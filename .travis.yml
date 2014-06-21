@@ -5,7 +5,7 @@ install:
 script: make ghpages
 env:
   global:
-    - TRAVIS=true
+    - secure: "<insert encrypted GH_TOKEN=blah here>"
 
 before_deploy: make submit
 deploy:
