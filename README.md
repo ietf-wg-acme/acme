@@ -41,13 +41,13 @@ $ git mv template.md draft-ietf-unicorn-protocol.md
    Or add an existing file.
 
 ```sh
-git add draft-ietf-unicorn-protocol.xml
+$ git add draft-ietf-unicorn-protocol.xml
 ````
 
 6. Remove the unnecessary template files.
 
 ```sh
-git rm template.md template.xml
+$ git rm template.md template.xml
 ```
 
 7. Move the README.md template into place.
