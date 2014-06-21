@@ -68,7 +68,7 @@ else
 IS_MASTER :=
 endif
 
-index.html: draft.html
+index.html: $(draft).html
 	cp $< $@
 
 ghpages: index.html $(draft).txt
