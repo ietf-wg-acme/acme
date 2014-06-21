@@ -3,6 +3,7 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 idnits ?= idnits
 
 draft := $(basename $(firstword $(wildcard draft-*.md draft-*.xml)))
+
 ifeq (,$(draft))
 $(warning No file named draft-*.md or draft-*.xml)
 $(error Read README.md for setup instructions)
@@ -37,10 +38,19 @@ $(next).xml: $(draft).xml
 	$(kramdown-rfc2629) $< > $@
 
 %.txt: %.xml
-	$(xml2rfc) $< $@
+	$(xml2rfc) $< -o $@ --text
+
+ifeq "$(shell uname -s 2>/dev/null)" "Darwin"
+sed_i := sed -i ''
+else
+sed_i := sed -i
+endif
 
 %.html: %.xml
-	$(xml2rfc) --html $< $@
+	$(xml2rfc) $< -o $@ --html
+	$(sed_i) -f lib/addstyle.sed $@
+
+### Below this deals with updating gh-pages
 
 GHPAGES_TMP := /tmp/ghpages$(shell echo $$$$)
 .TRANSIENT: $(GHPAGES_TMP)
