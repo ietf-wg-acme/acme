@@ -44,20 +44,33 @@ $ git mv template.md draft-ietf-unicorn-protocol.md
 $ git add draft-ietf-unicorn-protocol.xml
 ````
 
-6. Remove the unnecessary template files.
+6. Edit the draft so that it has the right name.  This template uses
+   the `-latest` suffix in place of the usual number ('-00', or '-08').
+   
+```xml
+   <rfc docName="draft-ietf-unicorn-protocol-latest" category="std">
+```
+
+   Or in markdown:
+
+```yaml
+docname: draft-ietf-unicorn-protocol-latest
+```
+
+7. Remove the unnecessary template files.
 
 ```sh
 $ git rm template.md template.xml
 ```
 
-7. Move the README.md template into place.
+8. Move the README.md template into place.
 
 ```sh
 $ git rm README.md
 $ git mv README-template.md README.md
 ```
 
-8. Edit the README.md and CONTRIBUTING.md files.
+9. Edit the README.md and CONTRIBUTING.md files.
 
 ```sh
 $ vi README.md CONTRIBUTING.md
@@ -65,7 +78,7 @@ $ vi README.md CONTRIBUTING.md
 $ git add README.md CONTRIBUTING.md
 ```
 
-8. Commit and push
+10. Commit and push
 
 ```sh
 $ git commit -am "Initial commit"
@@ -101,3 +114,28 @@ $ git commit -m "Updating Travis configuration" .travis.yml
 $ git push
 ```
 
+## Submitting Drafts
+
+Occasionally, you will want to submit versions of your draft to the
+official IETF repository.  The following process makes this easy.
+
+1. Make a submission version of your draft.  The makefile uses git
+   tags to work out what version to create.
+
+```sh
+$ make submit
+```
+
+2. [Submit the .txt and .xml files](https://datatracker.ietf.org/submit/)
+   that this produces.
+
+3. Tag your repository and upload the tags.  The tag you should use
+   is your draft name with the usual number in place of `-latest`.
+
+```sh
+$ git tag draft-ietf-unicorn-protocol-03
+$ git push --tags
+```
+
+You can setup Travis to produce a release in Github based on tags.
+See `.travis.yml` for a details.

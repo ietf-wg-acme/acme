@@ -5,3 +5,18 @@ install:
 script: make ghpages
 env:
   global:
+    - TRAVIS=true
+
+before_deploy: make submit
+deploy:
+  provider: releases
+  api-key:
+    secure: "<insert encrypted API key here>"
+  file:
+    - $TRAVIS_TAG.txt
+    - $TRAVIS_TAG.html
+    - $TRAVIS_TAG.xml
+  skip_cleanup: true
+  on:
+    branch: master
+    tags: true

@@ -2,9 +2,13 @@ xml2rfc ?= xml2rfc
 kramdown-rfc2629 ?= kramdown-rfc2629
 idnits ?= idnits
 
-draft := $(basename $(firstword $(wildcard draft-*.xml)))
+draft := $(basename $(firstword $(wildcard draft-*.md draft-*.xml)))
+ifeq (,$(draft))
+$(warning No file named draft-*.md or draft-*.xml)
+$(error Read README.md for setup instructions)
+endif
 
-current_ver := $(shell git tag | grep "$(draft)-[0-9][0-9]" | tail -1 | sed -e"s/.*-//")
+current_ver := $(shell git tag | grep '$(draft)-[0-9][0-9]' | tail -1 | sed -e"s/.*-//")
 ifeq "${current_ver}" ""
 next_ver ?= 00
 else

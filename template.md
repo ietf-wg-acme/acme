@@ -1,7 +1,7 @@
 ---
 title: STUN/TURN using PHP in Despair
 abbrev: STuPiD
-docname: draft-hartke-xmpp-stupid-00
+docname: draft-hartke-xmpp-stupid-latest
 date: 2009-07-05
 category: info
 
