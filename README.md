@@ -88,6 +88,27 @@ $ git push
 
 ### Setting Up The Editor's Copy
 
+Github uses the `gh-pages` branch as source for a project web page.
+This branch needs to be initialized first.
+
+```sh
+$ git checkout --orphan gh-pages
+$ git rm -rf .
+$ touch index.html
+$ git add index.html
+$ git commit
+$ git push
+```
+
+You can maintain `gh-pages` manually by running the following
+command occasionally.
+
+```sh
+$ make ghpages
+```
+
+### Automatic Update for Editor's Copy
+
 This requires that you sign in with [Travis](https://travis-ci.org/).
 
 While you are there, enable builds for the new repository.
@@ -98,7 +119,8 @@ You also need the travis command line tools, which is a Ruby script:
 $ sudo gem install travis
 ```
 
-Then, you need to get yourself a [new Github application token](https://github.com/settings/tokens/new).
+Then, you need to get yourself a
+[new Github application token](https://github.com/settings/tokens/new).
 You might want to use a dummy account for this purpose.
 
 The application token only needs the `public_repo` privilege.
@@ -113,6 +135,9 @@ $ git add .travis.yml
 $ git commit -m "Updating Travis configuration" .travis.yml
 $ git push
 ```
+
+As a side benefit, Travis will now also check pull requests for
+compilation errors, letting you know if things didn't work out.
 
 ## Submitting Drafts
 
