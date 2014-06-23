@@ -9,6 +9,8 @@ $(warning No file named draft-*.md or draft-*.xml)
 $(error Read README.md for setup instructions)
 endif
 
+draft_type := $(suffix $(firstword $(wildcard $(draft).md $(draft).xml)))
+
 current_ver := $(shell git tag | grep '$(draft)-[0-9][0-9]' | tail -1 | sed -e"s/.*-//")
 ifeq "${current_ver}" ""
 next_ver ?= 00
@@ -30,10 +32,14 @@ clean:
 	-rm -f $(draft).txt $(draft).html index.html
 	-rm -f $(next).txt $(next).html
 	-rm -f $(draft)-[0-9][0-9].xml
+ifeq (md,$(draft_type))
+	-rm -f $(draft).xml
+endif
 
 $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" $< > $@
 
+.INTERMEDIATE: $(draft).xml
 %.xml: %.md
 	$(kramdown-rfc2629) $< > $@
 
