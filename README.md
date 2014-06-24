@@ -15,57 +15,59 @@ group.  This guide will use the name `unicorn-wg` for your working group.
 
 ### New Draft Setup
 
-1. [Make a new repository](https://github.com/new).  This guide will use the
-   name name `unicorn-protocol` here.
-2. Clone that repository:
+[Make a new repository](https://github.com/new).  This guide will use the
+name name `unicorn-protocol` here.
+
+Clone that repository:
 ```sh
 $ git clone https://github.com/unicorn-wg/unicorn-protocol.git
 ```
-3. Copy the contents of this respository in:
+Copy the contents of this respository in:
 ```sh
 $ cd unicorn-protocol
 $ git pull https://github.com/martinthomson/i-d-template.git master
 ```
-4. Choose whether you want to use markdown or xml as your input form.  If you
-   already have a draft, then that decision is already made for you.
-5. Move the template file into place.
+Choose whether you want to use markdown or xml as your input form.  If you
+already have a draft, then that decision is already made for you.
+
+Move the template file into place.
 ```sh
 $ git mv template.md draft-ietf-unicorn-protocol.md
 ```
-   Or add an existing file.
+Or add an existing file.
 ```sh
 $ git add draft-ietf-unicorn-protocol.xml
 ````
-6. Edit the draft so that it has the right name.  This template uses the
-   `-latest` suffix in place of the usual number ('-00', or '-08').
+Edit the draft so that it has the right name.  This template uses the
+`-latest` suffix in place of the usual number ('-00', or '-08').
 ```xml
    <rfc docName="draft-ietf-unicorn-protocol-latest" category="std">
 ```
-   Or in markdown:
+Or in markdown:
 ```yaml
 docname: draft-ietf-unicorn-protocol-latest
 ```
-   And add it:
+And add it:
 ```sh
 $ git add draft-ietf-unicorn-protocol.md
 ```
-7. Remove the unnecessary template files.
+Remove the unnecessary template files.
 ```sh
 $ git rm template.md template.xml
 ```
-8. Move the README.md template into place.
+Move the README.md template into place.
 ```sh
 $ git rm README.md
 $ git mv README-template.md README.md
 ```
-9. Edit the `README.md` and `CONTRIBUTING.md` files.  Note that `CONTRIBUTING.md`
-   file is just the latter part of `README.md`.
+Edit the `README.md` and `CONTRIBUTING.md` files.  Note that `CONTRIBUTING.md`
+file is just the latter part of `README.md`.
 ```sh
 $ vi README.md CONTRIBUTING.md
 # ...
 $ git add README.md CONTRIBUTING.md
 ```
-10. Commit and push
+Commit and push
 ```sh
 $ git commit
 $ git push
@@ -146,18 +148,18 @@ errors, letting you know if things didn't work out.
 Occasionally, you will want to submit versions of your draft to the official
 IETF repository.  The following process makes this easy.
 
-1. Make a submission version of your draft.  The makefile uses git tags to work
-   out what version to create.
+Make a submission version of your draft.  The makefile uses git tags to work
+out what version to create.
 
 ```sh
 $ make submit
 ```
 
-2. [Submit the .txt and .xml files](https://datatracker.ietf.org/submit/)
-   that this produces.
+[Submit the .txt and .xml files](https://datatracker.ietf.org/submit/)
+that this produces.
 
-3. Tag your repository and upload the tags.  The tag you should use is your
-   draft name with the usual number in place of `-latest`.
+Tag your repository and upload the tags.  The tag you should use is your
+draft name with the usual number in place of `-latest`.
 
 ```sh
 $ git tag draft-ietf-unicorn-protocol-03
