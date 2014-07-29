@@ -2,7 +2,7 @@ xml2rfc ?= xml2rfc
 kramdown-rfc2629 ?= kramdown-rfc2629
 idnits ?= idnits
 
-draft := $(basename $(lastword $(wildcard draft-*.xml draft-*.md)))
+draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.md))))
 
 ifeq (,$(draft))
 $(warning No file named draft-*.md or draft-*.xml)
