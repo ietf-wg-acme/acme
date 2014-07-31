@@ -158,8 +158,8 @@ $ make submit
 [Submit the .txt and .xml files](https://datatracker.ietf.org/submit/)
 that this produces.
 
-Tag your repository and upload the tags.  The tag you should use is your
-draft name with the usual number in place of `-latest`.
+Then you can tag your repository and upload the tags.  The tag you should
+use is your draft name with the usual number in place of `-latest`.
 
 ```sh
 $ git tag draft-ietf-unicorn-protocol-03
