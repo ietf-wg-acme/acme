@@ -27,8 +27,8 @@ Copy the contents of this respository in:
 $ cd unicorn-protocol
 $ git pull https://github.com/martinthomson/i-d-template.git master
 ```
-Choose whether you want to use markdown or xml as your input form.  If you
-already have a draft, then that decision is already made for you.
+Choose whether you want to use markdown, outline, or xml as your input form.
+If you already have a draft, then that decision is already made for you.
 
 Move the template file into place.
 ```sh
