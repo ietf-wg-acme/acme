@@ -10,14 +10,14 @@ oxtradoc ?= oxtradoc.in
 idnits ?= idnits
 rfcdiff ?= rfcdiff
 
-draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.md)) $(sort $(wildcard draft-*.org)) ))
+draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.md)) $(sort $(wildcard draft-*.org))))
 
 ifeq (,$(draft))
 $(warning No file named draft-*.md or draft-*.xml or draft-*.org)
 $(error Read README.md for setup instructions)
 endif
 
-draft_type := $(suffix $(firstword $(wildcard $(draft).md $(draft).org $(draft).xml) ))
+draft_type := $(suffix $(firstword $(wildcard $(draft).md $(draft).org $(draft).xml)))
 
 current_ver := $(shell git tag | grep '$(draft)-[0-9][0-9]' | tail -1 | sed -e"s/.*-//")
 ifeq "${current_ver}" ""
@@ -26,7 +26,7 @@ else
 next_ver ?= $(shell printf "%.2d" $$((1$(current_ver)-99)))
 endif
 next := $(draft)-$(next_ver)
-current := $(draft)-$(current_ver)
+diff_ver := $(draft)-$(current_ver)
 
 .PHONY: latest submit diff clean
 
@@ -37,18 +37,15 @@ submit: $(next).txt
 idnits: $(next).txt
 	$(idnits) $<
 
-diff:   $(draft).txt
-	-git show $(current):$(draft)$(draft_type) > $(current).xml 
-	-$(xml2rfc) $(current).xml --text
-	-$(rfcdiff) --browse $(draft).txt $(current).txt
-	-rm -f $(current).xml
-	-rm -f $(current).txt
+diff: $(draft).txt $(draft)-$(current_ver).txt
+	$(rfcdiff) $*
 
 clean:
 	-rm -f $(draft).txt $(draft).html index.html
 	-rm -f $(next).txt $(next).html
 	-rm -f $(draft)-[0-9][0-9].xml
 	-rm -f *.diff.html
+	-rm -f $(diff_ver).txt
 ifeq (md,$(draft_type))
 	-rm -f $(draft).xml
 endif
@@ -58,6 +55,9 @@ endif
 
 $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" $< > $@
+
+$(diff_ver).xml: $(draft).xml $(draft).txt
+	git show $(current):$(draft)$(draft_type) > $(diff_ver)$(draft_type)
 
 .INTERMEDIATE: $(draft).xml
 %.xml: %.md
