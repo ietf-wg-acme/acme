@@ -8,7 +8,7 @@ xml2rfc ?= xml2rfc
 kramdown-rfc2629 ?= kramdown-rfc2629
 oxtradoc ?= oxtradoc.in
 idnits ?= idnits
-rfcdiff ?= rfcdiff
+rfcdiff ?= rfcdiff --browse
 
 draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.md)) $(sort $(wildcard draft-*.org))))
 
@@ -20,7 +20,7 @@ endif
 draft_type := $(suffix $(firstword $(wildcard $(draft).md $(draft).org $(draft).xml)))
 
 current_ver := $(shell git tag | grep '$(draft)-[0-9][0-9]' | tail -1 | sed -e"s/.*-//")
-ifeq "${current_ver}" ""
+ifeq (,$(current_ver))
 next_ver ?= 00
 else
 next_ver ?= $(shell printf "%.2d" $$((1$(current_ver)-99)))
@@ -37,27 +37,25 @@ submit: $(next).txt
 idnits: $(next).txt
 	$(idnits) $<
 
-diff: $(draft).txt $(draft)-$(current_ver).txt
-	$(rfcdiff) $*
-
 clean:
 	-rm -f $(draft).txt $(draft).html index.html
 	-rm -f $(next).txt $(next).html
-	-rm -f $(draft)-[0-9][0-9].xml
+	-rm -f $(addprefix $(draft)-[0-9][0-9].,xml md org)
 	-rm -f *.diff.html
-	-rm -f $(diff_ver).txt
-ifeq (md,$(draft_type))
-	-rm -f $(draft).xml
-endif
-ifeq (org,$(draft_type))
+ifneq (xml,$(draft_type))
 	-rm -f $(draft).xml
 endif
 
 $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" $< > $@
 
-$(diff_ver).xml: $(draft).xml $(draft).txt
-	git show $(current):$(draft)$(draft_type) > $(diff_ver)$(draft_type)
+ifneq (,$(current_ver))
+diff: $(draft).txt $(draft)-$(current_ver).txt
+	$(rfcdiff) $*
+
+$(draft)-$(current_ver).$(draft_type):
+	git show $(draft)-$(current_ver):$(draft).$(draft_type) > $@
+endif
 
 .INTERMEDIATE: $(draft).xml
 %.xml: %.md
@@ -69,7 +67,7 @@ $(diff_ver).xml: $(draft).xml $(draft).txt
 %.txt: %.xml
 	$(xml2rfc) $< -o $@ --text
 
-ifeq "$(shell uname -s 2>/dev/null)" "Darwin"
+ifeq (Darwin, $(shell uname -s 2>/dev/null))
 sed_i := sed -i ''
 else
 sed_i := sed -i
