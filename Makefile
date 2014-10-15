@@ -1,15 +1,22 @@
+# In case your system doesn't have any of these tools:
+# https://pypi.python.org/pypi/xml2rfc
+# https://github.com/cabo/kramdown-rfc2629
+# https://github.com/Juniper/libslax/tree/master/doc/oxtradoc
+# https://tools.ietf.org/tools/idnits/
+
 xml2rfc ?= xml2rfc
 kramdown-rfc2629 ?= kramdown-rfc2629
+oxtradoc ?= oxtradoc.in
 idnits ?= idnits
 
-draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.md))))
+draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.md)) $(sort $(wildcard draft-*.org)) ))
 
 ifeq (,$(draft))
-$(warning No file named draft-*.md or draft-*.xml)
+$(warning No file named draft-*.md or draft-*.xml or draft-*.org)
 $(error Read README.md for setup instructions)
 endif
 
-draft_type := $(suffix $(firstword $(wildcard $(draft).md $(draft).xml)))
+draft_type := $(suffix $(firstword $(wildcard $(draft).md $(draft).org $(draft).xml) ))
 
 current_ver := $(shell git tag | grep '$(draft)-[0-9][0-9]' | tail -1 | sed -e"s/.*-//")
 ifeq "${current_ver}" ""
@@ -35,6 +42,9 @@ clean:
 ifeq (md,$(draft_type))
 	-rm -f $(draft).xml
 endif
+ifeq (org,$(draft_type))
+	-rm -f $(draft).xml
+endif
 
 $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" $< > $@
@@ -42,6 +52,9 @@ $(next).xml: $(draft).xml
 .INTERMEDIATE: $(draft).xml
 %.xml: %.md
 	$(kramdown-rfc2629) $< > $@
+
+%.xml: %.org
+	$(oxtradoc) -m outline-to-xml -n "$@" $< > $@
 
 %.txt: %.xml
 	$(xml2rfc) $< -o $@ --text
