@@ -10,7 +10,7 @@ oxtradoc ?= oxtradoc.in
 idnits ?= idnits
 rfcdiff ?= rfcdiff --browse
 
-draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.md)) $(sort $(wildcard draft-*.org))))
+draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.org)) $(sort $(wildcard draft-*.md))))
 
 ifeq (,$(draft))
 $(warning No file named draft-*.md or draft-*.xml or draft-*.org)
@@ -39,8 +39,7 @@ idnits: $(next).txt
 
 clean:
 	-rm -f $(draft).txt $(draft).html index.html
-	-rm -f $(next).txt $(next).html
-	-rm -f $(addprefix $(draft)-[0-9][0-9].,xml md org)
+	-rm -f $(addprefix $(draft)-[0-9][0-9].,xml md org html txt)
 	-rm -f *.diff.html
 ifneq (xml,$(draft_type))
 	-rm -f $(draft).xml
@@ -50,11 +49,12 @@ $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" $< > $@
 
 ifneq (,$(current_ver))
+.INTERMEDIATE: $(addprefix $(draft)-$(current_ver),.txt $(draft_type))
 diff: $(draft).txt $(draft)-$(current_ver).txt
-	$(rfcdiff) $*
+	-$(rfcdiff) $^
 
-$(draft)-$(current_ver).$(draft_type):
-	git show $(draft)-$(current_ver):$(draft).$(draft_type) > $@
+$(draft)-$(current_ver)$(draft_type):
+	git show $(draft)-$(current_ver):$(draft)$(draft_type) > $@
 endif
 
 .INTERMEDIATE: $(draft).xml
