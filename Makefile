@@ -80,15 +80,26 @@ endif
 ### Update this Makefile
 
 # The prerequisites here are what is updated
+.TRANSIENT: .i-d-template.diff
 update: Makefile lib .gitignore
+	if [ -f .i-d-template ]; then \
+	  git diff --exit-code $^ > .i-d-template.diff && \
+	  rm -f .i-d-template.diff \
+	fi
 	git diff --quiet $^ || \
 	  (echo "You have uncommitted changes to:" $^ 1>&2; exit 1)
 	git remote | grep i-d-template > /dev/null || \
 	  git remote add i-d-template https://github.com/martinthomson/i-d-template.git
 	git fetch i-d-template
-	git checkout i-d-template/master $^
-	git diff --quiet $^ || \
+	[ -f .i-d-template ] && [ $$(git rev-parse i-d-template/master) = $$(cat .i-d-template) ] || \
+	  git checkout i-d-template/master $^
+	git diff --quiet $^ && rm -f .i-d-template.diff || \
 	  git commit -m "Update of $^ from i-d-template/$$(git rev-parse i-d-template/master)" $^
+	if [ -f .i-d-template.diff ]; then \
+	  git apply .i-d-template.diff && \
+	  git commit -m "Restoring local changes to $$(git diff --name-only $^ | paste -s -d ' ' -)" $^ \
+	fi
+	git rev-parse i-d-template/master > .i-d-template
 
 ### Below this deals with updating gh-pages
 
