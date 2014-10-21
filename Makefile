@@ -28,7 +28,7 @@ endif
 next := $(draft)-$(next_ver)
 diff_ver := $(draft)-$(current_ver)
 
-.PHONY: latest submit diff clean
+.PHONY: latest submit diff clean update
 
 latest: $(draft).txt $(draft).html
 
@@ -76,6 +76,19 @@ endif
 %.html: %.xml
 	$(xml2rfc) $< -o $@ --html
 	$(sed_i) -f lib/addstyle.sed $@
+
+### Update this Makefile
+
+# The prerequisites here are what is updated
+update: Makefile lib .gitignore
+	git diff --quiet $^ || \
+	  (echo "You have uncommitted changes to:" $^ 1>&2; exit 1)
+	git remote | grep i-d-template > /dev/null || \
+	  git remote add i-d-template https://github.com/martinthomson/i-d-template.git
+	git fetch i-d-template
+	git checkout i-d-template/master $^
+	git diff --quiet $^ || \
+	  git commit -m "Update of $^ from i-d-template/$$(git rev-parse i-d-template/master)" $^
 
 ### Below this deals with updating gh-pages
 
