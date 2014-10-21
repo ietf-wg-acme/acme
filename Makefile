@@ -76,7 +76,7 @@ endif
 # The prerequisites here are what is updated
 .INTERMEDIATE: .i-d-template.diff
 update: Makefile lib .gitignore
-	if [ -f .i-d-template ]; then \
+	-if [ -f .i-d-template ]; then \
 	  git diff --exit-code $$(cat .i-d-template) -- $^ > .i-d-template.diff && \
 	  rm -f .i-d-template.diff; \
 	fi
