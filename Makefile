@@ -67,20 +67,14 @@ endif
 %.txt: %.xml
 	$(xml2rfc) $< -o $@ --text
 
-ifeq (Darwin, $(shell uname -s 2>/dev/null))
-sed_i := sed -i ''
-else
-sed_i := sed -i
-endif
-
-%.html: %.xml
+%.htmltmp: %.xml
 	$(xml2rfc) $< -o $@ --html
-	$(sed_i) -f lib/addstyle.sed $@
+%.html: %.htmltmp
+	sed -f lib/addstyle.sed $@ > $<
 
 ### Update this Makefile
-
 # The prerequisites here are what is updated
-.TRANSIENT: .i-d-template.diff
+.INTERMEDIATE: .i-d-template.diff
 update: Makefile lib .gitignore
 	if [ -f .i-d-template ]; then \
 	  git diff --exit-code $$(cat .i-d-template) -- $^ > .i-d-template.diff && \
@@ -104,7 +98,7 @@ update: Makefile lib .gitignore
 ### Below this deals with updating gh-pages
 
 GHPAGES_TMP := /tmp/ghpages$(shell echo $$$$)
-.TRANSIENT: $(GHPAGES_TMP)
+.INTERMEDIATE: $(GHPAGES_TMP)
 ifeq (,$(TRAVIS_COMMIT))
 GIT_ORIG := $(shell git branch | grep '*' | cut -c 3-)
 else
