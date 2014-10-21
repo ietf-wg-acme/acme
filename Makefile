@@ -76,12 +76,12 @@ endif
 # The prerequisites here are what is updated
 .INTERMEDIATE: .i-d-template.diff
 update: Makefile lib .gitignore
+	git diff --quiet -- $^ || \
+	  (echo "You have uncommitted changes to:" $^ 1>&2; exit 1)
 	-if [ -f .i-d-template ]; then \
 	  git diff --exit-code $$(cat .i-d-template) -- $^ > .i-d-template.diff && \
 	  rm -f .i-d-template.diff; \
 	fi
-	git diff --quiet -- $^ || \
-	  (echo "You have uncommitted changes to:" $^ 1>&2; exit 1)
 	git remote | grep i-d-template > /dev/null || \
 	  git remote add i-d-template https://github.com/martinthomson/i-d-template.git
 	git fetch i-d-template
