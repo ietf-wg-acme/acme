@@ -84,7 +84,7 @@ endif
 update: Makefile lib .gitignore
 	if [ -f .i-d-template ]; then \
 	  git diff --exit-code $^ > .i-d-template.diff && \
-	  rm -f .i-d-template.diff \
+	  rm -f .i-d-template.diff; \
 	fi
 	git diff --quiet $^ || \
 	  (echo "You have uncommitted changes to:" $^ 1>&2; exit 1)
@@ -97,7 +97,7 @@ update: Makefile lib .gitignore
 	  git commit -m "Update of $^ from i-d-template/$$(git rev-parse i-d-template/master)" $^
 	if [ -f .i-d-template.diff ]; then \
 	  git apply .i-d-template.diff && \
-	  git commit -m "Restoring local changes to $$(git diff --name-only $^ | paste -s -d ' ' -)" $^ \
+	  git commit -m "Restoring local changes to $$(git diff --name-only $^ | paste -s -d ' ' -)" $^; \
 	fi
 	git rev-parse i-d-template/master > .i-d-template
 
