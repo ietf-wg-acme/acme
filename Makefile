@@ -103,7 +103,7 @@ endif
 %.htmltmp: %.xml
 	$(xml2rfc) $< -o $@ --html
 %.html: %.htmltmp
-	sed -f lib/addstyle.sed $@ > $<
+	sed -f lib/addstyle.sed $< > $@
 
 %.pdf: %.txt
 	$(enscript) --margins 76::76: -B -q -p - $^ | $(ps2pdf) - $@
