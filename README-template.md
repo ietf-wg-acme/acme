@@ -27,11 +27,11 @@ meaning of the specification), you can either:
 
   a) Fork this repository and submit a pull request; this is the lowest
   friction way to get editorial changes in.
-  
+
   b) Submit a new issue to Github, and mention that you believe it is editorial
   in the issue body. It is not necessary to notify the mailing list for
   editorial issues.
-  
+
   c) Make comments on individual commits in Github. Note that this feedback is
   processed only with best effort by the editors, so it should only be used for
   quick editorial suggestions or questions.
@@ -42,6 +42,26 @@ providing a link to the issue in the message body.
 
   Note that **github issues are not for substantial discussions**; the only
   appropriate place to discuss design issues is on the mailing list itself.
+
+
+## Building the Draft
+
+In order to build a copy of the draft, you will need to install xml2rfc.  This
+requires Python 2.7 and can be installed using `pip`:
+
+```sh
+$ pip install xml2rfc
+```
+
+You may also need to install kramdown-xml2rfc, which requires Ruby and can be
+installed using the roby package manager, `gem`:
+
+```sh
+$ gem install kramdown-xml2rfc
+```
+
+Other tools can be used to produce PDF files, or to provide a comparison.  These
+tools - and where to find them - are described in the `Makefile`.
 
 
 ## NOTE WELL
@@ -55,22 +75,22 @@ are addressed to:
 
  * The IETF plenary session
  * The IESG, or any member thereof on behalf of the IESG
- * Any IETF mailing list, including the IETF list itself, any working group 
+ * Any IETF mailing list, including the IETF list itself, any working group
    or design team list, or any other list functioning under IETF auspices
  * Any IETF working group or portion thereof
  * Any Birds of a Feather (BOF) session
  * The IAB or any member thereof on behalf of the IAB
  * The RFC Editor or the Internet-Drafts function
- * All IETF Contributions are subject to the rules of 
-   [RFC 5378](https://tools.ietf.org/html/rfc5378) and 
-   [RFC 3979](https://tools.ietf.org/html/rfc3979) 
+ * All IETF Contributions are subject to the rules of
+   [RFC 5378](https://tools.ietf.org/html/rfc5378) and
+   [RFC 3979](https://tools.ietf.org/html/rfc3979)
    (updated by [RFC 4879](https://tools.ietf.org/html/rfc4879)).
 
 Statements made outside of an IETF session, mailing list or other function,
 that are clearly not intended to be input to an IETF activity, group or
 function, are not IETF Contributions in the context of this notice.
 
-Please consult [RFC 5378](https://tools.ietf.org/html/rfc5378) and [RFC 
+Please consult [RFC 5378](https://tools.ietf.org/html/rfc5378) and [RFC
 3979](https://tools.ietf.org/html/rfc3979) for details.
 
 A participant in any IETF activity is deemed to accept all IETF rules of
