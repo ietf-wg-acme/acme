@@ -1,14 +1,37 @@
-# In case your system doesn't have any of these tools:
-# https://pypi.python.org/pypi/xml2rfc
-# https://github.com/cabo/kramdown-rfc2629
-# https://github.com/Juniper/libslax/tree/master/doc/oxtradoc
-# https://tools.ietf.org/tools/idnits/
+# Original makefile from https://github.com/martinthomson/i-d-template
 
+# The following tools are used by this file.
+# All are assumed to be on the path, but you can override these
+# in the environment, or command line.
+
+# Mandatory:
+#   https://pypi.python.org/pypi/xml2rfc
 xml2rfc ?= xml2rfc
+
+# If you are using markdown files:
+#   https://github.com/cabo/kramdown-rfc2629
 kramdown-rfc2629 ?= kramdown-rfc2629
+
+# If you are using outline files:
+#   https://github.com/Juniper/libslax/tree/master/doc/oxtradoc
 oxtradoc ?= oxtradoc.in
+
+# For sanity checkout your draft:
+#   https://tools.ietf.org/tools/idnits/
 idnits ?= idnits
+
+# For diff:
+#   https://tools.ietf.org/tools/rfcdiff/
 rfcdiff ?= rfcdiff --browse
+
+# For generating PDF:
+#   https://www.gnu.org/software/enscript/
+enscript ?= enscript
+#   http://www.ghostscript.com/
+ps2pdf ?= ps2pdf 
+
+
+## Work out what to build
 
 draft := $(basename $(lastword $(sort $(wildcard draft-*.xml)) $(sort $(wildcard draft-*.org)) $(sort $(wildcard draft-*.md))))
 
@@ -28,9 +51,15 @@ endif
 next := $(draft)-$(next_ver)
 diff_ver := $(draft)-$(current_ver)
 
-.PHONY: latest submit diff clean update
 
-latest: $(draft).txt $(draft).html
+## Targets
+
+.PHONY: latest txt html pdf submit diff clean update ghpages
+
+latest: txt html
+txt: $(draft).txt
+html: $(draft).html
+pdf: $(draft).pdf
 
 submit: $(next).txt
 
@@ -45,6 +74,8 @@ ifneq (xml,$(draft_type))
 	-rm -f $(draft).xml
 endif
 
+## diff
+
 $(next).xml: $(draft).xml
 	sed -e"s/$(basename $<)-latest/$(basename $@)/" $< > $@
 
@@ -56,6 +87,8 @@ diff: $(draft).txt $(draft)-$(current_ver).txt
 $(draft)-$(current_ver)$(draft_type):
 	git show $(draft)-$(current_ver):$(draft)$(draft_type) > $@
 endif
+
+## Recipes
 
 .INTERMEDIATE: $(draft).xml
 %.xml: %.md
@@ -72,7 +105,11 @@ endif
 %.html: %.htmltmp
 	sed -f lib/addstyle.sed $@ > $<
 
-### Update this Makefile
+%.pdf: %.txt
+	$(enscript) --margins 76::76: -B -q -p - $^ | $(ps2pdf) - $@
+
+## Update this Makefile
+
 # The prerequisites here are what is updated
 .INTERMEDIATE: .i-d-template.diff
 update: Makefile lib .gitignore
@@ -95,7 +132,7 @@ update: Makefile lib .gitignore
 	fi
 	git rev-parse i-d-template/master > .i-d-template
 
-### Below this deals with updating gh-pages
+## Update the gh-pages branch with useful files
 
 GHPAGES_TMP := /tmp/ghpages$(shell echo $$$$)
 .INTERMEDIATE: $(GHPAGES_TMP)
