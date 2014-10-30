@@ -66,11 +66,17 @@ submit: $(next).txt
 idnits: $(next).txt
 	$(idnits) $<
 
+## If you'd like the main github page to show the draft text.
+readme: $(next).txt
+	@echo '```' > README.md
+	@cat $(next).txt >> README.md
+	@echo '```' >> README.md
+
 clean:
 	-rm -f $(draft).{txt,html,pdf} index.html
 	-rm -f $(draft)-[0-9][0-9].{xml,md,org,txt,html,pdf}
 	-rm -f *.diff.html
-ifneq (xml,$(draft_type))
+ifneq (.xml,$(draft_type))
 	-rm -f $(draft).xml
 endif
 
