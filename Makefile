@@ -118,7 +118,7 @@ endif
 
 # The prerequisites here are what is updated
 .INTERMEDIATE: .i-d-template.diff
-update: Makefile lib .gitignore
+update: Makefile lib .gitignore SUBMITTING.md
 	git diff --quiet -- $^ || \
 	  (echo "You have uncommitted changes to:" $^ 1>&2; exit 1)
 	-if [ -f .i-d-template ]; then \
