@@ -167,6 +167,3 @@ use is your draft name with the usual number in place of `-latest`.
 $ git tag draft-ietf-unicorn-protocol-03
 $ git push --tags
 ```
-
-You can setup Travis to produce a release in Github based on tags.  See
-`.travis.yml` for a template.
