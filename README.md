@@ -107,9 +107,8 @@ $ make ghpages
 This requires that you sign in with [Travis](https://travis-ci.org/).
 
 While you are there, enable builds for the new repository.  (Hit the button with
-a '+' on it once you are logged in.)  Note that Travis can take quite a while to
-synchronize its view of all the respositories, you might have to wait a day or
-so for your new repository to show up.
+a '+' on it once you are logged in.)  Note that Travis only synchronizes
+repositories with github once a day, so you might have to force a refresh.
 
 You need the Travis command line tools, which is a Ruby script:
 
