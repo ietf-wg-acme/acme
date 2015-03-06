@@ -163,8 +163,10 @@ index.html: $(draft).html
 	cp $< $@
 
 ghpages: index.html $(draft).txt
+ifneq (true,$(TRAVIS))
 	@git show-ref refs/heads/gh-pages > /dev/null 2>&1 || \
 	  ! echo 'Error: No gh-pages branch, run `make setup-ghpages` to initialize it.'
+endif
 ifneq (,$(or $(IS_LOCAL),$(IS_MASTER)))
 	mkdir $(GHPAGES_TMP)
 	cp -f $^ $(GHPAGES_TMP)
