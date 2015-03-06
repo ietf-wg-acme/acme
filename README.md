@@ -149,6 +149,7 @@ the core files.
 
 ```sh
 $ make update
+$ git commit
 ```
 
 This script is cunning enough to handle merging any simple changes that you
