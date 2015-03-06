@@ -144,6 +144,9 @@ GHPAGES_TMP := /tmp/ghpages$(shell echo $$$$)
 .INTERMEDIATE: $(GHPAGES_TMP)
 ifeq (,$(TRAVIS_COMMIT))
 GIT_ORIG := $(shell git branch | grep '*' | cut -c 3-)
+ifneq (,$(findstring detached from,$(GIT_ORIG)))
+GIT_ORIG := $(shell git show -s --format='format:%H')
+endif
 else
 GIT_ORIG := $(TRAVIS_COMMIT)
 endif
@@ -160,6 +163,8 @@ index.html: $(draft).html
 	cp $< $@
 
 ghpages: index.html $(draft).txt
+	@git show -s gh-pages > /dev/null 2>&1 || \
+	  ! echo 'Error: No gh-pages branch, run `make setup-ghpages` to initialize it.'
 ifneq (,$(or $(IS_LOCAL),$(IS_MASTER)))
 	mkdir $(GHPAGES_TMP)
 	cp -f $^ $(GHPAGES_TMP)
@@ -185,3 +190,23 @@ endif
 	-git checkout -qf "$(GIT_ORIG)"
 	-rm -rf $(GHPAGES_TMP)
 endif
+
+.PHONY: setup-ghpages
+setup-ghpages:
+# Check if the gh-pages branch already exists locally
+	@if git show -s gh-pages >/dev/null 2>&1; then \
+	  ! echo "Error: gh-pages branch already exists"; \
+        else true; fi
+# Check if the gh-pages branch already exists on origin
+	@git show -s origin/gh-pages >/dev/null 2>&1 && \
+	  (echo 'Warning: gh-pages already present on the origin'; \
+	   git checkout -b gh-pages origin/gh-pages && \
+	   ! git checkout -qf $(GIT_ORIG) )
+	@echo "Initializing gh-pages branch"
+	git checkout --orphan gh-pages
+	git rm -rf .
+	touch index.html
+	git add index.html
+	git commit -m "Automatic setup of gh-pages."
+	git push --set-upstream origin gh-pages
+	git checkout -qf "$(GIT_ORIG)"
