@@ -6,7 +6,7 @@ draft.
 ## Getting Started
 
 This all assumes that you have an [account](https://github.com/join) with
-Github.
+GitHub.
 
 ### Working Group Setup
 
@@ -82,17 +82,11 @@ draft-*.xml
 
 ### Setting Up The Editor's Copy
 
-Github uses the `gh-pages` branch as source for a project web page.  This branch
-needs to be initialized first.
+GitHub uses the `gh-pages` branch as source for a project web page.  This branch
+needs to be initialized first.  The `setup-ghpages` make target does that:
 
 ```sh
-$ git checkout --orphan gh-pages
-$ git rm -rf .
-$ touch index.html
-$ git add index.html
-$ git commit
-$ git push --set-upstream origin gh-pages
-$ git checkout master
+$ make setup-ghpages
 ```
 
 You can maintain `gh-pages` manually by running the following command
@@ -102,29 +96,33 @@ occasionally.
 $ make ghpages
 ```
 
+Or, you can run an automatic commit after each checkin with Travis.
+
+
 ### Automatic Update for Editor's Copy
 
 This requires that you sign in with [Travis](https://travis-ci.org/).
 
-While you are there, enable builds for the new repository.  (Hit the button with
-a '+' on it once you are logged in.)  Note that Travis only synchronizes
-repositories with github once a day, so you might have to force a refresh.
+First enable builds for the new repository on the Travis site.  (Hit the button
+with a '+' on it once you are logged in.)  Note that Travis only synchronizes
+repositories with GitHub once a day, so you might have to force a refresh.
 
-You need the Travis command line tools, which is a Ruby script:
+You will need the Travis command line tool for the next step; this is available
+as a [Ruby](https://www.ruby-lang.org/) [gem](https://rubygems.org/):
 
 ```sh
 $ sudo gem install travis
 ```
 
 *WARNING*: You might want to use a dummy account for this next part to minimize
-any problems from accidental leaks.  Once you enable pushes from Travis, be very
-careful accepting pull requests that alter `.travis.yml` or `Makefile`.  Those
-files can cause the value of the token to be published for all to see.  You
-don't want that to happen, even though tokens can be revoked easily.  Only
-pushes to the main repository will be able to see the token, so don't worry
-about pull requests.
+any problems from accidental leaks of your key.  Once you enable pushes from
+Travis, be very careful accepting pull requests that alter `.travis.yml` or
+`Makefile`.  Those files can cause the value of the token to be published for
+all to see.  You don't want that to happen, even though tokens can be revoked
+easily.  Only pushes to the main repository will be able to see the token, so
+don't worry about pull requests.
 
-Then, you need to get yourself a [new Github application
+Then, you need to get yourself a [new GitHub application
 token](https://github.com/settings/tokens/new).  The application token only
 needs the `public_repo` privilege.  This will let it push updates to your
 `gh-pages` branch.
@@ -139,8 +137,23 @@ $ git commit
 $ git push
 ```
 
-As a side benefit, Travis will now also check pull requests for compilation
-errors, letting you know if things didn't work out.
+As a side benefit, Travis will now also check pull requests for errors, letting
+you know if things didn't work out so that you don't merge anything suspect.
+
+
+## Updating the Makefile
+
+Occasionally improvements and changes are made to the Makefile or the support
+files in this repository.  The `update` make target looks after the update of
+the core files.
+
+```sh
+$ make update
+```
+
+This script is cunning enough to handle merging any simple changes that you
+might have made to the Makefile yourself, such as adding targets.
+
 
 ## Submitting Drafts
 

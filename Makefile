@@ -200,8 +200,7 @@ setup-ghpages:
 # Check if the gh-pages branch already exists on origin
 	@git show -s origin/gh-pages >/dev/null 2>&1 && \
 	  (echo 'Warning: gh-pages already present on the origin'; \
-	   git checkout -b gh-pages origin/gh-pages && \
-	   ! git checkout -qf $(GIT_ORIG) )
+	   git branch gh-pages origin/gh-pages; false)
 	@echo "Initializing gh-pages branch"
 	git checkout --orphan gh-pages
 	git rm -rf .

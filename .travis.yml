@@ -12,21 +12,3 @@ install:
  - sudo pip install xml2rfc
 
 script: make ghpages
-
-env:
-  global:
-    - secure: "<insert encrypted GH_TOKEN=blah here>"
-
-before_deploy: make submit
-deploy:
-  provider: releases
-  api-key:
-    secure: "<insert encrypted API key here>"
-  file:
-    - $TRAVIS_TAG.txt
-    - $TRAVIS_TAG.html
-    - $TRAVIS_TAG.xml
-  skip_cleanup: true
-  on:
-    branch: master
-    tags: true
