@@ -47,10 +47,17 @@ providing a link to the issue in the message body.
 ## Building the Draft
 
 In order to build a copy of the draft, you will need to install xml2rfc.  This
-requires Python 2.7 and can be installed using `pip`:
+requires Python 2.7 and can be installed using `pip` and `virtualenv`:
 
 ```sh
-$ pip install xml2rfc
+# install dependencies for lxml built for xml2rfc
+sudo apt-get install libxml2-dev libxslt1-dev
+# instead of "sudo pip" that pollutes system-wide packages, use
+# virtual Python environment
+virtualenv --no-site-packages venv
+# remember also to activate the virtualenv before any 'make' run
+source venv/bin/activate
+pip install xml2rfc
 ```
 
 You may also need to install kramdown-xml2rfc, which requires Ruby and can be
