@@ -3,7 +3,7 @@
 This is the working area for the [IETF |WG-TITLE| Working
 Group](https://trac.tools.ietf.org/wg/|WG-NAME|/trac/wiki) draft of |DRAFT-TITLE|
 
-* [Editor's copy](https://rtcweb-wg.github.io/security-arch/)
+* [Editor's copy](https://|THIS-USER|.github.io/|THIS-DRAFT|/)
 * [Working Group Draft] (https://tools.ietf.org/html/|DRAFT-NAME|)
 
 
