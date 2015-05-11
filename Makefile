@@ -108,7 +108,7 @@ endif
 
 %.htmltmp: %.xml
 	$(xml2rfc) $< -o $@ --html
-%.html: %.htmltmp
+%.html: %.htmltmp lib/addstyle.sed lib/style.css
 	sed -f lib/addstyle.sed $< > $@
 
 %.pdf: %.txt
