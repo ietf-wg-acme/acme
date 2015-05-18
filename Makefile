@@ -30,6 +30,9 @@ enscript ?= enscript
 #   http://www.ghostscript.com/
 ps2pdf ?= ps2pdf 
 
+# Where to get references
+XML_RESOURCE_ORG_PREFIX ?= http://unicorn-wg.github.io/idrefs
+
 
 ## Work out what to build
 
@@ -98,7 +101,8 @@ endif
 
 .INTERMEDIATE: $(draft).xml
 %.xml: %.md
-	$(kramdown-rfc2629) $< > $@
+	XML_RESOURCE_ORG_PREFIX=$(XML_RESOURCE_ORG_PREFIX) \
+	  $(kramdown-rfc2629) $< > $@
 
 %.xml: %.org
 	$(oxtradoc) -m outline-to-xml -n "$@" $< > $@
