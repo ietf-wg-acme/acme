@@ -14,8 +14,8 @@ no WG-adopted documents yet.
 Be aware that all contributions to the specification fall under the "NOTE WELL"
 terms outlined below.
 
-Before submitting feedback, please familiarize yourself with our current issues
-list and review the [current
+Before submitting feedback, please familiarize yourself with our [current issues
+list](https://github.com/ietf-wg-acme/acme/issues)  and review the [current
 drafts](http://datatracker.ietf.org/wg/acme/documents/).
 If you're new to the IETF, you should also read the [Tao of the
 IETF](https://www.ietf.org/tao.html).
