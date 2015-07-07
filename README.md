@@ -1,21 +1,24 @@
-# acme
+# ACME
 
 This is the working area for the [IETF ACME Working
-Group](https://trac.tools.ietf.org/wg/acme/trac/wiki).
+Group](http://datatracker.ietf.org/wg/acme/charter/).
+This is still being set up, and not all links are up yet since we have
+no WG-adopted documents yet.
 
-* [Editor's copy](https://ietf-wg-acme.github.io/acme/)
-* [Working Group Draft] (https://tools.ietf.org/html/acme)
+* BROKEN [Editor's copy](https://ietf-wg-acme.github.io/acme/)
+* BROKEN [Working Group Draft] (https://tools.ietf.org/html/acme)
 
 
 ## Contributing
 
-Before submitting feedback, please familiarize yourself with our current issues
-list and review the [working group home page](http://www.ietf.org/wg/acme). If you're
-new to this, you may also want to read the [Tao of the
-IETF](https://www.ietf.org/tao.html).
-
 Be aware that all contributions to the specification fall under the "NOTE WELL"
 terms outlined below.
+
+Before submitting feedback, please familiarize yourself with our current issues
+list and review the [current
+drafts](http://datatracker.ietf.org/wg/acme/documents/).
+If you're new to the IETF, you should also read the [Tao of the
+IETF](https://www.ietf.org/tao.html).
 
 1. The best way to provide feedback (editorial or design) and ask questions is
 sending an e-mail to [our mailing
@@ -46,6 +49,10 @@ providing a link to the issue in the message body.
 
 ## Building the Draft
 
+If you want to make your own formatted copies (such as for previewing
+changes you want to suggest) then follow the instructions in this
+section.  If not, you can skip it.
+
 Formatted text and HTML versions of the draft can be built using `make`.
 
 ```sh
@@ -57,7 +64,7 @@ other tools that are enabled by make, check the Makefile for details, including
 links to the software those tools might require.
 
 
-## Installation and Setup
+### Installation and Setup
 
 Mac users will need to install
 [XCode](https://itunes.apple.com/us/app/xcode/id497799835) to get `make`, see
