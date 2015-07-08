@@ -118,6 +118,11 @@ endif
 %.pdf: %.txt
 	$(enscript) --margins 76::76: -B -q -p - $^ | $(ps2pdf) - $@
 
+# Store the issues list locally
+.PHONY: issues
+issues:
+	curl https://api.github.com/repos/ietf-wg-acme/acme/issues?state=open >issues.json
+
 ## Update this Makefile
 
 # The prerequisites here are what is updated
