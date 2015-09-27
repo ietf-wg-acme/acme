@@ -483,7 +483,6 @@ label) MUST NOT be included in authorization requests.  See
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
-      "path": "Hf5GrX4Q7EBax9hc2jJnfw"
     }
   ],
 }
@@ -795,6 +794,9 @@ requests are not authenticated.  If a client wishes to query the server for
 information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
 That is, it should send a JWS whose payload is trivial ({"resource":"reg"}).
+In this case the server reply MUST contain the same link headers sent for a
+new registration, to allow a client to retreive the "new-authorization" and
+"terms-of-service" URI
 
 ### Recovery Keys
 
@@ -1158,9 +1160,8 @@ Link: <https://example.com/acme/new-cert>;rel="next"
 The client needs to respond with information to complete the challenges.  To do
 this, the client updates the authorization object received from the server by
 filling in any required information in the elements of the "challenges"
-dictionary.  For example, if the client wishes to complete the "simpleHttp"
-challenge, it needs to provide the "path" component.  (This is also the stage
-where the client should perform any actions required by the challenge.)
+dictionary.  (This is also the stage where the client should perform any
+actions required by the challenge.)
 
 The client sends these updates back to the server in the form of a JSON object
 with the response fields required by the challenge type, carried in a POST
@@ -1178,7 +1179,7 @@ Host: example.com
 {
   "resource": "challenge",
   "type": "simpleHttp",
-  "path": "Hf5GrX4Q7EBax9hc2jJnfw"
+  "tls": false
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1232,7 +1233,6 @@ HTTP/1.1 200 OK
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
-      "path": "Hf5GrX4Q7EBax9hc2jJnfw"
     }
   ]
 }
@@ -1428,7 +1428,7 @@ mechanism to prove possession of a given identifier.  In all practical cases,
 CAs rely on a variety of means to test whether an entity applying for a
 certificate with a given identifier actually controls that identifier.
 
-Challenges provide the server with assurance the an account key holder is also
+Challenges provide the server with assurance that an account key holder is also
 the entity that controls an identifier.  For each type of challenge, it must be
 the case that in order for an entity to successfully complete the challenge the
 entity must both:
@@ -1505,7 +1505,7 @@ need to specify which types of identifier they apply to.
 With Simple HTTP validation, the client in an ACME transaction proves its
 control over a domain name by proving that it can provision resources on an HTTP
 server that responds for that domain name.  The ACME server challenges the
-client to provision a file with a specific string as its contents.
+client to provision a file with a specific JWS as its contents.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
 connect to at least one of the hosts found in A and AAAA records, at its
@@ -1516,20 +1516,20 @@ type (required, string):
 : The string "simpleHttp"
 
 token (required, string):
-: The value to be provisioned in the file.  This value MUST have at least 128
-bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT
-contain any non-ASCII characters.
+: The value to be used in generation of validation JWS.  This value MUST have at
+least 128 bits of entropy, in order to prevent an attacker from guessing it.
+It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
 
 ~~~~~~~~~~
 {
   "type": "simpleHttp",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ+PCt92wr+oA"
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
 A client responds to this challenge by signing a JWS object and provisioning it
 as a resource on the HTTP server for the domain in question.  The payload of the
-JWS MUST be a JSON dictionary containing the fields "type", "token", "path", and
+JWS MUST be a JSON dictionary containing the fields "type", "token", and
 "tls" from the ACME challenge and response (see below), and no other fields.  If
 the "tls" field is not included in the response, then validation object MUST
 have its "tls" field set to "true".  The JWS MUST be signed with the client's
@@ -1566,7 +1566,6 @@ Otherwise the check will be done over HTTPS, on port 443.
 ~~~~~~~~~~
 {
   "type": "simpleHttp",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA",
   "tls": false
 }
 /* Signed as JWS */
@@ -1585,19 +1584,18 @@ domain by verifying that the resource was provisioned as expected.
 3. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
 ACME server MUST ignore the certificate provided by the HTTPS server.
 4. Verify that the Content-Type header of the response is either absent, or has
-the value "application/jose+json"
-5. Verify that the body of the response is a valid JWS of the type indicated by
-the Content-Type header (if present), signed with the client's account key
+the value "application/jose+json".
+5. Verify that the body of the response is a valid JWS, signed with the client's
+account key.
 6. Verify that the payload of the JWS meets the following criteria:
-  * It is a valid JSON dictionary
-  * It has exactly four fields
-  * Its "type" field is set to "simpleHttp"
-  * Its "token" field is equal to the "token" field in the challenge
-  * Its "path" field is equal to the "path" field in the response
-  * Its "tls" field is equal to the "tls" field in the response, or "true" if
-    the "tls" field was absent
+  * it is a valid JSON dictionary;
+  * it has exactly three fields;
+  * its "type" field is set to "simpleHttp";
+  * its "token" field is equal to the "token" field in the challenge;
+  * its "tls" field is equal to the "tls" field in the response, or "true" if
+    the "tls" field was absent.
 
-Comparisons of the "path" and "token" fields MUST be performed in terms of
+Comparisons of the "token" field MUST be performed in terms of
 Unicode code points, taking into account the encodings of the stored nonce and
 the body of the request.
 
@@ -1619,12 +1617,14 @@ type (required, string):
 : The string "dvsni"
 
 token (required, string):
-: A random value with at least 128 bits of entropy, base64-encoded
+: The value to be used in generation of validation certificate.  This value MUST have at
+least 128 bits of entropy, in order to prevent an attacker from guessing it.
+It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
 
 ~~~~~~~~~~
 {
   "type": "dvsni",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJyPCt92wrDoA",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
@@ -1636,12 +1636,12 @@ type (required, string):
 : The string "dvsni"
 
 token (required, string):
-: A random value with at least 128 bits of entropy, base64-encoded
+: The token value from the server-provided challenge object
 
 ~~~~~~~~~~
 {
   "type": "dvsni",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJyPCt92wrDoA",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
@@ -1828,13 +1828,15 @@ type (required, string):
 : The string "dns"
 
 token (required, string):
-: A random value with at least 128 bits of entropy.  It MUST NOT contain any
-characters outside the URL-safe Base64 alphabet.
+: The value to be used in generation of validation record to be provisioned
+in DNS.  This value MUST have at least 128 bits of entropy, in order to
+prevent an attacker from guessing it.  It MUST NOT contain any characters
+outside the URL-safe Base64 alphabet.
 
 ~~~~~~~~~~
 {
   "type": "dns",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ+PCt92wr+oA",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
@@ -1846,12 +1848,12 @@ type (required, string):
 : The string "dns"
 
 token (required, string):
-: The token value in the challenge
+: The token value from the server-provided challenge object
 
 ~~~~~~~~~~
 {
   "type": "dns",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ+PCt92wr+oA",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
