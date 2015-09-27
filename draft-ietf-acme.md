@@ -479,7 +479,7 @@ label) MUST NOT be included in authorization requests.  See
 
   "challenges": [
     {
-      "type": "simpleHttp",
+      "type": "http-00",
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
@@ -1139,12 +1139,12 @@ Link: <https://example.com/acme/new-cert>;rel="next"
 
   "challenges": [
     {
-      "type": "simpleHttp",
+      "type": "http-00",
       "uri": "https://example.com/authz/asdf/0",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     },
     {
-      "type": "dns",
+      "type": "dns-00",
       "uri": "https://example.com/authz/asdf/1"
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
@@ -1169,7 +1169,7 @@ request to the challenge URI (not authorization URI or the new-authorization
 URI).  This allows the client to send information only for challenges it is
 responding to.
 
-For example, if the client were to respond to the "simpleHttp" challenge in the
+For example, if the client were to respond to the "http-00" challenge in the
 above authorization, it would send the following request:
 
 ~~~~~~~~~~
@@ -1178,7 +1178,7 @@ Host: example.com
 
 {
   "resource": "challenge",
-  "type": "simpleHttp",
+  "type": "http-00",
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1228,7 +1228,7 @@ HTTP/1.1 200 OK
 
   "challenges": [
     {
-      "type": "simpleHttp"
+      "type": "http-00"
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
@@ -1474,7 +1474,7 @@ fields of a Response payload.  If the server sets a Challenge's "status" to
 why they failed the challenge.
 
 Different challenges allow the server to obtain proof of different aspects of
-control over an identifier.  In some challenges, like Simple HTTP and DVSNI, the
+control over an identifier.  In some challenges, like HTTP and TLS SNI, the
 client directly proves its ability to do certain things related to the
 identifier.  In the Proof of Possession challenge, the client proves historical
 control of the identifier, by reference to a prior authorization transaction or
@@ -1485,8 +1485,7 @@ a matter of server policy.  A CA may choose different sets of challenges
 depending on whether it has interacted with a domain before, and how.  For
 example:
 
-* New domain with no known certificates: Domain Validation (DVSNI or Simple
-  HTTP)
+* New domain with no known certificates: Domain Validation (HTTP or TLS SNI)
 * Domain for which known certs exist from other CAs: DV + Proof of Possession of
   previous CA-signed key
 * Domain with a cert from this CA, lost account key: DV + PoP of ACME-certified
@@ -1520,7 +1519,7 @@ key (required, JWK):
 }
 ~~~~~~~~~~
 
-## Simple HTTP
+## HTTP
 
 With Simple HTTP validation, the client in an ACME transaction proves its
 control over a domain name by proving that it can provision resources on an HTTP
@@ -1534,7 +1533,7 @@ particular low-privilege tenant user in a subtle and non-intuitive manner, the
 challenge must be completed over HTTP, not HTTPS.
 
 type (required, string):
-: The string "simpleHttp"
+: The string "http-00"
 
 authorizedKey (required, string):
 : A serialized authorized key object, base64-encoded.  The "key" field in this
@@ -1542,7 +1541,7 @@ object MUST match the client's account key.
 
 ~~~~~~~~~~
 {
-  "type": "simpleHttp",
+  "type": "http-00",
   "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
 }
 ~~~~~~~~~~
@@ -1570,7 +1569,7 @@ The client's response to this challenge indicates its agreement to this
 challenge:
 
 type (required, string):
-: The string "simpleHttp"
+: The string "http-00"
 
 token (required, string):
 : The "token" value from the authorized key object in the challenge.
@@ -1608,9 +1607,9 @@ If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
 failed.
 
-## Domain Validation with Server Name Indication (DVSNI)
+## TLS with Server Name Indication (TLS SNI)
 
-The Domain Validation with Server Name Indication (DVSNI) validation method
+The TLS with Server Name Indication (TLS SNI) validation method
 proves control over a domain name by requiring the client to configure a TLS
 server referenced by an A/AAAA record under the domain name to respond to
 specific connection attempts utilizing the Server Name Indication extension
@@ -1619,18 +1618,18 @@ reconfigured server and verifying a particular challenge certificate is
 presented.
 
 type (required, string):
-: The string "dvsni"
+: The string "tls-sni-00"
 
 authorizedKey (required, string):
 : A serialized authorized key object, base64-encoded.  The "key" field in this
 object MUST match the client's account key.
 
 n (required, number):
-: Number of DVSNI iterations
+: Number of tls-sni-00 iterations
 
 ~~~~~~~~~~
 {
-  "type": "dvsni",
+  "type": "tls-sni-00",
   "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4",
   "n": 25
 }
@@ -1658,11 +1657,11 @@ with the Server Name Indication extension set to
 "\<Zi[0:32]\>.\<Zi[32:64]\>.acme.invalid", the corresponding generated
 certificate is presented.
 
-The response to the DVSNI challenge simply acknowledges that the client is ready
+The response to the TLS SNI challenge simply acknowledges that the client is ready
 to fulfill this challenge.
 
 type (required, string):
-: The string "dvsni"
+: The string "tls-sni-00"
 
 token (required, string):
 : The "token" value from the authorized key object in the challenge.
@@ -1678,8 +1677,7 @@ of the domain by verifying that the TLS server was configured appropriately.
 
 1. Verify that the "token" value in the response matches the "token" field in
    the authorized key object in the challenge.
-2. Choose a subset of the N DVSNI iterations to check, according to local
-   policy.
+2. Choose a subset of the N iterations to check, according to local policy.
 3. For each iteration, compute the Zi-value from the authorized keys object in
    the same way as the client.
 4. Open a TLS connection to the domain name being validated on the requested
@@ -1731,7 +1729,7 @@ a public key), or by asking for the key corresponding to a certificate.
 The server provides the following fields as part of the challenge:
 
 type (required, string):
-: The string "proofOfPossession"
+: The string "proofOfPossession-00"
 
 certs (optional, array of string):
 : An array of certificates, in Base64-encoded DER format, that contain
@@ -1740,7 +1738,7 @@ acceptable public keys.
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession",
+  "type": "proofOfPossession-00",
   "certs": ["MIIF7z...bYVQLY"]
 }
 ~~~~~~~~~~
@@ -1761,7 +1759,7 @@ accountKey (required, JWK):
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession",
+  "type": "proofOfPossession-00",
   "identifiers: [{"type": "dns", "value": "example.com"}],
   "accountKey": { "kty": "RSA", ... }
 }
@@ -1788,7 +1786,7 @@ authorization (required, JWS):
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession",
+  "type": "proofOfPossession-00",
   "authorization": {
     "header": {
       "alg": "RS256",
@@ -1829,7 +1827,7 @@ challenge requires the client to provision a TXT record containing a designated
 value under a specific validation domain name.
 
 type (required, string):
-: The string "dns"
+: The string "dns-00"
 
 authorizedKey (required, string):
 : A serialized authorized key object, base64-encoded.  The "key" field in this
@@ -1837,7 +1835,7 @@ object MUST match the client's account key.
 
 ~~~~~~~~~~
 {
-  "type": "dns",
+  "type": "dns-00",
   "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4"
 }
 ~~~~~~~~~~
@@ -1862,7 +1860,7 @@ The response to the DNS challenge simply acknowledges that the client is ready
 to fulfill this challenge.
 
 type (required, string):
-: The string "dns"
+: The string "dns-00"
 
 token (required, string):
 : The "token" value from the authorized key object in the challenge.
@@ -1994,9 +1992,9 @@ All of the challenges above that require an out-of-band query by the server have
 a binding to the account private key, such that the only the account private key
 holder can successfully respond to the validation query:
 
-* Simple HTTP: The value provided in the validation request is signed by the
+* HTTP: The value provided in the validation request is signed by the
   account private key.
-* DVSNI: The validation TLS request uses the account key pair as the server's
+* TLS SNI: The validation TLS request uses the account key pair as the server's
   key pair.
 * DNS: The MAC covers the account key, and the MAC key is derived from an ECDH
   public key signed with the account private key.
@@ -2007,8 +2005,8 @@ The association of challenges to identifiers is typically done by requiring the
 client to perform some action that only someone who effectively controls the
 identifier can perform.  For the challenges in this document, the actions are:
 
-* Simple HTTP: Provision files under .well-known on a web server for the domain
-* DVSNI: Configure a TLS server for the domain
+* HTTP: Provision files under .well-known on a web server for the domain
+* TLS SNI: Configure a TLS server for the domain
 * DNS: Provision DNS resource records for the domain
 * Proof of possession of a prior key: Sign using the private key specified by
   the server
@@ -2017,7 +2015,7 @@ There are several ways that these assumptions can be violated, both by
 misconfiguration and by attack.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
 server's hostname by responding to a Simple HTTP challenge, and likewise for TLS
-configuration and DVSNI.
+configuration and TLS SNI.
 
 The use of hosting providers is a particular risk for ACME validation.  If the
 owner of the domain has outsourced operation of DNS or web services to a hosting
@@ -2036,7 +2034,7 @@ validation path will not be known to the primary server.
 The DNS is a common point of vulnerability for all of these challenges.  An
 entity that can provision false DNS records for a domain can attack the DNS
 challenge directly, and can provision false A/AAAA records to direct the ACME
-server to send its DVSNI or Simple HTTP validation query to a server of the
+server to send its TLS SNI or HTTP validation query to a server of the
 attacker's choosing.  There are a few different mitigations that ACME servers
 can apply:
 
