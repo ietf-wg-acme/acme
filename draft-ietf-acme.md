@@ -1179,7 +1179,6 @@ Host: example.com
 {
   "resource": "challenge",
   "type": "simpleHttp",
-  "tls": false
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1530,8 +1529,9 @@ client to provision a file with a specific JWS as its contents.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
 connect to at least one of the hosts found in A and AAAA records, at its
-discretion.  The HTTP server may be made available over either HTTPS or
-unencrypted HTTP; the client tells the server in its response which to check.
+discretion.  Because many webservers allocate a default HTTPS virtual host to a
+particular low-privilege tenant user in a subtle and non-intuitive manner, the
+challenge must be completed over HTTP, not HTTPS.
 
 type (required, string):
 : The string "simpleHttp"
@@ -1567,8 +1567,7 @@ The path at which the resource is provisioned is comprised of the fixed prefix "
 ~~~~~~~~~~
 
 The client's response to this challenge indicates its agreement to this
-challenge in particular, and whether it would prefer for the validation request
-to be sent over TLS:
+challenge:
 
 type (required, string):
 : The string "simpleHttp"
@@ -1576,15 +1575,9 @@ type (required, string):
 token (required, string):
 : The "token" value from the authorized key object in the challenge.
 
-tls (optional, boolean, default true):
-: If this attribute is present and set to "false", the server will perform its
-validation check over unencrypted HTTP (on port 80) rather than over HTTPS.
-Otherwise the check will be done over HTTPS, on port 443.
-
 ~~~~~~~~~~
 {
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA",
-  "tls": false
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1595,11 +1588,9 @@ domain by verifying that the resource was provisioned as expected.
 1. Verify that the "token" value in the response matches the "token" field in
    the authorized key object in the challenge.
 2. Form a URI by populating the URI template {{RFC6570}}
-"{scheme}://{domain}/.well-known/acme-challenge/{token}", where:
-  * the scheme field is set to "http" if the "tls" field in the response is
-    present and set to false, and "https" otherwise;
-  * the domain field is set to the domain name being verified; and
-  * the token field is set to the token in the authorized key object.
+   "http://{domain}/.well-known/acme-challenge/{token}", where:
+  * the domain field is set to the domain name being verified
+  * the token field is set to the token in the authorized key object
 3. Verify that the resulting URI is well-formed.
 4. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
    ACME server MUST ignore the certificate provided by the HTTPS server.
