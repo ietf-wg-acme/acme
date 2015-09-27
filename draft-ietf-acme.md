@@ -482,7 +482,7 @@ label) MUST NOT be included in authorization requests.  See
       "type": "simpleHttp",
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
-      "token": "IlirfxKKXAsHtmzK29Pj8A"
+      "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
     }
   ],
 }
@@ -1179,7 +1179,7 @@ Host: example.com
 {
   "resource": "challenge",
   "type": "simpleHttp",
-  "tls": false
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA" 
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1232,7 +1232,7 @@ HTTP/1.1 200 OK
       "type": "simpleHttp"
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
-      "token": "IlirfxKKXAsHtmzK29Pj8A"
+      "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
     }
   ]
 }
