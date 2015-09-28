@@ -2,7 +2,7 @@
 title: "Automatic Certificate Management Environment (ACME)"
 abbrev: ACME
 docname: draft-ietf-acme-acme-00
-date: 2015-07-23
+date: 2015-09-28
 category: std
 ipr: trust200902
 
