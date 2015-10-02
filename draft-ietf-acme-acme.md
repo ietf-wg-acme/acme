@@ -1503,6 +1503,19 @@ validation of domain names.  If ACME is extended in the future to support other
 types of identifier, there will need to be new Challenge types, and they will
 need to specify which types of identifier they apply to.
 
+[[ Editor's Note: In pre-RFC versions of this specification, challenges are
+labeled by type, and with the version of the draft in which they were
+introduced.  For example, if an HTTP challenge were introduced in version -03
+and a breaking change made in version -05, then there would be a challenge
+labeled "http-03" and one labeled "http-05" -- but not one labeled "http-04",
+since challenge in version -04 was compatible with one in version -04. ]]
+
+[[ Editor's Note: Operators SHOULD NOT issue "combinations" arrays in
+authorization objects that require the client to perform multiple challenges
+over the same type, e.g., ["http-03", "http-05"].  Challenges within a type are
+testing the same capability of the domain owner, and it may not be possible to
+satisfy both at once. ]]
+
 ## Authorized Key Objects
 
 Several of the challenges in this document makes use of an "authorized key"
@@ -1550,11 +1563,13 @@ object MUST match the client's account key.
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by parsing the authorized key object,
-verifying that its "key" field contains the client's account key, and
-provisioning it as a resource on the HTTP server for the domain in question.
-(Note: The provisioned object need not be a byte-exact copy of the authorized
-keys object in the challenge, but it MUST represent the same JSON object.)
+A client responds to this challenge by base64-decoding and parsing the
+authorized key object, verifying that its "key" field contains the client's
+account key, and provisioning it as a resource on the HTTP server for the domain
+in question.  That is, the server provisions a JSON object that is equivalent to
+the object encoded in the "authorizedKey" field sent by the server. (Note: The
+provisioned object need not be a byte-exact copy of the authorized keys object
+in the challenge.)
 
 ~~~~~~~~~~
 {
@@ -1598,7 +1613,7 @@ domain by verifying that the resource was provisioned as expected.
 1. Verify that the "token" value in the response matches the "token" field in
    the authorized key object in the challenge.
 2. Form a URI by populating the URI template {{RFC6570}}
-"{scheme}://{domain}/.well-known/acme-challenge/{token}", where:
+   "{scheme}://{domain}/.well-known/acme-challenge/{token}", where:
   * the scheme field is set to "http" if the "tls" field in the response is
     present and set to false, and "https" otherwise;
   * the domain field is set to the domain name being verified; and
@@ -1607,7 +1622,7 @@ domain by verifying that the resource was provisioned as expected.
 4. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
    ACME server MUST ignore the certificate provided by the HTTPS server.
 5. Verify that the Content-Type header of the response is either absent, or has
-the value "application/json".
+   the value "application/json".
 6. Verify that the body of the response is well-formed authorized key object.
 7. Verify that the "key" and "token" fields in the authorized key object match
    the values from the authorized key object in the challenge.
