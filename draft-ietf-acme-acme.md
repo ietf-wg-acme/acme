@@ -1193,6 +1193,12 @@ ignore any fields in the response object that are not specified as response
 fields for this type of challenge.  The server provides a 200 (OK) response
 with the updated challenge object as its body.
 
+If the client's response is invalid for some reason, or does not provide the
+server with appropriate information to validate the challenge, then the server
+MUST return an HTTP error.  On receiving such an error, the client MUST undo any
+actions that have been taken to fulfil the challenge, e.g., removing files that
+have been provisioned to a web server.
+
 Presumably, the client's responses provide the server with enough information to
 validate one or more challenges.  The server is said to "finalize" the
 authorization when it has completed all the validations it is going to complete,
@@ -1607,24 +1613,27 @@ Otherwise the check will be done over HTTPS, on port 443.
 /* Signed as JWS */
 ~~~~~~~~~~
 
+On receiving a response, the server MUST verify that the "token" value in the
+response matches the "token" field in the authorized key object in the
+challenge.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge
+
 Given a Challenge/Response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
 
-1. Verify that the "token" value in the response matches the "token" field in
-   the authorized key object in the challenge.
-2. Form a URI by populating the URI template {{RFC6570}}
+1. Form a URI by populating the URI template {{RFC6570}}
    "{scheme}://{domain}/.well-known/acme-challenge/{token}", where:
   * the scheme field is set to "http" if the "tls" field in the response is
     present and set to false, and "https" otherwise;
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the authorized key object.
-3. Verify that the resulting URI is well-formed.
-4. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
+2. Verify that the resulting URI is well-formed.
+3. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
    ACME server MUST ignore the certificate provided by the HTTPS server.
-5. Verify that the Content-Type header of the response is either absent, or has
+4. Verify that the Content-Type header of the response is either absent, or has
    the value "application/json".
-6. Verify that the body of the response is well-formed authorized key object.
-7. Verify that the "key" and "token" fields in the authorized key object match
+5. Verify that the body of the response is well-formed authorized key object.
+6. Verify that the "key" and "token" fields in the authorized key object match
    the values from the authorized key object in the challenge.
 
 Comparisons of the "token" field MUST be performed in terms of
@@ -1686,17 +1695,20 @@ token (required, string):
 }
 ~~~~~~~~~~
 
+On receiving a response, the server MUST verify that the "token" value in the
+response matches the "token" field in the authorized key object in the
+challenge.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge
+
 Given a Challenge/Response pair, the ACME server verifies the client's control
 of the domain by verifying that the TLS server was configured appropriately.
 
-1. Verify that the "token" value in the response matches the "token" field in
-   the authorized key object in the challenge.
-2. Compute the Z-value from the authorized key object in the same way as the
+1. Compute the Z-value from the authorized key object in the same way as the
    client.
-3. Open a TLS connection to the domain name being validated on port 443,
+2. Open a TLS connection to the domain name being validated on port 443,
    presenting the value "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid" in the SNI
    field (where the comparison is case-insensitive).
-4. Verify that the certificate contains a subjectAltName extension with the
+3. Verify that the certificate contains a subjectAltName extension with the
    dNSName of "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid".
 
 It is RECOMMENDED that the ACME server validation TLS connections from multiple
@@ -1874,13 +1886,16 @@ token (required, string):
 }
 ~~~~~~~~~~
 
+On receiving a response, the server MUST verify that the "token" value in the
+response matches the "token" field in the authorized key object in the
+challenge.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge
+
 To validate a DNS challenge, the server performs the following steps:
 
-1. Verify that the "token" value in the response matches the "token" field in
-   the authorized key object in the challenge.
-2. Compute the SHA-256 digest of the authorized key object
-3. Query for TXT records under the validation domain name
-4. Verify that the contents of one of the TXT records matches the digest value
+1. Compute the SHA-256 digest of the authorized key object
+2. Query for TXT records under the validation domain name
+3. Verify that the contents of one of the TXT records matches the digest value
 
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
