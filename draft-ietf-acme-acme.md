@@ -1,7 +1,7 @@
 ---
 title: "Automatic Certificate Management Environment (ACME)"
 abbrev: ACME
-docname: draft-ietf-acme-acme-00
+docname: draft-ietf-acme-acme-01
 date: 2015-09-28
 category: std
 ipr: trust200902
@@ -482,7 +482,7 @@ label) MUST NOT be included in authorization requests.  See
 
   "challenges": [
     {
-      "type": "http-00",
+      "type": "http-01",
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
       "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
@@ -1142,12 +1142,12 @@ Link: <https://example.com/acme/new-cert>;rel="next"
 
   "challenges": [
     {
-      "type": "http-00",
+      "type": "http-01",
       "uri": "https://example.com/authz/asdf/0",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     },
     {
-      "type": "dns-00",
+      "type": "dns-01",
       "uri": "https://example.com/authz/asdf/1"
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
@@ -1172,7 +1172,7 @@ request to the challenge URI (not authorization URI or the new-authorization
 URI).  This allows the client to send information only for challenges it is
 responding to.
 
-For example, if the client were to respond to the "http-00" challenge in the
+For example, if the client were to respond to the "http-01" challenge in the
 above authorization, it would send the following request:
 
 ~~~~~~~~~~
@@ -1181,7 +1181,7 @@ Host: example.com
 
 {
   "resource": "challenge",
-  "type": "http-00",
+  "type": "http-01",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA" 
 }
 /* Signed as JWS */
@@ -1238,7 +1238,7 @@ HTTP/1.1 200 OK
 
   "challenges": [
     {
-      "type": "http-00"
+      "type": "http-01"
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
       "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
@@ -1556,7 +1556,7 @@ particular low-privilege tenant user in a subtle and non-intuitive manner, the
 challenge must be completed over HTTP, not HTTPS.
 
 type (required, string):
-: The string "http-00"
+: The string "http-01"
 
 authorizedKey (required, string):
 : A serialized authorized key object, base64-encoded.  The "key" field in this
@@ -1564,7 +1564,7 @@ object MUST match the client's account key.
 
 ~~~~~~~~~~
 {
-  "type": "http-00",
+  "type": "http-01",
   "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
 }
 ~~~~~~~~~~
@@ -1594,7 +1594,7 @@ The client's response to this challenge indicates its agreement to this
 challenge:
 
 type (required, string):
-: The string "http-00"
+: The string "http-01"
 
 token (required, string):
 : The "token" value from the authorized key object in the challenge.
@@ -1646,18 +1646,18 @@ reconfigured server and verifying a particular challenge certificate is
 presented.
 
 type (required, string):
-: The string "tls-sni-00"
+: The string "tls-sni-01"
 
 authorizedKey (required, string):
 : A serialized authorized key object, base64-encoded.  The "key" field in this
 object MUST match the client's account key.
 
 n (required, number):
-: Number of tls-sni-00 iterations
+: Number of tls-sni-01 iterations
 
 ~~~~~~~~~~
 {
-  "type": "tls-sni-00",
+  "type": "tls-sni-01",
   "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4",
   "n": 25
 }
@@ -1689,7 +1689,7 @@ The response to the TLS SNI challenge simply acknowledges that the client is rea
 to fulfill this challenge.
 
 type (required, string):
-: The string "tls-sni-00"
+: The string "tls-sni-01"
 
 token (required, string):
 : The "token" value from the authorized key object in the challenge.
@@ -1760,7 +1760,7 @@ a public key), or by asking for the key corresponding to a certificate.
 The server provides the following fields as part of the challenge:
 
 type (required, string):
-: The string "proofOfPossession-00"
+: The string "proofOfPossession-01"
 
 certs (optional, array of string):
 : An array of certificates, in Base64-encoded DER format, that contain
@@ -1769,7 +1769,7 @@ acceptable public keys.
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession-00",
+  "type": "proofOfPossession-01",
   "certs": ["MIIF7z...bYVQLY"]
 }
 ~~~~~~~~~~
@@ -1790,7 +1790,7 @@ accountKey (required, JWK):
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession-00",
+  "type": "proofOfPossession-01",
   "identifiers: [{"type": "dns", "value": "example.com"}],
   "accountKey": { "kty": "RSA", ... }
 }
@@ -1817,7 +1817,7 @@ authorization (required, JWS):
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession-00",
+  "type": "proofOfPossession-01",
   "authorization": {
     "header": {
       "alg": "RS256",
@@ -1858,7 +1858,7 @@ challenge requires the client to provision a TXT record containing a designated
 value under a specific validation domain name.
 
 type (required, string):
-: The string "dns-00"
+: The string "dns-01"
 
 authorizedKey (required, string):
 : A serialized authorized key object, base64-encoded.  The "key" field in this
@@ -1866,7 +1866,7 @@ object MUST match the client's account key.
 
 ~~~~~~~~~~
 {
-  "type": "dns-00",
+  "type": "dns-01",
   "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4"
 }
 ~~~~~~~~~~
@@ -1891,7 +1891,7 @@ The response to the DNS challenge simply acknowledges that the client is ready
 to fulfill this challenge.
 
 type (required, string):
-: The string "dns-00"
+: The string "dns-01"
 
 token (required, string):
 : The "token" value from the authorized key object in the challenge.
