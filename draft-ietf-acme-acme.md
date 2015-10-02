@@ -1144,12 +1144,12 @@ Link: <https://example.com/acme/new-cert>;rel="next"
     {
       "type": "http-01",
       "uri": "https://example.com/authz/asdf/0",
-      "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
+      "token": "IlirfxKKXAsHtmzK29Pj8A"
     },
     {
       "type": "dns-01",
       "uri": "https://example.com/authz/asdf/1",
-      "authorizedKey": "SEeEZ2JM54Yf07WTwtz...Me_JgUIK3fxMSkBB_dU9w"
+      "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   },
 
@@ -1528,9 +1528,7 @@ object.  Such an object is a JSON object that encodes an authorization for a
 specific account key to fulfill a specific challenge.
 
 token (required, string):
-: A random value that uniquely identifies a challenge.  This value MUST have at
-least 128 bits of entropy, in order to prevent an attacker from guessing it.  It
-MUST NOT contain any characters outside the URL-safe Base64 alphabet.
+: A random value that uniquely identifies a challenge.
 
 key (required, JWK):
 : The account key being authorized
@@ -1558,24 +1556,22 @@ challenge must be completed over HTTP, not HTTPS.
 type (required, string):
 : The string "http-01"
 
-authorizedKey (required, string):
-: A serialized authorized key object, base64-encoded.  The "key" field in this
-object MUST match the client's account key.
+token (required, string):
+: A random value that uniquely identifies the challenge.  This value MUST have
+at least 128 bits of entropy, in order to prevent an attacker from guessing it.
+It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
 
 ~~~~~~~~~~
 {
   "type": "http-01",
-  "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA",
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by base64-decoding and parsing the
-authorized key object, verifying that its "key" field contains the client's
-account key, and provisioning it as a resource on the HTTP server for the domain
-in question.  That is, the server provisions a JSON object that is equivalent to
-the object encoded in the "authorizedKey" field sent by the server. (Note: The
-provisioned object need not be a byte-exact copy of the authorized keys object
-in the challenge.)
+A client responds to this challenge by constructing an authorized key object
+from the "token" value provided in the challenge and the client's account key.
+The client then provisions the authorized key object as a resource on the HTTP
+server for the domain in question.
 
 ~~~~~~~~~~
 {
@@ -1584,32 +1580,33 @@ in the challenge.)
 }
 ~~~~~~~~~~
 
-The path at which the resource is provisioned is comprised of the fixed prefix ".well-known/acme-challenge/", followed by the "token" value in the challenge.
+The path at which the resource is provisioned is comprised of the fixed prefix
+".well-known/acme-challenge/", followed by the "token" value in the challenge.
 
 ~~~~~~~~~~
 .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
 ~~~~~~~~~~
 
 The client's response to this challenge indicates its agreement to this
-challenge:
+challenge by sending the server the authorized key object covering the
+challenge's token and the client's account key:
 
-type (required, string):
-: The string "http-01"
-
-token (required, string):
-: The "token" value from the authorized key object in the challenge.
+authorizedKey (required, string):
+: A serialized authorized key object, base64-encoded.  The "key" field in this
+object MUST match the client's account key, and the "token" field MUST be the
+"token" value provided in the challenge.
 
 ~~~~~~~~~~
 {
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA",
+  "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
 }
 /* Signed as JWS */
 ~~~~~~~~~~
 
-On receiving a response, the server MUST verify that the "token" value in the
-response matches the "token" field in the authorized key object in the
-challenge.  If they do not match, then the server MUST return an HTTP error in
-response to the POST request in which the client sent the challenge
+On receiving a response, the server MUST verify that the authorized key object
+in the response matches the "token" value in the challenge and the client's
+account key.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge.
 
 Given a Challenge/Response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
@@ -1648,9 +1645,10 @@ presented.
 type (required, string):
 : The string "tls-sni-01"
 
-authorizedKey (required, string):
-: A serialized authorized key object, base64-encoded.  The "key" field in this
-object MUST match the client's account key.
+token (required, string):
+: A random value that uniquely identifies the challenge.  This value MUST have
+at least 128 bits of entropy, in order to prevent an attacker from guessing it.
+It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
 
 n (required, number):
 : Number of tls-sni-01 iterations
@@ -1658,15 +1656,15 @@ n (required, number):
 ~~~~~~~~~~
 {
   "type": "tls-sni-01",
-  "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA",
   "n": 25
 }
 ~~~~~~~~~~
 
-In response to the challenge, the client MUST decode and parse the authorized
-keys object and verify that it contains exactly one entry, whose "token" and
-"key" attributes match the token for this challenge and the client's account
-key.  The client then computes the SHA-256 digest Z0 of the JSON-encoded
+A client responds to this challenge by constructing an authorized key object
+from the "token" value provided in the challenge and the client's account key.
+The client encodes this object in JSON and uses it to compute a series of
+hashes:  The client first computes the SHA-256 digest Z0 of the JSON-encoded
 authorized key object (without base64-encoding), and encodes Z0 in UTF-8
 lower-case hexadecimal form. The client then generates iterated hash values
 Z1...Z(n-1) as follows:
@@ -1688,22 +1686,22 @@ certificate is presented.
 The response to the TLS SNI challenge simply acknowledges that the client is ready
 to fulfill this challenge.
 
-type (required, string):
-: The string "tls-sni-01"
-
-token (required, string):
-: The "token" value from the authorized key object in the challenge.
+authorizedKey (required, string):
+: A serialized authorized key object, base64-encoded.  The "key" field in this
+object MUST match the client's account key, and the "token" field MUST be the
+"token" value provided in the challenge.
 
 ~~~~~~~~~~
 {
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
+  "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4",
 }
+/* Signed as JWS */
 ~~~~~~~~~~
 
-On receiving a response, the server MUST verify that the "token" value in the
-response matches the "token" field in the authorized key object in the
-challenge.  If they do not match, then the server MUST return an HTTP error in
-response to the POST request in which the client sent the challenge
+On receiving a response, the server MUST verify that the authorized key object
+in the response matches the "token" value in the challenge and the client's
+account key.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge.
 
 Given a Challenge/Response pair, the ACME server verifies the client's control
 of the domain by verifying that the TLS server was configured appropriately.
@@ -1860,21 +1858,24 @@ value under a specific validation domain name.
 type (required, string):
 : The string "dns-01"
 
-authorizedKey (required, string):
-: A serialized authorized key object, base64-encoded.  The "key" field in this
-object MUST match the client's account key.
+token (required, string):
+: A random value that uniquely identifies the challenge.  This value MUST have
+at least 128 bits of entropy, in order to prevent an attacker from guessing it.
+It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
 
 ~~~~~~~~~~
 {
   "type": "dns-01",
-  "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4"
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
-In response to the challenge, the client MUST parse the authorized key object
-and verify that its "key" field contains the client's account key.  The client
-then computes the SHA-256 digest of the JSON-encoded authorized key object
-(without base64-encoding).
+A client responds to this challenge by constructing an authorized key object
+from the "token" value provided in the challenge and the client's account key.
+The client then computes two artefacts from this authorized key object:
+
+* The JSON encoding of the authorized key object
+* The SHA-256 digest of the JSON-encoded authorized key object
 
 The record provisioned to the DNS is the base64 encoding of this digest.  The
 client constructs the validation domain name by prepending the label
@@ -1893,19 +1894,22 @@ to fulfill this challenge.
 type (required, string):
 : The string "dns-01"
 
-token (required, string):
-: The "token" value from the authorized key object in the challenge.
+authorizedKey (required, string):
+: The serialized authorized key object, base64-encoded.  The "key" field in this
+object MUST match the client's account key, and the "token" field MUST be the
+"token" value provided in the challenge.
 
 ~~~~~~~~~~
 {
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
+  "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4"
 }
+/* Signed as JWS */
 ~~~~~~~~~~
 
-On receiving a response, the server MUST verify that the "token" value in the
-response matches the "token" field in the authorized key object in the
-challenge.  If they do not match, then the server MUST return an HTTP error in
-response to the POST request in which the client sent the challenge
+On receiving a response, the server MUST verify that the authorized key object
+in the response matches the "token" value in the challenge and the client's
+account key.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge.
 
 To validate a DNS challenge, the server performs the following steps:
 
