@@ -1144,12 +1144,12 @@ Link: <https://example.com/acme/new-cert>;rel="next"
     {
       "type": "http-01",
       "uri": "https://example.com/authz/asdf/0",
-      "token": "IlirfxKKXAsHtmzK29Pj8A"
+      "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
     },
     {
       "type": "dns-01",
-      "uri": "https://example.com/authz/asdf/1"
-      "token": "DGyRejmCefe7v4NfDGDKfA"
+      "uri": "https://example.com/authz/asdf/1",
+      "authorizedKey": "SEeEZ2JM54Yf07WTwtz...Me_JgUIK3fxMSkBB_dU9w"
     }
   },
 
