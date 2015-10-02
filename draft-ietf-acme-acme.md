@@ -1552,8 +1552,9 @@ client to provision a file with a specific JWS as its contents.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
 connect to at least one of the hosts found in A and AAAA records, at its
-discretion.  The HTTP server may be made available over either HTTPS or
-unencrypted HTTP; the client tells the server in its response which to check.
+discretion.  Because many webservers allocate a default HTTPS virtual host to a
+particular low-privilege tenant user in a subtle and non-intuitive manner, the
+challenge must be completed over HTTP, not HTTPS.
 
 type (required, string):
 : The string "simpleHttp"
@@ -1591,8 +1592,7 @@ The path at which the resource is provisioned is comprised of the fixed prefix "
 ~~~~~~~~~~
 
 The client's response to this challenge indicates its agreement to this
-challenge in particular, and whether it would prefer for the validation request
-to be sent over TLS:
+challenge:
 
 type (required, string):
 : The string "simpleHttp"
@@ -1600,15 +1600,9 @@ type (required, string):
 token (required, string):
 : The "token" value from the authorized key object in the challenge.
 
-tls (optional, boolean, default true):
-: If this attribute is present and set to "false", the server will perform its
-validation check over unencrypted HTTP (on port 80) rather than over HTTPS.
-Otherwise the check will be done over HTTPS, on port 443.
-
 ~~~~~~~~~~
 {
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA",
-  "tls": false
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1622,9 +1616,7 @@ Given a Challenge/Response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
 
 1. Form a URI by populating the URI template {{RFC6570}}
-   "{scheme}://{domain}/.well-known/acme-challenge/{token}", where:
-  * the scheme field is set to "http" if the "tls" field in the response is
-    present and set to false, and "https" otherwise;
+   "http://{domain}/.well-known/acme-challenge/{token}", where:
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the authorized key object.
 2. Verify that the resulting URI is well-formed.
@@ -1661,24 +1653,38 @@ authorizedKey (required, string):
 : A serialized authorized key object, base64-encoded.  The "key" field in this
 object MUST match the client's account key.
 
+n (required, number):
+: Number of DVSNI iterations
+
 ~~~~~~~~~~
 {
   "type": "dvsni",
-  "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4"
+  "authorizedKey": "odyHtABZt47RZfacMq3zL...xIWRXBCCvl61bYo7ATU6Z4",
+  "n": 25
 }
 ~~~~~~~~~~
 
-In response to the challenge, the client MUST parse the authorized key object
-and verify that its "key" field contains the client's account key.  The client
-then computes the SHA-256 digest Z of the JSON-encoded authorized key object
-(without base64-encoding), and encodes Z in hexadecimal form.
+In response to the challenge, the client MUST decode and parse the authorized
+keys object and verify that it contains exactly one entry, whose "token" and
+"key" attributes match the token for this challenge and the client's account
+key.  The client then computes the SHA-256 digest Z0 of the JSON-encoded
+authorized key object (without base64-encoding), and encodes Z0 in UTF-8
+lower-case hexadecimal form. The client then generates iterated hash values
+Z1...Z(n-1) as follows:
 
-The client will generate a self-signed certificate with the
-subjectAlternativeName extension containing the dNSName
-"\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid".  The client will then configure the TLS
-server at the domain such that when a handshake is initiated with the Server
-Name Indication extension set to "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid", the
-generated test certificate is presented.
+~~~~~~~~~~
+Z(i) = lowercase_hexadecimal(SHA256(Z(i-1))).
+~~~~~~~~~~
+
+The client generates a self-signed certificate for each iteration of Zi with a
+single subjectAlternativeName extension dNSName that is
+"\<Zi[0:32]\>.\<Zi[32:64]\>.acme.invalid", where "Zi[0:32]" and "Zi[32:64]"
+represent the first 32 and last 32 characters of the hex-encoded value,
+respectively (following the notation used in Python).  The client then
+configures the TLS server at the domain such that when a handshake is initiated
+with the Server Name Indication extension set to
+"\<Zi[0:32]\>.\<Zi[32:64]\>.acme.invalid", the corresponding generated
+certificate is presented.
 
 The response to the DVSNI challenge simply acknowledges that the client is ready
 to fulfill this challenge.
@@ -1703,13 +1709,25 @@ response to the POST request in which the client sent the challenge
 Given a Challenge/Response pair, the ACME server verifies the client's control
 of the domain by verifying that the TLS server was configured appropriately.
 
-1. Compute the Z-value from the authorized key object in the same way as the
-   client.
-2. Open a TLS connection to the domain name being validated on port 443,
-   presenting the value "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid" in the SNI
-   field (where the comparison is case-insensitive).
-3. Verify that the certificate contains a subjectAltName extension with the
-   dNSName of "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid".
+1. Choose a subset of the N DVSNI iterations to check, according to local
+   policy.
+2. For each iteration, compute the Zi-value from the authorized keys object in
+   the same way as the client.
+3. Open a TLS connection to the domain name being validated on the requested
+   port, presenting the value "\<Zi[0:32]\>.\<Zi[32:64]\>.acme.invalid" in the
+   SNI field (where the comparison is case-insensitive).
+4. Verify that the certificate contains a subjectAltName extension with the
+   dNSName of "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid", and that no other dNSName
+   entries of the form "*.acme.invalid" are present in the subjectAltName
+   extension.
+
+It is RECOMMENDED that the ACME server verify a random subset of the N
+iterations with an appropriate sized to ensure that an attacker who can
+provision certs for a default virtual host, but not for arbitrary simultaneous
+virtual hosts, cannot pass the challenge.  For instance, testing a subset of 5
+of N=25 domains ensures that such an attacker has only a one in 25/5 chance of
+success if they post certs Zn in random succession.  (This probability is
+enforced by the requirement that each certificate have only one Zi value.)
 
 It is RECOMMENDED that the ACME server validation TLS connections from multiple
 vantage points to reduce the risk of DNS hijacking attacks.
