@@ -2,7 +2,7 @@
 title: "Automatic Certificate Management Environment (ACME)"
 abbrev: ACME
 docname: draft-ietf-acme-acme-00
-date: 2015-07-23
+date: 2015-09-28
 category: std
 ipr: trust200902
 
@@ -68,6 +68,9 @@ informative:
 
 Certificates in the Web's X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation.
 
+DANGER: Do not implement this specification.  It has a known signature reuse vulnerability.  For details, see the following discussion:
+
+https://mailarchive.ietf.org/arch/msg/acme/F71iz6qq1o_QPVhJCV4dqWf-4Yc
 
 --- middle
 
@@ -482,7 +485,7 @@ label) MUST NOT be included in authorization requests.  See
       "type": "simpleHttp",
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
-      "token": "IlirfxKKXAsHtmzK29Pj8A"
+      "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
     }
   ],
 }
@@ -1179,6 +1182,7 @@ Host: example.com
 {
   "resource": "challenge",
   "type": "simpleHttp",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA" 
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1188,6 +1192,12 @@ the challenge with the response fields provided by the client.  The server MUST
 ignore any fields in the response object that are not specified as response
 fields for this type of challenge.  The server provides a 200 (OK) response
 with the updated challenge object as its body.
+
+If the client's response is invalid for some reason, or does not provide the
+server with appropriate information to validate the challenge, then the server
+MUST return an HTTP error.  On receiving such an error, the client MUST undo any
+actions that have been taken to fulfil the challenge, e.g., removing files that
+have been provisioned to a web server.
 
 Presumably, the client's responses provide the server with enough information to
 validate one or more challenges.  The server is said to "finalize" the
@@ -1231,7 +1241,7 @@ HTTP/1.1 200 OK
       "type": "simpleHttp"
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
-      "token": "IlirfxKKXAsHtmzK29Pj8A"
+      "authorizedKey": "SXQe-2XODaDxNRsbp0h...fMsNxvb29HhjjLPSggwiE"
     }
   ]
 }
@@ -1499,6 +1509,19 @@ validation of domain names.  If ACME is extended in the future to support other
 types of identifier, there will need to be new Challenge types, and they will
 need to specify which types of identifier they apply to.
 
+[[ Editor's Note: In pre-RFC versions of this specification, challenges are
+labeled by type, and with the version of the draft in which they were
+introduced.  For example, if an HTTP challenge were introduced in version -03
+and a breaking change made in version -05, then there would be a challenge
+labeled "http-03" and one labeled "http-05" -- but not one labeled "http-04",
+since challenge in version -04 was compatible with one in version -04. ]]
+
+[[ Editor's Note: Operators SHOULD NOT issue "combinations" arrays in
+authorization objects that require the client to perform multiple challenges
+over the same type, e.g., ["http-03", "http-05"].  Challenges within a type are
+testing the same capability of the domain owner, and it may not be possible to
+satisfy both at once. ]]
+
 ## Authorized Key Objects
 
 Several of the challenges in this document makes use of an "authorized key"
@@ -1547,11 +1570,13 @@ object MUST match the client's account key.
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by parsing the authorized key object,
-verifying that its "key" field contains the client's account key, and
-provisioning it as a resource on the HTTP server for the domain in question.
-(Note: The provisioned object need not be a byte-exact copy of the authorized
-keys object in the challenge, but it MUST represent the same JSON object.)
+A client responds to this challenge by base64-decoding and parsing the
+authorized key object, verifying that its "key" field contains the client's
+account key, and provisioning it as a resource on the HTTP server for the domain
+in question.  That is, the server provisions a JSON object that is equivalent to
+the object encoded in the "authorizedKey" field sent by the server. (Note: The
+provisioned object need not be a byte-exact copy of the authorized keys object
+in the challenge.)
 
 ~~~~~~~~~~
 {
@@ -1582,22 +1607,25 @@ token (required, string):
 /* Signed as JWS */
 ~~~~~~~~~~
 
+On receiving a response, the server MUST verify that the "token" value in the
+response matches the "token" field in the authorized key object in the
+challenge.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge
+
 Given a Challenge/Response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
 
-1. Verify that the "token" value in the response matches the "token" field in
-   the authorized key object in the challenge.
-2. Form a URI by populating the URI template {{RFC6570}}
+1. Form a URI by populating the URI template {{RFC6570}}
    "http://{domain}/.well-known/acme-challenge/{token}", where:
-  * the domain field is set to the domain name being verified
-  * the token field is set to the token in the authorized key object
-3. Verify that the resulting URI is well-formed.
-4. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
+  * the domain field is set to the domain name being verified; and
+  * the token field is set to the token in the authorized key object.
+2. Verify that the resulting URI is well-formed.
+3. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
    ACME server MUST ignore the certificate provided by the HTTPS server.
-5. Verify that the Content-Type header of the response is either absent, or has
-the value "application/json".
-6. Verify that the body of the response is well-formed authorized key object.
-7. Verify that the "key" and "token" fields in the authorized key object match
+4. Verify that the Content-Type header of the response is either absent, or has
+   the value "application/json".
+5. Verify that the body of the response is well-formed authorized key object.
+6. Verify that the "key" and "token" fields in the authorized key object match
    the values from the authorized key object in the challenge.
 
 Comparisons of the "token" field MUST be performed in terms of
@@ -1673,19 +1701,22 @@ token (required, string):
 }
 ~~~~~~~~~~
 
+On receiving a response, the server MUST verify that the "token" value in the
+response matches the "token" field in the authorized key object in the
+challenge.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge
+
 Given a Challenge/Response pair, the ACME server verifies the client's control
 of the domain by verifying that the TLS server was configured appropriately.
 
-1. Verify that the "token" value in the response matches the "token" field in
-   the authorized key object in the challenge.
-2. Choose a subset of the N DVSNI iterations to check, according to local
+1. Choose a subset of the N DVSNI iterations to check, according to local
    policy.
-3. For each iteration, compute the Zi-value from the authorized keys object in
+2. For each iteration, compute the Zi-value from the authorized keys object in
    the same way as the client.
-4. Open a TLS connection to the domain name being validated on the requested
+3. Open a TLS connection to the domain name being validated on the requested
    port, presenting the value "\<Zi[0:32]\>.\<Zi[32:64]\>.acme.invalid" in the
    SNI field (where the comparison is case-insensitive).
-5. Verify that the certificate contains a subjectAltName extension with the
+4. Verify that the certificate contains a subjectAltName extension with the
    dNSName of "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid", and that no other dNSName
    entries of the form "*.acme.invalid" are present in the subjectAltName
    extension.
@@ -1873,13 +1904,16 @@ token (required, string):
 }
 ~~~~~~~~~~
 
+On receiving a response, the server MUST verify that the "token" value in the
+response matches the "token" field in the authorized key object in the
+challenge.  If they do not match, then the server MUST return an HTTP error in
+response to the POST request in which the client sent the challenge
+
 To validate a DNS challenge, the server performs the following steps:
 
-1. Verify that the "token" value in the response matches the "token" field in
-   the authorized key object in the challenge.
-2. Compute the SHA-256 digest of the authorized key object
-3. Query for TXT records under the validation domain name
-4. Verify that the contents of one of the TXT records matches the digest value
+1. Compute the SHA-256 digest of the authorized key object
+2. Query for TXT records under the validation domain name
+3. Verify that the contents of one of the TXT records matches the digest value
 
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
