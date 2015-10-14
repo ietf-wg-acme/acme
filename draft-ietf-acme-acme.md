@@ -517,6 +517,11 @@ to errors, this document defines the following standard tokens for use in the
 | tls             | The server experienced a TLS error during DV             |
 | unauthorized    | The client lacks sufficient authorization                |
 | unknownHost     | The server could not resolve a domain name               |
+| rateLimited     | The request exceeds a rate limit                         |
+
+This list is not exhaustive. The server MAY return errors whose "type"
+field is not on this list. Clients SHOULD display the "detail" field of such
+errors.
 
 Authorization and challenge objects can also contain error information to
 indicate why the server was unable to validate authorization.
