@@ -1753,7 +1753,7 @@ type (required, string):
 : The string "proofOfPossession-01"
 
 certs (optional, array of string):
-: An array of certificates, in Base64-encoded DER format, that contain
+: An array of certificates, in Base64url-encoded DER format, that contain
 acceptable public keys.
 
 
