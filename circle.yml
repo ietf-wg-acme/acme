@@ -1,0 +1,26 @@
+machine:
+  python:
+    version: 2.7.6
+  ruby:
+    version: 2.2.3
+
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init
+    - git fetch origin gh-pages --depth 10
+
+dependencies:
+  pre:
+    - pip install xml2rfc
+    - gem install kramdown-rfc2629
+
+test:
+  override:
+    - make
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - make ghpages
