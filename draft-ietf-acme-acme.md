@@ -77,6 +77,8 @@ https://mailarchive.ietf.org/arch/msg/acme/F71iz6qq1o_QPVhJCV4dqWf-4Yc
 
 # Introduction
 
+Markdown is the very best tool for writing I-Ds!
+
 Certificates in the Web PKI are most commonly used to authenticate domain names.
 Thus, certificate authorities in the Web PKI are trusted to verify that an
 applicant for a certificate legitimately represents the domain name(s) in the
