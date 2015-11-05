@@ -1557,7 +1557,7 @@ be represented in UTF-8 form (or, equivalently, ASCII).
 
 ## HTTP
 
-With Simple HTTP validation, the client in an ACME transaction proves its
+With HTTP validation, the client in an ACME transaction proves its
 control over a domain name by proving that it can provision resources on an HTTP
 server that responds for that domain name.  The ACME server challenges the
 client to provision a file with a specific JWS as its contents.
@@ -2050,7 +2050,7 @@ identifier can perform.  For the challenges in this document, the actions are:
 There are several ways that these assumptions can be violated, both by
 misconfiguration and by attack.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
-server's hostname by responding to a Simple HTTP challenge, and likewise for TLS
+server's hostname by responding to an HTTP challenge, and likewise for TLS
 configuration and TLS SNI.
 
 The use of hosting providers is a particular risk for ACME validation.  If the
@@ -2061,10 +2061,10 @@ provided by the hosting provider is the real thing.
 
 More limited forms of delegation can also lead to an unintended party gaining
 the ability to successfully complete a validation transaction.  For example,
-suppose an ACME server follows HTTP redirects in Simple HTTP validation and a
+suppose an ACME server follows HTTP redirects in HTTP validation and a
 web site operator provisions a catch-all redirect rule that redirects requests
 for unknown resources to different domain.  Then the target of the redirect
-could use that to get a certificate through Simple HTTP validation, since the
+could use that to get a certificate through HTTP validation, since the
 validation path will not be known to the primary server.
 
 The DNS is a common point of vulnerability for all of these challenges.  An
