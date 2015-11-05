@@ -67,11 +67,24 @@ informative:
 
 --- abstract
 
-Certificates in the Web's X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation.
+Certificates in the Web's X.509 PKI (PKIX) are used for a number of purposes,
+the most significant of which is the authentication of domain names.  Thus,
+certificate authorities in the Web PKI are trusted to verify that an applicant
+for a certificate legitimately represents the domain name(s) in the certificate.
+Today, this verification is done through a collection of ad hoc mechanisms.
+This document describes a protocol that a certificate authority (CA) and an
+applicant can use to automate the process of verification and certificate
+issuance.  The protocol also provides facilities for other certificate
+management functions, such as certificate revocation.
 
-DANGER: Do not implement this specification.  It has a known signature reuse vulnerability.  For details, see the following discussion:
+DISCLAIMER: This is a WIP draft of ACME and has not yet had a thorough security
+analysis.
 
-https://mailarchive.ietf.org/arch/msg/acme/F71iz6qq1o_QPVhJCV4dqWf-4Yc
+RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH: The source for this draft is
+maintained in GitHub. Suggested changes should be submitted as pull requests at
+<https://github.com/ietf-wg-acme/acme>. Instructions are on that page as well.
+Editorial changes can be managed in GitHub, but any substantive change should be
+discussed on the ACME mailing list (acme@ietf.org).
 
 --- middle
 
