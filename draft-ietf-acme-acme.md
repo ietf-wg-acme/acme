@@ -912,6 +912,57 @@ Host: example.com
 /* Signed as JWS */
 ~~~~~~~~~~
 
+## Account Key Roll-over
+
+A client may wish to change the public key that is associated with a
+registration, e.g., in order to mitigate the risk of key compromise.  To do
+this, the client first constructs a JSON object representing a request to
+update the registration:
+
+resource (required, string):
+: The string "reg", indicating an update to the registration.
+
+oldKey (required, string):
+: The JWK thumbprint of the old key {{RFC7638}}, base64url-encoded
+
+~~~~~~~~~~
+{
+  "resource": "reg",
+  "oldKey": "D7J9RL1f-RWUl68JP-gW1KSl2TkIrJB7hK6rLFFeYMU"
+}
+~~~~~~~~~~
+
+The client signs this object with the new key pair and encodes the object and
+signature as a JWS.  The client then sends this JWS to the server in the
+"newKey" field of a request to update the registration.
+
+~~~~~~~~~~
+POST /acme/reg/asdf HTTP/1.1
+Host: example.com
+
+{
+  "resource": "reg",
+  "newKey": /* JSON object signed as JWS with new key */
+}
+/* Signed as JWS with original key */
+~~~~~~~~~~
+
+On receiving a request to the registration URL with the "newKey" attribute set,
+the server MUST perform the following steps:
+
+1. Check that the contents of the "newKey" attribute are a valid JWS
+2. Check that the "newKey" JWS verifies using the key in the "jwk" header
+   parameter of the JWS
+3. Check that the payload of the JWS is a valid JSON object
+4. Check that the "resource" field of the object has the value "reg"
+5. Check that the "oldKey" field of the object contains the JWK thumbprint of
+   the account key for this registration
+
+If all of these checks pass, then the server updates the registration by
+replacing the old account key with the public key carried in the "jwk" header
+parameter of the "newKey" JWS object.
+
+
 ## Account Recovery
 
 Once a client has created an account with an ACME server, it is possible that
