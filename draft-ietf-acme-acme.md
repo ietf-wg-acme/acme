@@ -812,6 +812,23 @@ ignore any updates to the "key", "authorizations, or "certificates" fields, and
 MUST verify that the request is signed with the private key corresponding to the
 "key" field of the request before updating the registration.
 
+For example, to update the contact information in the above registration, the
+client could send the following request:
+
+~~~~~~~~~~
+POST /acme/reg/asdf HTTP/1.1
+Host: example.com
+
+{
+  "resource": "reg",
+  "contact": [
+    "mailto:certificates@example.com",
+    "tel:+12125551212"
+  ],
+}
+/* Signed as JWS */
+~~~~~~~~~~
+
 Servers SHOULD NOT respond to GET requests for registration resources as these
 requests are not authenticated.  If a client wishes to query the server for
 information about its account (e.g., to examine the "contact" or "certificates"
