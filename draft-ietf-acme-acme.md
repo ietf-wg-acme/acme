@@ -1173,10 +1173,7 @@ Link: <https://example.com/acme/new-cert>;rel="next"
     }
   },
 
-  "combinations": [
-    [0, 2],
-    [1, 2]
-  ]
+  "combinations": [[0], [1]]
 }
 ~~~~~~~~~~
 
