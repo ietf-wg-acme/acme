@@ -1677,8 +1677,7 @@ domain by verifying that the resource was provisioned as expected.
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
-3. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
-   ACME server MUST ignore the certificate provided by the HTTPS server.
+3. Dereference the URI using an HTTP GET request.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the server matches the token for
