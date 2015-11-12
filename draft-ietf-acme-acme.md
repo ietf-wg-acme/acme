@@ -1278,6 +1278,14 @@ sent in the Base64url-encoded version of the DER format.  (Note: This field uses
 the same modified Base64 encoding rules used elsewhere in this document, so it
 is different from PEM.)
 
+notBefore (optional, string):
+: The requested value of the notBefore field in the certificate, in the date
+format defined in {{RFC3339}}
+
+notAfter (optional, string):
+: The requested value of the notBefore field in the certificate, in the date
+format defined in {{RFC3339}}
+
 ~~~~~~~~~~
 POST /acme/new-cert HTTP/1.1
 Host: example.com
@@ -1286,6 +1294,8 @@ Accept: application/pkix-cert
 {
   "resource": "new-cert",
   "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z"
 }
 /* Signed as JWS */
 ~~~~~~~~~~
