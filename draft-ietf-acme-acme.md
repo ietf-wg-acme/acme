@@ -962,7 +962,7 @@ Host: example.com
   "base": "https://example.com/acme/reg/asdf",
   "mac": {
     "header": { "alg": "HS256" },
-    "payload": base64(JWK(newAccountKey)),
+    "payload": base64url(JWK(newAccountKey)),
     "signature": "5wUrDI3eAaV4wl2Rfj3aC0Pp--XB3t4YYuNgacv_D3U"
   }
 }
@@ -1274,8 +1274,8 @@ account key, from which the server can look up related authorizations.
 
 csr (required, string):
 : A CSR encoding the parameters for the certificate being requested.  The CSR is
-sent in the Base64-encoded version of the DER format.  (Note: This field uses
-the same modified Base64-encoding rules used elsewhere in this document, so it
+sent in the Base64url-encoded version of the DER format.  (Note: This field uses
+the same modified Base64 encoding rules used elsewhere in this document, so it
 is different from PEM.)
 
 ~~~~~~~~~~
@@ -1397,8 +1397,8 @@ the ACME server's revoke-cert URI.  The body of the POST is a JWS object whose
 JSON payload contains the certificate to be revoked:
 
 certificate (required, string):
-: The certificate to be revoked, in the Base64-encoded version of the DER
-format.  (Note: This field uses the same modified Base64-encoding rules used
+: The certificate to be revoked, in the Base64url-encoded version of the DER
+format.  (Note: This field uses the same modified Base64 encoding rules used
 elsewhere in this document, so it is different from PEM.)
 
 ~~~~~~~~~~
@@ -1543,17 +1543,24 @@ specified key to satisfy a specified challenge, by concatenating the token
 for the challenge with a key fingerprint, separated by a "." character:
 
 ~~~~~~~~~~
-key-authz = token || '.' || base64(JWK_Thumbprint(accountKey))
+key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 ~~~~~~~~~~
 
 The "JWK_Thumbprint" step indicates the computation specified in {{RFC7638}},
 using the SHA-256 digest.  As specified in the individual challenges below, the
 token for a challenge is a JSON string comprised entirely of characters in the
-base64 alphabet.  The "||" operator indicates concatenation of strings.
+URL-safe Base64 alphabet.  The "||" operator indicates concatenation of strings.
 
 In computations involving key authorizations, such as the digest computations
 required for the DNS and TLS SNI challenges, the key authorization string MUST
 be represented in UTF-8 form (or, equivalently, ASCII).
+
+An example of how to compute a JWK thumbprint can be found in Section 3.1 of
+{{RFC7638}}.  Note that some cryptographic libraries prepend a zero octet to the
+representation of the RSA public key parameters N and E, in order to avoid
+ambiguity with regard to the sign of the number.  As noted in {{JWA}}, a JWK
+object MUST NOT include this zero octet.  That is, any initial zero octets MUST
+be stripped before the values are Base64url-encoded.
 
 ## HTTP
 
@@ -1879,7 +1886,7 @@ A client responds to this challenge by constructing a key authorization from the
 "token" value provided in the challenge and the client's account key.  The
 client then computes the SHA-256 digest of the key authorization.
 
-The record provisioned to the DNS is the base64 encoding of this digest.  The
+The record provisioned to the DNS is the base64url encoding of this digest.  The
 client constructs the validation domain name by prepending the label
 "_acme-challenge" to the domain name being validated, then provisions a TXT
 record with the digest value under that name. For example, if the domain name
