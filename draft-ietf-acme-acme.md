@@ -1602,6 +1602,8 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
 
 The path at which the resource is provisioned is comprised of the fixed prefix
 ".well-known/acme-challenge/", followed by the "token" value in the challenge.
+The value of the resource MUST be the ASCII representation of the key
+authorization.
 
 ~~~~~~~~~~
 .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
@@ -1637,10 +1639,9 @@ domain by verifying that the resource was provisioned as expected.
 2. Verify that the resulting URI is well-formed.
 3. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
    ACME server MUST ignore the certificate provided by the HTTPS server.
-4. Verify that the Content-Type header of the response is either absent, or has
-   the value "text/plain".
-5. Verify that the body of the response is well-formed key authorization.
-6. Verify that key authorization provided by the server matches the token for
+4. Verify that the body of the response is well-formed key authorization.  The
+   server SHOULD ignore whitespace characters at the end of the body.
+5. Verify that key authorization provided by the server matches the token for
    this challenge and the client's account key.
 
 If all of the above verifications succeed, then the validation is successful.
