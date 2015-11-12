@@ -61,7 +61,7 @@ links to the software those tools might require.
 ## Installation and Setup
 
 Mac users will need to install
-[XCode](https://itunes.apple.com/us/app/xcode/id497799835) to get `make`, see
+[Xcode](https://itunes.apple.com/us/app/xcode/id497799835) to get `make`, see
 [this answer](http://stackoverflow.com/a/11494872/1375574) for instructions.
 
 Windows users will need to use [Cygwin](http://cygwin.org/) to get `make`.
