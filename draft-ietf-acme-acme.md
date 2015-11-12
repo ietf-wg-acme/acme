@@ -1342,10 +1342,19 @@ The server provides metadata about the certificate in HTTP headers.  In
 particular, the server MUST include a Link relation header field {{RFC5988}}
 with relation "up" to provide a certificate under which this certificate was
 issued, and one with relation "author" to indicate the registration under which
-this certicate was issued.  The server MAY also include an Expires header as a
-hint to the client about when to renew the certificate.  (Of course, the real
-expiration of the certificate is controlled by the notAfter time in the
-certificate itself.)
+this certicate was issued.
+
+The server MAY include an Expires header as a hint to the client about when to
+renew the certificate.  (Of course, the real expiration of the certificate is
+controlled by the notAfter time in the certificate itself.)
+
+If the CA particpates in Certificate Transparency (CT) {{RFC6962}}, then they
+may want to provide the client with a Signed Certificate Timestamp (SCT) that
+can be used to prove that a certificate was submitted to a CT log.  An SCT can
+be included as a extension in the certificate or as an extension to OCSP
+responses for the certificate.  The server can also provide the client with
+direct access to an SCT for a certificate using a Link relation header field
+with relation "ct-sct".
 
 ~~~~~~~~~~
 GET /acme/cert/asdf HTTP/1.1
@@ -1357,6 +1366,7 @@ Content-Type: application/pkix-cert
 Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
 Link: <https://example.com/acme/revoke-cert>;rel="revoke"
 Link: <https://example.com/acme/reg/asdf>;rel="author"
+Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Location: https://example.com/acme/cert/asdf
 Content-Location: https://example.com/acme/cert-seq/12345
 
