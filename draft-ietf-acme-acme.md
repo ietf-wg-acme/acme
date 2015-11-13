@@ -1216,7 +1216,7 @@ Host: example.com
 {
   "resource": "challenge",
   "type": "http-01",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA" 
+  "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1275,7 +1275,8 @@ HTTP/1.1 200 OK
       "type": "http-01"
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
-      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
+      "token": "IlirfxKKXAsHtmzK29Pj8A",
+      "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
     }
   ]
 }
