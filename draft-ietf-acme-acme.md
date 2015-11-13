@@ -132,7 +132,7 @@ authentication for other protocols based on TLS {{RFC5246}}.
 The major guiding use case for ACME is obtaining certificates for Web sites
 (HTTPS {{RFC2818}}).  In that case, the server is intended to speak for one or
 more domains, and the process of certificate issuance is intended to verify that
-the server actually speaks for the domain.
+the server actually speaks for the domain(s).
 
 Different types of certificates reflect different kinds of CA verification of
 information about the certificate subject.  "Domain Validation" (DV)
