@@ -886,7 +886,7 @@ by the client are acceptable, and that it is otherwise willing to create a
 recovery key.  If not, then it MUST reject the new-registration request.
 
 If the server agrees to create a recovery key, then it generates its own random
-ECDH key pair and combines it with with the client's public key as described in
+ECDH key pair and combines it with the client's public key as described in
 {{key-agreement}} above, using the label "recovery".  The derived secret value
 is the recovery key.  The server then returns to the client the ECDH key that it
 generated.  The server MUST generate a fresh key pair for every transaction.
