@@ -420,7 +420,7 @@ certificates (optional, string):
 : A URI from which a list of certificates issued for this account can be fetched
 via a GET request.  The result of the GET request MUST be a JSON object whose
 "certificates" field is an array of strings, where each string is the URI of a
-certificate.  The server SHOULD NOT include expired certificates.
+certificate.  The server SHOULD NOT include expired or revoked certificates.
 
 ~~~~~~~~~~
 {
