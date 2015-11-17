@@ -1379,7 +1379,7 @@ The server MAY include an Expires header as a hint to the client about when to
 renew the certificate.  (Of course, the real expiration of the certificate is
 controlled by the notAfter time in the certificate itself.)
 
-If the CA particpates in Certificate Transparency (CT) {{RFC6962}}, then they
+If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
 may want to provide the client with a Signed Certificate Timestamp (SCT) that
 can be used to prove that a certificate was submitted to a CT log.  An SCT can
 be included as a extension in the certificate or as an extension to OCSP
