@@ -1987,7 +1987,7 @@ correct, and that only authorized entities can manage certificates.  ACME
 identifies clients by their account keys, so this overall goal breaks down into
 two more precise goals:
 
-1. Only an entity that controls a identifier can get an account key authorized
+1. Only an entity that controls an identifier can get an account key authorized
    for that identifier
 2. Once authorized, an account key's authorizations cannot be improperly
    transferred to another account key
