@@ -1487,7 +1487,7 @@ Content-Language: en
 
 # Identifier Validation Challenges
 
-There are few types of identifier in the world for which there is a standardized
+There are few types of identifiers in the world for which there is a standardized
 mechanism to prove possession of a given identifier.  In all practical cases,
 CAs rely on a variety of means to test whether an entity applying for a
 certificate with a given identifier actually controls that identifier.
