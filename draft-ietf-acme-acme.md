@@ -2073,7 +2073,7 @@ account key for one of his choosing, e.g.:
   account key A (the legitimate domain holder)
 
 All of the challenges above that require an out-of-band query by the server have
-a binding to the account private key, such that the only the account private key
+a binding to the account private key, such that only the account private key
 holder can successfully respond to the validation query:
 
 * HTTP: The value provided in the validation request is signed by the
