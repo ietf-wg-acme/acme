@@ -1230,7 +1230,7 @@ with the updated challenge object as its body.
 If the client's response is invalid for some reason, or does not provide the
 server with appropriate information to validate the challenge, then the server
 MUST return an HTTP error.  On receiving such an error, the client MUST undo any
-actions that have been taken to fulfil the challenge, e.g., removing files that
+actions that have been taken to fulfill the challenge, e.g., removing files that
 have been provisioned to a web server.
 
 Presumably, the client's responses provide the server with enough information to
