@@ -150,7 +150,7 @@ means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
 
-When an operator deploys a current HTTPS server, it generally prompts him to
+When deploying a current HTTPS server, an operator generally gets a prompt to
 generate a self-signed certificate.  When an operator deploys an ACME-compatible
 web server, the experience would be something like this:
 
