@@ -787,7 +787,9 @@ If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
 in a Link header with link relation "terms-of-service".  As noted above, the
 client may indicate its agreement with these terms by updating its registration
-to include the "agreement" field, with the terms URI as its value.
+to include the "agreement" field, with the terms URI as its value.  When these
+terms change in a way that requires an agreement update, the server MUST
+use a different URI in the Link header.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
