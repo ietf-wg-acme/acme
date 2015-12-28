@@ -3,7 +3,6 @@ sudo: false
 addons:
   apt:
     packages:
-     - python-lxml
      - python-pip
 
 install:

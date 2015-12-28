@@ -6,8 +6,6 @@ machine:
 
 checkout:
   post:
-    - git submodule sync
-    - git submodule update --init
     - git fetch origin gh-pages --depth 10
 
 dependencies:

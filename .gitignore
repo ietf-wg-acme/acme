@@ -8,3 +8,4 @@
 .refcache
 venv/
 draft-ietf-acme-acme.xml
+lib
