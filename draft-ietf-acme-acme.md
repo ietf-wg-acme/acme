@@ -836,7 +836,7 @@ information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
 That is, it should send a JWS whose payload is trivial ({"resource":"reg"}).
 In this case the server reply MUST contain the same link headers sent for a
-new registration, to allow a client to retreive the "new-authorization" and
+new registration, to allow a client to retrieve the "new-authorization" and
 "terms-of-service" URI
 
 ### Recovery Keys
@@ -887,7 +887,7 @@ by the client are acceptable, and that it is otherwise willing to create a
 recovery key.  If not, then it MUST reject the new-registration request.
 
 If the server agrees to create a recovery key, then it generates its own random
-ECDH key pair and combines it with with the client's public key as described in
+ECDH key pair and combines it with the client's public key as described in
 {{key-agreement}} above, using the label "recovery".  The derived secret value
 is the recovery key.  The server then returns to the client the ECDH key that it
 generated.  The server MUST generate a fresh key pair for every transaction.
@@ -1231,7 +1231,7 @@ with the updated challenge object as its body.
 If the client's response is invalid for some reason, or does not provide the
 server with appropriate information to validate the challenge, then the server
 MUST return an HTTP error.  On receiving such an error, the client MUST undo any
-actions that have been taken to fulfil the challenge, e.g., removing files that
+actions that have been taken to fulfill the challenge, e.g., removing files that
 have been provisioned to a web server.
 
 Presumably, the client's responses provide the server with enough information to
@@ -1374,13 +1374,13 @@ The server provides metadata about the certificate in HTTP headers.  In
 particular, the server MUST include a Link relation header field {{RFC5988}}
 with relation "up" to provide a certificate under which this certificate was
 issued, and one with relation "author" to indicate the registration under which
-this certicate was issued.
+this certificate was issued.
 
 The server MAY include an Expires header as a hint to the client about when to
 renew the certificate.  (Of course, the real expiration of the certificate is
 controlled by the notAfter time in the certificate itself.)
 
-If the CA particpates in Certificate Transparency (CT) {{RFC6962}}, then they
+If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
 may want to provide the client with a Signed Certificate Timestamp (SCT) that
 can be used to prove that a certificate was submitted to a CT log.  An SCT can
 be included as a extension in the certificate or as an extension to OCSP
