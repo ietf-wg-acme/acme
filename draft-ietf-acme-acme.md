@@ -43,6 +43,7 @@ normative:
   RFC5988:
   RFC6066:
   RFC6570:
+  RFC6962:
   RFC7159:
   RFC7469:
   RFC7515:
@@ -132,7 +133,7 @@ authentication for other protocols based on TLS {{RFC5246}}.
 The major guiding use case for ACME is obtaining certificates for Web sites
 (HTTPS {{RFC2818}}).  In that case, the server is intended to speak for one or
 more domains, and the process of certificate issuance is intended to verify that
-the server actually speaks for the domain.
+the server actually speaks for the domain(s).
 
 Different types of certificates reflect different kinds of CA verification of
 information about the certificate subject.  "Domain Validation" (DV)
@@ -150,7 +151,7 @@ means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
 
-When an operator deploys a current HTTPS server, it generally prompts him to
+When deploying a current HTTPS server, an operator generally gets a prompt to
 generate a self-signed certificate.  When an operator deploys an ACME-compatible
 web server, the experience would be something like this:
 
@@ -420,7 +421,7 @@ certificates (optional, string):
 : A URI from which a list of certificates issued for this account can be fetched
 via a GET request.  The result of the GET request MUST be a JSON object whose
 "certificates" field is an array of strings, where each string is the URI of a
-certificate.  The server SHOULD NOT include expired certificates.
+certificate.  The server SHOULD NOT include expired or revoked certificates.
 
 ~~~~~~~~~~
 {
@@ -473,7 +474,7 @@ dictionary with parameters required to validate the challenge, as specified in
 combinations (optional, array of arrays of integers):
 : A collection of sets of
 challenges, each of which would be sufficient to prove possession of the
-identifier. Clients complete a set of challenges that that covers at least one
+identifier. Clients complete a set of challenges that covers at least one
 set in this array. Challenges are identified by their indices in the challenges
 array.  If no "combinations" element is included in an authorization object, the
 client completes all challenges.
@@ -517,7 +518,7 @@ When the server responds with an error status, it SHOULD provide additional
 information using problem document {{I-D.ietf-appsawg-http-problem}}.  The
 "type" and "detail" fields MUST be populated.  To facilitate automatic response
 to errors, this document defines the following standard tokens for use in the
-"type" field (within the "urn:acme:" namespace):
+"type" field (within the "urn:ietf:params:acme:error:" namespace):
 
 | Code            | Semantic                                                 |
 |:----------------|:---------------------------------------------------------|
@@ -530,6 +531,12 @@ to errors, this document defines the following standard tokens for use in the
 | tls             | The server experienced a TLS error during DV             |
 | unauthorized    | The client lacks sufficient authorization                |
 | unknownHost     | The server could not resolve a domain name               |
+| rateLimited     | The request exceeds a rate limit                         |
+
+This list is not exhaustive. The server MAY return errors whose "type" field is
+set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
+namespace for errors other than the standard types.  Clients SHOULD display the
+"detail" field of such errors.
 
 Authorization and challenge objects can also contain error information to
 indicate why the server was unable to validate authorization.
@@ -750,7 +757,9 @@ If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
 in a Link header with link relation "terms-of-service".  As noted above, the
 client may indicate its agreement with these terms by updating its registration
-to include the "agreement" field, with the terms URI as its value.
+to include the "agreement" field, with the terms URI as its value.  When these
+terms change in a way that requires an agreement update, the server MUST
+use a different URI in the Link header.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
@@ -776,13 +785,30 @@ ignore any updates to the "key", "authorizations, or "certificates" fields, and
 MUST verify that the request is signed with the private key corresponding to the
 "key" field of the request before updating the registration.
 
+For example, to update the contact information in the above registration, the
+client could send the following request:
+
+~~~~~~~~~~
+POST /acme/reg/asdf HTTP/1.1
+Host: example.com
+
+{
+  "resource": "reg",
+  "contact": [
+    "mailto:certificates@example.com",
+    "tel:+12125551212"
+  ],
+}
+/* Signed as JWS */
+~~~~~~~~~~
+
 Servers SHOULD NOT respond to GET requests for registration resources as these
 requests are not authenticated.  If a client wishes to query the server for
 information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
 That is, it should send a JWS whose payload is trivial ({"resource":"reg"}).
 In this case the server reply MUST contain the same link headers sent for a
-new registration, to allow a client to retreive the "new-authorization" and
+new registration, to allow a client to retrieve the "new-authorization" and
 "terms-of-service" URI
 
 ## Account Recovery
@@ -965,10 +991,7 @@ Link: <https://example.com/acme/new-cert>;rel="next"
     }
   },
 
-  "combinations": [
-    [0, 2],
-    [1, 2]
-  ]
+  "combinations": [[0], [1]]
 }
 ~~~~~~~~~~
 
@@ -994,7 +1017,7 @@ Host: example.com
 {
   "resource": "challenge",
   "type": "http-01",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA" 
+  "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1008,7 +1031,7 @@ with the updated challenge object as its body.
 If the client's response is invalid for some reason, or does not provide the
 server with appropriate information to validate the challenge, then the server
 MUST return an HTTP error.  On receiving such an error, the client MUST undo any
-actions that have been taken to fulfil the challenge, e.g., removing files that
+actions that have been taken to fulfill the challenge, e.g., removing files that
 have been provisioned to a web server.
 
 Presumably, the client's responses provide the server with enough information to
@@ -1053,7 +1076,8 @@ HTTP/1.1 200 OK
       "type": "http-01"
       "status": "valid",
       "validated": "2014-12-01T12:05Z",
-      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
+      "token": "IlirfxKKXAsHtmzK29Pj8A",
+      "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
     }
   ]
 }
@@ -1072,9 +1096,17 @@ account key, from which the server can look up related authorizations.
 
 csr (required, string):
 : A CSR encoding the parameters for the certificate being requested.  The CSR is
-sent in the Base64-encoded version of the DER format.  (Note: This field uses
-the same modified Base64-encoding rules used elsewhere in this document, so it
+sent in the Base64url-encoded version of the DER format.  (Note: This field uses
+the same modified Base64 encoding rules used elsewhere in this document, so it
 is different from PEM.)
+
+notBefore (optional, string):
+: The requested value of the notBefore field in the certificate, in the date
+format defined in {{RFC3339}}
+
+notAfter (optional, string):
+: The requested value of the notBefore field in the certificate, in the date
+format defined in {{RFC3339}}
 
 ~~~~~~~~~~
 POST /acme/new-cert HTTP/1.1
@@ -1084,6 +1116,8 @@ Accept: application/pkix-cert
 {
   "resource": "new-cert",
   "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z"
 }
 /* Signed as JWS */
 ~~~~~~~~~~
@@ -1140,10 +1174,19 @@ The server provides metadata about the certificate in HTTP headers.  In
 particular, the server MUST include a Link relation header field {{RFC5988}}
 with relation "up" to provide a certificate under which this certificate was
 issued, and one with relation "author" to indicate the registration under which
-this certicate was issued.  The server MAY also include an Expires header as a
-hint to the client about when to renew the certificate.  (Of course, the real
-expiration of the certificate is controlled by the notAfter time in the
-certificate itself.)
+this certificate was issued.
+
+The server MAY include an Expires header as a hint to the client about when to
+renew the certificate.  (Of course, the real expiration of the certificate is
+controlled by the notAfter time in the certificate itself.)
+
+If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
+may want to provide the client with a Signed Certificate Timestamp (SCT) that
+can be used to prove that a certificate was submitted to a CT log.  An SCT can
+be included as an extension in the certificate or as an extension to OCSP
+responses for the certificate.  The server can also provide the client with
+direct access to an SCT for a certificate using a Link relation header field
+with relation "ct-sct".
 
 ~~~~~~~~~~
 GET /acme/cert/asdf HTTP/1.1
@@ -1155,6 +1198,7 @@ Content-Type: application/pkix-cert
 Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
 Link: <https://example.com/acme/revoke-cert>;rel="revoke"
 Link: <https://example.com/acme/reg/asdf>;rel="author"
+Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Location: https://example.com/acme/cert/asdf
 Content-Location: https://example.com/acme/cert-seq/12345
 
@@ -1195,8 +1239,8 @@ the ACME server's revoke-cert URI.  The body of the POST is a JWS object whose
 JSON payload contains the certificate to be revoked:
 
 certificate (required, string):
-: The certificate to be revoked, in the Base64-encoded version of the DER
-format.  (Note: This field uses the same modified Base64-encoding rules used
+: The certificate to be revoked, in the Base64url-encoded version of the DER
+format.  (Note: This field uses the same modified Base64 encoding rules used
 elsewhere in this document, so it is different from PEM.)
 
 ~~~~~~~~~~
@@ -1244,7 +1288,7 @@ Content-Language: en
 
 # Identifier Validation Challenges
 
-There are few types of identifier in the world for which there is a standardized
+There are few types of identifiers in the world for which there is a standardized
 mechanism to prove possession of a given identifier.  In all practical cases,
 CAs rely on a variety of means to test whether an entity applying for a
 certificate with a given identifier actually controls that identifier.
@@ -1341,21 +1385,28 @@ specified key to satisfy a specified challenge, by concatenating the token
 for the challenge with a key fingerprint, separated by a "." character:
 
 ~~~~~~~~~~
-key-authz = token || '.' || base64(JWK_Thumbprint(accountKey))
+key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 ~~~~~~~~~~
 
 The "JWK_Thumbprint" step indicates the computation specified in {{RFC7638}},
 using the SHA-256 digest.  As specified in the individual challenges below, the
 token for a challenge is a JSON string comprised entirely of characters in the
-base64 alphabet.  The "||" operator indicates concatenation of strings.
+URL-safe Base64 alphabet.  The "||" operator indicates concatenation of strings.
 
 In computations involving key authorizations, such as the digest computations
 required for the DNS and TLS SNI challenges, the key authorization string MUST
 be represented in UTF-8 form (or, equivalently, ASCII).
 
+An example of how to compute a JWK thumbprint can be found in Section 3.1 of
+{{RFC7638}}.  Note that some cryptographic libraries prepend a zero octet to the
+representation of the RSA public key parameters N and E, in order to avoid
+ambiguity with regard to the sign of the number.  As noted in JWA {{RFC7518}}, a
+JWK object MUST NOT include this zero octet.  That is, any initial zero octets
+MUST be stripped before the values are Base64url-encoded.
+
 ## HTTP
 
-With Simple HTTP validation, the client in an ACME transaction proves its
+With HTTP validation, the client in an ACME transaction proves its
 control over a domain name by proving that it can provision resources on an HTTP
 server that responds for that domain name.  The ACME server challenges the
 client to provision a file with a specific JWS as its contents.
@@ -1393,6 +1444,8 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
 
 The path at which the resource is provisioned is comprised of the fixed prefix
 ".well-known/acme-challenge/", followed by the "token" value in the challenge.
+The value of the resource MUST be the ASCII representation of the key
+authorization.
 
 ~~~~~~~~~~
 .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
@@ -1426,12 +1479,10 @@ domain by verifying that the resource was provisioned as expected.
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
-3. Dereference the URI using an HTTP or HTTPS GET request.  If using HTTPS, the
-   ACME server MUST ignore the certificate provided by the HTTPS server.
-4. Verify that the Content-Type header of the response is either absent, or has
-   the value "text/plain".
-5. Verify that the body of the response is well-formed key authorization.
-6. Verify that key authorization provided by the server matches the token for
+3. Dereference the URI using an HTTP GET request.
+4. Verify that the body of the response is well-formed key authorization.  The
+   server SHOULD ignore whitespace characters at the end of the body.
+5. Verify that key authorization provided by the server matches the token for
    this challenge and the client's account key.
 
 If all of the above verifications succeed, then the validation is successful.
@@ -1564,7 +1615,7 @@ type (required, string):
 : The string "proofOfPossession-01"
 
 certs (optional, array of string):
-: An array of certificates, in Base64-encoded DER format, that contain
+: An array of certificates, in Base64url-encoded DER format, that contain
 acceptable public keys.
 
 
@@ -1677,7 +1728,7 @@ A client responds to this challenge by constructing a key authorization from the
 "token" value provided in the challenge and the client's account key.  The
 client then computes the SHA-256 digest of the key authorization.
 
-The record provisioned to the DNS is the base64 encoding of this digest.  The
+The record provisioned to the DNS is the base64url encoding of this digest.  The
 client constructs the validation domain name by prepending the label
 "_acme-challenge" to the domain name being validated, then provisions a TXT
 record with the digest value under that name. For example, if the domain name
@@ -1737,7 +1788,7 @@ correct, and that only authorized entities can manage certificates.  ACME
 identifies clients by their account keys, so this overall goal breaks down into
 two more precise goals:
 
-1. Only an entity that controls a identifier can get an account key authorized
+1. Only an entity that controls an identifier can get an account key authorized
    for that identifier
 2. Once authorized, an account key's authorizations cannot be improperly
    transferred to another account key
@@ -1823,7 +1874,7 @@ account key for one of his choosing, e.g.:
   account key A (the legitimate domain holder)
 
 All of the challenges above that require an out-of-band query by the server have
-a binding to the account private key, such that the only the account private key
+a binding to the account private key, such that only the account private key
 holder can successfully respond to the validation query:
 
 * HTTP: The value provided in the validation request is signed by the
@@ -1848,7 +1899,7 @@ identifier can perform.  For the challenges in this document, the actions are:
 There are several ways that these assumptions can be violated, both by
 misconfiguration and by attack.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
-server's hostname by responding to a Simple HTTP challenge, and likewise for TLS
+server's hostname by responding to an HTTP challenge, and likewise for TLS
 configuration and TLS SNI.
 
 The use of hosting providers is a particular risk for ACME validation.  If the
@@ -1859,10 +1910,10 @@ provided by the hosting provider is the real thing.
 
 More limited forms of delegation can also lead to an unintended party gaining
 the ability to successfully complete a validation transaction.  For example,
-suppose an ACME server follows HTTP redirects in Simple HTTP validation and a
+suppose an ACME server follows HTTP redirects in HTTP validation and a
 web site operator provisions a catch-all redirect rule that redirects requests
 for unknown resources to different domain.  Then the target of the redirect
-could use that to get a certificate through Simple HTTP validation, since the
+could use that to get a certificate through HTTP validation, since the
 validation path will not be known to the primary server.
 
 The DNS is a common point of vulnerability for all of these challenges.  An

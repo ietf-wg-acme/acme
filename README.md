@@ -61,7 +61,7 @@ links to the software those tools might require.
 ## Installation and Setup
 
 Mac users will need to install
-[XCode](https://itunes.apple.com/us/app/xcode/id497799835) to get `make`, see
+[Xcode](https://itunes.apple.com/us/app/xcode/id497799835) to get `make`, see
 [this answer](http://stackoverflow.com/a/11494872/1375574) for instructions.
 
 Windows users will need to use [Cygwin](http://cygwin.org/) to get `make`.
@@ -97,7 +97,7 @@ xml2rfc depends on development versions of [libxml2](http://xmlsoft.org/) and
 Fedora).
 
 If you use markdown, you will also need to install `kramdown-rfc2629`,
-which requires Ruby and can be installed using the roby package
+which requires Ruby and can be installed using the Ruby package
 manager, `gem`:
 
 ```sh
