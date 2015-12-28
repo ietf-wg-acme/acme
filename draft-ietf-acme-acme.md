@@ -96,6 +96,8 @@ Thus, certificate authorities in the Web PKI are trusted to verify that an
 applicant for a certificate legitimately represents the domain name(s) in the
 certificate.
 
+This section contains an unresolved reference to {{RFC6919}}.
+
 Existing Web PKI certificate authorities tend to run on a set of ad hoc
 protocols for certificate issuance and identity verification.  A typical user
 experience is something like:
