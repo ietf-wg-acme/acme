@@ -133,7 +133,7 @@ authentication for other protocols based on TLS {{RFC5246}}.
 The major guiding use case for ACME is obtaining certificates for Web sites
 (HTTPS {{RFC2818}}).  In that case, the server is intended to speak for one or
 more domains, and the process of certificate issuance is intended to verify that
-the server actually speaks for the domain.
+the server actually speaks for the domain(s).
 
 Different types of certificates reflect different kinds of CA verification of
 information about the certificate subject.  "Domain Validation" (DV)
@@ -421,7 +421,7 @@ certificates (optional, string):
 : A URI from which a list of certificates issued for this account can be fetched
 via a GET request.  The result of the GET request MUST be a JSON object whose
 "certificates" field is an array of strings, where each string is the URI of a
-certificate.  The server SHOULD NOT include expired certificates.
+certificate.  The server SHOULD NOT include expired or revoked certificates.
 
 ~~~~~~~~~~
 {
@@ -1385,7 +1385,7 @@ controlled by the notAfter time in the certificate itself.)
 If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
 may want to provide the client with a Signed Certificate Timestamp (SCT) that
 can be used to prove that a certificate was submitted to a CT log.  An SCT can
-be included as a extension in the certificate or as an extension to OCSP
+be included as an extension in the certificate or as an extension to OCSP
 responses for the certificate.  The server can also provide the client with
 direct access to an SCT for a certificate using a Link relation header field
 with relation "ct-sct".
@@ -1490,7 +1490,7 @@ Content-Language: en
 
 # Identifier Validation Challenges
 
-There are few types of identifier in the world for which there is a standardized
+There are few types of identifiers in the world for which there is a standardized
 mechanism to prove possession of a given identifier.  In all practical cases,
 CAs rely on a variety of means to test whether an entity applying for a
 certificate with a given identifier actually controls that identifier.
@@ -1990,7 +1990,7 @@ correct, and that only authorized entities can manage certificates.  ACME
 identifies clients by their account keys, so this overall goal breaks down into
 two more precise goals:
 
-1. Only an entity that controls a identifier can get an account key authorized
+1. Only an entity that controls an identifier can get an account key authorized
    for that identifier
 2. Once authorized, an account key's authorizations cannot be improperly
    transferred to another account key
@@ -2076,7 +2076,7 @@ account key for one of his choosing, e.g.:
   account key A (the legitimate domain holder)
 
 All of the challenges above that require an out-of-band query by the server have
-a binding to the account private key, such that the only the account private key
+a binding to the account private key, such that only the account private key
 holder can successfully respond to the validation query:
 
 * HTTP: The value provided in the validation request is signed by the
