@@ -2251,6 +2251,38 @@ perform, for example:
 CAs that use ACME to automate issuance will need to ensure that their servers
 perform all necessary checks before issuing.
 
+# Operational Considerations
+
+There are certain factors that arise in operational reality that operators of
+ACME-based CAs will need to keep in mind when configuring their services.
+
+[[ TODO: Other operational considerations ]]
+
+## Default Virtual Hosts
+
+In many cases, TLS-based services are deployed on hosted platforms that use
+the Server Name Indication (SNI) TLS extension to distinguish between
+different hosted services or "virtual hosts".  When a client initiates a
+TLS connection with an SNI value indicating a provisioned host, the hosting
+platform routes the connection to that host.
+
+When a connection come in with an unknown SNI value, one might expect the
+hosting platform to terminate the TLS connection.  However, some hosting
+platforms will choose a virtual host to be the "default", and route connections
+with unknown SNI values to that host.
+
+In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., "tls-sni-01")
+for any domain with an A record that points to the hosting platform.  This could
+  result in mis-issuance in cases where there are multiple hosts with different
+  owners resident on the hosting platform.
+
+A CA that accepts TLS-based proof of domain control should attempt to check
+whether a domain is hosted on a domain with a default virtual host before
+allowing an authorization request for this host to use a TLS-based challenge.
+A default virtual host can be detected by initiating TLS connections to the host
+with random SNI values within the namespace used for the TLS-based challenge
+(the "acme.invalid" namespace for "tls-sni-01").
+
 
 # Acknowledgements
 
