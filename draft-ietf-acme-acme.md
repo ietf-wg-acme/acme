@@ -1645,7 +1645,7 @@ a public key), or by asking for the key corresponding to a certificate.
 The server provides the following fields as part of the challenge:
 
 type (required, string):
-: The string "proofOfPossession-01"
+: The string "proof-of-possession-01"
 
 certs (optional, array of string):
 : An array of certificates, in Base64url-encoded DER format, that contain
@@ -1654,7 +1654,7 @@ acceptable public keys.
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession-01",
+  "type": "proof-of-possession-01",
   "certs": ["MIIF7z...bYVQLY"]
 }
 ~~~~~~~~~~
@@ -1665,7 +1665,7 @@ the challenge.  The validation object covered by the signature has the following
 fields:
 
 type (required, string):
-: The string "proofOfPossession"
+: The string "proof-of-possession"
 
 identifiers (required, identifier):
 : A list of identifiers for which the holder of the prior key authorizes the new key
@@ -1675,7 +1675,7 @@ accountKey (required, JWK):
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession-01",
+  "type": "proof-of-possession-01",
   "identifiers: [{"type": "dns", "value": "example.com"}],
   "accountKey": { "kty": "RSA", ... }
 }
@@ -1695,14 +1695,14 @@ The client's response includes the server-provided nonce, together with a
 signature over that nonce by one of the private keys requested by the server.
 
 type (required, string):
-: The string "proofOfPossession"
+: The string "proof-of-possession"
 
 authorization (required, JWS):
 : The validation JWS
 
 ~~~~~~~~~~
 {
-  "type": "proofOfPossession-01",
+  "type": "proof-of-possession-01",
   "authorization": {
     "header": {
       "alg": "RS256",
@@ -1726,7 +1726,7 @@ steps:
 2. Verify the "authorization" JWS using the key indicated in its "jwk" header
 3. Decode the payload of the JWS as UTF-8 encoded JSON
 4. Verify that there are exactly three fields in the decoded object, and that:
-  * The "type" field is set to "proofOfPossession"
+  * The "type" field is set to "proof-of-possession"
   * The "identifier" field contains the identifier for which authorization is
     being validated
   * The "accountKey" field matches the account key for which the challenge was
