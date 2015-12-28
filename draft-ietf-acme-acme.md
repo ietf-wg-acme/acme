@@ -43,6 +43,7 @@ normative:
   RFC5988:
   RFC6066:
   RFC6570:
+  RFC6962:
   RFC7159:
   RFC7469:
   RFC7515:
@@ -1599,9 +1600,9 @@ be represented in UTF-8 form (or, equivalently, ASCII).
 An example of how to compute a JWK thumbprint can be found in Section 3.1 of
 {{RFC7638}}.  Note that some cryptographic libraries prepend a zero octet to the
 representation of the RSA public key parameters N and E, in order to avoid
-ambiguity with regard to the sign of the number.  As noted in {{JWA}}, a JWK
-object MUST NOT include this zero octet.  That is, any initial zero octets MUST
-be stripped before the values are Base64url-encoded.
+ambiguity with regard to the sign of the number.  As noted in JWA {{RFC7518}}, a
+JWK object MUST NOT include this zero octet.  That is, any initial zero octets
+MUST be stripped before the values are Base64url-encoded.
 
 ## HTTP
 
