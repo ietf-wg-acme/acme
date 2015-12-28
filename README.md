@@ -97,7 +97,7 @@ xml2rfc depends on development versions of [libxml2](http://xmlsoft.org/) and
 Fedora).
 
 If you use markdown, you will also need to install `kramdown-rfc2629`,
-which requires Ruby and can be installed using the ruby package
+which requires Ruby and can be installed using the Ruby package
 manager, `gem`:
 
 ```sh
