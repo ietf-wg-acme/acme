@@ -3,6 +3,7 @@
 This is the working area for the Working Group internet-draft, "Automatic Certificate Management Environment (ACME)".
 
 * [Editor's copy](https://ietf-wg-acme.github.io/acme/)
+* [Build history](https://circleci.com/gh/ietf-wg-acme/acme)
 * [Working Group Draft] (https://tools.ietf.org/html/draft-ietf-acme-acme)
 
 
