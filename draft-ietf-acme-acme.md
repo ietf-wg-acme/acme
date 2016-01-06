@@ -532,6 +532,7 @@ to errors, this document defines the following standard tokens for use in the
 | unauthorized    | The client lacks sufficient authorization                |
 | unknownHost     | The server could not resolve a domain name               |
 | rateLimited     | The request exceeds a rate limit                         |
+| invalidEmail    | The provided email for a registration was invalid        |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
