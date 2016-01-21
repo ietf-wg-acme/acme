@@ -1956,8 +1956,8 @@ server to send its TLS SNI or HTTP validation query to a server of the
 attacker's choosing.  There are a few different mitigations that ACME servers
 can apply:
 
-* Checking the DNSSEC status of DNS records used in ACME validation (for zones
-  that are DNSSEC-enabled)
+* Always querying the DNS using a DNSSEC-validating resolver (enhancing
+  security for zones that are DNSSEC-enabled)
 * Querying the DNS from multiple vantage points to address local attackers
 * Applying mitigations against DNS off-path attackers, e.g., adding entropy to
   requests {{I-D.vixie-dnsext-dns0x20}} or only using TCP
@@ -2101,6 +2101,21 @@ A default virtual host can be detected by initiating TLS connections to the host
 with random SNI values within the namespace used for the TLS-based challenge
 (the "acme.invalid" namespace for "tls-sni-01").
 
+## Use of DNSSEC Resolvers
+
+An ACME-based CA needs to make DNS lookups when processing challenges. Because
+the security of an ACME-based CA ultimately depends entirely on the
+authenticity of DNS data, every possible precaution should be taken to secure
+such lookups. It is therefore RECOMMENDED that ACME-based CAs make all DNS
+resolutions via DNSSEC-validating stub or recursive resolvers. This provides
+additional protection to domains which choose to make use of DNSSEC.
+
+An ACME-based CA must use only a resolver if it trusts the resolver and every
+component of the network route by which it is accessed. It is therefore
+RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
+within their trusted network and use these resolvers both for all CAA record
+lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
+TXT, etc.).
 
 # Acknowledgements
 
