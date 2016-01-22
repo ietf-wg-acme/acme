@@ -1570,7 +1570,7 @@ the "token" value provided in the challenge and the client's account key.  The
 client computes the SHA-256 digest Z of the UTF8-encoded key
 authorization, and encodes Z in UTF-8 lower-case hexadecimal form.
 
-The client generates a self-signed certificate for with a
+The client generates a self-signed certificate with a
 single subjectAlternativeName extension dNSName that is
 "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid", where "Z[0:32]" and "Z[32:64]"
 represent the first 32 and last 32 characters of the hex-encoded value,
