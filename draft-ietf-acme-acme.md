@@ -1584,7 +1584,7 @@ form. The dNSName is "x.y.ka.acme.invalid" where x is the first half of the
 hexadecimal representation and y is the second half.
 
 The client MUST ensure that the certificate is served to TLS connections
-specifying a Server Name Indication (SNI) value of SAN B.
+specifying a Server Name Indication (SNI) value of SAN A.
 
 The response to the TLS-SNI challenge simply acknowledges that the client is
 ready to fulfill this challenge.
@@ -1611,12 +1611,12 @@ using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
 2. Open a TLS connection to the domain name being validated on the requested
-   port, presenting SAN B in the SNI field.
+   port, presenting SAN A in the SNI field.
 
-   The server MUST request the certificate using an SNI value of SAN B.
+   The server MUST request the certificate using an SNI value of SAN A.
 
-   The server SHOULD ensure that it does not reveal SAN A in any way when
-   making the TLS connection, such that the presentation of SAN A in the
+   The server SHOULD ensure that it does not reveal SAN B in any way when
+   making the TLS connection, such that the presentation of SAN B in the
    returned certificate proves association with the client.
 
 3. Verify that the certificate contains a subjectAltName extension containing
