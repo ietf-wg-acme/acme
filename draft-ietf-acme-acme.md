@@ -43,6 +43,7 @@ normative:
   RFC5988:
   RFC6066:
   RFC6570:
+  RFC6844:
   RFC6962:
   RFC7159:
   RFC7469:
@@ -649,6 +650,9 @@ certificate resources to indicate a resource from which the client may fetch a
 chain of CA certificates that could be used to validate the certificate in the
 original resource.
 
+The "directory" link relation is present on all resources other than the
+directory and indicates the directory URL.
+
 The following diagram illustrates the relations between resources on an ACME
 server.  The solid lines indicate link relations, and the dotted lines
 correspond to relationships expressed in other ways, e.g., the Location header
@@ -698,6 +702,26 @@ with which clients are configured. It is a JSON dictionary, whose keys are the
 "resource" values listed in {{https-requests}}, and whose values are the
 URIs used to accomplish the corresponding function.
 
+The dictionary MAY additionally contain a key "meta". If present, it MUST be a
+JSON dictionary; each item in the dictionary is an item of metadata relating to
+the service provided by the ACME server.
+
+The following metadata items are defined, all of which are OPTIONAL:
+
+"terms-of-service":
+: A string containing a URI identifying the current terms of service.
+
+"website":
+: String containing an HTTP or HTTPS URL locating a website providing more
+information about the ACME server.
+
+"caa-identities":
+: If present, MUST be an array of strings. Each string MUST be a lowercase
+hostname which the ACME server recognises as referring to itself for the
+purposes of CAA record validation as defined in {{RFC6844}}.  This allows
+clients to determine the correct issuer domain name to use when configuring CAA
+record.
+
 Clients access the directory by sending a GET request to the directory URI.
 
 ~~~~~~~~~~
@@ -709,7 +733,12 @@ Content-Type: application/json
   "recover-reg": "https://example.com/acme/recover-reg",
   "new-authz": "https://example.com/acme/new-authz",
   "new-cert": "https://example.com/acme/new-cert",
-  "revoke-cert": "https://example.com/acme/revoke-cert"
+  "revoke-cert": "https://example.com/acme/revoke-cert",
+  "meta": {
+    "terms-of-service": "https://example.com/acme/terms",
+    "website": "https://www.example.com/",
+    "caa-identities": ["example.com"]
+  }
 }
 ~~~~~~~~~~
 
@@ -768,6 +797,7 @@ Location: https://example.com/acme/reg/asdf
 Link: <https://example.com/acme/new-authz>;rel="next"
 Link: <https://example.com/acme/recover-reg>;rel="recover"
 Link: <https://example.com/acme/terms>;rel="terms-of-service"
+Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
   "key": { /* JWK from JWS header */ },
@@ -1020,6 +1050,7 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 Location: https://example.com/authz/asdf
 Link: <https://example.com/acme/new-cert>;rel="next"
+Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
   "status": "pending",
@@ -1250,6 +1281,7 @@ Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
 Link: <https://example.com/acme/revoke-cert>;rel="revoke"
 Link: <https://example.com/acme/reg/asdf>;rel="author"
 Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
+Link: <https://example.com/acme/some-directory>;rel="directory"
 Location: https://example.com/acme/cert/asdf
 Content-Location: https://example.com/acme/cert-seq/12345
 
