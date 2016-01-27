@@ -481,9 +481,12 @@ client completes all challenges.
 
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns").  The value of the identifier MUST be the ASCII
-representation of the domain name.  Wildcard domain names (with "*" as the first
-label) MUST NOT be included in authorization requests.  See
-{{certificate-issuance}} below for more information about wildcard domains.
+representation of the domain name.  A wildcard domain (a domain starting with
+one or more `*` labels) MAY be the subject of an authorization request. A
+partial-match wildcard domain (a domain which contains a label which contains
+`*` but is not `*`, for example `foo*.example.com`) MUST NOT be included in
+authorization requests. See {{certificate-issuance}} below for more information
+about wildcard domains.
 
 ~~~~~~~~~~
 {
@@ -1185,12 +1188,16 @@ key that signed the request.
 
 It is up to the server's local policy to decide which names are acceptable in a
 certificate, given the authorizations that the server associates with the
-client's account key.  A server MAY consider a client authorized for a wildcard
-domain if it is authorized for the underlying domain name (without the "*"
-label).  Servers SHOULD NOT extend authorization across identifier types.  For
-example, if a client is authorized for "example.com", then the server should not
-allow the client to issue a certificate with an iPAddress subjectAltName, even
-if it contains an IP address to which example.com resolves.
+client's account key. Servers SHOULD NOT extend authorization across identifier
+types.  For example, if a client is authorized for "example.com", then the
+server should not allow the client to issue a certificate with an iPAddress
+subjectAltName, even if it contains an IP address to which example.com
+resolves.
+
+Wildcard names SHOULD NOT be accepted unless a client is authorized for that
+exact wildcard name. For example, an authorization for `*.*.example.com`
+requires the specification of that exact name and does not authorize the
+issuance of `*.foo.example.com`.
 
 If the CA decides to issue a certificate, then the server creates a new
 certificate resource and returns a URI for it in the Location header field of a
@@ -1410,10 +1417,11 @@ example:
 * Domain with a cert from this CA, all keys and recovery mechanisms lost: Out of
   band proof of authority for the domain
 
-The identifier validation challenges described in this section all relate to
-validation of domain names.  If ACME is extended in the future to support other
-types of identifier, there will need to be new Challenge types, and they will
-need to specify which types of identifier they apply to.
+With the exception of the proof of possession challenge, the identifier
+validation challenges described in this section all relate to validation of
+domain names.  If ACME is extended in the future to support other types of
+identifier, there will need to be new Challenge types, and they will need to
+specify which types of identifier they apply to.
 
 [[ Editor's Note: In pre-RFC versions of this specification, challenges are
 labeled by type, and with the version of the draft in which they were
@@ -1427,6 +1435,35 @@ authorization objects that require the client to perform multiple challenges
 over the same type, e.g., ["http-03", "http-05"].  Challenges within a type are
 testing the same capability of the domain owner, and it may not be possible to
 satisfy both at once. ]]
+
+## Validation of Wildcard Authorizations
+
+When validating a challenge other than a proof of possesion challenge which is
+part of an authorization for a wildcard name (a domain name which contains one
+or more `*` labels), the challenge is validated as follows:
+
+- A CA chooses some positive integer n by policy.
+
+- The CA generates n random strings for each of the m `*` labels. Let `s(i,j)`
+  denote string i for `*`-label j. Each string MUST consist of lowercase
+  letters, decimal digits and hyphens and MUST NOT exceed 63 characters. Each
+  string MUST be random and MUST have at least 128 bits of entropy.
+
+- A challenge is validated when requested by the client by validating the
+  challenge `n` times. In a given iteration `i`, each `*` label `j` is
+  substituted for random string `s(i,j)`.
+
+For example, where n=2, in verifying challenges for the wildcard authorization
+`*.*.example.com`, challenges initiated by the client could be initiated under
+the following names:
+
+~~~~~~~~~~
+t5d3l6jni76lm27mibf74n4mki.df2icxw7mg5gbbfc636ttbwsmi.example.com
+dsbzj4ircw3ihg5tlpchv276sq.fonm6ymv77dlpac2qfvyjns4u4.example.com
+~~~~~~~~~~
+
+A wildcard challenge MUST NOT be considered successful unless all
+sub-validations performed are successful.
 
 ## Key Authorizations
 
