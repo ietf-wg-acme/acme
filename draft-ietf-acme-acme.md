@@ -2025,6 +2025,14 @@ balance between using contact channels that can reach many clients and using
 contact-based recovery schemes that achieve an appropriate level of risk using
 those contact channels.
 
+## Considerations for Domain Holders
+
+Domain holders should note that anyone who controls their DNS records can
+complete a validation challenge on their domain. This is especially relevant
+for dynamic DNS providers, who might assume that _acme-challenge is a perfectly
+fine subdomain for a customer to request. Those providers should ensure that
+all their domains are on the Public Suffix List.
+
 ## Denial-of-Service Considerations
 
 As a protocol run over HTTPS, standard considerations for TCP-based and
