@@ -43,6 +43,7 @@ normative:
   RFC5988:
   RFC6066:
   RFC6570:
+  RFC6844:
   RFC6962:
   RFC7159:
   RFC7469:
@@ -1800,6 +1801,39 @@ To validate a DNS challenge, the server performs the following steps:
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
+
+# Use with CAA Records
+
+An ACME server SHOULD support CAA DNS records as described in {{RFC6844}}. The
+server SHOULD look for such records when issuing authorizations, as opposed to
+when issuing certificates.
+
+## Account Key Restriction
+
+CAA is designed to be extensible beyond mere CA-level authorization. It is
+RECOMMENDED that ACME servers support the following account key parameter to
+allow issuance to be restricted to the bearer of the given account key.
+
+A CAA record parameter "acme-ak" is defined. The value of this parameter MUST
+be the base64url encoding (without padding) of the JWK thumbprint of the
+account key.
+
+If an ACME server finds multiple CAA records pertaining to it (i.e., having
+property 'issue' and a domain that the ACME server recognises as its own) with
+different "acme-ak" parameters, the ACME server MUST NOT grant an authorization
+unless at least one of the specified key thumbprints matches the requesting
+account key. A record without an "acme-ak" parameter matches any account key. A
+record with an invalid "acme-ak" parameter (i.e. not 43 characters long and a
+valid base64url string) or multiple "acme-ak" parameters is unsatisfiable.
+
+The following shows an example DNS configuration which nominates two account
+keys as authorized to issue certificates for the domain example.com. Issuance
+is restricted to the CA "example.net".
+
+    example.com. IN CAA 0 issue \
+      "example.net; acme-ak=UKNmi2whPhuAhDvAxGa_aOZgPzyJDhhsrt-8Bt2fWh0"
+    example.com. IN CAA 0 issue \
+      "example.net; acme-ak=rlp4OZPOR9MKejkOdZAKQ5Tfwce6llawmrDIh-BtNJ0"
 
 # IANA Considerations
 
