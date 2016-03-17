@@ -1313,7 +1313,7 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
 }
 </pre>
 <p id="rfc.section.7.3.p.3">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client computes the SHA-256 digest Z of the UTF8-encoded key authorization, and encodes Z in UTF-8 lower-case hexadecimal form.</p>
-<p id="rfc.section.7.3.p.4">The client generates a self-signed certificate for with a single subjectAlternativeName extension dNSName that is &#8220;&lt;Z[0:32]&gt;.&lt;Z[32:64]&gt;.acme.invalid&#8221;, where &#8220;Z[0:32]&#8221; and &#8220;Z[32:64]&#8221; represent the first 32 and last 32 characters of the hex-encoded value, respectively (following the notation used in Python).  The client then configures the TLS server at the domain such that when a handshake is initiated with the Server Name Indication extension set to &#8220;&lt;Z[0:32]&gt;.&lt;Z[32:64]&gt;.acme.invalid&#8221;, the corresponding generated certificate is presented.</p>
+<p id="rfc.section.7.3.p.4">The client generates a self-signed certificate with a single subjectAlternativeName extension dNSName that is &#8220;&lt;Z[0:32]&gt;.&lt;Z[32:64]&gt;.acme.invalid&#8221;, where &#8220;Z[0:32]&#8221; and &#8220;Z[32:64]&#8221; represent the first 32 and last 32 characters of the hex-encoded value, respectively (following the notation used in Python).  The client then configures the TLS server at the domain such that when a handshake is initiated with the Server Name Indication extension set to &#8220;&lt;Z[0:32]&gt;.&lt;Z[32:64]&gt;.acme.invalid&#8221;, the corresponding generated certificate is presented.</p>
 <p id="rfc.section.7.3.p.5">The response to the TLS SNI challenge simply acknowledges that the client is ready to fulfill this challenge.</p>
 <p/>
 
@@ -1611,7 +1611,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
       <td class="reference">
         <b id="I-D.ietf-appsawg-http-problem">[I-D.ietf-appsawg-http-problem]</b>
       </td>
-      <td class="top"><a>mnot, m.</a> and <a>E. Wilde</a>, "<a href="http://tools.ietf.org/html/draft-ietf-appsawg-http-problem-02">Problem Details for HTTP APIs</a>", Internet-Draft draft-ietf-appsawg-http-problem-02, December 2015.</td>
+      <td class="top"><a>mnot, m.</a> and <a>E. Wilde</a>, "<a href="http://tools.ietf.org/html/draft-ietf-appsawg-http-problem-03">Problem Details for HTTP APIs</a>", Internet-Draft draft-ietf-appsawg-http-problem-03, January 2016.</td>
     </tr>
     <tr>
       <td class="reference">
