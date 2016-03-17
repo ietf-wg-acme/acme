@@ -693,10 +693,21 @@ structured and how the ACME protocol makes use of them.
 ## Directory
 
 In order to help clients configure themselves with the right URIs for each ACME
-operation, ACME servers provide a directory object. This should be the root URL
-with which clients are configured. It is a JSON dictionary, whose keys are the
+operation, ACME servers provide a directory object. This should be the only URL
+needed to configure clients. It is a JSON dictionary, whose keys are the
 "resource" values listed in {{https-requests}}, and whose values are the
 URIs used to accomplish the corresponding function.
+
+There is no constraint on the actual URI of the directory except that it
+should be different from the other ACME server resources' URIs, and that it
+should not clash with other services. For instance:
+
+ * a host which function as both an ACME and Web server may want to keep
+   the root path "/" for an HTML "front page", and and place the ACME
+   directory under path "/acme".
+
+ * a host which only functions as an ACME server could place the directory
+   under path "/".
 
 Clients access the directory by sending a GET request to the directory URI.
 
