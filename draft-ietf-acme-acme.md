@@ -516,8 +516,8 @@ For example:  If the client submits a request using a method not allowed in this
 document, then the server MAY return status code 405 (Method Not Allowed).
 
 When the server responds with an error status, it SHOULD provide additional
-information using problem document {{I-D.ietf-appsawg-http-problem}}.  The
-"type" and "detail" fields MUST be populated.  To facilitate automatic response
+information using problem document {{I-D.ietf-appsawg-http-problem}}.
+To facilitate automatic response
 to errors, this document defines the following standard tokens for use in the
 "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
