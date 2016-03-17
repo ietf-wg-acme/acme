@@ -461,7 +461,7 @@ status (optional, string):
 the default value is "pending".
 
 expires (optional, string):
-: The date after which the server will consider this
+: The timestamp after which the server will consider this
 authorization invalid, encoded in the format specified in RFC 3339 {{RFC3339}}.
 
 challenges (required, array):
@@ -488,7 +488,7 @@ label) MUST NOT be included in authorization requests.  See
 ~~~~~~~~~~
 {
   "status": "valid",
-  "expires": "2015-03-01",
+  "expires": "2015-03-01T14:09:00Z",
 
   "identifier": {
     "type": "dns",
@@ -499,7 +499,7 @@ label) MUST NOT be included in authorization requests.  See
     {
       "type": "http-01",
       "status": "valid",
-      "validated": "2014-12-01T12:05Z",
+      "validated": "2014-12-01T12:05:00Z",
       "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
     }
   ],
@@ -1126,7 +1126,7 @@ HTTP/1.1 200 OK
 
 {
   "status": "valid",
-  "expires": "2015-03-01",
+  "expires": "2015-03-01T14:09:00Z",
 
   "identifier": {
     "type": "dns",
@@ -1137,7 +1137,7 @@ HTTP/1.1 200 OK
     {
       "type": "http-01"
       "status": "valid",
-      "validated": "2014-12-01T12:05Z",
+      "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
       "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
     }
