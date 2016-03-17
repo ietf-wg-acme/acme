@@ -666,7 +666,7 @@ li, p {
 </pre>
 <h1 id="rfc.section.5.4"><a href="#rfc.section.5.4">5.4.</a> <a href="#errors" id="errors">Errors</a></h1>
 <p id="rfc.section.5.4.p.1">Errors can be reported in ACME both at the HTTP layer and within ACME payloads.  ACME servers can return responses with an HTTP error response code (4XX or 5XX).  For example:  If the client submits a request using a method not allowed in this document, then the server MAY return status code 405 (Method Not Allowed).</p>
-<p id="rfc.section.5.4.p.2">When the server responds with an error status, it SHOULD provide additional information using problem document <a href="#I-D.ietf-appsawg-http-problem">[I-D.ietf-appsawg-http-problem]</a>.  The &#8220;type&#8221; and &#8220;detail&#8221; fields MUST be populated.  To facilitate automatic response to errors, this document defines the following standard tokens for use in the &#8220;type&#8221; field (within the &#8220;urn:ietf:params:acme:error:&#8221; namespace):</p>
+<p id="rfc.section.5.4.p.2">When the server responds with an error status, it SHOULD provide additional information using problem document <a href="#I-D.ietf-appsawg-http-problem">[I-D.ietf-appsawg-http-problem]</a>.  To facilitate automatic response to errors, this document defines the following standard tokens for use in the &#8220;type&#8221; field (within the &#8220;urn:ietf:params:acme:error:&#8221; namespace):</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
