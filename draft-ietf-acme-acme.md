@@ -210,11 +210,12 @@ Recovery Key:
 : A MAC key that a client can use to demonstrate that it participated in
 a prior registration transaction.
 
-ACME messaging is based on HTTPS {{RFC2818}} and JSON {{RFC7159}}.  Since JSON
-is a text-based format, binary fields are Base64-encoded.  For Base64 encoding,
-we use the variant defined in {{RFC7515}}.  The important features of this
-encoding are (1) that it uses the URL-safe character set, and (2) that "="
-padding characters are stripped.
+ACME messaging is based on HTTPS [RFC2818] and JSON [RFC7159].
+
+Binary fields are encoded using Base64url encoding described in
+[RFC4648] Section 5, according to the profile specified in JSON Web
+Signature [RFC7515] Section 2. This encoding uses a URL safe
+character set. Trailing '=' characters MUST be stripped.
 
 Some HTTPS bodies in ACME are authenticated and integrity-protected by being
 encapsulated in a JSON Web Signature (JWS) object {{RFC7515}}.  ACME uses a
