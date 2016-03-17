@@ -769,7 +769,8 @@ li, p {
 <p id="rfc.section.6.1.p.4">In general, the intent is for authorization and certificate resources to contain only public information, so that CAs may publish these resources to document what certificates have been issued and how they were authorized.  Non-public information, such as contact information, is stored in registration resources.</p>
 <p id="rfc.section.6.1.p.5">ACME uses different URIs for different management functions. Each function is listed in a directory along with its corresponding URI, so clients only need to be configured with the directory URI.</p>
 <p id="rfc.section.6.1.p.6">The &#8220;up&#8221; link relation is used with challenge resources to indicate the authorization resource to which a challenge belongs.  It is also used from certificate resources to indicate a resource from which the client may fetch a chain of CA certificates that could be used to validate the certificate in the original resource.</p>
-<p id="rfc.section.6.1.p.7">The following diagram illustrates the relations between resources on an ACME server.  The solid lines indicate link relations, and the dotted lines correspond to relationships expressed in other ways, e.g., the Location header in a 201 (Created) response.</p>
+<p id="rfc.section.6.1.p.7">The &#8220;directory&#8221; link relation is present on all resources other than the directory and indicates the directory URL.</p>
+<p id="rfc.section.6.1.p.8">The following diagram illustrates the relations between resources on an ACME server.  The solid lines indicate link relations, and the dotted lines correspond to relationships expressed in other ways, e.g., the Location header in a 201 (Created) response.</p>
 <pre>
                                directory
                                    .
@@ -788,7 +789,7 @@ li, p {
                          V |                 V
                        challenge         cert-chain
 </pre>
-<p id="rfc.section.6.1.p.8">The following table illustrates a typical sequence of requests required to establish a new account with the server, prove control of an identifier, issue a certificate, and fetch an updated certificate some time after issuance.  The &#8220;-&gt;&#8221; is a mnemonic for a Location header pointing to a created resource.</p>
+<p id="rfc.section.6.1.p.9">The following table illustrates a typical sequence of requests required to establish a new account with the server, prove control of an identifier, issue a certificate, and fetch an updated certificate some time after issuance.  The &#8220;-&gt;&#8221; is a mnemonic for a Location header pointing to a created resource.</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
@@ -830,7 +831,7 @@ li, p {
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.6.1.p.9">The remainder of this section provides the details of how these resources are structured and how the ACME protocol makes use of them.</p>
+<p id="rfc.section.6.1.p.10">The remainder of this section provides the details of how these resources are structured and how the ACME protocol makes use of them.</p>
 <h1 id="rfc.section.6.2"><a href="#rfc.section.6.2">6.2.</a> <a href="#directory" id="directory">Directory</a></h1>
 <p id="rfc.section.6.2.p.1">In order to help clients configure themselves with the right URIs for each ACME operation, ACME servers provide a directory object. This should be the only URL needed to configure clients. It is a JSON dictionary, whose keys are the &#8220;resource&#8221; values listed in <a href="#https-requests">Section 5.1</a>, and whose values are the URIs used to accomplish the corresponding function.</p>
 <p id="rfc.section.6.2.p.2">There is no constraint on the actual URI of the directory except that it should be different from the other ACME server resources&#8217; URIs, and that it should not clash with other services. For instance:</p>
@@ -840,7 +841,19 @@ li, p {
   <li>a host which function as both an ACME and Web server may want to keep the root path &#8220;/&#8221; for an HTML &#8220;front page&#8221;, and and place the ACME directory under path &#8220;/acme&#8221;.</li>
   <li>a host which only functions as an ACME server could place the directory under path &#8220;/&#8221;.</li>
 </ul>
-<p id="rfc.section.6.2.p.4">Clients access the directory by sending a GET request to the directory URI.</p>
+<p id="rfc.section.6.2.p.4">The dictionary MAY additionally contain a key &#8220;meta&#8221;. If present, it MUST be a JSON dictionary; each item in the dictionary is an item of metadata relating to the service provided by the ACME server.</p>
+<p id="rfc.section.6.2.p.5">The following metadata items are defined, all of which are OPTIONAL:</p>
+<p/>
+
+<dl>
+  <dt>&#8220;terms-of-service&#8221;:</dt>
+  <dd style="margin-left: 8">A string containing a URI identifying the current terms of service.</dd>
+  <dt>&#8220;website&#8221;:</dt>
+  <dd style="margin-left: 8">String containing an HTTP or HTTPS URL locating a website providing more information about the ACME server.</dd>
+  <dt>&#8220;caa-identities&#8221;:</dt>
+  <dd style="margin-left: 8">If present, MUST be an array of strings. Each string MUST be a lowercase hostname which the ACME server recognises as referring to itself for the purposes of CAA record validation as defined in <a href="#RFC6844">[RFC6844]</a>.  This allows clients to determine the correct issuer domain name to use when configuring CAA record.</dd>
+</dl>
+<p id="rfc.section.6.2.p.7">Clients access the directory by sending a GET request to the directory URI.</p>
 <pre>
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -850,7 +863,12 @@ Content-Type: application/json
   "recover-reg": "https://example.com/acme/recover-reg",
   "new-authz": "https://example.com/acme/new-authz",
   "new-cert": "https://example.com/acme/new-cert",
-  "revoke-cert": "https://example.com/acme/revoke-cert"
+  "revoke-cert": "https://example.com/acme/revoke-cert",
+  "meta": {
+    "terms-of-service": "https://example.com/acme/terms",
+    "website": "https://www.example.com/",
+    "caa-identities": ["example.com"]
+  }
 }
 </pre>
 <h1 id="rfc.section.6.3"><a href="#rfc.section.6.3">6.3.</a> <a href="#registration" id="registration">Registration</a></h1>
@@ -879,6 +897,7 @@ Location: https://example.com/acme/reg/asdf
 Link: &lt;https://example.com/acme/new-authz&gt;;rel="next"
 Link: &lt;https://example.com/acme/recover-reg&gt;;rel="recover"
 Link: &lt;https://example.com/acme/terms&gt;;rel="terms-of-service"
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
 {
   "key": { /* JWK from JWS header */ },
@@ -1022,6 +1041,7 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 Location: https://example.com/authz/asdf
 Link: &lt;https://example.com/acme/new-cert&gt;;rel="next"
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
 {
   "status": "pending",
@@ -1149,6 +1169,7 @@ Link: &lt;https://example.com/acme/ca-cert&gt;;rel="up";title="issuer"
 Link: &lt;https://example.com/acme/revoke-cert&gt;;rel="revoke"
 Link: &lt;https://example.com/acme/reg/asdf&gt;;rel="author"
 Link: &lt;https://example.com/acme/sct/asdf&gt;;rel="ct-sct"
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 Location: https://example.com/acme/cert/asdf
 Content-Location: https://example.com/acme/cert-seq/12345
 
@@ -1710,6 +1731,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
         <b id="RFC6570">[RFC6570]</b>
       </td>
       <td class="top"><a>Gregorio, J.</a>, <a>Fielding, R.</a>, <a>Hadley, M.</a>, <a>Nottingham, M.</a> and <a>D. Orchard</a>, "<a href="http://tools.ietf.org/html/rfc6570">URI Template</a>", RFC 6570, DOI 10.17487/RFC6570, March 2012.</td>
+    </tr>
+    <tr>
+      <td class="reference">
+        <b id="RFC6844">[RFC6844]</b>
+      </td>
+      <td class="top"><a>Hallam-Baker, P.</a> and <a>R. Stradling</a>, "<a href="http://tools.ietf.org/html/rfc6844">DNS Certification Authority Authorization (CAA) Resource Record</a>", RFC 6844, DOI 10.17487/RFC6844, January 2013.</td>
     </tr>
     <tr>
       <td class="reference">
