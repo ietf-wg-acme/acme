@@ -1612,8 +1612,13 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 </ul>
 <p id="rfc.section.9.5.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
 <h1 id="rfc.section.10"><a href="#rfc.section.10">10.</a> <a href="#operational-considerations" id="operational-considerations">Operational Considerations</a></h1>
-<p id="rfc.section.10.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.</p>
-<p id="rfc.section.10.p.2">[[ TODO: Other operational considerations ]]</p>
+<p id="rfc.section.10.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.  For example:</p>
+<p/>
+
+<ul>
+  <li>It is advisable to perform DNS queries via TCP to mitigate DNS forgery attacks over UDP</li>
+</ul>
+<p id="rfc.section.10.p.3">[[ TODO: Other operational considerations ]]</p>
 <h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#default-virtual-hosts" id="default-virtual-hosts">Default Virtual Hosts</a></h1>
 <p id="rfc.section.10.1.p.1">In many cases, TLS-based services are deployed on hosted platforms that use the Server Name Indication (SNI) TLS extension to distinguish between different hosted services or &#8220;virtual hosts&#8221;.  When a client initiates a TLS connection with an SNI value indicating a provisioned host, the hosting platform routes the connection to that host.</p>
 <p id="rfc.section.10.1.p.2">When a connection come in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>

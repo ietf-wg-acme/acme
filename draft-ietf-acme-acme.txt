@@ -128,7 +128,7 @@ Internet-Draft                    ACME                      October 2015
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  51
      12.1.  Normative References . . . . . . . . . . . . . . . . . .  51
      12.2.  Informative References . . . . . . . . . . . . . . . . .  54
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  54
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  55
 
 1.  Introduction
 
@@ -2779,7 +2779,10 @@ Internet-Draft                    ACME                      October 2015
 
    There are certain factors that arise in operational reality that
    operators of ACME-based CAs will need to keep in mind when
-   configuring their services.
+   configuring their services.  For example:
+
+   o  It is advisable to perform DNS queries via TCP to mitigate DNS
+      forgery attacks over UDP
 
    [[ TODO: Other operational considerations ]]
 
@@ -2792,9 +2795,6 @@ Internet-Draft                    ACME                      October 2015
    a provisioned host, the hosting platform routes the connection to
    that host.
 
-   When a connection come in with an unknown SNI value, one might expect
-   the hosting platform to terminate the TLS connection.  However, some
-
 
 
 Barnes, et al.            Expires April 6, 2016                [Page 50]
@@ -2802,6 +2802,8 @@ Barnes, et al.            Expires April 6, 2016                [Page 50]
 Internet-Draft                    ACME                      October 2015
 
 
+   When a connection come in with an unknown SNI value, one might expect
+   the hosting platform to terminate the TLS connection.  However, some
    hosting platforms will choose a virtual host to be the "default", and
    route connections with unknown SNI values to that host.
 
@@ -2845,10 +2847,8 @@ Internet-Draft                    ACME                      October 2015
 
 12.1.  Normative References
 
-   [I-D.ietf-appsawg-http-problem]
-              mnot, m. and E. Wilde, "Problem Details for HTTP APIs",
-              draft-ietf-appsawg-http-problem-03 (work in progress),
-              January 2016.
+
+
 
 
 
@@ -2857,6 +2857,11 @@ Barnes, et al.            Expires April 6, 2016                [Page 51]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   [I-D.ietf-appsawg-http-problem]
+              mnot, m. and E. Wilde, "Problem Details for HTTP APIs",
+              draft-ietf-appsawg-http-problem-03 (work in progress),
+              January 2016.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -2900,11 +2905,6 @@ Internet-Draft                    ACME                      October 2015
               DOI 10.17487/RFC5226, May 2008,
               <http://www.rfc-editor.org/info/rfc5226>.
 
-   [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
-              (TLS) Protocol Version 1.2", RFC 5246,
-              DOI 10.17487/RFC5246, August 2008,
-              <http://www.rfc-editor.org/info/rfc5246>.
-
 
 
 
@@ -2913,6 +2913,11 @@ Barnes, et al.            Expires April 6, 2016                [Page 52]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
+              (TLS) Protocol Version 1.2", RFC 5246,
+              DOI 10.17487/RFC5246, August 2008,
+              <http://www.rfc-editor.org/info/rfc5246>.
 
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key
@@ -2956,11 +2961,6 @@ Internet-Draft                    ACME                      October 2015
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
               2015, <http://www.rfc-editor.org/info/rfc7469>.
 
-   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
-              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
-              2015, <http://www.rfc-editor.org/info/rfc7515>.
-
-
 
 
 
@@ -2969,6 +2969,10 @@ Barnes, et al.            Expires April 6, 2016                [Page 53]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
+              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
+              2015, <http://www.rfc-editor.org/info/rfc7515>.
 
    [RFC7517]  Jones, M., "JSON Web Key (JWK)", RFC 7517,
               DOI 10.17487/RFC7517, May 2015,
@@ -3013,10 +3017,6 @@ Internet-Draft                    ACME                      October 2015
               February 2014,
               <http://www.w3.org/TR/2014/WD-capability-urls-20140218>.
 
-Authors' Addresses
-
-
-
 
 
 
@@ -3025,6 +3025,8 @@ Barnes, et al.            Expires April 6, 2016                [Page 54]
 
 Internet-Draft                    ACME                      October 2015
 
+
+Authors' Addresses
 
    Richard Barnes
    Mozilla
@@ -3042,8 +3044,6 @@ Internet-Draft                    ACME                      October 2015
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
 
 
 
