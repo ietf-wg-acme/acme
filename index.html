@@ -476,8 +476,9 @@ li, p {
   <dt>Recovery Key:</dt>
   <dd style="margin-left: 8">A MAC key that a client can use to demonstrate that it participated in a prior registration transaction.</dd>
 </dl>
-<p id="rfc.section.3.p.6">ACME messaging is based on HTTPS <a href="#RFC2818">[RFC2818]</a> and JSON <a href="#RFC7159">[RFC7159]</a>.  Since JSON is a text-based format, binary fields are Base64-encoded.  For Base64 encoding, we use the variant defined in <a href="#RFC7515">[RFC7515]</a>.  The important features of this encoding are (1) that it uses the URL-safe character set, and (2) that &#8220;=&#8221; padding characters are stripped.</p>
-<p id="rfc.section.3.p.7">Some HTTPS bodies in ACME are authenticated and integrity-protected by being encapsulated in a JSON Web Signature (JWS) object <a href="#RFC7515">[RFC7515]</a>.  ACME uses a profile of JWS, with the following restrictions:</p>
+<p id="rfc.section.3.p.6">ACME messaging is based on HTTPS <a href="#RFC2818">[RFC2818]</a> and JSON <a href="#RFC7159">[RFC7159]</a>.</p>
+<p id="rfc.section.3.p.7">Binary fields are encoded using Base64url encoding described in <a href="#RFC4648">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
+<p id="rfc.section.3.p.8">Some HTTPS bodies in ACME are authenticated and integrity-protected by being encapsulated in a JSON Web Signature (JWS) object <a href="#RFC7515">[RFC7515]</a>.  ACME uses a profile of JWS, with the following restrictions:</p>
 <p/>
 
 <ul>
@@ -486,7 +487,7 @@ li, p {
   <li>The JWS Header or Protected Header MUST include &#8220;alg&#8221; and &#8220;jwk&#8221; fields</li>
   <li>The JWS MUST NOT have the value &#8220;none&#8221; in its &#8220;alg&#8221; field</li>
 </ul>
-<p id="rfc.section.3.p.9">Additionally, JWS objects used in ACME MUST include the &#8220;nonce&#8221; header parameter, defined below.</p>
+<p id="rfc.section.3.p.10">Additionally, JWS objects used in ACME MUST include the &#8220;nonce&#8221; header parameter, defined below.</p>
 <h1 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#protocol-overview" id="protocol-overview">Protocol Overview</a></h1>
 <p id="rfc.section.4.p.1">ACME allows a client to request certificate management actions using a set of JSON messages carried over HTTPS.   In some ways, ACME functions much like a traditional CA, in which a user creates an account, adds identifiers to that account (proving control of the domains), and requests certificate issuance for those domains while logged in to the account.</p>
 <p id="rfc.section.4.p.2">In ACME, the account is represented by an account key pair.  The &#8220;add a domain&#8221; function is accomplished by authorizing the key pair for a given domain.  Certificate issuance and revocation are authorized by a signature with the key pair.</p>
