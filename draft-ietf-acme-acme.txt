@@ -715,13 +715,13 @@ Internet-Draft                    ACME                      October 2015
    | unknownHost    | The server could not resolve a domain name       |
    |                |                                                  |
    | rateLimited    | The request exceeds a rate limit                 |
+   |                |                                                  |
+   | invalidEmail   | The provided email for a registration was        |
+   |                | invalid                                          |
    +----------------+--------------------------------------------------+
 
    This list is not exhaustive.  The server MAY return errors whose
    "type" field is set to a URI other than those defined above.  Servers
-   MUST NOT use the ACME URN namespace for errors other than the
-   standard types.  Clients SHOULD display the "detail" field of such
-   errors.
 
 
 
@@ -729,6 +729,10 @@ Barnes, et al.            Expires April 6, 2016                [Page 13]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   MUST NOT use the ACME URN namespace for errors other than the
+   standard types.  Clients SHOULD display the "detail" field of such
+   errors.
 
    Authorization and challenge objects can also contain error
    information to indicate why the server was unable to validate
@@ -773,10 +777,6 @@ Internet-Draft                    ACME                      October 2015
    The "Replay-Nonce" header field includes a server-generated value
    that the server can use to detect unauthorized replay in future
    client requests.  The server should generate the value provided in
-   Replay-Nonce in such a way that they are unique to each message, with
-   high probability.
-
-
 
 
 
@@ -785,6 +785,9 @@ Barnes, et al.            Expires April 6, 2016                [Page 14]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   Replay-Nonce in such a way that they are unique to each message, with
+   high probability.
 
    The value of the Replay-Nonce field MUST be an octet string encoded
    according to the base64url encoding described in Section 2 of
@@ -831,9 +834,6 @@ Internet-Draft                    ACME                      October 2015
    ACME is structured as a REST application with a few types of
    resources:
 
-   o  Registration resources, representing information about an account
-
-
 
 
 
@@ -841,6 +841,8 @@ Barnes, et al.            Expires April 6, 2016                [Page 15]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   o  Registration resources, representing information about an account
 
    o  Authorization resources, representing an account's authorization
       to act for an identifier
@@ -887,8 +889,6 @@ Internet-Draft                    ACME                      October 2015
    an ACME server.  The solid lines indicate link relations, and the
    dotted lines correspond to relationships expressed in other ways,
    e.g., the Location header in a 201 (Created) response.
-
-
 
 
 
