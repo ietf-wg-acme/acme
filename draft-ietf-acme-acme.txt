@@ -618,8 +618,8 @@ Barnes, et al.            Expires April 6, 2016                [Page 11]
 Internet-Draft                    ACME                      October 2015
 
 
-   expires (optional, string):  The date after which the server will
-      consider this authorization invalid, encoded in the format
+   expires (optional, string):  The timestamp after which the server
+      will consider this authorization invalid, encoded in the format
       specified in RFC 3339 [RFC3339].
 
    challenges (required, array):  The challenges that the client needs
@@ -645,7 +645,7 @@ Internet-Draft                    ACME                      October 2015
 
    {
      "status": "valid",
-     "expires": "2015-03-01",
+     "expires": "2015-03-01T14:09:00Z",
 
      "identifier": {
        "type": "dns",
@@ -656,7 +656,7 @@ Internet-Draft                    ACME                      October 2015
        {
          "type": "http-01",
          "status": "valid",
-         "validated": "2014-12-01T12:05Z",
+         "validated": "2014-12-01T12:05:00Z",
          "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
        }
      ],
@@ -1465,7 +1465,7 @@ Internet-Draft                    ACME                      October 2015
 
    {
      "status": "valid",
-     "expires": "2015-03-01",
+     "expires": "2015-03-01T14:09:00Z",
 
      "identifier": {
        "type": "dns",
@@ -1476,7 +1476,7 @@ Internet-Draft                    ACME                      October 2015
        {
          "type": "http-01"
          "status": "valid",
-         "validated": "2014-12-01T12:05Z",
+         "validated": "2014-12-01T12:05:00Z",
          "token": "IlirfxKKXAsHtmzK29Pj8A",
          "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
        }

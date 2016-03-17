@@ -636,7 +636,7 @@ li, p {
   <dt>status (optional, string):</dt>
   <dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;unknown&#8221;, &#8220;pending&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, &#8220;invalid&#8221; and &#8220;revoked&#8221;.  If this field is missing, then the default value is &#8220;pending&#8221;.</dd>
   <dt>expires (optional, string):</dt>
-  <dd style="margin-left: 8">The date after which the server will consider this authorization invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.</dd>
+  <dd style="margin-left: 8">The timestamp after which the server will consider this authorization invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.</dd>
   <dt>challenges (required, array):</dt>
   <dd style="margin-left: 8">The challenges that the client needs to fulfill in order to prove possession of the identifier (for pending authorizations).  For final authorizations, the challenges that were used.  Each array entry is a dictionary with parameters required to validate the challenge, as specified in <a href="#identifier-validation-challenges">Section 7</a>.</dd>
   <dt>combinations (optional, array of arrays of integers):</dt>
@@ -646,7 +646,7 @@ li, p {
 <pre>
 {
   "status": "valid",
-  "expires": "2015-03-01",
+  "expires": "2015-03-01T14:09:00Z",
 
   "identifier": {
     "type": "dns",
@@ -657,7 +657,7 @@ li, p {
     {
       "type": "http-01",
       "status": "valid",
-      "validated": "2014-12-01T12:05Z",
+      "validated": "2014-12-01T12:05:00Z",
       "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
     }
   ],
@@ -1073,7 +1073,7 @@ HTTP/1.1 200 OK
 
 {
   "status": "valid",
-  "expires": "2015-03-01",
+  "expires": "2015-03-01T14:09:00Z",
 
   "identifier": {
     "type": "dns",
@@ -1084,7 +1084,7 @@ HTTP/1.1 200 OK
     {
       "type": "http-01"
       "status": "valid",
-      "validated": "2014-12-01T12:05Z",
+      "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
       "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
     }
