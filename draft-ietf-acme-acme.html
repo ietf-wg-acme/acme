@@ -831,8 +831,15 @@ li, p {
 </table>
 <p id="rfc.section.6.1.p.9">The remainder of this section provides the details of how these resources are structured and how the ACME protocol makes use of them.</p>
 <h1 id="rfc.section.6.2"><a href="#rfc.section.6.2">6.2.</a> <a href="#directory" id="directory">Directory</a></h1>
-<p id="rfc.section.6.2.p.1">In order to help clients configure themselves with the right URIs for each ACME operation, ACME servers provide a directory object. This should be the root URL with which clients are configured. It is a JSON dictionary, whose keys are the &#8220;resource&#8221; values listed in <a href="#https-requests">Section 5.1</a>, and whose values are the URIs used to accomplish the corresponding function.</p>
-<p id="rfc.section.6.2.p.2">Clients access the directory by sending a GET request to the directory URI.</p>
+<p id="rfc.section.6.2.p.1">In order to help clients configure themselves with the right URIs for each ACME operation, ACME servers provide a directory object. This should be the only URL needed to configure clients. It is a JSON dictionary, whose keys are the &#8220;resource&#8221; values listed in <a href="#https-requests">Section 5.1</a>, and whose values are the URIs used to accomplish the corresponding function.</p>
+<p id="rfc.section.6.2.p.2">There is no constraint on the actual URI of the directory except that it should be different from the other ACME server resources&#8217; URIs, and that it should not clash with other services. For instance:</p>
+<p/>
+
+<ul>
+  <li>a host which function as both an ACME and Web server may want to keep the root path &#8220;/&#8221; for an HTML &#8220;front page&#8221;, and and place the ACME directory under path &#8220;/acme&#8221;.</li>
+  <li>a host which only functions as an ACME server could place the directory under path &#8220;/&#8221;.</li>
+</ul>
+<p id="rfc.section.6.2.p.4">Clients access the directory by sending a GET request to the directory URI.</p>
 <pre>
 HTTP/1.1 200 OK
 Content-Type: application/json
