@@ -609,9 +609,9 @@ li, p {
   <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this authorization. For example, the server may wish to notify the client about server-initiated revocation.</dd>
   <dt>agreement (optional, string):</dt>
   <dd style="margin-left: 8">A URI referring to a subscriber agreement or terms of service provided by the server (see below).  Including this field indicates the client&#8217;s agreement with the referenced terms.</dd>
-  <dt>authorizations (string):</dt>
+  <dt>authorizations (required, string):</dt>
   <dd style="margin-left: 8">A URI from which a list of authorizations granted to this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;authorizations&#8221; field is an array of strings, where each string is the URI of an authorization belonging to this registration.  The server SHOULD include pending authorizations, and SHOULD NOT include authorizations that are invalid or expired. The server MAY return an incomplete list, with a <samp>link rel=next</samp> header indicating a URL to retrieve further entries.</dd>
-  <dt>certificates (string):</dt>
+  <dt>certificates (required, string):</dt>
   <dd style="margin-left: 8">A URI from which a list of certificates issued for this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;certificates&#8221; field is an array of strings, where each string is the URI of a certificate.  The server SHOULD NOT include expired or revoked certificates.  The server MAY return an incomplete list, with a <samp>link rel=next</samp> header indicating a URL to retrieve further entries.</dd>
 </dl>
 <pre>
