@@ -304,6 +304,7 @@ li, p {
 <link href="#rfc.section.9.5" rel="Chapter" title="9.5 CA Policy Considerations"/>
 <link href="#rfc.section.10" rel="Chapter" title="10 Operational Considerations"/>
 <link href="#rfc.section.10.1" rel="Chapter" title="10.1 Default Virtual Hosts"/>
+<link href="#rfc.section.10.2" rel="Chapter" title="10.2 Use of DNSSEC Resolvers"/>
 <link href="#rfc.section.11" rel="Chapter" title="11 Acknowledgements"/>
 <link href="#rfc.references" rel="Chapter" title="12 References"/>
 <link href="#rfc.references.1" rel="Chapter" title="12.1 Normative References"/>
@@ -423,6 +424,7 @@ li, p {
 <li>9.5.   <a href="#rfc.section.9.5">CA Policy Considerations</a></li>
 </ul><li>10.   <a href="#rfc.section.10">Operational Considerations</a></li>
 <ul><li>10.1.   <a href="#rfc.section.10.1">Default Virtual Hosts</a></li>
+<li>10.2.   <a href="#rfc.section.10.2">Use of DNSSEC Resolvers</a></li>
 </ul><li>11.   <a href="#rfc.section.11">Acknowledgements</a></li>
 <li>12.   <a href="#rfc.references">References</a></li>
 <ul><li>12.1.   <a href="#rfc.references.1">Normative References</a></li>
@@ -1586,7 +1588,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <p/>
 
 <ul>
-  <li>Checking the DNSSEC status of DNS records used in ACME validation (for zones that are DNSSEC-enabled)</li>
+  <li>Always querying the DNS using a DNSSEC-validating resolver (enhancing security for zones that are DNSSEC-enabled)</li>
   <li>Querying the DNS from multiple vantage points to address local attackers</li>
   <li>Applying mitigations against DNS off-path attackers, e.g., adding entropy to requests <a href="#I-D.vixie-dnsext-dns0x20">[I-D.vixie-dnsext-dns0x20]</a> or only using TCP</li>
 </ul>
@@ -1636,6 +1638,9 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <p id="rfc.section.10.1.p.2">When a connection come in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>
 <p id="rfc.section.10.1.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-01&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
 <p id="rfc.section.10.1.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-01&#8221;).</p>
+<h1 id="rfc.section.10.2"><a href="#rfc.section.10.2">10.2.</a> <a href="#use-of-dnssec-resolvers" id="use-of-dnssec-resolvers">Use of DNSSEC Resolvers</a></h1>
+<p id="rfc.section.10.2.p.1">An ACME-based CA needs to make DNS lookups when processing challenges. Because the security of an ACME-based CA ultimately depends entirely on the authenticity of DNS data, every possible precaution should be taken to secure such lookups. It is therefore RECOMMENDED that ACME-based CAs make all DNS resolutions via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
+<p id="rfc.section.10.2.p.2">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for all CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
 <h1 id="rfc.section.11"><a href="#rfc.section.11">11.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a></h1>
 <p id="rfc.section.11.p.1">In addition to the editors listed on the front page, this document has benefited from contributions from a broad set of contributors, all the way back to its inception.</p>
 <p/>

@@ -124,9 +124,10 @@ Internet-Draft                    ACME                      October 2015
      9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  50
    10. Operational Considerations  . . . . . . . . . . . . . . . . .  50
      10.1.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  50
+     10.2.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  51
    11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  51
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  51
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  51
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  52
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  52
      12.2.  Informative References . . . . . . . . . . . . . . . . .  54
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  55
 
@@ -160,8 +161,7 @@ Internet-Draft                    ACME                      October 2015
    o  Download the issued certificate and install it on their Web
       Server.
 
-   With the exception of the CSR itself and the certificates that are
-   issued, these are all completely ad hoc procedures and are
+
 
 
 
@@ -170,6 +170,8 @@ Barnes, et al.            Expires April 6, 2016                 [Page 3]
 Internet-Draft                    ACME                      October 2015
 
 
+   With the exception of the CSR itself and the certificates that are
+   issued, these are all completely ad hoc procedures and are
    accomplished by getting the human user to follow interactive natural-
    language instructions from the CA rather than by machine-implemented
    published protocols.  In many cases, the instructions are difficult
@@ -216,8 +218,6 @@ Internet-Draft                    ACME                      October 2015
 
    When deploying a current HTTPS server, an operator generally gets a
    prompt to generate a self-signed certificate.  When an operator
-   deploys an ACME-compatible web server, the experience would be
-   something like this:
 
 
 
@@ -225,6 +225,9 @@ Barnes, et al.            Expires April 6, 2016                 [Page 4]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   deploys an ACME-compatible web server, the experience would be
+   something like this:
 
    o  The ACME client prompts the operator for the intended domain
       name(s) that the web server is to stand for.
@@ -271,9 +274,6 @@ Internet-Draft                    ACME                      October 2015
    certificate authority, and responds to client requests, performing
    the requested actions if the client is authorized.
 
-   For simplicity, in all HTTPS transactions used by ACME, the ACME
-   client is the HTTPS client and the ACME server is the HTTPS server.
-
 
 
 
@@ -281,6 +281,9 @@ Barnes, et al.            Expires April 6, 2016                 [Page 5]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   For simplicity, in all HTTPS transactions used by ACME, the ACME
+   client is the HTTPS client and the ACME server is the HTTPS server.
 
    In the discussion below, we will refer to three different types of
    keys / key pairs:
@@ -327,9 +330,6 @@ Internet-Draft                    ACME                      October 2015
    domains), and requests certificate issuance for those domains while
    logged in to the account.
 
-   In ACME, the account is represented by an account key pair.  The "add
-   a domain" function is accomplished by authorizing the key pair for a
-
 
 
 
@@ -338,6 +338,8 @@ Barnes, et al.            Expires April 6, 2016                 [Page 6]
 Internet-Draft                    ACME                      October 2015
 
 
+   In ACME, the account is represented by an account key pair.  The "add
+   a domain" function is accomplished by authorizing the key pair for a
    given domain.  Certificate issuance and revocation are authorized by
    a signature with the key pair.
 
@@ -383,8 +385,6 @@ Internet-Draft                    ACME                      October 2015
    the record in question, or send an HTTP request for the file.  If the
    client provisioned the DNS or the web server as expected, then the
    server considers the client authorized for the domain name.
-
-
 
 
 
@@ -2617,8 +2617,8 @@ Internet-Draft                    ACME                      October 2015
    validation query to a server of the attacker's choosing.  There are a
    few different mitigations that ACME servers can apply:
 
-   o  Checking the DNSSEC status of DNS records used in ACME validation
-      (for zones that are DNSSEC-enabled)
+   o  Always querying the DNS using a DNSSEC-validating resolver
+      (enhancing security for zones that are DNSSEC-enabled)
 
    o  Querying the DNS from multiple vantage points to address local
       attackers
@@ -2821,6 +2821,23 @@ Internet-Draft                    ACME                      October 2015
    the namespace used for the TLS-based challenge (the "acme.invalid"
    namespace for "tls-sni-01").
 
+10.2.  Use of DNSSEC Resolvers
+
+   An ACME-based CA needs to make DNS lookups when processing
+   challenges.  Because the security of an ACME-based CA ultimately
+   depends entirely on the authenticity of DNS data, every possible
+   precaution should be taken to secure such lookups.  It is therefore
+   RECOMMENDED that ACME-based CAs make all DNS resolutions via DNSSEC-
+   validating stub or recursive resolvers.  This provides additional
+   protection to domains which choose to make use of DNSSEC.
+
+   An ACME-based CA must use only a resolver if it trusts the resolver
+   and every component of the network route by which it is accessed.  It
+   is therefore RECOMMENDED that ACME-based CAs operate their own
+   DNSSEC-validating resolvers within their trusted network and use
+   these resolvers both for all CAA record lookups and all record
+   lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).
+
 11.  Acknowledgements
 
    In addition to the editors listed on the front page, this document
@@ -2832,6 +2849,14 @@ Internet-Draft                    ACME                      October 2015
    o  Eric Rescorla, Mozilla
 
    o  Seth Schoen, EFF
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 51]
+
+Internet-Draft                    ACME                      October 2015
+
 
    o  Alex Halderman, University of Michigan
 
@@ -2846,17 +2871,6 @@ Internet-Draft                    ACME                      October 2015
 12.  References
 
 12.1.  Normative References
-
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 51]
-
-Internet-Draft                    ACME                      October 2015
-
 
    [I-D.ietf-appsawg-http-problem]
               mnot, m. and E. Wilde, "Problem Details for HTTP APIs",
@@ -2891,6 +2905,15 @@ Internet-Draft                    ACME                      October 2015
               RFC 3986, DOI 10.17487/RFC3986, January 2005,
               <http://www.rfc-editor.org/info/rfc3986>.
 
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 52]
+
+Internet-Draft                    ACME                      October 2015
+
+
    [RFC4514]  Zeilenga, K., Ed., "Lightweight Directory Access Protocol
               (LDAP): String Representation of Distinguished Names",
               RFC 4514, DOI 10.17487/RFC4514, June 2006,
@@ -2904,15 +2927,6 @@ Internet-Draft                    ACME                      October 2015
               IANA Considerations Section in RFCs", BCP 26, RFC 5226,
               DOI 10.17487/RFC5226, May 2008,
               <http://www.rfc-editor.org/info/rfc5226>.
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 52]
-
-Internet-Draft                    ACME                      October 2015
-
 
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
@@ -2949,6 +2963,13 @@ Internet-Draft                    ACME                      October 2015
               DOI 10.17487/RFC6844, January 2013,
               <http://www.rfc-editor.org/info/rfc6844>.
 
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 53]
+
+Internet-Draft                    ACME                      October 2015
+
+
    [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
               Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
               <http://www.rfc-editor.org/info/rfc6962>.
@@ -2960,15 +2981,6 @@ Internet-Draft                    ACME                      October 2015
    [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
               2015, <http://www.rfc-editor.org/info/rfc7469>.
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 53]
-
-Internet-Draft                    ACME                      October 2015
-
 
    [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
               Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
@@ -3006,6 +3018,14 @@ Internet-Draft                    ACME                      October 2015
               DOI 10.17487/RFC3552, July 2003,
               <http://www.rfc-editor.org/info/rfc3552>.
 
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 54]
+
+Internet-Draft                    ACME                      October 2015
+
+
    [W3C.CR-cors-20130129]
               Kesteren, A., "Cross-Origin Resource Sharing", World Wide
               Web Consortium CR CR-cors-20130129, January 2013,
@@ -3016,15 +3036,6 @@ Internet-Draft                    ACME                      October 2015
               Wide Web Consortium WD WD-capability-urls-20140218,
               February 2014,
               <http://www.w3.org/TR/2014/WD-capability-urls-20140218>.
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 54]
-
-Internet-Draft                    ACME                      October 2015
-
 
 Authors' Addresses
 
@@ -3044,17 +3055,6 @@ Authors' Addresses
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
-
-
-
-
-
-
 
 
 
