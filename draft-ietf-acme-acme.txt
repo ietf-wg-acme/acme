@@ -874,7 +874,8 @@ Internet-Draft                    ACME                      October 2015
 
    ACME uses different URIs for different management functions.  Each
    function is listed in a directory along with its corresponding URI,
-   so clients only need to be configured with the directory URI.
+   so clients only need to be configured with the directory URI.  These
+   URIs are connected by a few different link relations [RFC5988].
 
    The "up" link relation is used with challenge resources to indicate
    the authorization resource to which a challenge belongs.  It is also
@@ -889,7 +890,6 @@ Internet-Draft                    ACME                      October 2015
    an ACME server.  The solid lines indicate link relations, and the
    dotted lines correspond to relationships expressed in other ways,
    e.g., the Location header in a 201 (Created) response.
-
 
 
 
