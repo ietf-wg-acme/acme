@@ -849,7 +849,7 @@ In this case the server reply MUST contain the same link headers sent for a
 new registration, to allow a client to retrieve the "new-authorization" and
 "terms-of-service" URI
 
-## Account Key Roll-over
+### Account Key Roll-over
 
 A client may wish to change the public key that is associated with a
 registration, e.g., in order to mitigate the risk of key compromise.  To do
@@ -905,7 +905,7 @@ successful, then the server responds with an error status code and a problem
 document describing the error.
 
 
-## Account Recovery
+### Account Recovery
 
 Once a client has created an account with an ACME server, it is possible that
 the private key for the account will be lost.  The recovery contacts included in
@@ -997,6 +997,46 @@ If the recovery process has succeeded, then the server will send a 200 (OK)
 response, containing the full registration object, with any necessary
 information copied from the old registration).  The client may now use this in
 the same way as if he had gotten it from a new-registration transaction.
+
+### Deleting an Account
+
+If a client no longer wishes to have an account key registered with the server,
+it may request that the server delete its account by sending a POST request to
+the account URI containing the "delete" field.
+
+delete (required, boolean):
+The boolean value "true".
+
+The request object MUST contain the "resource" field as required above(with the
+value "reg").  It MUST NOT contain any fields besides "resource" and "delete".
+
+Note that although this object is very simple, the risk of replay or fraudulent
+generation via signing oracles is mitigated by the need for an anti-replay
+token in the protected header of the JWS.
+
+~~~~~~~~~~
+POST /acme/reg/asdf HTTP/1.1
+Host: example.com
+
+{
+  "resource": "reg",
+  "delete": true,
+}
+/* Signed as JWS */
+~~~~~~~~~~
+
+On receiving a POST to an account URI containing a "delete" field, the server
+MUST verify that no other fields were sent in the object (other than
+"resource"), and it MUST verify that the value of the "delete" field is "true"
+(as a boolean, not a string).  If either of these checks fails, then the server
+MUST reject the request with status code 400 (Bad Request).
+
+If the server accepts the deletion request, then it MUST delete the account and
+all related objects and send a response with a 200 (OK) status code and an empty
+body.  The server SHOULD delete any authorization objects related to the deleted
+account, since they can no longer be used.  The server SHOULD NOT delete
+certificate objects related to the account, since certificates issued under the
+account continue to be valid until they expire or are revoked.
 
 ## Identifier Authorization
 
@@ -1090,11 +1130,14 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 }
 ~~~~~~~~~~
 
-The client needs to respond with information to complete the challenges.  To do
-this, the client updates the authorization object received from the server by
-filling in any required information in the elements of the "challenges"
-dictionary.  (This is also the stage where the client should perform any
-actions required by the challenge.)
+### Responding to Challenges
+
+To prove control of the identifer and receive authorization, the client needs to
+respond with information to complete the challenges.  To do this, the client
+updates the authorization object received from the server by filling in any
+required information in the elements of the "challenges" dictionary.  (This is
+also the stage where the client should perform any actions required by the
+challenge.)
 
 The client sends these updates back to the server in the form of a JSON object
 with the response fields required by the challenge type, carried in a POST
@@ -1178,6 +1221,28 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
+### Deleting an Authorization
+
+If a client wishes to relinquish its authorization to issue certificates for an
+identifier, then it may request that the server delete the authorization.  The
+client makes this request by sending a POST request to the authorization URI
+containing a payload in the same format as in {{deleting-an-account}}.  The only
+difference is that the value of the "resource" field is "authz".
+
+~~~~~~~~~~
+POST /acme/authz/asdf HTTP/1.1
+Host: example.com
+
+{
+  "resource": "authz",
+  "delete": true,
+}
+/* Signed as JWS */
+~~~~~~~~~~
+
+The server MUST perform the same validity checks as in {{deleting-an-account}}
+and reject the request if they fail.  If the server deletes the account then it
+MUST send a response with a 200 (OK) status code and an empty body.
 
 ## Certificate Issuance
 
