@@ -213,7 +213,7 @@ a prior registration transaction.
 
 ACME messaging is based on HTTPS [RFC2818] and JSON [RFC7159].
 
-Binary fields are encoded using Base64url encoding described in
+Binary fields are encoded using base64url encoding described in
 [RFC4648] Section 5, according to the profile specified in JSON Web
 Signature [RFC7515] Section 2. This encoding uses a URL safe
 character set. Trailing '=' characters MUST be stripped.
@@ -1338,7 +1338,7 @@ the ACME server's revoke-cert URI.  The body of the POST is a JWS object whose
 JSON payload contains the certificate to be revoked:
 
 certificate (required, string):
-: The certificate to be revoked, in the Base64url-encoded version of the DER
+: The certificate to be revoked, in the base64url-encoded version of the DER
 format.  (Note: This field uses the same modified Base64 encoding rules used
 elsewhere in this document, so it is different from PEM.)
 
@@ -1501,7 +1501,7 @@ An example of how to compute a JWK thumbprint can be found in Section 3.1 of
 representation of the RSA public key parameters N and E, in order to avoid
 ambiguity with regard to the sign of the number.  As noted in JWA {{RFC7518}}, a
 JWK object MUST NOT include this zero octet.  That is, any initial zero octets
-MUST be stripped before the values are Base64url-encoded.
+MUST be stripped before the values are base64url-encoded.
 
 ## HTTP
 
@@ -1522,7 +1522,8 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
+It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST
+NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
 {
@@ -1619,7 +1620,8 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
+It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST
+NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
 {
@@ -1722,7 +1724,7 @@ type (required, string):
 : The string "proof-of-possession-01"
 
 certs (optional, array of string):
-: An array of certificates, in Base64url-encoded DER format, that contain
+: An array of certificates, in base64url-encoded DER format, that contain
 acceptable public keys.
 
 
@@ -1822,7 +1824,8 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
+It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST
+NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
 {
