@@ -128,15 +128,15 @@ Internet-Draft                    ACME                      October 2015
    11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  52
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  52
      12.1.  Normative References . . . . . . . . . . . . . . . . . .  52
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  55
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  54
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  55
 
 1.  Introduction
 
-   Certificates in the Web PKI are most commonly used to authenticate
-   domain names.  Thus, certificate authorities in the Web PKI are
-   trusted to verify that an applicant for a certificate legitimately
-   represents the domain name(s) in the certificate.
+   Certificates in the Web PKI [RFC5280] are most commonly used to
+   authenticate domain names.  Thus, certificate authorities in the Web
+   PKI are trusted to verify that an applicant for a certificate
+   legitimately represents the domain name(s) in the certificate.
 
    Existing Web PKI certificate authorities tend to run on a set of ad
    hoc protocols for certificate issuance and identity verification.  A
@@ -2932,24 +2932,9 @@ Internet-Draft                    ACME                      October 2015
               Timestamps", RFC 3339, DOI 10.17487/RFC3339, July 2002,
               <http://www.rfc-editor.org/info/rfc3339>.
 
-   [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
-              Resource Identifier (URI): Generic Syntax", STD 66,
-              RFC 3986, DOI 10.17487/RFC3986, January 2005,
-              <http://www.rfc-editor.org/info/rfc3986>.
-
-   [RFC4514]  Zeilenga, K., Ed., "Lightweight Directory Access Protocol
-              (LDAP): String Representation of Distinguished Names",
-              RFC 4514, DOI 10.17487/RFC4514, June 2006,
-              <http://www.rfc-editor.org/info/rfc4514>.
-
    [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <http://www.rfc-editor.org/info/rfc4648>.
-
-   [RFC5226]  Narten, T. and H. Alvestrand, "Guidelines for Writing an
-              IANA Considerations Section in RFCs", BCP 26, RFC 5226,
-              DOI 10.17487/RFC5226, May 2008,
-              <http://www.rfc-editor.org/info/rfc5226>.
 
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
@@ -2961,19 +2946,6 @@ Internet-Draft                    ACME                      October 2015
               Infrastructure Certificate and Certificate Revocation List
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <http://www.rfc-editor.org/info/rfc5280>.
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 53]
-
-Internet-Draft                    ACME                      October 2015
-
-
-   [RFC5753]  Turner, S. and D. Brown, "Use of Elliptic Curve
-              Cryptography (ECC) Algorithms in Cryptographic Message
-              Syntax (CMS)", RFC 5753, DOI 10.17487/RFC5753, January
-              2010, <http://www.rfc-editor.org/info/rfc5753>.
 
    [RFC5988]  Nottingham, M., "Web Linking", RFC 5988,
               DOI 10.17487/RFC5988, October 2010,
@@ -2988,6 +2960,15 @@ Internet-Draft                    ACME                      October 2015
               and D. Orchard, "URI Template", RFC 6570,
               DOI 10.17487/RFC6570, March 2012,
               <http://www.rfc-editor.org/info/rfc6570>.
+
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 53]
+
+Internet-Draft                    ACME                      October 2015
+
 
    [RFC6844]  Hallam-Baker, P. and R. Stradling, "DNS Certification
               Authority Authorization (CAA) Resource Record", RFC 6844,
@@ -3018,21 +2999,9 @@ Internet-Draft                    ACME                      October 2015
               DOI 10.17487/RFC7518, May 2015,
               <http://www.rfc-editor.org/info/rfc7518>.
 
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 54]
-
-Internet-Draft                    ACME                      October 2015
-
-
    [RFC7638]  Jones, M. and N. Sakimura, "JSON Web Key (JWK)
               Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
               2015, <http://www.rfc-editor.org/info/rfc7638>.
-
-   [SEC1]     Standards for Efficient Cryptography Group, "SEC 1:
-              Elliptic Curve Cryptography", May 2009,
-              <http://www.secg.org/sec1-v2.pdf>.
 
 12.2.  Informative References
 
@@ -3049,6 +3018,13 @@ Internet-Draft                    ACME                      October 2015
               Text on Security Considerations", BCP 72, RFC 3552,
               DOI 10.17487/RFC3552, July 2003,
               <http://www.rfc-editor.org/info/rfc3552>.
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 54]
+
+Internet-Draft                    ACME                      October 2015
+
 
    [W3C.CR-cors-20130129]
               Kesteren, A., "Cross-Origin Resource Sharing", World Wide
@@ -3073,13 +3049,6 @@ Authors' Addresses
    EFF
 
    Email: jsha@eff.org
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 55]
-
-Internet-Draft                    ACME                      October 2015
 
 
    James Kasten
@@ -3108,29 +3077,4 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 56]
+Barnes, et al.            Expires April 6, 2016                [Page 55]
