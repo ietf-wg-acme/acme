@@ -2170,17 +2170,17 @@ with random SNI values within the namespace used for the TLS-based challenge
 
 ## Use of DNSSEC Resolvers
 
-An ACME-based CA needs to make DNS lookups when processing challenges. Because
-the security of an ACME-based CA ultimately depends entirely on the
+When validating control of DNS identifiers, an ACME-based CA needs to make DNS
+queries. Because the security of such validations ultimately depends on the
 authenticity of DNS data, every possible precaution should be taken to secure
-such lookups. It is therefore RECOMMENDED that ACME-based CAs make all DNS
-resolutions via DNSSEC-validating stub or recursive resolvers. This provides
+DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make
+all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides
 additional protection to domains which choose to make use of DNSSEC.
 
 An ACME-based CA must use only a resolver if it trusts the resolver and every
 component of the network route by which it is accessed. It is therefore
 RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
-within their trusted network and use these resolvers both for all CAA record
+within their trusted network and use these resolvers both for both CAA record
 lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
 TXT, etc.).
 
