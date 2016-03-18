@@ -1614,7 +1614,7 @@ reconfigured server and verifying a particular challenge certificate is
 presented.
 
 type (required, string):
-: The string "tls-sni-01"
+: The string "tls-sni-02"
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
@@ -1623,28 +1623,34 @@ It MUST NOT contain any characters outside the URL-safe Base64 alphabet.
 
 ~~~~~~~~~~
 {
-  "type": "tls-sni-01",
+  "type": "tls-sni-02",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by constructing a key authorization from
-the "token" value provided in the challenge and the client's account key.  The
-client computes the SHA-256 digest Z of the UTF8-encoded key
-authorization, and encodes Z in UTF-8 lower-case hexadecimal form.
+A client responds to this challenge by constructing a self-signed certificate
+which the client MUST provision at the domain name concerned in order to pass
+the challenge.
 
-The client generates a self-signed certificate with a
-single subjectAlternativeName extension dNSName that is
-"\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid", where "Z[0:32]" and "Z[32:64]"
-represent the first 32 and last 32 characters of the hex-encoded value,
-respectively (following the notation used in Python).  The client then
-configures the TLS server at the domain such that when a handshake is initiated
-with the Server Name Indication extension set to
-"\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid", the corresponding generated
-certificate is presented.
+The certificate may be constructed arbitrarily, except that each certificate
+MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be
+dNSNames.
 
-The response to the TLS SNI challenge simply acknowledges that the client is ready
-to fulfill this challenge.
+SAN A MUST be constructed as follows: compute the SHA-256 digest of the
+UTF-8-encoded challenge token and encode it in lowercase hexadecimal form.  The
+dNSName is "x.y.token.acme.invalid", where x is the first half of the
+hexadecimal representation and y is the second half.
+
+SAN B MUST be constructed as follows: compute the SHA-256 digest of
+the UTF-8 encoded key authorization and encode it in lowercase hexadecimal
+form. The dNSName is "x.y.ka.acme.invalid" where x is the first half of the
+hexadecimal representation and y is the second half.
+
+The client MUST ensure that the certificate is served to TLS connections
+specifying a Server Name Indication (SNI) value of SAN A.
+
+The response to the TLS-SNI challenge simply acknowledges that the client is
+ready to fulfill this challenge.
 
 keyAuthorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
@@ -1666,14 +1672,19 @@ Given a Challenge/Response pair, the ACME server verifies the client's control
 of the domain by verifying that the TLS server was configured appropriately,
 using these steps:
 
-1. Compute the Z-value from the key authorization in the same way as the client.
+1. Compute SAN A and SAN B in the same way as the client.
 2. Open a TLS connection to the domain name being validated on the requested
-   port, presenting the value "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid" in the
-   SNI field (where the comparison is case-insensitive).
-3. Verify that the certificate contains a subjectAltName extension with the
-   dNSName of "\<Z[0:32]\>.\<Z[32:64]\>.acme.invalid", and that no other dNSName
-   entries of the form "*.acme.invalid" are present in the subjectAltName
-   extension.
+   port, presenting SAN A in the SNI field.
+
+   The server MUST request the certificate using an SNI value of SAN A.
+
+   The server SHOULD ensure that it does not reveal SAN B in any way when
+   making the TLS connection, such that the presentation of SAN B in the
+   returned certificate proves association with the client.
+
+3. Verify that the certificate contains a subjectAltName extension containing
+   dNSName entries of SAN A and SAN B and no other entries.
+   The comparison MUST be insensitive to case and ordering of names.
 
 It is RECOMMENDED that the ACME server validation TLS connections from multiple
 vantage points to reduce the risk of DNS hijacking attacks.
@@ -2156,7 +2167,7 @@ hosting platform to terminate the TLS connection.  However, some hosting
 platforms will choose a virtual host to be the "default", and route connections
 with unknown SNI values to that host.
 
-In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., "tls-sni-01")
+In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., "tls-sni-02")
 for any domain with an A record that points to the hosting platform.  This could
   result in mis-issuance in cases where there are multiple hosts with different
   owners resident on the hosting platform.
@@ -2166,7 +2177,7 @@ whether a domain is hosted on a domain with a default virtual host before
 allowing an authorization request for this host to use a TLS-based challenge.
 A default virtual host can be detected by initiating TLS connections to the host
 with random SNI values within the namespace used for the TLS-based challenge
-(the "acme.invalid" namespace for "tls-sni-01").
+(the "acme.invalid" namespace for "tls-sni-02").
 
 ## Use of DNSSEC Resolvers
 
