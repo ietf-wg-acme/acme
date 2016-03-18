@@ -1318,7 +1318,7 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
 
 <dl>
   <dt>address (optional, string):</dt>
-  <dd style="margin-left: 8">An IPv4 or IPv6 address which, if given, MUST be included in the set of IP addresses to which the domain name resolves.  If given, the server will connect to that specific IP address instead of arbitrarily choosing an IP from the set of A and AAAA records to which the domain name resolves.  If the field is given but equal to <samp>"peer"</samp>, the server MUST treat the field as if it contained the IP address from which the response was received.</dd>
+  <dd style="margin-left: 8">An IPv4 or IPv6 address which, in dotted decimal form or <a href="#RFC4291">[RFC4291]</a> form, respectively.  If given, this address MUST be included in the set of IP addresses to which the domain name resolves.  If given, the server SHOULD connect to that specific IP address instead of arbitrarily choosing an IP from the set of A and AAAA records to which the domain name resolves.</dd>
 </dl>
 <pre>
 {
@@ -1696,6 +1696,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
         <b id="RFC3339">[RFC3339]</b>
       </td>
       <td class="top"><a>Klyne, G.</a> and <a>C. Newman</a>, "<a href="http://tools.ietf.org/html/rfc3339">Date and Time on the Internet: Timestamps</a>", RFC 3339, DOI 10.17487/RFC3339, July 2002.</td>
+    </tr>
+    <tr>
+      <td class="reference">
+        <b id="RFC4291">[RFC4291]</b>
+      </td>
+      <td class="top"><a>Hinden, R.</a> and <a>S. Deering</a>, "<a href="http://tools.ietf.org/html/rfc4291">IP Version 6 Addressing Architecture</a>", RFC 4291, DOI 10.17487/RFC4291, February 2006.</td>
     </tr>
     <tr>
       <td class="reference">
