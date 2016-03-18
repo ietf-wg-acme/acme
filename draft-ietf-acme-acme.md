@@ -33,13 +33,9 @@ normative:
   RFC2985:
   RFC2986:
   RFC3339:
-  RFC3986:
-  RFC4514:
   RFC4648:
-  RFC5226:
   RFC5246:
   RFC5280:
-  RFC5753:
   RFC5988:
   RFC6066:
   RFC6570:
@@ -52,12 +48,6 @@ normative:
   RFC7518:
   RFC7638:
   I-D.ietf-appsawg-http-problem:
-  SEC1:
-    target: http://www.secg.org/sec1-v2.pdf
-    title: "SEC 1: Elliptic Curve Cryptography"
-    author:
-      organization: Standards for Efficient Cryptography Group
-    date: 2009-05-01
 
 informative:
   RFC2818:
@@ -92,10 +82,10 @@ discussed on the ACME mailing list (acme@ietf.org).
 
 # Introduction
 
-Certificates in the Web PKI are most commonly used to authenticate domain names.
-Thus, certificate authorities in the Web PKI are trusted to verify that an
-applicant for a certificate legitimately represents the domain name(s) in the
-certificate.
+Certificates in the Web PKI {{RFC5280}} are most commonly used to authenticate
+domain names.  Thus, certificate authorities in the Web PKI are trusted to
+verify that an applicant for a certificate legitimately represents the domain
+name(s) in the certificate.
 
 Existing Web PKI certificate authorities tend to run on a set of ad hoc
 protocols for certificate issuance and identity verification.  A typical user
