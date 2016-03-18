@@ -637,7 +637,8 @@ information, such as contact information, is stored in registration resources.
 
 ACME uses different URIs for different management functions. Each function is
 listed in a directory along with its corresponding URI, so clients only need to
-be configured with the directory URI.
+be configured with the directory URI.  These URIs are connected by a few
+different link relations {{RFC5988}}.
 
 The "up" link relation is used with challenge resources to indicate the
 authorization resource to which a challenge belongs.  It is also used from
