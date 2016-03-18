@@ -899,6 +899,11 @@ If all of these checks pass, then the server updates the registration by
 replacing the old account key with the public key carried in the "jwk" header
 parameter of the "newKey" JWS object.
 
+If the update was successful, then the server sends a response with status code
+200 (OK) and the updated registration object as its body.  If the update was not
+successful, then the server responds with an error status code and a problem
+document describing the error.
+
 
 ## Account Recovery
 
