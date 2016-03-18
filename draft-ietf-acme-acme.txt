@@ -96,16 +96,16 @@ Table of Contents
      6.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  15
      6.2.  Directory . . . . . . . . . . . . . . . . . . . . . . . .  17
      6.3.  Registration  . . . . . . . . . . . . . . . . . . . . . .  19
-     6.4.  Account Key Roll-over . . . . . . . . . . . . . . . . . .  21
-     6.5.  Account Recovery  . . . . . . . . . . . . . . . . . . . .  22
-     6.6.  Identifier Authorization  . . . . . . . . . . . . . . . .  24
-     6.7.  Certificate Issuance  . . . . . . . . . . . . . . . . . .  28
-     6.8.  Certificate Revocation  . . . . . . . . . . . . . . . . .  32
-   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  33
-     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  35
-     7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  36
-     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  38
-     7.4.  Proof of Possession of a Prior Key  . . . . . . . . . . .  40
+       6.3.1.  Account Key Roll-over . . . . . . . . . . . . . . . .  21
+       6.3.2.  Account Recovery  . . . . . . . . . . . . . . . . . .  22
+       6.3.3.  Deleting an Account . . . . . . . . . . . . . . . . .  24
+     6.4.  Identifier Authorization  . . . . . . . . . . . . . . . .  25
+       6.4.1.  Responding to Challenges  . . . . . . . . . . . . . .  27
+       6.4.2.  Deleting an Authorization . . . . . . . . . . . . . .  29
+     6.5.  Certificate Issuance  . . . . . . . . . . . . . . . . . .  30
+     6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  33
+   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  34
+     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  36
 
 
 
@@ -114,22 +114,25 @@ Barnes, et al.            Expires April 6, 2016                 [Page 2]
 Internet-Draft                    ACME                      October 2015
 
 
-     7.5.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  42
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  44
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  44
-     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  45
-     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  46
-     9.3.  Preventing Authorization Hijacking  . . . . . . . . . . .  48
-     9.4.  Denial-of-Service Considerations  . . . . . . . . . . . .  49
-     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  50
-   10. Operational Considerations  . . . . . . . . . . . . . . . . .  51
-     10.1.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  51
-     10.2.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  51
-   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  52
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  52
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  52
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  54
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  55
+     7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  37
+     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  39
+     7.4.  Proof of Possession of a Prior Key  . . . . . . . . . . .  41
+     7.5.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  43
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  45
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  45
+     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  46
+     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  47
+     9.3.  Preventing Authorization Hijacking  . . . . . . . . . . .  49
+     9.4.  Denial-of-Service Considerations  . . . . . . . . . . . .  50
+     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  51
+   10. Operational Considerations  . . . . . . . . . . . . . . . . .  52
+     10.1.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  52
+     10.2.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  52
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  53
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  53
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  53
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  55
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  56
 
 1.  Introduction
 
@@ -158,9 +161,6 @@ Internet-Draft                    ACME                      October 2015
          e-mail address corresponding to the domain and then respond to
          it on the CA's web page.
 
-   o  Download the issued certificate and install it on their Web
-      Server.
-
 
 
 
@@ -169,6 +169,9 @@ Barnes, et al.            Expires April 6, 2016                 [Page 3]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   o  Download the issued certificate and install it on their Web
+      Server.
 
    With the exception of the CSR itself and the certificates that are
    issued, these are all completely ad hoc procedures and are
@@ -216,9 +219,6 @@ Internet-Draft                    ACME                      October 2015
    process can be represented and performed by Internet protocols with
    no out-of-band human intervention.
 
-   When deploying a current HTTPS server, an operator generally gets a
-   prompt to generate a self-signed certificate.  When an operator
-
 
 
 Barnes, et al.            Expires April 6, 2016                 [Page 4]
@@ -226,6 +226,8 @@ Barnes, et al.            Expires April 6, 2016                 [Page 4]
 Internet-Draft                    ACME                      October 2015
 
 
+   When deploying a current HTTPS server, an operator generally gets a
+   prompt to generate a self-signed certificate.  When an operator
    deploys an ACME-compatible web server, the experience would be
    something like this:
 
@@ -271,8 +273,6 @@ Internet-Draft                    ACME                      October 2015
    such as issuance or revocation.  An ACME client therefore typically
    runs on a web server, mail server, or some other server system which
    requires valid TLS certificates.  The ACME server runs at a
-   certificate authority, and responds to client requests, performing
-   the requested actions if the client is authorized.
 
 
 
@@ -281,6 +281,9 @@ Barnes, et al.            Expires April 6, 2016                 [Page 5]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   certificate authority, and responds to client requests, performing
+   the requested actions if the client is authorized.
 
    For simplicity, in all HTTPS transactions used by ACME, the ACME
    client is the HTTPS client and the ACME server is the HTTPS server.
@@ -327,9 +330,6 @@ Internet-Draft                    ACME                      October 2015
    a set of JSON messages carried over HTTPS.  In some ways, ACME
    functions much like a traditional CA, in which a user creates an
    account, adds identifiers to that account (proving control of the
-   domains), and requests certificate issuance for those domains while
-   logged in to the account.
-
 
 
 
@@ -337,6 +337,9 @@ Barnes, et al.            Expires April 6, 2016                 [Page 6]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   domains), and requests certificate issuance for those domains while
+   logged in to the account.
 
    In ACME, the account is represented by an account key pair.  The "add
    a domain" function is accomplished by authorizing the key pair for a
@@ -383,9 +386,6 @@ Internet-Draft                    ACME                      October 2015
    name, or to provision a file on a web server referenced by an A or
    AAAA record under that name.  The server would then query the DNS for
    the record in question, or send an HTTP request for the file.  If the
-   client provisioned the DNS or the web server as expected, then the
-   server considers the client authorized for the domain name.
-
 
 
 
@@ -393,6 +393,9 @@ Barnes, et al.            Expires April 6, 2016                 [Page 7]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   client provisioned the DNS or the web server as expected, then the
+   server considers the client authorized for the domain name.
 
          Client                                                  Server
 
@@ -435,12 +438,9 @@ Internet-Draft                    ACME                      October 2015
    request, signed with an authorized key pair, and the server indicates
    whether the request has succeeded.
 
-         Client                                                 Server
 
-         Revocation request
-         Signature                    -------->
 
-                                      <--------                 Result
+
 
 
 
@@ -449,6 +449,13 @@ Barnes, et al.            Expires April 6, 2016                 [Page 8]
 
 Internet-Draft                    ACME                      October 2015
 
+
+         Client                                                 Server
+
+         Revocation request
+         Signature                    -------->
+
+                                      <--------                 Result
 
    Note that while ACME is defined with enough flexibility to handle
    different types of identifiers in principle, the primary use case
@@ -491,13 +498,6 @@ Internet-Draft                    ACME                      October 2015
    wrong type, each request object MUST have a "resource" field that
    indicates what type of resource the request is addressed to, as
    defined in the below table:
-
-
-
-
-
-
-
 
 
 
@@ -645,7 +645,7 @@ Internet-Draft                    ACME                      October 2015
    qualified domain name (type: "dns").  The value of the identifier
    MUST be the ASCII representation of the domain name.  Wildcard domain
    names (with "*" as the first label) MUST NOT be included in
-   authorization requests.  See Section 6.7 below for more information
+   authorization requests.  See Section 6.5 below for more information
    about wildcard domains.
 
    {
@@ -1144,7 +1144,7 @@ Internet-Draft                    ACME                      October 2015
    registration, to allow a client to retrieve the "new-authorization"
    and "terms-of-service" URI
 
-6.4.  Account Key Roll-over
+6.3.1.  Account Key Roll-over
 
    A client may wish to change the public key that is associated with a
    registration, e.g., in order to mitigate the risk of key compromise.
@@ -1211,7 +1211,7 @@ Internet-Draft                    ACME                      October 2015
    If the update was not successful, then the server responds with an
    error status code and a problem document describing the error.
 
-6.5.  Account Recovery
+6.3.2.  Account Recovery
 
    Once a client has created an account with an ACME server, it is
    possible that the private key for the account will be lost.  The
@@ -1323,7 +1323,58 @@ Internet-Draft                    ACME                      October 2015
    may now use this in the same way as if he had gotten it from a new-
    registration transaction.
 
-6.6.  Identifier Authorization
+6.3.3.  Deleting an Account
+
+   If a client no longer wishes to have an account key registered with
+   the server, it may request that the server delete its account by
+   sending a POST request to the account URI containing the "delete"
+   field.
+
+   delete (required, boolean): The boolean value "true".
+
+   The request object MUST contain the "resource" field as required
+   above(with the value "reg").  It MUST NOT contain any fields besides
+   "resource" and "delete".
+
+
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 24]
+
+Internet-Draft                    ACME                      October 2015
+
+
+   Note that although this object is very simple, the risk of replay or
+   fraudulent generation via signing oracles is mitigated by the need
+   for an anti-replay token in the protected header of the JWS.
+
+   POST /acme/reg/asdf HTTP/1.1
+   Host: example.com
+
+   {
+     "resource": "reg",
+     "delete": true,
+   }
+   /* Signed as JWS */
+
+   On receiving a POST to an account URI containing a "delete" field,
+   the server MUST verify that no other fields were sent in the object
+   (other than "resource"), and it MUST verify that the value of the
+   "delete" field is "true" (as a boolean, not a string).  If either of
+   these checks fails, then the server MUST reject the request with
+   status code 400 (Bad Request).
+
+   If the server accepts the deletion request, then it MUST delete the
+   account and all related objects and send a response with a 200 (OK)
+   status code and an empty body.  The server SHOULD delete any
+   authorization objects related to the deleted account, since they can
+   no longer be used.  The server SHOULD NOT delete certificate objects
+   related to the account, since certificates issued under the account
+   continue to be valid until they expire or are revoked.
+
+6.4.  Identifier Authorization
 
    The identifier authorization process establishes the authorization of
    an account to manage certificates for a given identifier.  This
@@ -1338,19 +1389,19 @@ Internet-Draft                    ACME                      October 2015
    As illustrated by the figure in the overview section above, the
    authorization process proceeds in two phases.  The client first
    requests a new authorization, and the server issues challenges, then
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 24]
-
-Internet-Draft                    ACME                      October 2015
-
-
    the client responds to those challenges and the server validates the
    client's responses.
 
    To begin the key authorization process, the client sends a POST
    request to the server's new-authorization resource.  The body of the
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 25]
+
+Internet-Draft                    ACME                      October 2015
+
+
    POST request MUST contain a JWS object, whose payload is a partial
    authorization object.  This JWS object MUST contain only the
    "identifier" field, so that the server knows what identifier is being
@@ -1395,16 +1446,17 @@ Internet-Draft                    ACME                      October 2015
 
    o  The "expires" field MUST be absent.
 
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 25]
-
-Internet-Draft                    ACME                      October 2015
-
-
    The server allocates a new URI for this authorization, and returns a
    201 (Created) response, with the authorization URI in a Location
    header field, and the JSON authorization object in the body.
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 26]
+
+Internet-Draft                    ACME                      October 2015
+
 
    HTTP/1.1 201 Created
    Content-Type: application/json
@@ -1436,12 +1488,14 @@ Internet-Draft                    ACME                      October 2015
      "combinations": [[0], [1]]
    }
 
-   The client needs to respond with information to complete the
-   challenges.  To do this, the client updates the authorization object
-   received from the server by filling in any required information in
-   the elements of the "challenges" dictionary.  (This is also the stage
-   where the client should perform any actions required by the
-   challenge.)
+6.4.1.  Responding to Challenges
+
+   To prove control of the identifer and receive authorization, the
+   client needs to respond with information to complete the challenges.
+   To do this, the client updates the authorization object received from
+   the server by filling in any required information in the elements of
+   the "challenges" dictionary.  (This is also the stage where the
+   client should perform any actions required by the challenge.)
 
    The client sends these updates back to the server in the form of a
    JSON object with the response fields required by the challenge type,
@@ -1449,17 +1503,16 @@ Internet-Draft                    ACME                      October 2015
    or the new-authorization URI).  This allows the client to send
    information only for challenges it is responding to.
 
+   For example, if the client were to respond to the "http-01" challenge
+   in the above authorization, it would send the following request:
 
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 26]
+Barnes, et al.            Expires April 6, 2016                [Page 27]
 
 Internet-Draft                    ACME                      October 2015
 
-
-   For example, if the client were to respond to the "http-01" challenge
-   in the above authorization, it would send the following request:
 
    POST /acme/authz/asdf/0 HTTP/1.1
    Host: example.com
@@ -1506,17 +1559,16 @@ Internet-Draft                    ACME                      October 2015
 
    To check on the status of an authorization, the client sends a GET
    request to the authorization URI, and the server responds with the
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 27]
-
-Internet-Draft                    ACME                      October 2015
-
-
    current authorization object.  In responding to poll requests while
    the validation is still in progress, the server MUST return a 202
    (Accepted) response with a Retry-After header field.
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 28]
+
+Internet-Draft                    ACME                      October 2015
+
 
    GET /acme/authz/asdf HTTP/1.1
    Host: example.com
@@ -1543,7 +1595,38 @@ Internet-Draft                    ACME                      October 2015
      ]
    }
 
-6.7.  Certificate Issuance
+6.4.2.  Deleting an Authorization
+
+   If a client wishes to relinquish its authorization to issue
+   certificates for an identifier, then it may request that the server
+   delete the authorization.  The client makes this request by sending a
+   POST request to the authorization URI containing a payload in the
+   same format as in Section 6.3.3.  The only difference is that the
+   value of the "resource" field is "authz".
+
+   POST /acme/authz/asdf HTTP/1.1
+   Host: example.com
+
+   {
+     "resource": "authz",
+     "delete": true,
+   }
+   /* Signed as JWS */
+
+   The server MUST perform the same validity checks as in Section 6.3.3
+   and reject the request if they fail.  If the server deletes the
+   account then it MUST send a response with a 200 (OK) status code and
+   an empty body.
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 29]
+
+Internet-Draft                    ACME                      October 2015
+
+
+6.5.  Certificate Issuance
 
    The holder of an authorized key pair for an identifier may use ACME
    to request that a certificate be issued for that identifier.  The
@@ -1562,13 +1645,6 @@ Internet-Draft                    ACME                      October 2015
 
    notBefore (optional, string):  The requested value of the notBefore
       field in the certificate, in the date format defined in [RFC3339]
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 28]
-
-Internet-Draft                    ACME                      October 2015
-
 
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339]
@@ -1598,6 +1674,14 @@ Internet-Draft                    ACME                      October 2015
 
    It is up to the server's local policy to decide which names are
    acceptable in a certificate, given the authorizations that the server
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 30]
+
+Internet-Draft                    ACME                      October 2015
+
+
    associates with the client's account key.  A server MAY consider a
    client authorized for a wildcard domain if it is authorized for the
    underlying domain name (without the "*" label).  Servers SHOULD NOT
@@ -1618,14 +1702,6 @@ Internet-Draft                    ACME                      October 2015
    provided in the body of the response.  If the CA has not yet issued
    the certificate, the body of this response will be empty.  The client
    should then send a GET request to the certificate URI to poll for the
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 29]
-
-Internet-Draft                    ACME                      October 2015
-
-
    certificate.  As long as the certificate is unavailable, the server
    MUST provide a 202 (Accepted) response and include a Retry-After
    header to indicate when the server believes the certificate will be
@@ -1653,6 +1729,15 @@ Internet-Draft                    ACME                      October 2015
    of the certificate is controlled by the notAfter time in the
    certificate itself.)
 
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 31]
+
+Internet-Draft                    ACME                      October 2015
+
+
    If the CA participates in Certificate Transparency (CT) [RFC6962],
    then they may want to provide the client with a Signed Certificate
    Timestamp (SCT) that can be used to prove that a certificate was
@@ -1661,26 +1746,6 @@ Internet-Draft                    ACME                      October 2015
    The server can also provide the client with direct access to an SCT
    for a certificate using a Link relation header field with relation
    "ct-sct".
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 30]
-
-Internet-Draft                    ACME                      October 2015
-
 
    GET /acme/cert/asdf HTTP/1.1
    Host: example.com
@@ -1722,23 +1787,20 @@ Internet-Draft                    ACME                      October 2015
    parties other than the account key holder, certificate URIs should be
    structured as capability URLs [W3C.WD-capability-urls-20140218].
 
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 32]
+
+Internet-Draft                    ACME                      October 2015
+
+
    From the client's perspective, there is no difference between a
    certificate URI that allows renewal and one that does not.  If the
    client wishes to obtain a renewed certificate, and a GET request to
    the certificate URI does not yield one, then the client may initiate
    a new-certificate transaction to request one.
 
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 31]
-
-Internet-Draft                    ACME                      October 2015
-
-
-6.8.  Certificate Revocation
+6.6.  Certificate Revocation
 
    To request that a certificate be revoked, the client sends a POST
    request to the ACME server's revoke-cert URI.  The body of the POST
@@ -1783,13 +1845,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 32]
+Barnes, et al.            Expires April 6, 2016                [Page 33]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -1845,7 +1901,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 33]
+Barnes, et al.            Expires April 6, 2016                [Page 34]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -1901,7 +1957,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 34]
+Barnes, et al.            Expires April 6, 2016                [Page 35]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -1957,7 +2013,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 35]
+Barnes, et al.            Expires April 6, 2016                [Page 36]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2013,7 +2069,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 36]
+Barnes, et al.            Expires April 6, 2016                [Page 37]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2069,7 +2125,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 37]
+Barnes, et al.            Expires April 6, 2016                [Page 38]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2125,7 +2181,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 38]
+Barnes, et al.            Expires April 6, 2016                [Page 39]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2181,7 +2237,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 39]
+Barnes, et al.            Expires April 6, 2016                [Page 40]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2237,7 +2293,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 40]
+Barnes, et al.            Expires April 6, 2016                [Page 41]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2293,7 +2349,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 41]
+Barnes, et al.            Expires April 6, 2016                [Page 42]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2349,7 +2405,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 42]
+Barnes, et al.            Expires April 6, 2016                [Page 43]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2405,7 +2461,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 43]
+Barnes, et al.            Expires April 6, 2016                [Page 44]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2461,7 +2517,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 44]
+Barnes, et al.            Expires April 6, 2016                [Page 45]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2517,7 +2573,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 45]
+Barnes, et al.            Expires April 6, 2016                [Page 46]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2573,7 +2629,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 46]
+Barnes, et al.            Expires April 6, 2016                [Page 47]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2629,7 +2685,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 47]
+Barnes, et al.            Expires April 6, 2016                [Page 48]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2673,7 +2729,7 @@ Internet-Draft                    ACME                      October 2015
 
 9.3.  Preventing Authorization Hijacking
 
-   The account recovery processes described in Section 6.5 allow
+   The account recovery processes described in Section 6.3.2 allow
    authorization to be transferred from one account key to another, in
    case the former account key pair's private key is lost.  ACME needs
    to prevent these processes from being exploited by an attacker to
@@ -2685,7 +2741,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 48]
+Barnes, et al.            Expires April 6, 2016                [Page 49]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2741,7 +2797,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 49]
+Barnes, et al.            Expires April 6, 2016                [Page 50]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2797,7 +2853,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 50]
+Barnes, et al.            Expires April 6, 2016                [Page 51]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2853,7 +2909,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 51]
+Barnes, et al.            Expires April 6, 2016                [Page 52]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2909,7 +2965,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 52]
+Barnes, et al.            Expires April 6, 2016                [Page 53]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -2965,7 +3021,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 53]
+Barnes, et al.            Expires April 6, 2016                [Page 54]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -3021,7 +3077,7 @@ Internet-Draft                    ACME                      October 2015
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 54]
+Barnes, et al.            Expires April 6, 2016                [Page 55]
 
 Internet-Draft                    ACME                      October 2015
 
@@ -3077,4 +3133,4 @@ Authors' Addresses
 
 
 
-Barnes, et al.            Expires April 6, 2016                [Page 55]
+Barnes, et al.            Expires April 6, 2016                [Page 56]
