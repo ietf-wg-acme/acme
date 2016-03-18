@@ -33,6 +33,7 @@ normative:
   RFC2985:
   RFC2986:
   RFC3339:
+  RFC4291:
   RFC4648:
   RFC5246:
   RFC5280:
@@ -1554,12 +1555,11 @@ In addition, the client MAY advise the server at which IP the challenge is
 provisioned:
 
 address (optional, string):
-: An IPv4 or IPv6 address which, if given, MUST be included in the set of IP
-addresses to which the domain name resolves.  If given, the server will connect
-to that specific IP address instead of arbitrarily choosing an IP from the set
-of A and AAAA records to which the domain name resolves.  If the field is given
-but equal to ``"peer"``, the server MUST treat the field as if it contained the
-IP address from which the response was received.
+: An IPv4 or IPv6 address which, in dotted decimal form or {{RFC4291}} form,
+respectively.  If given, this address MUST be included in the set of IP
+addresses to which the domain name resolves.  If given, the server SHOULD
+connect to that specific IP address instead of arbitrarily choosing an IP from
+the set of A and AAAA records to which the domain name resolves.
 
 ~~~~~~~~~~
 {
