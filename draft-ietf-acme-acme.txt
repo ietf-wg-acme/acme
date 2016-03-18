@@ -105,7 +105,7 @@ Table of Contents
      7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  35
      7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  36
      7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  38
-     7.4.  Proof of Possession of a Prior Key  . . . . . . . . . . .  39
+     7.4.  Proof of Possession of a Prior Key  . . . . . . . . . . .  40
 
 
 
@@ -1976,10 +1976,10 @@ Internet-Draft                    ACME                      October 2015
 
    As a domain may resolve to multiple IPv4 and IPv6 addresses, the
    server will connect to at least one of the hosts found in A and AAAA
-   records, at its discretion.  Because many webservers allocate a
-   default HTTPS virtual host to a particular low-privilege tenant user
-   in a subtle and non-intuitive manner, the challenge must be completed
-   over HTTP, not HTTPS.
+   records.  Because many webservers allocate a default HTTPS virtual
+   host to a particular low-privilege tenant user in a subtle and non-
+   intuitive manner, the challenge must be completed over HTTP, not
+   HTTPS.
 
    type (required, string):  The string "http-01"
 
@@ -2026,6 +2026,18 @@ Internet-Draft                    ACME                      October 2015
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
 
+   In addition, the client MAY advise the server at which IP the
+   challenge is provisioned:
+
+   address (optional, string):  An IPv4 or IPv6 address which, if given,
+      MUST be included in the set of IP addresses to which the domain
+      name resolves.  If given, the server will connect to that specific
+      IP address instead of arbitrarily choosing an IP from the set of A
+      and AAAA records to which the domain name resolves.  If the field
+      is given but equal to ""peer"", the server MUST treat the field as
+      if it contained the IP address from which the response was
+      received.
+
    {
      "keyAuthorization": "evaGxfADs...62jcerQ"
    }
@@ -2050,22 +2062,10 @@ Internet-Draft                    ACME                      October 2015
 
    2.  Verify that the resulting URI is well-formed.
 
-   3.  Dereference the URI using an HTTP GET request.
-
-   4.  Verify that the body of the response is well-formed key
-       authorization.  The server SHOULD ignore whitespace characters at
-       the end of the body.
-
-   5.  Verify that key authorization provided by the server matches the
-       token for this challenge and the client's account key.
-
-   If all of the above verifications succeed, then the validation is
-   successful.  If the request fails, or the body does not pass these
-   checks, then it has failed.
-
-
-
-
+   3.  If the client has supplied an address to use, verify that the
+       address is included in the A or AAAA records to which the domain
+       name resolves.  If the address is not included in the result, the
+       validation fails.
 
 
 
@@ -2073,6 +2073,21 @@ Barnes, et al.            Expires April 6, 2016                [Page 37]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   4.  Dereference the URI using an HTTP GET request.  If an address was
+       supplied by the client, use that address to establish the HTTP
+       connection.
+
+   5.  Verify that the body of the response is well-formed key
+       authorization.  The server SHOULD ignore whitespace characters at
+       the end of the body.
+
+   6.  Verify that key authorization provided by the server matches the
+       token for this challenge and the client's account key.
+
+   If all of the above verifications succeed, then the validation is
+   successful.  If the request fails, or the body does not pass these
+   checks, then it has failed.
 
 7.3.  TLS with Server Name Indication (TLS SNI)
 
@@ -2107,6 +2122,14 @@ Internet-Draft                    ACME                      October 2015
    "<Z[0:32]>.<Z[32:64]>.acme.invalid", where "Z[0:32]" and "Z[32:64]"
    represent the first 32 and last 32 characters of the hex-encoded
    value, respectively (following the notation used in Python).  The
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 38]
+
+Internet-Draft                    ACME                      October 2015
+
+
    client then configures the TLS server at the domain such that when a
    handshake is initiated with the Server Name Indication extension set
    to "<Z[0:32]>.<Z[32:64]>.acme.invalid", the corresponding generated
@@ -2118,17 +2141,6 @@ Internet-Draft                    ACME                      October 2015
    keyAuthorization (required, string):  The key authorization for this
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
-
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 38]
-
-Internet-Draft                    ACME                      October 2015
-
 
    {
      "keyAuthorization": "evaGxfADs...62jcerQ",
@@ -2165,6 +2177,15 @@ Internet-Draft                    ACME                      October 2015
    If all of the above verifications succeed, then the validation is
    successful.  Otherwise, the validation fails.
 
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 39]
+
+Internet-Draft                    ACME                      October 2015
+
+
 7.4.  Proof of Possession of a Prior Key
 
    The Proof of Possession challenge verifies that a client possesses a
@@ -2178,14 +2199,6 @@ Internet-Draft                    ACME                      October 2015
 
    This method is useful if a server policy calls for issuing a
    certificate only to an entity that already possesses the subject
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 39]
-
-Internet-Draft                    ACME                      October 2015
-
-
    private key of a particular prior related certificate (perhaps issued
    by a different CA).  It may also help enable other kinds of server
    policy that are related to authenticating a client's identity using
@@ -2220,6 +2233,15 @@ Internet-Draft                    ACME                      October 2015
 
    type (required, string):  The string "proof-of-possession"
 
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 40]
+
+Internet-Draft                    ACME                      October 2015
+
+
    identifiers (required, identifier):  A list of identifiers for which
       the holder of the prior key authorizes the new key
 
@@ -2234,14 +2256,6 @@ Internet-Draft                    ACME                      October 2015
    This JWS is NOT REQUIRED to have a "nonce" header parameter (as with
    the JWS objects that carry ACME request objects).  This allows proof-
    of-possession response objects to be computed off-line.  For example,
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 40]
-
-Internet-Draft                    ACME                      October 2015
-
-
    as part of a domain transfer, the new domain owner might require the
    old domain owner to sign a proof-of-possession validation object, so
    that the new domain owner can present that in an ACME transaction
@@ -2277,6 +2291,13 @@ Internet-Draft                    ACME                      October 2015
    To validate a proof-of-possession challenge, the server performs the
    following steps:
 
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 41]
+
+Internet-Draft                    ACME                      October 2015
+
+
    1.  Verify that the public key in the "jwk" header of the
        "authorization" JWS corresponds to one of the certificates in the
        "certs" field of the challenge
@@ -2290,13 +2311,6 @@ Internet-Draft                    ACME                      October 2015
        and that:
 
        *  The "type" field is set to "proof-of-possession"
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 41]
-
-Internet-Draft                    ACME                      October 2015
-
 
        *  The "identifier" field contains the identifier for which
           authorization is being validated
@@ -2332,6 +2346,14 @@ Internet-Draft                    ACME                      October 2015
    the client's account key.  The client then computes the SHA-256
    digest of the key authorization.
 
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 42]
+
+Internet-Draft                    ACME                      October 2015
+
+
    The record provisioned to the DNS is the base64url encoding of this
    digest.  The client constructs the validation domain name by
    prepending the label "_acme-challenge" to the domain name being
@@ -2344,15 +2366,6 @@ Internet-Draft                    ACME                      October 2015
 
    The response to the DNS challenge simply acknowledges that the client
    is ready to fulfill this challenge.
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 42]
-
-Internet-Draft                    ACME                      October 2015
-
 
    keyAuthorization (required, string):  The key authorization for this
       challenge.  This value MUST match the token from the challenge and
@@ -2390,6 +2403,13 @@ Internet-Draft                    ACME                      October 2015
 
    o  Register Replay-Nonce HTTP header
 
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 43]
+
+Internet-Draft                    ACME                      October 2015
+
+
    o  Register "nonce" JWS header parameter
 
    o  Register "urn:acme" namespace
@@ -2397,18 +2417,6 @@ Internet-Draft                    ACME                      October 2015
    o  Create identifier validation method registry
 
    o  Registries of syntax tokens, e.g., message types / error types?
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 43]
-
-Internet-Draft                    ACME                      October 2015
-
 
 9.  Security Considerations
 
@@ -2446,14 +2454,6 @@ Internet-Draft                    ACME                      October 2015
 
    o  A contact channel, over which the ACME server sends messages to
       the registered contacts for ACME clients
-
-
-
-
-
-
-
-
 
 
 
