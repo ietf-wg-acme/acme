@@ -411,7 +411,7 @@ agreement (optional, string):
 server (see below).  Including this field indicates the client's agreement with
 the referenced terms.
 
-authorizations (optional, string):
+authorizations (string):
 : A URI from which a list of authorizations granted to this account can be
 fetched via a GET request.  The result of the GET request MUST be a JSON object
 whose "authorizations" field is an array of strings, where each string is the
@@ -420,7 +420,7 @@ include pending authorizations, and SHOULD NOT include authorizations that are
 invalid or expired. The server MAY return an incomplete list, with a `link
 rel=next` header indicating a URL to retrieve further entries.
 
-certificates (optional, string):
+certificates (string):
 : A URI from which a list of certificates issued for this account can be fetched
 via a GET request.  The result of the GET request MUST be a JSON object whose
 "certificates" field is an array of strings, where each string is the URI of a
