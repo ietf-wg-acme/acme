@@ -1206,6 +1206,11 @@ Internet-Draft                    ACME                      October 2015
    by replacing the old account key with the public key carried in the
    "jwk" header parameter of the "newKey" JWS object.
 
+   If the update was successful, then the server sends a response with
+   status code 200 (OK) and the updated registration object as its body.
+   If the update was not successful, then the server responds with an
+   error status code and a problem document describing the error.
+
 6.5.  Account Recovery
 
    Once a client has created an account with an ACME server, it is
@@ -1221,11 +1226,6 @@ Internet-Draft                    ACME                      October 2015
    the "key" field, which is set to the new account key.  The server
    reassigns resources associated with the base registration to the new
    registration (e.g., authorizations and certificates).  The server
-   SHOULD delete the old registration resource after it has been used as
-   a base for recovery.
-
-   In addition to the recovery mechanisms defined by ACME, individual
-   client implementations may also offer implementation-specific
 
 
 
@@ -1234,6 +1234,11 @@ Barnes, et al.            Expires April 6, 2016                [Page 22]
 Internet-Draft                    ACME                      October 2015
 
 
+   SHOULD delete the old registration resource after it has been used as
+   a base for recovery.
+
+   In addition to the recovery mechanisms defined by ACME, individual
+   client implementations may also offer implementation-specific
    recovery mechanisms.  For example, if a client creates account keys
    deterministically from a seed value, then this seed could be used to
    recover the account key by re-generating it.  Or an implementation
@@ -1277,11 +1282,6 @@ Internet-Draft                    ACME                      October 2015
 
    If the server agrees to attempt recovery, then it creates a new
    registration resource containing a stub registration object.  The
-   stub registration has the client's new account key and contacts, but
-   no authorizations or certificates associated.  The server returns the
-   stub contact in a 201 (Created) response, along with a Location
-   header field indicating the URI for the new registration resource
-   (which will be the registration URI if the recovery succeeds).
 
 
 
@@ -1289,6 +1289,12 @@ Barnes, et al.            Expires April 6, 2016                [Page 23]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   stub registration has the client's new account key and contacts, but
+   no authorizations or certificates associated.  The server returns the
+   stub contact in a 201 (Created) response, along with a Location
+   header field indicating the URI for the new registration resource
+   (which will be the registration URI if the recovery succeeds).
 
    HTTP/1.1 201 Created
    Content-Type: application/json
@@ -1332,12 +1338,6 @@ Internet-Draft                    ACME                      October 2015
    As illustrated by the figure in the overview section above, the
    authorization process proceeds in two phases.  The client first
    requests a new authorization, and the server issues challenges, then
-   the client responds to those challenges and the server validates the
-   client's responses.
-
-   To begin the key authorization process, the client sends a POST
-   request to the server's new-authorization resource.  The body of the
-   POST request MUST contain a JWS object, whose payload is a partial
 
 
 
@@ -1346,6 +1346,12 @@ Barnes, et al.            Expires April 6, 2016                [Page 24]
 Internet-Draft                    ACME                      October 2015
 
 
+   the client responds to those challenges and the server validates the
+   client's responses.
+
+   To begin the key authorization process, the client sends a POST
+   request to the server's new-authorization resource.  The body of the
+   POST request MUST contain a JWS object, whose payload is a partial
    authorization object.  This JWS object MUST contain only the
    "identifier" field, so that the server knows what identifier is being
    authorized.  The server MUST ignore any other fields present in the
@@ -1389,18 +1395,16 @@ Internet-Draft                    ACME                      October 2015
 
    o  The "expires" field MUST be absent.
 
-   The server allocates a new URI for this authorization, and returns a
-   201 (Created) response, with the authorization URI in a Location
-   header field, and the JSON authorization object in the body.
-
-
-
 
 
 Barnes, et al.            Expires April 6, 2016                [Page 25]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   The server allocates a new URI for this authorization, and returns a
+   201 (Created) response, with the authorization URI in a Location
+   header field, and the JSON authorization object in the body.
 
    HTTP/1.1 201 Created
    Content-Type: application/json
@@ -1445,10 +1449,6 @@ Internet-Draft                    ACME                      October 2015
    or the new-authorization URI).  This allows the client to send
    information only for challenges it is responding to.
 
-   For example, if the client were to respond to the "http-01" challenge
-   in the above authorization, it would send the following request:
-
-
 
 
 
@@ -1457,6 +1457,9 @@ Barnes, et al.            Expires April 6, 2016                [Page 26]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   For example, if the client were to respond to the "http-01" challenge
+   in the above authorization, it would send the following request:
 
    POST /acme/authz/asdf/0 HTTP/1.1
    Host: example.com
@@ -1503,9 +1506,6 @@ Internet-Draft                    ACME                      October 2015
 
    To check on the status of an authorization, the client sends a GET
    request to the authorization URI, and the server responds with the
-   current authorization object.  In responding to poll requests while
-   the validation is still in progress, the server MUST return a 202
-   (Accepted) response with a Retry-After header field.
 
 
 
@@ -1513,6 +1513,10 @@ Barnes, et al.            Expires April 6, 2016                [Page 27]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   current authorization object.  In responding to poll requests while
+   the validation is still in progress, the server MUST return a 202
+   (Accepted) response with a Retry-After header field.
 
    GET /acme/authz/asdf HTTP/1.1
    Host: example.com
@@ -1559,16 +1563,15 @@ Internet-Draft                    ACME                      October 2015
    notBefore (optional, string):  The requested value of the notBefore
       field in the certificate, in the date format defined in [RFC3339]
 
-   notAfter (optional, string):  The requested value of the notAfter
-      field in the certificate, in the date format defined in [RFC3339]
-
-
 
 
 Barnes, et al.            Expires April 6, 2016                [Page 28]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   notAfter (optional, string):  The requested value of the notAfter
+      field in the certificate, in the date format defined in [RFC3339]
 
    POST /acme/new-cert HTTP/1.1
    Host: example.com
@@ -1615,9 +1618,6 @@ Internet-Draft                    ACME                      October 2015
    provided in the body of the response.  If the CA has not yet issued
    the certificate, the body of this response will be empty.  The client
    should then send a GET request to the certificate URI to poll for the
-   certificate.  As long as the certificate is unavailable, the server
-   MUST provide a 202 (Accepted) response and include a Retry-After
-
 
 
 
@@ -1626,6 +1626,8 @@ Barnes, et al.            Expires April 6, 2016                [Page 29]
 Internet-Draft                    ACME                      October 2015
 
 
+   certificate.  As long as the certificate is unavailable, the server
+   MUST provide a 202 (Accepted) response and include a Retry-After
    header to indicate when the server believes the certificate will be
    issued (as in the example above).
 
@@ -1659,8 +1661,6 @@ Internet-Draft                    ACME                      October 2015
    The server can also provide the client with direct access to an SCT
    for a certificate using a Link relation header field with relation
    "ct-sct".
-
-
 
 
 
