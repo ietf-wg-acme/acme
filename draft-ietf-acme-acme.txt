@@ -300,7 +300,7 @@ Internet-Draft                    ACME                      October 2015
 
    ACME messaging is based on HTTPS [RFC2818] and JSON [RFC7159].
 
-   Binary fields are encoded using Base64url encoding described in
+   Binary fields are encoded using base64url encoding described in
    [RFC4648] Section 5, according to the profile specified in JSON Web
    Signature [RFC7515] Section 2.  This encoding uses a URL safe
    character set.  Trailing '=' characters MUST be stripped.
@@ -1746,7 +1746,7 @@ Internet-Draft                    ACME                      October 2015
    revoked:
 
    certificate (required, string):  The certificate to be revoked, in
-      the Base64url-encoded version of the DER format.  (Note: This
+      the base64url-encoded version of the DER format.  (Note: This
       field uses the same modified Base64 encoding rules used elsewhere
       in this document, so it is different from PEM.)
 
@@ -1964,7 +1964,7 @@ Internet-Draft                    ACME                      October 2015
 
    sign of the number.  As noted in JWA [RFC7518], a JWK object MUST NOT
    include this zero octet.  That is, any initial zero octets MUST be
-   stripped before the values are Base64url-encoded.
+   stripped before the values are base64url-encoded.
 
 7.2.  HTTP
 
@@ -1986,7 +1986,8 @@ Internet-Draft                    ACME                      October 2015
    token (required, string):  A random value that uniquely identifies
       the challenge.  This value MUST have at least 128 bits of entropy,
       in order to prevent an attacker from guessing it.  It MUST NOT
-      contain any characters outside the URL-safe Base64 alphabet.
+      contain any characters outside the URL-safe Base64 alphabet and
+      MUST NOT contain any padding characters ("=").
 
    {
      "type": "http-01",
@@ -2008,7 +2009,6 @@ Internet-Draft                    ACME                      October 2015
    representation of the key authorization.
 
   .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
-
 
 
 
@@ -2104,7 +2104,8 @@ Internet-Draft                    ACME                      October 2015
    token (required, string):  A random value that uniquely identifies
       the challenge.  This value MUST have at least 128 bits of entropy,
       in order to prevent an attacker from guessing it.  It MUST NOT
-      contain any characters outside the URL-safe Base64 alphabet.
+      contain any characters outside the URL-safe Base64 alphabet and
+      MUST NOT contain any padding characters ("=").
 
    {
      "type": "tls-sni-02",
@@ -2121,7 +2122,6 @@ Internet-Draft                    ACME                      October 2015
 
    SAN A MUST be constructed as follows: compute the SHA-256 digest of
    the UTF-8-encoded challenge token and encode it in lowercase
-   hexadecimal form.  The dNSName is "x.y.token.acme.invalid", where x
 
 
 
@@ -2130,6 +2130,7 @@ Barnes, et al.            Expires April 6, 2016                [Page 38]
 Internet-Draft                    ACME                      October 2015
 
 
+   hexadecimal form.  The dNSName is "x.y.token.acme.invalid", where x
    is the first half of the hexadecimal representation and y is the
    second half.
 
@@ -2176,8 +2177,7 @@ Internet-Draft                    ACME                      October 2015
        when making the TLS connection, such that the presentation of SAN
        B in the returned certificate proves association with the client.
 
-   3.  Verify that the certificate contains a subjectAltName extension
-       containing dNSName entries of SAN A and SAN B and no other
+
 
 
 
@@ -2186,6 +2186,8 @@ Barnes, et al.            Expires April 6, 2016                [Page 39]
 Internet-Draft                    ACME                      October 2015
 
 
+   3.  Verify that the certificate contains a subjectAltName extension
+       containing dNSName entries of SAN A and SAN B and no other
        entries.  The comparison MUST be insensitive to case and ordering
        of names.
 
@@ -2229,9 +2231,7 @@ Internet-Draft                    ACME                      October 2015
    type (required, string):  The string "proof-of-possession-01"
 
    certs (optional, array of string):  An array of certificates, in
-      Base64url-encoded DER format, that contain acceptable public keys.
-
-
+      base64url-encoded DER format, that contain acceptable public keys.
 
 
 
@@ -2362,7 +2362,8 @@ Internet-Draft                    ACME                      October 2015
    token (required, string):  A random value that uniquely identifies
       the challenge.  This value MUST have at least 128 bits of entropy,
       in order to prevent an attacker from guessing it.  It MUST NOT
-      contain any characters outside the URL-safe Base64 alphabet.
+      contain any characters outside the URL-safe Base64 alphabet and
+      MUST NOT contain any padding characters ("=").
 
    {
      "type": "dns-01",
@@ -2401,7 +2402,6 @@ Internet-Draft                    ACME                      October 2015
    challenge and the client's account key.  If they do not match, then
    the server MUST return an HTTP error in response to the POST request
    in which the client sent the challenge.
-
 
 
 

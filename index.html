@@ -479,7 +479,7 @@ li, p {
   <dd style="margin-left: 8">A MAC key that a client can use to demonstrate that it participated in a prior registration transaction.</dd>
 </dl>
 <p id="rfc.section.3.p.6">ACME messaging is based on HTTPS <a href="#RFC2818">[RFC2818]</a> and JSON <a href="#RFC7159">[RFC7159]</a>.</p>
-<p id="rfc.section.3.p.7">Binary fields are encoded using Base64url encoding described in <a href="#RFC4648">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
+<p id="rfc.section.3.p.7">Binary fields are encoded using base64url encoding described in <a href="#RFC4648">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
 <p id="rfc.section.3.p.8">Some HTTPS bodies in ACME are authenticated and integrity-protected by being encapsulated in a JSON Web Signature (JWS) object <a href="#RFC7515">[RFC7515]</a>.  ACME uses a profile of JWS, with the following restrictions:</p>
 <p/>
 
@@ -1192,7 +1192,7 @@ Content-Location: https://example.com/acme/cert-seq/12345
 
 <dl>
   <dt>certificate (required, string):</dt>
-  <dd style="margin-left: 8">The certificate to be revoked, in the Base64url-encoded version of the DER format.  (Note: This field uses the same modified Base64 encoding rules used elsewhere in this document, so it is different from PEM.)</dd>
+  <dd style="margin-left: 8">The certificate to be revoked, in the base64url-encoded version of the DER format.  (Note: This field uses the same modified Base64 encoding rules used elsewhere in this document, so it is different from PEM.)</dd>
 </dl>
 <pre>
 POST /acme/revoke-cert HTTP/1.1
@@ -1279,7 +1279,7 @@ key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 </pre>
 <p id="rfc.section.7.1.p.2">The &#8220;JWK_Thumbprint&#8221; step indicates the computation specified in <a href="#RFC7638">[RFC7638]</a>, using the SHA-256 digest.  As specified in the individual challenges below, the token for a challenge is a JSON string comprised entirely of characters in the URL-safe Base64 alphabet.  The &#8220;||&#8221; operator indicates concatenation of strings.</p>
 <p id="rfc.section.7.1.p.3">In computations involving key authorizations, such as the digest computations required for the DNS and TLS SNI challenges, the key authorization string MUST be represented in UTF-8 form (or, equivalently, ASCII).</p>
-<p id="rfc.section.7.1.p.4">An example of how to compute a JWK thumbprint can be found in Section 3.1 of <a href="#RFC7638">[RFC7638]</a>.  Note that some cryptographic libraries prepend a zero octet to the representation of the RSA public key parameters N and E, in order to avoid ambiguity with regard to the sign of the number.  As noted in JWA <a href="#RFC7518">[RFC7518]</a>, a JWK object MUST NOT include this zero octet.  That is, any initial zero octets MUST be stripped before the values are Base64url-encoded.</p>
+<p id="rfc.section.7.1.p.4">An example of how to compute a JWK thumbprint can be found in Section 3.1 of <a href="#RFC7638">[RFC7638]</a>.  Note that some cryptographic libraries prepend a zero octet to the representation of the RSA public key parameters N and E, in order to avoid ambiguity with regard to the sign of the number.  As noted in JWA <a href="#RFC7518">[RFC7518]</a>, a JWK object MUST NOT include this zero octet.  That is, any initial zero octets MUST be stripped before the values are base64url-encoded.</p>
 <h1 id="rfc.section.7.2"><a href="#rfc.section.7.2">7.2.</a> <a href="#http" id="http">HTTP</a></h1>
 <p id="rfc.section.7.2.p.1">With HTTP validation, the client in an ACME transaction proves its control over a domain name by proving that it can provision resources on an HTTP server that responds for that domain name.  The ACME server challenges the client to provision a file with a specific JWS as its contents.</p>
 <p id="rfc.section.7.2.p.2">As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will connect to at least one of the hosts found in A and AAAA records.  Because many webservers allocate a default HTTPS virtual host to a particular low-privilege tenant user in a subtle and non-intuitive manner, the challenge must be completed over HTTP, not HTTPS.</p>
@@ -1289,7 +1289,7 @@ key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;http-01&#8221;</dd>
   <dt>token (required, string):</dt>
-  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet.</dd>
+  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
 {
@@ -1347,7 +1347,7 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;tls-sni-02&#8221;</dd>
   <dt>token (required, string):</dt>
-  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet.</dd>
+  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
 {
@@ -1395,7 +1395,7 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;proof-of-possession-01&#8221;</dd>
   <dt>certs (optional, array of string):</dt>
-  <dd style="margin-left: 8">An array of certificates, in Base64url-encoded DER format, that contain acceptable public keys.</dd>
+  <dd style="margin-left: 8">An array of certificates, in base64url-encoded DER format, that contain acceptable public keys.</dd>
 </dl>
 <pre>
 {
@@ -1467,7 +1467,7 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;dns-01&#8221;</dd>
   <dt>token (required, string):</dt>
-  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet.</dd>
+  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
 {
