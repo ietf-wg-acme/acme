@@ -1508,10 +1508,10 @@ server that responds for that domain name.  The ACME server challenges the
 client to provision a file with a specific JWS as its contents.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
-connect to at least one of the hosts found in A and AAAA records, at its
-discretion.  Because many webservers allocate a default HTTPS virtual host to a
-particular low-privilege tenant user in a subtle and non-intuitive manner, the
-challenge must be completed over HTTP, not HTTPS.
+connect to at least one of the hosts found in A and AAAA records.  Because many
+webservers allocate a default HTTPS virtual host to a particular low-privilege
+tenant user in a subtle and non-intuitive manner, the challenge must be
+completed over HTTP, not HTTPS.
 
 type (required, string):
 : The string "http-01"
@@ -1555,6 +1555,17 @@ keyAuthorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
 from the challenge and the client's account key.
 
+In addition, the client MAY advise the server at which IP the challenge is
+provisioned:
+
+address (optional, string):
+: An IPv4 or IPv6 address which, if given, MUST be included in the set of IP
+addresses to which the domain name resolves.  If given, the server will connect
+to that specific IP address instead of arbitrarily choosing an IP from the set
+of A and AAAA records to which the domain name resolves.  If the field is given
+but equal to ``"peer"``, the server MUST treat the field as if it contained the
+IP address from which the response was received.
+
 ~~~~~~~~~~
 {
   "keyAuthorization": "evaGxfADs...62jcerQ"
@@ -1575,10 +1586,14 @@ domain by verifying that the resource was provisioned as expected.
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
-3. Dereference the URI using an HTTP GET request.
-4. Verify that the body of the response is well-formed key authorization.  The
+3. If the client has supplied an address to use, verify that the address is
+   included in the A or AAAA records to which the domain name resolves.  If
+   the address is not included in the result, the validation fails.
+4. Dereference the URI using an HTTP GET request.  If an address was supplied
+   by the client, use that address to establish the HTTP connection.
+5. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
-5. Verify that key authorization provided by the server matches the token for
+6. Verify that key authorization provided by the server matches the token for
    this challenge and the client's account key.
 
 If all of the above verifications succeed, then the validation is successful.
