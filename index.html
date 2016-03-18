@@ -1345,19 +1345,22 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
 
 <dl>
   <dt>type (required, string):</dt>
-  <dd style="margin-left: 8">The string &#8220;tls-sni-01&#8221;</dd>
+  <dd style="margin-left: 8">The string &#8220;tls-sni-02&#8221;</dd>
   <dt>token (required, string):</dt>
   <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet.</dd>
 </dl>
 <pre>
 {
-  "type": "tls-sni-01",
+  "type": "tls-sni-02",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 </pre>
-<p id="rfc.section.7.3.p.3">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client computes the SHA-256 digest Z of the UTF8-encoded key authorization, and encodes Z in UTF-8 lower-case hexadecimal form.</p>
-<p id="rfc.section.7.3.p.4">The client generates a self-signed certificate with a single subjectAlternativeName extension dNSName that is &#8220;&lt;Z[0:32]&gt;.&lt;Z[32:64]&gt;.acme.invalid&#8221;, where &#8220;Z[0:32]&#8221; and &#8220;Z[32:64]&#8221; represent the first 32 and last 32 characters of the hex-encoded value, respectively (following the notation used in Python).  The client then configures the TLS server at the domain such that when a handshake is initiated with the Server Name Indication extension set to &#8220;&lt;Z[0:32]&gt;.&lt;Z[32:64]&gt;.acme.invalid&#8221;, the corresponding generated certificate is presented.</p>
-<p id="rfc.section.7.3.p.5">The response to the TLS SNI challenge simply acknowledges that the client is ready to fulfill this challenge.</p>
+<p id="rfc.section.7.3.p.3">A client responds to this challenge by constructing a self-signed certificate which the client MUST provision at the domain name concerned in order to pass the challenge.</p>
+<p id="rfc.section.7.3.p.4">The certificate may be constructed arbitrarily, except that each certificate MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be dNSNames.</p>
+<p id="rfc.section.7.3.p.5">SAN A MUST be constructed as follows: compute the SHA-256 digest of the UTF-8-encoded challenge token and encode it in lowercase hexadecimal form.  The dNSName is &#8220;x.y.token.acme.invalid&#8221;, where x is the first half of the hexadecimal representation and y is the second half.</p>
+<p id="rfc.section.7.3.p.6">SAN B MUST be constructed as follows: compute the SHA-256 digest of the UTF-8 encoded key authorization and encode it in lowercase hexadecimal form. The dNSName is &#8220;x.y.ka.acme.invalid&#8221; where x is the first half of the hexadecimal representation and y is the second half.</p>
+<p id="rfc.section.7.3.p.7">The client MUST ensure that the certificate is served to TLS connections specifying a Server Name Indication (SNI) value of SAN A.</p>
+<p id="rfc.section.7.3.p.8">The response to the TLS-SNI challenge simply acknowledges that the client is ready to fulfill this challenge.</p>
 <p/>
 
 <dl>
@@ -1370,17 +1373,17 @@ evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
 }
 /* Signed as JWS */
 </pre>
-<p id="rfc.section.7.3.p.7">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
-<p id="rfc.section.7.3.p.8">Given a Challenge/Response pair, the ACME server verifies the client&#8217;s control of the domain by verifying that the TLS server was configured appropriately, using these steps:</p>
+<p id="rfc.section.7.3.p.10">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
+<p id="rfc.section.7.3.p.11">Given a Challenge/Response pair, the ACME server verifies the client&#8217;s control of the domain by verifying that the TLS server was configured appropriately, using these steps:</p>
 <p/>
 
 <ol>
-  <li>Compute the Z-value from the key authorization in the same way as the client.</li>
-  <li>Open a TLS connection to the domain name being validated on the requested port, presenting the value &#8220;&lt;Z[0:32]&gt;.&lt;Z[32:64]&gt;.acme.invalid&#8221; in the SNI field (where the comparison is case-insensitive).</li>
-  <li>Verify that the certificate contains a subjectAltName extension with the dNSName of &#8220;&lt;Z[0:32]&gt;.&lt;Z[32:64]&gt;.acme.invalid&#8221;, and that no other dNSName entries of the form &#8220;*.acme.invalid&#8221; are present in the subjectAltName extension.</li>
+  <li>Compute SAN A and SAN B in the same way as the client.</li>
+  <li>Open a TLS connection to the domain name being validated on the requested port, presenting SAN A in the SNI field.  <br/><br/> The server MUST request the certificate using an SNI value of SAN A.  <br/><br/> The server SHOULD ensure that it does not reveal SAN B in any way when making the TLS connection, such that the presentation of SAN B in the returned certificate proves association with the client.</li>
+  <li>Verify that the certificate contains a subjectAltName extension containing dNSName entries of SAN A and SAN B and no other entries.  The comparison MUST be insensitive to case and ordering of names.</li>
 </ol>
-<p id="rfc.section.7.3.p.10">It is RECOMMENDED that the ACME server validation TLS connections from multiple vantage points to reduce the risk of DNS hijacking attacks.</p>
-<p id="rfc.section.7.3.p.11">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
+<p id="rfc.section.7.3.p.13">It is RECOMMENDED that the ACME server validation TLS connections from multiple vantage points to reduce the risk of DNS hijacking attacks.</p>
+<p id="rfc.section.7.3.p.14">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
 <h1 id="rfc.section.7.4"><a href="#rfc.section.7.4">7.4.</a> <a href="#proof-of-possession-of-a-prior-key" id="proof-of-possession-of-a-prior-key">Proof of Possession of a Prior Key</a></h1>
 <p id="rfc.section.7.4.p.1">The Proof of Possession challenge verifies that a client possesses a private key corresponding to a server-specified public key, as demonstrated by its ability to sign with that key.  This challenge is meant to be used when the server knows of a public key that is already associated with the identifier being claimed, and wishes for new authorizations to be authorized by the holder of the corresponding private key.  For DNS identifiers, for example, this can help guard against domain hijacking.</p>
 <p id="rfc.section.7.4.p.2">This method is useful if a server policy calls for issuing a certificate only to an entity that already possesses the subject private key of a particular prior related certificate (perhaps issued by a different CA).  It may also help enable other kinds of server policy that are related to authenticating a client&#8217;s identity using digital signatures.</p>
@@ -1636,8 +1639,8 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#default-virtual-hosts" id="default-virtual-hosts">Default Virtual Hosts</a></h1>
 <p id="rfc.section.10.1.p.1">In many cases, TLS-based services are deployed on hosted platforms that use the Server Name Indication (SNI) TLS extension to distinguish between different hosted services or &#8220;virtual hosts&#8221;.  When a client initiates a TLS connection with an SNI value indicating a provisioned host, the hosting platform routes the connection to that host.</p>
 <p id="rfc.section.10.1.p.2">When a connection come in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>
-<p id="rfc.section.10.1.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-01&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
-<p id="rfc.section.10.1.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-01&#8221;).</p>
+<p id="rfc.section.10.1.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-02&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
+<p id="rfc.section.10.1.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).</p>
 <h1 id="rfc.section.10.2"><a href="#rfc.section.10.2">10.2.</a> <a href="#use-of-dnssec-resolvers" id="use-of-dnssec-resolvers">Use of DNSSEC Resolvers</a></h1>
 <p id="rfc.section.10.2.p.1">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
 <p id="rfc.section.10.2.p.2">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
