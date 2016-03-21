@@ -535,6 +535,18 @@ namespace for errors other than the standard types.  Clients SHOULD display the
 Authorization and challenge objects can also contain error information to
 indicate why the server was unable to validate authorization.
 
+## Rate limits
+
+Creation of resources can be rate limited to ensure fair usage and prevent abuse. If rate limits are in place, the server SHOULD send the following three headers fields:
+
+| Header name           | Value                                         |
+|:----------------------|:----------------------------------------------|
+| RateLimit-Limit       | Total limit in the given time window.         |
+| RateLimit-Remaining   | Remaining creations in the given time window. |
+| RateLimit-Reset       | Time in seconds until the limit is reset.     |
+
+Once the rate limit is exceeded, the server responds with an error with the code "rateLimited".
+
 ## Replay protection
 
 In order to protect ACME resources from any possible replay attacks, ACME
