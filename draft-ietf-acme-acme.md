@@ -2113,9 +2113,9 @@ response can only be used with the account key for which it was generated.
 An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
-particular case.  For identifiers where the server already has some credential
+particular case.  For identifiers where the server already has some public key
 associated with the domain this attack can be prevented by requiring the client
-to complete a proof-of-possession challenge.
+to prove control of the corresponding private key.
 
 ## Preventing Authorization Hijacking
 
