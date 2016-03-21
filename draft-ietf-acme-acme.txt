@@ -12,7 +12,7 @@ Expires: April 6, 2016                                               EFF
 
 
           Automatic Certificate Management Environment (ACME)
-                        draft-ietf-acme-acme-01
+                        draft-ietf-acme-acme-02
 
 Abstract
 
