@@ -192,26 +192,6 @@ private key of this key pair to sign all messages sent to the server.  The
 server uses the public key to verify the authenticity and integrity of messages
 from the client.
 
-[[ XXX: Remainder is protocol, not terminology ]]
-
-For simplicity, in all HTTPS transactions used by ACME, the ACME client is the
-HTTPS client and the ACME server is the HTTPS server.
-
-Binary fields are encoded using base64url encoding described in
-[RFC4648] Section 5, according to the profile specified in JSON Web
-Signature [RFC7515] Section 2. This encoding uses a URL safe
-character set. Trailing '=' characters MUST be stripped.
-
-HTTPS request bodies in ACME are authenticated and integrity-protected by being
-encapsulated in a JSON Web Signature (JWS) object {{RFC7515}}.  ACME uses a
-profile of JWS, with the following restrictions:
-
-* The JWS MUST use the Flattened JSON Serialization
-* The JWS MUST be encoded using UTF-8
-* The JWS Header or Protected Header MUST include "alg" and "jwk" fields
-* The JWS MUST NOT have the value "none" in its "alg" field
-* The JWS Protected Header MUST inlucde the "nonce" fiele
-
 # Protocol Overview
 
 ACME allows a client to request certificate management actions using a set of
@@ -347,11 +327,34 @@ emit pinning headers.  Each subsection of {{certificate-management}} below
 describes the message formats used by the function, and the order in which
 messages are sent.
 
+In all HTTPS transactions used by ACME, the ACME client is the HTTPS client and
+the ACME server is the HTTPS server.
+
+ACME servers that are intended to be generally accessible need to use
+Cross-Origin Resource Sharing (CORS) in order to be accessible from
+browser-based clients {{W3C.CR-cors-20130129}}.  Such servers SHOULD set the
+Access-Control-Allow-Origin header field to the value "*".
+
+Binary fields in the JSON objects used by ACME are encoded using base64url
+encoding described in [RFC4648] Section 5, according to the profile specified in
+JSON Web Signature [RFC7515] Section 2. This encoding uses a URL safe character
+set. Trailing '=' characters MUST be stripped.
+
+## Request Authentication
+
 All ACME requests with a non-empty body MUST encapsulate the body in a JWS
 object, signed using the account key pair.  The server MUST verify the JWS
 before processing the request.  (For readability, however, the examples below
 omit this encapsulation.)  Encapsulating request bodies in JWS provides a simple
 authentication of requests by way of key continuity.
+
+JWS objects sent in ACME requests MUST meet the following additional criteria:
+
+* The JWS MUST use the Flattened JSON Serialization
+* The JWS MUST be encoded using UTF-8
+* The JWS Header or Protected Header MUST include "alg" and "jwk" fields
+* The JWS MUST NOT have the value "none" in its "alg" field
+* The JWS Protected Header MUST include the "nonce" field (defined below)
 
 Note that this implies that GET requests are not authenticated.  Servers MUST
 NOT respond to GET requests for resources that might be considered sensitive.
@@ -375,11 +378,6 @@ addressed to, as defined in the below table:
 | Certificate          | cert             |
 
 Other fields in ACME request bodies are described below.
-
-ACME servers that are intended to be generally accessible need to use
-Cross-Origin Resource Sharing (CORS) in order to be accessible from
-browser-based clients {{W3C.CR-cors-20130129}}.  Such servers SHOULD set the
-Access-Control-Allow-Origin header field to the value "*".
 
 ## Registration Objects
 
