@@ -30,6 +30,7 @@ author:
 normative:
   RFC2119:
   RFC2314:
+  RFC2818:
   RFC2985:
   RFC2986:
   RFC3339:
@@ -54,7 +55,6 @@ normative:
   I-D.ietf-appsawg-http-problem:
 
 informative:
-  RFC2818:
   RFC3552:
   W3C.CR-cors-20130129:
   W3C.WD-capability-urls-20140218:
@@ -327,12 +327,12 @@ degree of integrity for the HTTPS request URI.
 
 ## HTTPS Requests
 
-Each ACME function is accomplished by the client sending a sequence of
-HTTPS requests to the server, carrying JSON messages.  Use of HTTPS is REQUIRED.
-Clients SHOULD support HTTP public key pinning {{RFC7469}}, and servers SHOULD
-emit pinning headers.  Each subsection of {{certificate-management}} below
-describes the message formats used by the function, and the order in which
-messages are sent.
+Each ACME function is accomplished by the client sending a sequence of HTTPS
+requests to the server, carrying JSON messages {{RFC2818}}{{RFC7159}}.  Use of
+HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning {{RFC7469}},
+and servers SHOULD emit pinning headers.  Each subsection of
+{{certificate-management}} below describes the message formats used by the
+function, and the order in which messages are sent.
 
 In all HTTPS transactions used by ACME, the ACME client is the HTTPS client and
 the ACME server is the HTTPS server.
@@ -343,9 +343,9 @@ browser-based clients {{W3C.CR-cors-20130129}}.  Such servers SHOULD set the
 Access-Control-Allow-Origin header field to the value "*".
 
 Binary fields in the JSON objects used by ACME are encoded using base64url
-encoding described in [RFC4648] Section 5, according to the profile specified in
-JSON Web Signature [RFC7515] Section 2. This encoding uses a URL safe character
-set. Trailing '=' characters MUST be stripped.
+encoding described in {{RFC4648}} Section 5, according to the profile specified
+in JSON Web Signature {{RFC7515}} Section 2. This encoding uses a URL safe
+character set. Trailing '=' characters MUST be stripped.
 
 ## Request Authentication
 
