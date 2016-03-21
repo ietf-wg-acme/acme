@@ -313,10 +313,17 @@ The use of ACME for other protocols will require further specification, in order
 to describe how these identifiers are encoded in the protocol, and what types of
 validation challenges the server might require.
 
-# Protocol Elements
+# Message Transport
 
-This section describes several components that are used by ACME, and
-general rules that apply to ACME transactions.
+ACME uses a combination of HTTPS and JWS to create a messaging layer with a few
+important security properties.
+
+Communications between an ACME client and an ACME server are done over HTTPS,
+using JWS to provide som additional security properties for messages sent from
+the client to the server.  HTTPS provides server authentication and
+confidentiality.  With some ACME-specific extensions, JWS provides
+authentication of the client's request payloads, anti-replay protection, and a
+degree of integrity for the HTTPS request URI.
 
 ## HTTPS Requests
 
@@ -359,11 +366,25 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 Note that this implies that GET requests are not authenticated.  Servers MUST
 NOT respond to GET requests for resources that might be considered sensitive.
 
+## Request URI Type Integrity
+
+It is common in deployment the entity terminating TLS for HTTPS to be different
+from the entity operating the logical HTTPS server, with a "request routing"
+layer in the middle.  For example, an ACME CA might have a content delivery
+network terminate TLS connections from clients so that it can inspect client
+requests for denial-of-service protection.
+
+These intermediaries can also change values in the request that are not signed
+in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to
+provides a limited integrity mechanism, which protects against an intermediary
+changing the request URI to anothe ACME URI of a different type.  (It does not
+protect against changing between URIs of the same type, e.g., from one
+authorization URI to another).
+
 An ACME request carries a JSON dictionary that provides the details of the
-client's request to the server.  In order to avoid attacks that might arise from
-sending a request object to a resource of the wrong type, each request object
-MUST have a "resource" field that indicates what type of resource the request is
-addressed to, as defined in the below table:
+client's request to the server.  Each request object MUST have a "resource"
+field that indicates what type of resource the request is addressed to, as
+defined in the below table:
 
 | Resource type        | "resource" value |
 |:---------------------|:-----------------|
