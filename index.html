@@ -869,12 +869,12 @@ li, p {
 <p/>
 
 <dl>
-  <dt>&#8220;terms-of-service&#8221;:</dt>
-  <dd style="margin-left: 8">A string containing a URI identifying the current terms of service.</dd>
-  <dt>&#8220;website&#8221;:</dt>
-  <dd style="margin-left: 8">String containing an HTTP or HTTPS URL locating a website providing more information about the ACME server.</dd>
-  <dt>&#8220;caa-identities&#8221;:</dt>
-  <dd style="margin-left: 8">If present, MUST be an array of strings. Each string MUST be a lowercase hostname which the ACME server recognises as referring to itself for the purposes of CAA record validation as defined in <a href="#RFC6844">[RFC6844]</a>.  This allows clients to determine the correct issuer domain name to use when configuring CAA record.</dd>
+  <dt>&#8220;terms-of-service&#8221; (optional, string):</dt>
+  <dd style="margin-left: 8">A URI identifying the current terms of service.</dd>
+  <dt>&#8220;website&#8221; (optional, string)):</dt>
+  <dd style="margin-left: 8">An HTTP or HTTPS URL locating a website providing more information about the ACME server.</dd>
+  <dt>&#8220;caa-identities&#8221; (optional, array of string):</dt>
+  <dd style="margin-left: 8">Each string MUST be a lowercase hostname which the ACME server recognises as referring to itself for the purposes of CAA record validation as defined in <a href="#RFC6844">[RFC6844]</a>.  This allows clients to determine the correct issuer domain name to use when configuring CAA record.</dd>
 </dl>
 <p id="rfc.section.6.2.p.7">Clients access the directory by sending a GET request to the directory URI.</p>
 <pre>
