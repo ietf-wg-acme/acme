@@ -726,19 +726,18 @@ the service provided by the ACME server.
 
 The following metadata items are defined, all of which are OPTIONAL:
 
-"terms-of-service":
-: A string containing a URI identifying the current terms of service.
+"terms-of-service" (optional, string):
+: A URI identifying the current terms of service.
 
-"website":
-: String containing an HTTP or HTTPS URL locating a website providing more
+"website" (optional, string)):
+: An HTTP or HTTPS URL locating a website providing more
 information about the ACME server.
 
-"caa-identities":
-: If present, MUST be an array of strings. Each string MUST be a lowercase
-hostname which the ACME server recognises as referring to itself for the
-purposes of CAA record validation as defined in {{RFC6844}}.  This allows
-clients to determine the correct issuer domain name to use when configuring CAA
-record.
+"caa-identities" (optional, array of string):
+: Each string MUST be a lowercase hostname which the ACME server recognises as
+referring to itself for the purposes of CAA record validation as defined in
+{{RFC6844}}.  This allows clients to determine the correct issuer domain name to
+use when configuring CAA record.
 
 Clients access the directory by sending a GET request to the directory URI.
 
