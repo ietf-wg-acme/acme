@@ -287,8 +287,7 @@ li, p {
 <link href="#rfc.section.6.2" rel="Chapter" title="6.2 Directory"/>
 <link href="#rfc.section.6.3" rel="Chapter" title="6.3 Registration"/>
 <link href="#rfc.section.6.3.1" rel="Chapter" title="6.3.1 Account Key Roll-over"/>
-<link href="#rfc.section.6.3.2" rel="Chapter" title="6.3.2 Account Recovery"/>
-<link href="#rfc.section.6.3.3" rel="Chapter" title="6.3.3 Deleting an Account"/>
+<link href="#rfc.section.6.3.2" rel="Chapter" title="6.3.2 Deleting an Account"/>
 <link href="#rfc.section.6.4" rel="Chapter" title="6.4 Identifier Authorization"/>
 <link href="#rfc.section.6.4.1" rel="Chapter" title="6.4.1 Responding to Challenges"/>
 <link href="#rfc.section.6.4.2" rel="Chapter" title="6.4.2 Deleting an Authorization"/>
@@ -311,9 +310,8 @@ li, p {
 <link href="#rfc.section.10" rel="Chapter" title="10 Security Considerations"/>
 <link href="#rfc.section.10.1" rel="Chapter" title="10.1 Threat model"/>
 <link href="#rfc.section.10.2" rel="Chapter" title="10.2 Integrity of Authorizations"/>
-<link href="#rfc.section.10.3" rel="Chapter" title="10.3 Preventing Authorization Hijacking"/>
-<link href="#rfc.section.10.4" rel="Chapter" title="10.4 Denial-of-Service Considerations"/>
-<link href="#rfc.section.10.5" rel="Chapter" title="10.5 CA Policy Considerations"/>
+<link href="#rfc.section.10.3" rel="Chapter" title="10.3 Denial-of-Service Considerations"/>
+<link href="#rfc.section.10.4" rel="Chapter" title="10.4 CA Policy Considerations"/>
 <link href="#rfc.section.11" rel="Chapter" title="11 Operational Considerations"/>
 <link href="#rfc.section.11.1" rel="Chapter" title="11.1 Default Virtual Hosts"/>
 <link href="#rfc.section.11.2" rel="Chapter" title="11.2 Use of DNSSEC Resolvers"/>
@@ -419,8 +417,7 @@ li, p {
 </ul><li>6.2.   <a href="#rfc.section.6.2">Directory</a></li>
 <li>6.3.   <a href="#rfc.section.6.3">Registration</a></li>
 <ul><li>6.3.1.   <a href="#rfc.section.6.3.1">Account Key Roll-over</a></li>
-<li>6.3.2.   <a href="#rfc.section.6.3.2">Account Recovery</a></li>
-<li>6.3.3.   <a href="#rfc.section.6.3.3">Deleting an Account</a></li>
+<li>6.3.2.   <a href="#rfc.section.6.3.2">Deleting an Account</a></li>
 </ul><li>6.4.   <a href="#rfc.section.6.4">Identifier Authorization</a></li>
 <ul><li>6.4.1.   <a href="#rfc.section.6.4.1">Responding to Challenges</a></li>
 <li>6.4.2.   <a href="#rfc.section.6.4.2">Deleting an Authorization</a></li>
@@ -443,9 +440,8 @@ li, p {
 </ul></ul><li>10.   <a href="#rfc.section.10">Security Considerations</a></li>
 <ul><li>10.1.   <a href="#rfc.section.10.1">Threat model</a></li>
 <li>10.2.   <a href="#rfc.section.10.2">Integrity of Authorizations</a></li>
-<li>10.3.   <a href="#rfc.section.10.3">Preventing Authorization Hijacking</a></li>
-<li>10.4.   <a href="#rfc.section.10.4">Denial-of-Service Considerations</a></li>
-<li>10.5.   <a href="#rfc.section.10.5">CA Policy Considerations</a></li>
+<li>10.3.   <a href="#rfc.section.10.3">Denial-of-Service Considerations</a></li>
+<li>10.4.   <a href="#rfc.section.10.4">CA Policy Considerations</a></li>
 </ul><li>11.   <a href="#rfc.section.11">Operational Considerations</a></li>
 <ul><li>11.1.   <a href="#rfc.section.11.1">Default Virtual Hosts</a></li>
 <li>11.2.   <a href="#rfc.section.11.2">Use of DNSSEC Resolvers</a></li>
@@ -585,10 +581,6 @@ li, p {
       <td class="left">new-reg</td>
     </tr>
     <tr>
-      <td class="left">Recover registration</td>
-      <td class="left">recover-reg</td>
-    </tr>
-    <tr>
       <td class="left">New authorization</td>
       <td class="left">new-authz</td>
     </tr>
@@ -702,7 +694,6 @@ li, p {
 
 <ul>
   <li>Account Key Registration</li>
-  <li>Account Recovery</li>
   <li>Account Key Authorization</li>
   <li>Certificate Issuance</li>
   <li>Certificate Renewal</li>
@@ -883,7 +874,6 @@ Content-Type: application/json
 
 {
   "new-reg": "https://example.com/acme/new-reg",
-  "recover-reg": "https://example.com/acme/recover-reg",
   "new-authz": "https://example.com/acme/new-authz",
   "new-cert": "https://example.com/acme/new-cert",
   "revoke-cert": "https://example.com/acme/revoke-cert",
@@ -918,7 +908,6 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 Location: https://example.com/acme/reg/asdf
 Link: &lt;https://example.com/acme/new-authz&gt;;rel="next"
-Link: &lt;https://example.com/acme/recover-reg&gt;;rel="recover"
 Link: &lt;https://example.com/acme/terms&gt;;rel="terms-of-service"
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
@@ -986,56 +975,11 @@ Host: example.com
 </ol>
 <p id="rfc.section.6.3.1.p.6">If all of these checks pass, then the server updates the registration by replacing the old account key with the public key carried in the &#8220;jwk&#8221; header parameter of the &#8220;newKey&#8221; JWS object.</p>
 <p id="rfc.section.6.3.1.p.7">If the update was successful, then the server sends a response with status code 200 (OK) and the updated registration object as its body.  If the update was not successful, then the server responds with an error status code and a problem document describing the error.</p>
-<h1 id="rfc.section.6.3.2"><a href="#rfc.section.6.3.2">6.3.2.</a> <a href="#account-recovery" id="account-recovery">Account Recovery</a></h1>
-<p id="rfc.section.6.3.2.p.1">Once a client has created an account with an ACME server, it is possible that the private key for the account will be lost.  The recovery contacts included in the registration allows the client to recover from this situation, as long as it still has access to these contacts.</p>
-<p id="rfc.section.6.3.2.p.2">By &#8220;recovery&#8221;, we mean that the information associated with an old account key is bound to a new account key.  When a recovery process succeeds, the server provides the client with a new registration whose contents are the same as base registration object &#8211; except for the &#8220;key&#8221; field, which is set to the new account key.  The server reassigns resources associated with the base registration to the new registration (e.g., authorizations and certificates).  The server SHOULD delete the old registration resource after it has been used as a base for recovery.</p>
-<p id="rfc.section.6.3.2.p.3">In addition to the recovery mechanisms defined by ACME, individual client implementations may also offer implementation-specific recovery mechanisms.  For example, if a client creates account keys deterministically from a seed value, then this seed could be used to recover the account key by re-generating it.  Or an implementation could escrow an encrypted copy of the account key with a cloud storage provider, and give the encryption key to the user as a recovery value.</p>
-<p id="rfc.section.6.3.2.p.4">The client requests recovery by asking that the server send a message to one of the contact URIs registered for the account.  That message indicates some action that the server requires the client&#8217;s user to perform, e.g., clicking a link in an email.  If the user successfully completes the server&#8217;s required actions, then the server will bind the account to the new account key.</p>
-<p id="rfc.section.6.3.2.p.5">(Note that this process is almost entirely out of band with respect to ACME.  ACME only allows the client to initiate the process, and the server to indicate the result.)</p>
-<p id="rfc.section.6.3.2.p.6">To initiate recovery, the client sends a POST request to the server&#8217;s recover-registration URI, with a body specifying which registration is to be recovered.  The body of the request MUST be signed by the client&#8217;s new account key pair.</p>
-<p/>
-
-<dl>
-  <dt>method (required, string):</dt>
-  <dd style="margin-left: 8">The string &#8220;contact&#8221;</dd>
-  <dt>base (required, string):</dt>
-  <dd style="margin-left: 8">The URI for the registration to be recovered.</dd>
-</dl>
-<pre>
-POST /acme/recover-reg HTTP/1.1
-Host: example.com
-
-{
-  "resource": "recover-reg",
-  "method": "contact",
-  "base": "https://example.com/acme/reg/asdf",
-  "contact": [
-    "mailto:forgetful@example.net"
-  ]
-}
-/* Signed as JWS, with new account key */
-</pre>
-<p id="rfc.section.6.3.2.p.8">If the server agrees to attempt recovery, then it creates a new registration resource containing a stub registration object.  The stub registration has the client&#8217;s new account key and contacts, but no authorizations or certificates associated.  The server returns the stub contact in a 201 (Created) response, along with a Location header field indicating the URI for the new registration resource (which will be the registration URI if the recovery succeeds).</p>
-<pre>
-HTTP/1.1 201 Created
-Content-Type: application/json
-Location: https://example.com/acme/reg/qwer
-
-{
-  "key": { /* new account key from JWS header */ },
-
-  "contact": [
-    "mailto:forgetful@example.net"
-  ]
-}
-</pre>
-<p id="rfc.section.6.3.2.p.9">After recovery has been initiated, the server follows its chosen recovery process, out-of-band to ACME.  While the recovery process is ongoing, the client may poll the registration resource&#8217;s URI for status, by sending a POST request with a trivial body ({&#8220;resource&#8221;:&#8221;reg&#8221;}).  If the recovery process is still pending, the server sends a 202 (Accepted) status code, and a Retry-After header field. If the recovery process has failed, the server sends an error code (e.g., 404), and SHOULD delete the stub registration resource.</p>
-<p id="rfc.section.6.3.2.p.10">If the recovery process has succeeded, then the server will send a 200 (OK) response, containing the full registration object, with any necessary information copied from the old registration).  The client may now use this in the same way as if he had gotten it from a new-registration transaction.</p>
-<h1 id="rfc.section.6.3.3"><a href="#rfc.section.6.3.3">6.3.3.</a> <a href="#deleting-an-account" id="deleting-an-account">Deleting an Account</a></h1>
-<p id="rfc.section.6.3.3.p.1">If a client no longer wishes to have an account key registered with the server, it may request that the server delete its account by sending a POST request to the account URI containing the &#8220;delete&#8221; field.</p>
-<p id="rfc.section.6.3.3.p.2">delete (required, boolean): The boolean value &#8220;true&#8221;.</p>
-<p id="rfc.section.6.3.3.p.3">The request object MUST contain the &#8220;resource&#8221; field as required above (with the value &#8220;reg&#8221;).  It MUST NOT contain any fields besides &#8220;resource&#8221; and &#8220;delete&#8221;.</p>
-<p id="rfc.section.6.3.3.p.4">Note that although this object is very simple, the risk of replay or fraudulent generation via signing oracles is mitigated by the need for an anti-replay token in the protected header of the JWS.</p>
+<h1 id="rfc.section.6.3.2"><a href="#rfc.section.6.3.2">6.3.2.</a> <a href="#deleting-an-account" id="deleting-an-account">Deleting an Account</a></h1>
+<p id="rfc.section.6.3.2.p.1">If a client no longer wishes to have an account key registered with the server, it may request that the server delete its account by sending a POST request to the account URI containing the &#8220;delete&#8221; field.</p>
+<p id="rfc.section.6.3.2.p.2">delete (required, boolean): The boolean value &#8220;true&#8221;.</p>
+<p id="rfc.section.6.3.2.p.3">The request object MUST contain the &#8220;resource&#8221; field as required above (with the value &#8220;reg&#8221;).  It MUST NOT contain any fields besides &#8220;resource&#8221; and &#8220;delete&#8221;.</p>
+<p id="rfc.section.6.3.2.p.4">Note that although this object is very simple, the risk of replay or fraudulent generation via signing oracles is mitigated by the need for an anti-replay token in the protected header of the JWS.</p>
 <pre>
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
@@ -1046,8 +990,8 @@ Host: example.com
 }
 /* Signed as JWS */
 </pre>
-<p id="rfc.section.6.3.3.p.5">On receiving a POST to an account URI containing a &#8220;delete&#8221; field, the server MUST verify that no other fields were sent in the object (other than &#8220;resource&#8221;), and it MUST verify that the value of the &#8220;delete&#8221; field is &#8220;true&#8221; (as a boolean, not a string).  If either of these checks fails, then the server MUST reject the request with status code 400 (Bad Request).</p>
-<p id="rfc.section.6.3.3.p.6">If the server accepts the deletion request, then it MUST delete the account and all related objects and send a response with a 200 (OK) status code and an empty body.  The server SHOULD delete any authorization objects related to the deleted account, since they can no longer be used.  The server SHOULD NOT delete certificate objects related to the account, since certificates issued under the account continue to be valid until they expire or are revoked.</p>
+<p id="rfc.section.6.3.2.p.5">On receiving a POST to an account URI containing a &#8220;delete&#8221; field, the server MUST verify that no other fields were sent in the object (other than &#8220;resource&#8221;), and it MUST verify that the value of the &#8220;delete&#8221; field is &#8220;true&#8221; (as a boolean, not a string).  If either of these checks fails, then the server MUST reject the request with status code 400 (Bad Request).</p>
+<p id="rfc.section.6.3.2.p.6">If the server accepts the deletion request, then it MUST delete the account and all related objects and send a response with a 200 (OK) status code and an empty body.  The server SHOULD delete any authorization objects related to the deleted account, since they can no longer be used.  The server SHOULD NOT delete certificate objects related to the account, since certificates issued under the account continue to be valid until they expire or are revoked.</p>
 <h1 id="rfc.section.6.4"><a href="#rfc.section.6.4">6.4.</a> <a href="#identifier-authorization" id="identifier-authorization">Identifier Authorization</a></h1>
 <p id="rfc.section.6.4.p.1">The identifier authorization process establishes the authorization of an account to manage certificates for a given identifier.  This process must assure the server of two things: First, that the client controls the private key of the account key pair, and second, that the client holds the identifier in question.  This process may be repeated to associate multiple identifiers to a key pair (e.g., to request certificates with multiple identifiers), or to associate multiple accounts with an identifier (e.g., to allow multiple entities to manage certificates).</p>
 <p id="rfc.section.6.4.p.2">As illustrated by the figure in the overview section above, the authorization process proceeds in two phases.  The client first requests a new authorization, and the server issues challenges, then the client responds to those challenges and the server validates the client&#8217;s responses.</p>
@@ -1154,7 +1098,7 @@ HTTP/1.1 200 OK
 }
 </pre>
 <h1 id="rfc.section.6.4.2"><a href="#rfc.section.6.4.2">6.4.2.</a> <a href="#deleting-an-authorization" id="deleting-an-authorization">Deleting an Authorization</a></h1>
-<p id="rfc.section.6.4.2.p.1">If a client wishes to relinquish its authorization to issue certificates for an identifier, then it may request that the server delete the authorization.  The client makes this request by sending a POST request to the authorization URI containing a payload in the same format as in <a href="#deleting-an-account">Section 6.3.3</a>.  The only difference is that the value of the &#8220;resource&#8221; field is &#8220;authz&#8221;.</p>
+<p id="rfc.section.6.4.2.p.1">If a client wishes to relinquish its authorization to issue certificates for an identifier, then it may request that the server delete the authorization.  The client makes this request by sending a POST request to the authorization URI containing a payload in the same format as in <a href="#deleting-an-account">Section 6.3.2</a>.  The only difference is that the value of the &#8220;resource&#8221; field is &#8220;authz&#8221;.</p>
 <pre>
 POST /acme/authz/asdf HTTP/1.1
 Host: example.com
@@ -1165,7 +1109,7 @@ Host: example.com
 }
 /* Signed as JWS */
 </pre>
-<p id="rfc.section.6.4.2.p.2">The server MUST perform the same validity checks as in <a href="#deleting-an-account">Section 6.3.3</a> and reject the request if they fail.  If the server deletes the account then it MUST send a response with a 200 (OK) status code and an empty body.</p>
+<p id="rfc.section.6.4.2.p.2">The server MUST perform the same validity checks as in <a href="#deleting-an-account">Section 6.3.2</a> and reject the request if they fail.  If the server deletes the account then it MUST send a response with a 200 (OK) status code and an empty body.</p>
 <h1 id="rfc.section.6.5"><a href="#rfc.section.6.5">6.5.</a> <a href="#certificate-issuance" id="certificate-issuance">Certificate Issuance</a></h1>
 <p id="rfc.section.6.5.p.1">The holder of an account key pair authorized for one or more identifiers may use ACME to request that a certificate be issued for any subset of those identifiers.  The client makes this request by sending a POST request to the server&#8217;s new-certificate resource.  The body of the POST is a JWS object whose JSON payload contains a Certificate Signing Request (CSR) <a href="#RFC2986">[RFC2986]</a>.  The CSR encodes the parameters of the requested certificate; authority to issue is demonstrated by the JWS signature by an account key, from which the server can look up related authorizations.  Some attributes which cannot be reflected in a CSR are placed directly in the certificate request.</p>
 <p/>
@@ -1665,26 +1609,13 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <p id="rfc.section.10.2.p.13">Given these considerations, the ACME validation process makes it impossible for any attacker on the ACME channel, or a passive attacker on the validation channel to hijack the authorization process to authorize a key of the attacker&#8217;s choice.</p>
 <p id="rfc.section.10.2.p.14">An attacker that can only see the ACME channel would need to convince the validation server to provide a response that would authorize the attacker&#8217;s account key, but this is prevented by binding the validation response to the account key used to request challenges.  A passive attacker on the validation channel can observe the correct validation response and even replay it, but that response can only be used with the account key for which it was generated.</p>
 <p id="rfc.section.10.2.p.15">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.  For identifiers where the server already has some public key associated with the domain this attack can be prevented by requiring the client to prove control of the corresponding private key.</p>
-<h1 id="rfc.section.10.3"><a href="#rfc.section.10.3">10.3.</a> <a href="#preventing-authorization-hijacking" id="preventing-authorization-hijacking">Preventing Authorization Hijacking</a></h1>
-<p id="rfc.section.10.3.p.1">The account recovery processes described in <a href="#account-recovery">Section 6.3.2</a> allow authorization to be transferred from one account key to another, in case the former account key pair&#8217;s private key is lost.  ACME needs to prevent these processes from being exploited by an attacker to hijack the authorizations attached to one key and assign them to a key of the attacker&#8217;s choosing.</p>
-<p id="rfc.section.10.3.p.2">Recovery takes place in two steps: 1. Provisioning recovery information (contact or recovery key) 2. Using recovery information to recover an account</p>
-<p id="rfc.section.10.3.p.3">The provisioning process needs to ensure that only the account key holder ends up with information that is useful for recovery.  The recovery process needs to assure that only the (now former) account key holder can successfully execute recovery, i.e., that this entity is the only one that can choose the new account key that receives the capabilities held by the account being recovered.</p>
-<p id="rfc.section.10.3.p.4">Account recovery uses both the ACME channel and the contact channel.  The provisioning process is only visible to an ACME MitM, and even then, the MitM can only observe the contact information provided.  If the ACME attacker does not also have access to the contact channel, there is no risk.</p>
-<p id="rfc.section.10.3.p.5">The security of the recovery process is entirely dependent on the security of the contact channel.  The details of this will depend on the specific out-of-band technique used by the server.  For example:</p>
-<p/>
-
-<ul>
-  <li>If the server requires a user to click a link in a message sent to a contact address, then the contact channel will need to ensure that the message is only available to the legitimate owner of the contact address.  Otherwise, a passive attacker could see the link and click it first, or an active attacker could redirect the message.</li>
-  <li>If the server requires a user to respond to a message sent to a contact address containing a secret value, then the contact channel will need to ensure that an attacker cannot observe the secret value and spoof a message from the contact address.</li>
-</ul>
-<p id="rfc.section.10.3.p.7">In practice, many contact channels that can be used to reach many clients do not provide strong assurances of the types noted above.  In designing and deploying recovery schemes, ACME servers operators will need to find an appropriate balance between using contact channels that can reach many clients and using contact-based recovery schemes that achieve an appropriate level of risk using those contact channels.</p>
-<h1 id="rfc.section.10.4"><a href="#rfc.section.10.4">10.4.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a></h1>
-<p id="rfc.section.10.4.p.1">As a protocol run over HTTPS, standard considerations for TCP-based and HTTP-based DoS mitigation also apply to ACME.</p>
-<p id="rfc.section.10.4.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
-<p id="rfc.section.10.4.p.3">In addition, an attacker can also cause the ACME server to send validation requests to a domain of its choosing by submitting authorization requests for the victim domain.</p>
-<p id="rfc.section.10.4.p.4">All of these attacks can be mitigated by the application of appropriate rate limits.  Issues closer to the front end, like POST body validation, can be addressed using HTTP request limiting.  For validation and certificate requests, there are other identifiers on which rate limits can be keyed.  For example, the server might limit the rate at which any individual account key can issue certificates, or the rate at which validation can be requested within a given subtree of the DNS.</p>
-<h1 id="rfc.section.10.5"><a href="#rfc.section.10.5">10.5.</a> <a href="#ca-policy-considerations" id="ca-policy-considerations">CA Policy Considerations</a></h1>
-<p id="rfc.section.10.5.p.1">The controls on issuance enabled by ACME are focused on validating that a certificate applicant controls the identifier he claims.  Before issuing a certificate, however, there are many other checks that a CA might need to perform, for example:</p>
+<h1 id="rfc.section.10.3"><a href="#rfc.section.10.3">10.3.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a></h1>
+<p id="rfc.section.10.3.p.1">As a protocol run over HTTPS, standard considerations for TCP-based and HTTP-based DoS mitigation also apply to ACME.</p>
+<p id="rfc.section.10.3.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
+<p id="rfc.section.10.3.p.3">In addition, an attacker can also cause the ACME server to send validation requests to a domain of its choosing by submitting authorization requests for the victim domain.</p>
+<p id="rfc.section.10.3.p.4">All of these attacks can be mitigated by the application of appropriate rate limits.  Issues closer to the front end, like POST body validation, can be addressed using HTTP request limiting.  For validation and certificate requests, there are other identifiers on which rate limits can be keyed.  For example, the server might limit the rate at which any individual account key can issue certificates, or the rate at which validation can be requested within a given subtree of the DNS.</p>
+<h1 id="rfc.section.10.4"><a href="#rfc.section.10.4">10.4.</a> <a href="#ca-policy-considerations" id="ca-policy-considerations">CA Policy Considerations</a></h1>
+<p id="rfc.section.10.4.p.1">The controls on issuance enabled by ACME are focused on validating that a certificate applicant controls the identifier he claims.  Before issuing a certificate, however, there are many other checks that a CA might need to perform, for example:</p>
 <p/>
 
 <ul>
@@ -1694,7 +1625,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Is the key in the CSR sufficiently strong?</li>
   <li>Is the CSR signed with an acceptable algorithm?</li>
 </ul>
-<p id="rfc.section.10.5.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
+<p id="rfc.section.10.4.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
 <h1 id="rfc.section.11"><a href="#rfc.section.11">11.</a> <a href="#operational-considerations" id="operational-considerations">Operational Considerations</a></h1>
 <p id="rfc.section.11.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.  For example:</p>
 <p/>
