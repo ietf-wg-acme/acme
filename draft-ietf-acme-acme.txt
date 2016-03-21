@@ -83,15 +83,16 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
    2.  Deployment Model and Operator Experience  . . . . . . . . . .   4
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   6
-   4.  Protocol Overview . . . . . . . . . . . . . . . . . . . . . .   7
+   4.  Protocol Overview . . . . . . . . . . . . . . . . . . . . . .   6
    5.  Protocol Elements . . . . . . . . . . . . . . . . . . . . . .   9
      5.1.  HTTPS Requests  . . . . . . . . . . . . . . . . . . . . .   9
-     5.2.  Registration Objects  . . . . . . . . . . . . . . . . . .  10
-     5.3.  Authorization Objects . . . . . . . . . . . . . . . . . .  11
-     5.4.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  13
-     5.5.  Replay protection . . . . . . . . . . . . . . . . . . . .  14
-       5.5.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  15
-       5.5.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  16
+     5.2.  Request Authentication  . . . . . . . . . . . . . . . . .   9
+     5.3.  Registration Objects  . . . . . . . . . . . . . . . . . .  10
+     5.4.  Authorization Objects . . . . . . . . . . . . . . . . . .  11
+     5.5.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  13
+     5.6.  Replay protection . . . . . . . . . . . . . . . . . . . .  14
+       5.6.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  15
+       5.6.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  16
    6.  Certificate Management  . . . . . . . . . . . . . . . . . . .  16
      6.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  16
      6.2.  Directory . . . . . . . . . . . . . . . . . . . . . . . .  18
@@ -105,7 +106,6 @@ Table of Contents
      6.5.  Certificate Issuance  . . . . . . . . . . . . . . . . . .  31
      6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  34
    7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  35
-     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  37
 
 
 
@@ -114,6 +114,7 @@ Barnes, et al.            Expires April 6, 2016                 [Page 2]
 Internet-Draft                    ACME                      October 2015
 
 
+     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  37
      7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  38
      7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  40
      7.4.  Proof of Possession of a Prior Key  . . . . . . . . . . .  42
@@ -161,7 +162,6 @@ Internet-Draft                    ACME                      October 2015
 
       *  Put a CA-provided challenge at a specific place on the web
          server.
-
 
 
 
@@ -301,43 +301,6 @@ Internet-Draft                    ACME                      October 2015
    the server.  The server uses the public key to verify the
    authenticity and integrity of messages from the client.
 
-   [[ XXX: Remainder is protocol, not terminology ]]
-
-   For simplicity, in all HTTPS transactions used by ACME, the ACME
-   client is the HTTPS client and the ACME server is the HTTPS server.
-
-   Binary fields are encoded using base64url encoding described in
-   [RFC4648] Section 5, according to the profile specified in JSON Web
-   Signature [RFC7515] Section 2.  This encoding uses a URL safe
-   character set.  Trailing '=' characters MUST be stripped.
-
-   HTTPS request bodies in ACME are authenticated and integrity-
-   protected by being encapsulated in a JSON Web Signature (JWS) object
-   [RFC7515].  ACME uses a profile of JWS, with the following
-   restrictions:
-
-   o  The JWS MUST use the Flattened JSON Serialization
-
-   o  The JWS MUST be encoded using UTF-8
-
-   o  The JWS Header or Protected Header MUST include "alg" and "jwk"
-      fields
-
-   o  The JWS MUST NOT have the value "none" in its "alg" field
-
-   o  The JWS Protected Header MUST inlucde the "nonce" fiele
-
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                 [Page 6]
-
-Internet-Draft                    ACME                      October 2015
-
-
 4.  Protocol Overview
 
    ACME allows a client to request certificate management actions using
@@ -367,6 +330,14 @@ Internet-Draft                    ACME                      October 2015
 
    Before a client can issue certificates, it must establish an
    authorization with the server for an account key pair to act for the
+
+
+
+Barnes, et al.            Expires April 6, 2016                 [Page 6]
+
+Internet-Draft                    ACME                      October 2015
+
+
    identifier(s) that it wishes to include in the certificate.  To do
    this, the client must demonstrate to the server both (1) that it
    holds the private key of the account key pair, and (2) that it has
@@ -386,13 +357,6 @@ Internet-Draft                    ACME                      October 2015
    which challenges the client has completed.  The server then validates
    the challenges to check that the client has accomplished the
    challenge.
-
-
-
-Barnes, et al.            Expires April 6, 2016                 [Page 7]
-
-Internet-Draft                    ACME                      October 2015
-
 
    For example, if the client requests a domain name, the server might
    challenge the client to provision a record in the DNS under that
@@ -422,6 +386,14 @@ Internet-Draft                    ACME                      October 2015
 
    Once the client has authorized an account key pair for an identifier,
    it can use the key pair to authorize the issuance of certificates for
+
+
+
+Barnes, et al.            Expires April 6, 2016                 [Page 7]
+
+Internet-Draft                    ACME                      October 2015
+
+
    the identifier.  To do this, the client sends a PKCS#10 Certificate
    Signing Request (CSR) to the server (indicating the identifier(s) to
    be included in the issued certificate) and a signature over the CSR
@@ -439,16 +411,6 @@ Internet-Draft                    ACME                      October 2015
    certificate and provides it in its response.  The certificate is
    assigned a URI, which the client can use to fetch updated versions of
    the certificate.
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                 [Page 8]
-
-Internet-Draft                    ACME                      October 2015
-
 
          Client                                                 Server
 
@@ -478,6 +440,16 @@ Internet-Draft                    ACME                      October 2015
    in the protocol, and what types of validation challenges the server
    might require.
 
+
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                 [Page 8]
+
+Internet-Draft                    ACME                      October 2015
+
+
 5.  Protocol Elements
 
    This section describes several components that are used by ACME, and
@@ -492,6 +464,22 @@ Internet-Draft                    ACME                      October 2015
    of Section 6 below describes the message formats used by the
    function, and the order in which messages are sent.
 
+   In all HTTPS transactions used by ACME, the ACME client is the HTTPS
+   client and the ACME server is the HTTPS server.
+
+   ACME servers that are intended to be generally accessible need to use
+   Cross-Origin Resource Sharing (CORS) in order to be accessible from
+   browser-based clients [W3C.CR-cors-20130129].  Such servers SHOULD
+   set the Access-Control-Allow-Origin header field to the value "*".
+
+   Binary fields in the JSON objects used by ACME are encoded using
+   base64url encoding described in [RFC4648] Section 5, according to the
+   profile specified in JSON Web Signature [RFC7515] Section 2.  This
+   encoding uses a URL safe character set.  Trailing '=' characters MUST
+   be stripped.
+
+5.2.  Request Authentication
+
    All ACME requests with a non-empty body MUST encapsulate the body in
    a JWS object, signed using the account key pair.  The server MUST
    verify the JWS before processing the request.  (For readability,
@@ -499,12 +487,27 @@ Internet-Draft                    ACME                      October 2015
    request bodies in JWS provides a simple authentication of requests by
    way of key continuity.
 
+   JWS objects sent in ACME requests MUST meet the following additional
+   criteria:
+
+   o  The JWS MUST use the Flattened JSON Serialization
+
+   o  The JWS MUST be encoded using UTF-8
+
+   o  The JWS Header or Protected Header MUST include "alg" and "jwk"
+      fields
+
+   o  The JWS MUST NOT have the value "none" in its "alg" field
+
 
 
 Barnes, et al.            Expires April 6, 2016                 [Page 9]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   o  The JWS Protected Header MUST include the "nonce" field (defined
+      below)
 
    Note that this implies that GET requests are not authenticated.
    Servers MUST NOT respond to GET requests for resources that might be
@@ -541,12 +544,7 @@ Internet-Draft                    ACME                      October 2015
 
    Other fields in ACME request bodies are described below.
 
-   ACME servers that are intended to be generally accessible need to use
-   Cross-Origin Resource Sharing (CORS) in order to be accessible from
-   browser-based clients [W3C.CR-cors-20130129].  Such servers SHOULD
-   set the Access-Control-Allow-Origin header field to the value "*".
-
-5.2.  Registration Objects
+5.3.  Registration Objects
 
    An ACME registration resource represents a set of metadata associated
    to an account key pair.  Registration resources have the following
@@ -554,6 +552,8 @@ Internet-Draft                    ACME                      October 2015
 
    key (required, dictionary):  The public key of the account key pair,
       encoded as a JSON Web Key object [RFC7517].
+
+
 
 
 
@@ -603,7 +603,7 @@ Internet-Draft                    ACME                      October 2015
      "certificates": "https://example.com/acme/reg/1/cert",
    }
 
-5.3.  Authorization Objects
+5.4.  Authorization Objects
 
    An ACME authorization object represents server's authorization for an
    account to represent an identifier.  In addition to the identifier,
@@ -693,7 +693,7 @@ Internet-Draft                    ACME                      October 2015
      ],
    }
 
-5.4.  Errors
+5.5.  Errors
 
    Errors can be reported in ACME both at the HTTP layer and within ACME
    payloads.  ACME servers can return responses with an HTTP error
@@ -772,7 +772,7 @@ Internet-Draft                    ACME                      October 2015
    information to indicate why the server was unable to validate
    authorization.
 
-5.5.  Replay protection
+5.6.  Replay protection
 
    In order to protect ACME resources from any possible replay attacks,
    ACME requests have a mandatory anti-replay mechanism.  This mechanism
@@ -814,7 +814,7 @@ Internet-Draft                    ACME                      October 2015
    value for each response, keep a list of issued nonces, and strike
    nonces from this list as they are used.
 
-5.5.1.  Replay-Nonce
+5.6.1.  Replay-Nonce
 
    The "Replay-Nonce" header field includes a server-generated value
    that the server can use to detect unauthorized replay in future
@@ -842,7 +842,7 @@ Barnes, et al.            Expires April 6, 2016                [Page 15]
 Internet-Draft                    ACME                      October 2015
 
 
-5.5.2.  "nonce" (Nonce) JWS header parameter
+5.6.2.  "nonce" (Nonce) JWS header parameter
 
    The "nonce" header parameter provides a unique value that enables the
    verifier of a JWS to recognize when replay has occurred.  The "nonce"
@@ -2564,7 +2564,7 @@ Internet-Draft                    ACME                      October 2015
 
    | Header Field Name | Protocol | Status | Reference |
    +:------------+:------+:------+:-----------+ | Replay-Nonce | http |
-   standard | Section 5.5.1 |
+   standard | Section 5.6.1 |
 
 
 
@@ -2591,7 +2591,7 @@ Internet-Draft                    ACME                      October 2015
 
    o  Change Controller: IESG
 
-   o  Specification Document(s): Section 5.5.2 of RFC XXXX
+   o  Specification Document(s): Section 5.6.2 of RFC XXXX
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -2649,7 +2649,7 @@ Internet-Draft                    ACME                      October 2015
    o  Reference: Where the error is defined
 
    Initial contents: The codes and descriptions in the table in
-   Section 5.4 above, with the Reference field set to point to this
+   Section 5.5 above, with the Reference field set to point to this
    specification.
 
 9.4.2.  Identifier Types
