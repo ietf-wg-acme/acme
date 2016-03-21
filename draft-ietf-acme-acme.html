@@ -297,8 +297,7 @@ li, p {
 <link href="#rfc.section.7.1" rel="Chapter" title="7.1 Key Authorizations"/>
 <link href="#rfc.section.7.2" rel="Chapter" title="7.2 HTTP"/>
 <link href="#rfc.section.7.3" rel="Chapter" title="7.3 TLS with Server Name Indication (TLS SNI)"/>
-<link href="#rfc.section.7.4" rel="Chapter" title="7.4 Proof of Possession of a Prior Key"/>
-<link href="#rfc.section.7.5" rel="Chapter" title="7.5 DNS"/>
+<link href="#rfc.section.7.4" rel="Chapter" title="7.4 DNS"/>
 <link href="#rfc.section.8" rel="Chapter" title="8 IANA Considerations"/>
 <link href="#rfc.section.9" rel="Chapter" title="9 Well-Known URI for the HTTP Challenge"/>
 <link href="#rfc.section.9.1" rel="Chapter" title="9.1 Replay-Nonce HTTP Header"/>
@@ -428,8 +427,7 @@ li, p {
 <ul><li>7.1.   <a href="#rfc.section.7.1">Key Authorizations</a></li>
 <li>7.2.   <a href="#rfc.section.7.2">HTTP</a></li>
 <li>7.3.   <a href="#rfc.section.7.3">TLS with Server Name Indication (TLS SNI)</a></li>
-<li>7.4.   <a href="#rfc.section.7.4">Proof of Possession of a Prior Key</a></li>
-<li>7.5.   <a href="#rfc.section.7.5">DNS</a></li>
+<li>7.4.   <a href="#rfc.section.7.4">DNS</a></li>
 </ul><li>8.   <a href="#rfc.section.8">IANA Considerations</a></li>
 <li>9.   <a href="#rfc.section.9">Well-Known URI for the HTTP Challenge</a></li>
 <ul><li>9.1.   <a href="#rfc.section.9.1">Replay-Nonce HTTP Header</a></li>
@@ -1260,19 +1258,10 @@ Content-Language: en
   <dd style="margin-left: 8">The error that occurred while the server was validating the challenge, if any.  This field is structured as a problem document <a href="#I-D.ietf-appsawg-http-problem">[I-D.ietf-appsawg-http-problem]</a>.</dd>
 </dl>
 <p id="rfc.section.7.p.10">All additional fields are specified by the challenge type.  If the server sets a challenge&#8217;s &#8220;status&#8221; to &#8220;invalid&#8221;, it SHOULD also include the &#8220;error&#8221; field to help the client diagnose why they failed the challenge.</p>
-<p id="rfc.section.7.p.11">Different challenges allow the server to obtain proof of different aspects of control over an identifier.  In some challenges, like HTTP and TLS SNI, the client directly proves its ability to do certain things related to the identifier.  In the Proof of Possession challenge, the client proves historical control of the identifier, by reference to a prior authorization transaction or certificate.</p>
-<p id="rfc.section.7.p.12">The choice of which challenges to offer to a client under which circumstances is a matter of server policy.  A CA may choose different sets of challenges depending on whether it has interacted with a domain before, and how.  For example:</p>
-<p/>
-
-<ul>
-  <li>New domain with no known certificates: Domain Validation (HTTP or TLS SNI)</li>
-  <li>Domain for which known certs exist from other CAs: DV + Proof of Possession of previous CA-signed key</li>
-  <li>Domain with a cert from this CA, lost account key: DV + PoP of ACME-certified Subject key</li>
-  <li>Domain with a cert from this CA, all keys and recovery mechanisms lost: Out of band proof of authority for the domain</li>
-</ul>
-<p id="rfc.section.7.p.14">The identifier validation challenges described in this section all relate to validation of domain names.  If ACME is extended in the future to support other types of identifier, there will need to be new challenge types, and they will need to specify which types of identifier they apply to.</p>
-<p id="rfc.section.7.p.15">[[ Editor&#8217;s Note: In pre-RFC versions of this specification, challenges are labeled by type, and with the version of the draft in which they were introduced.  For example, if an HTTP challenge were introduced in version -03 and a breaking change made in version -05, then there would be a challenge labeled &#8220;http-03&#8221; and one labeled &#8220;http-05&#8221; &#8211; but not one labeled &#8220;http-04&#8221;, since challenge in version -04 was compatible with one in version -04. ]]</p>
-<p id="rfc.section.7.p.16">[[ Editor&#8217;s Note: Operators SHOULD NOT issue &#8220;combinations&#8221; arrays in authorization objects that require the client to perform multiple challenges over the same type, e.g., [&#8220;http-03&#8221;, &#8220;http-05&#8221;].  Challenges within a type are testing the same capability of the domain owner, and it may not be possible to satisfy both at once. ]]</p>
+<p id="rfc.section.7.p.11">Different challenges allow the server to obtain proof of different aspects of control over an identifier.  In some challenges, like HTTP and TLS SNI, the client directly proves its ability to do certain things related to the identifier.  The choice of which challenges to offer to a client under which circumstances is a matter of server policy.</p>
+<p id="rfc.section.7.p.12">The identifier validation challenges described in this section all relate to validation of domain names.  If ACME is extended in the future to support other types of identifier, there will need to be new challenge types, and they will need to specify which types of identifier they apply to.</p>
+<p id="rfc.section.7.p.13">[[ Editor&#8217;s Note: In pre-RFC versions of this specification, challenges are labeled by type, and with the version of the draft in which they were introduced.  For example, if an HTTP challenge were introduced in version -03 and a breaking change made in version -05, then there would be a challenge labeled &#8220;http-03&#8221; and one labeled &#8220;http-05&#8221; &#8211; but not one labeled &#8220;http-04&#8221;, since challenge in version -04 was compatible with one in version -04. ]]</p>
+<p id="rfc.section.7.p.14">[[ Editor&#8217;s Note: Operators SHOULD NOT issue &#8220;combinations&#8221; arrays in authorization objects that require the client to perform multiple challenges over the same type, e.g., [&#8220;http-03&#8221;, &#8220;http-05&#8221;].  Challenges within a type are testing the same capability of the domain owner, and it may not be possible to satisfy both at once. ]]</p>
 <h1 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1.</a> <a href="#key-authorizations" id="key-authorizations">Key Authorizations</a></h1>
 <p id="rfc.section.7.1.p.1">Several of the challenges in this document makes use of a key authorization string.  A key authorization is a string that expresses a domain holder&#8217;s authorization for a specified key to satisfy a specified challenge, by concatenating the token for the challenge with a key fingerprint, separated by a &#8220;.&#8221; character:</p>
 <pre>
@@ -1376,83 +1365,8 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 </ol>
 <p id="rfc.section.7.3.p.13">It is RECOMMENDED that the ACME server validation TLS connections from multiple vantage points to reduce the risk of DNS hijacking attacks.</p>
 <p id="rfc.section.7.3.p.14">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
-<h1 id="rfc.section.7.4"><a href="#rfc.section.7.4">7.4.</a> <a href="#proof-of-possession-of-a-prior-key" id="proof-of-possession-of-a-prior-key">Proof of Possession of a Prior Key</a></h1>
-<p id="rfc.section.7.4.p.1">The Proof of Possession challenge verifies that a client possesses a private key corresponding to a server-specified public key, as demonstrated by its ability to sign with that key.  This challenge is meant to be used when the server knows of a public key that is already associated with the identifier being claimed, and wishes for new authorizations to be authorized by the holder of the corresponding private key.  For DNS identifiers, for example, this can help guard against domain hijacking.</p>
-<p id="rfc.section.7.4.p.2">This method is useful if a server policy calls for issuing a certificate only to an entity that already possesses the subject private key of a particular prior related certificate (perhaps issued by a different CA).  It may also help enable other kinds of server policy that are related to authenticating a client&#8217;s identity using digital signatures.</p>
-<p id="rfc.section.7.4.p.3">This challenge proceeds in much the same way as the proof of possession of the authorized key pair in the main ACME flow (challenge + authorizationRequest).  The server provides a nonce and the client signs over the nonce.  The main difference is that rather than signing with the private key of the key pair being authorized, the client signs with a private key specified by the server.  The server can specify which key pair(s) are acceptable directly (by indicating a public key), or by asking for the key corresponding to a certificate.</p>
-<p id="rfc.section.7.4.p.4">The server provides the following fields as part of the challenge:</p>
-<p/>
-
-<dl>
-  <dt>type (required, string):</dt>
-  <dd style="margin-left: 8">The string &#8220;proof-of-possession-01&#8221;</dd>
-  <dt>certs (optional, array of string):</dt>
-  <dd style="margin-left: 8">An array of certificates, in base64url-encoded DER format, that contain acceptable public keys.</dd>
-</dl>
-<pre>
-{
-  "type": "proof-of-possession-01",
-  "certs": ["MIIF7z...bYVQLY"]
-}
-</pre>
-<p id="rfc.section.7.4.p.6">In response to this challenge, the client uses the private key corresponding to one of the acceptable public keys to sign a JWS object including data related to the challenge.  The validation object covered by the signature has the following fields:</p>
-<p/>
-
-<dl>
-  <dt>type (required, string):</dt>
-  <dd style="margin-left: 8">The string &#8220;proof-of-possession&#8221;</dd>
-  <dt>identifiers (required, identifier):</dt>
-  <dd style="margin-left: 8">A list of identifiers for which the holder of the prior key authorizes the new key</dd>
-  <dt>accountKey (required, JWK):</dt>
-  <dd style="margin-left: 8">The client&#8217;s account public key</dd>
-</dl>
-<pre>
-{
-  "type": "proof-of-possession-01",
-  "identifiers: [{"type": "dns", "value": "example.com"}],
-  "accountKey": { "kty": "RSA", ... }
-}
-</pre>
-<p id="rfc.section.7.4.p.8">This JWS is NOT REQUIRED to have a &#8220;nonce&#8221; header parameter (as with the JWS objects that carry ACME request objects).  This allows proof-of-possession response objects to be computed off-line.  For example, as part of a domain transfer, the new domain owner might require the old domain owner to sign a proof-of-possession validation object, so that the new domain owner can present that in an ACME transaction later.</p>
-<p id="rfc.section.7.4.p.9">The validation JWS MUST contain a &#8220;jwk&#8221; header parameter indicating the public key under which the server should verify the JWS.</p>
-<p id="rfc.section.7.4.p.10">The client&#8217;s response includes the server-provided nonce, together with a signature over that nonce by one of the private keys requested by the server.</p>
-<p/>
-
-<dl>
-  <dt>type (required, string):</dt>
-  <dd style="margin-left: 8">The string &#8220;proof-of-possession&#8221;</dd>
-  <dt>authorization (required, JWS):</dt>
-  <dd style="margin-left: 8">The validation JWS</dd>
-</dl>
-<pre>
-{
-  "type": "proof-of-possession-01",
-  "authorization": {
-    "header": {
-      "alg": "RS256",
-      "jwk": {
-        "kty": "RSA",
-        "e": "AQAB",
-        "n": "AMswMT...3aVtjE"
-      }
-    },
-    "payload": "SfiR1...gSAl7A",
-    "signature": "XcQLfL...cW5beg"
-  }
-}
-</pre>
-<p id="rfc.section.7.4.p.12">To validate a proof-of-possession challenge, the server performs the following steps:</p>
-<p/>
-
-<ol>
-  <li>Verify that the public key in the &#8220;jwk&#8221; header of the &#8220;authorization&#8221; JWS corresponds to one of the certificates in the &#8220;certs&#8221; field of the challenge</li>
-  <li>Verify the &#8220;authorization&#8221; JWS using the key indicated in its &#8220;jwk&#8221; header</li>
-  <li>Decode the payload of the JWS as UTF-8 encoded JSON</li>
-  <li>Verify that there are exactly three fields in the decoded object, and that: <ul><li>The &#8220;type&#8221; field is set to &#8220;proof-of-possession&#8221;</li><li>The &#8220;identifier&#8221; field contains the identifier for which authorization is being validated</li><li>The &#8220;accountKey&#8221; field matches the account key for which the challenge was issued</li></ul></li>
-</ol>
-<p id="rfc.section.7.4.p.14">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
-<h1 id="rfc.section.7.5"><a href="#rfc.section.7.5">7.5.</a> <a href="#dns" id="dns">DNS</a></h1>
-<p id="rfc.section.7.5.p.1">When the identifier being validated is a domain name, the client can prove control of that domain by provisioning a resource record under it.   The DNS challenge requires the client to provision a TXT record containing a designated value under a specific validation domain name.</p>
+<h1 id="rfc.section.7.4"><a href="#rfc.section.7.4">7.4.</a> <a href="#dns" id="dns">DNS</a></h1>
+<p id="rfc.section.7.4.p.1">When the identifier being validated is a domain name, the client can prove control of that domain by provisioning a resource record under it.   The DNS challenge requires the client to provision a TXT record containing a designated value under a specific validation domain name.</p>
 <p/>
 
 <dl>
@@ -1467,12 +1381,12 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 </pre>
-<p id="rfc.section.7.5.p.3">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then computes the SHA-256 digest of the key authorization.</p>
-<p id="rfc.section.7.5.p.4">The record provisioned to the DNS is the base64url encoding of this digest.  The client constructs the validation domain name by prepending the label &#8220;_acme-challenge&#8221; to the domain name being validated, then provisions a TXT record with the digest value under that name. For example, if the domain name being validated is &#8220;example.com&#8221;, then the client would provision the following DNS record:</p>
+<p id="rfc.section.7.4.p.3">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then computes the SHA-256 digest of the key authorization.</p>
+<p id="rfc.section.7.4.p.4">The record provisioned to the DNS is the base64url encoding of this digest.  The client constructs the validation domain name by prepending the label &#8220;_acme-challenge&#8221; to the domain name being validated, then provisions a TXT record with the digest value under that name. For example, if the domain name being validated is &#8220;example.com&#8221;, then the client would provision the following DNS record:</p>
 <pre>
 _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 </pre>
-<p id="rfc.section.7.5.p.5">The response to the DNS challenge provides the computed key authorization to acknowledge that the client is ready to fulfill this challenge.</p>
+<p id="rfc.section.7.4.p.5">The response to the DNS challenge provides the computed key authorization to acknowledge that the client is ready to fulfill this challenge.</p>
 <p/>
 
 <dl>
@@ -1485,8 +1399,8 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 }
 /* Signed as JWS */
 </pre>
-<p id="rfc.section.7.5.p.7">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
-<p id="rfc.section.7.5.p.8">To validate a DNS challenge, the server performs the following steps:</p>
+<p id="rfc.section.7.4.p.7">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
+<p id="rfc.section.7.4.p.8">To validate a DNS challenge, the server performs the following steps:</p>
 <p/>
 
 <ol>
@@ -1494,7 +1408,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Query for TXT records under the validation domain name</li>
   <li>Verify that the contents of one of the TXT records matches the digest value</li>
 </ol>
-<p id="rfc.section.7.5.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
+<p id="rfc.section.7.4.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
 <h1 id="rfc.section.8"><a href="#rfc.section.8">8.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a></h1>
 <p id="rfc.section.8.p.1">[[ Editor&#8217;s Note: Should we create a registry for tokens that go into the various JSON objects used by this protocol, i.e., the field names in the JSON objects? ]]</p>
 <h1 id="rfc.section.9"><a href="#rfc.section.9">9.</a> <a href="#well-known-uri-for-the-http-challenge" id="well-known-uri-for-the-http-challenge">Well-Known URI for the HTTP Challenge</a></h1>
@@ -1675,7 +1589,6 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>HTTP: The value provided in the validation request is signed by the account private key.</li>
   <li>TLS SNI: The validation TLS request uses the account key pair as the server&#8217;s key pair.</li>
   <li>DNS: The MAC covers the account key, and the MAC key is derived from an ECDH public key signed with the account private key.</li>
-  <li>Proof of possession of a prior key: The signature by the prior key covers the account public key.</li>
 </ul>
 <p id="rfc.section.10.2.p.6">The association of challenges to identifiers is typically done by requiring the client to perform some action that only someone who effectively controls the identifier can perform.  For the challenges in this document, the actions are:</p>
 <p/>
@@ -1684,7 +1597,6 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>HTTP: Provision files under .well-known on a web server for the domain</li>
   <li>TLS SNI: Configure a TLS server for the domain</li>
   <li>DNS: Provision DNS resource records for the domain</li>
-  <li>Proof of possession of a prior key: Sign using the private key specified by the server</li>
 </ul>
 <p id="rfc.section.10.2.p.8">There are several ways that these assumptions can be violated, both by misconfiguration and by attack.  For example, on a web server that allows non-administrative users to write to .well-known, any user can claim to own the server&#8217;s hostname by responding to an HTTP challenge, and likewise for TLS configuration and TLS SNI.</p>
 <p id="rfc.section.10.2.p.9">The use of hosting providers is a particular risk for ACME validation.  If the owner of the domain has outsourced operation of DNS or web services to a hosting provider, there is nothing that can be done against tampering by the hosting provider.  As far as the outside world is concerned, the zone or web site provided by the hosting provider is the real thing.</p>
@@ -1699,7 +1611,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 </ul>
 <p id="rfc.section.10.2.p.13">Given these considerations, the ACME validation process makes it impossible for any attacker on the ACME channel, or a passive attacker on the validation channel to hijack the authorization process to authorize a key of the attacker&#8217;s choice.</p>
 <p id="rfc.section.10.2.p.14">An attacker that can only see the ACME channel would need to convince the validation server to provide a response that would authorize the attacker&#8217;s account key, but this is prevented by binding the validation response to the account key used to request challenges.  A passive attacker on the validation channel can observe the correct validation response and even replay it, but that response can only be used with the account key for which it was generated.</p>
-<p id="rfc.section.10.2.p.15">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.  For identifiers where the server already has some credential associated with the domain this attack can be prevented by requiring the client to complete a proof-of-possession challenge.</p>
+<p id="rfc.section.10.2.p.15">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.  For identifiers where the server already has some public key associated with the domain this attack can be prevented by requiring the client to prove control of the corresponding private key.</p>
 <h1 id="rfc.section.10.3"><a href="#rfc.section.10.3">10.3.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a></h1>
 <p id="rfc.section.10.3.p.1">As a protocol run over HTTPS, standard considerations for TCP-based and HTTP-based DoS mitigation also apply to ACME.</p>
 <p id="rfc.section.10.3.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
