@@ -299,19 +299,27 @@ li, p {
 <link href="#rfc.section.7.4" rel="Chapter" title="7.4 Proof of Possession of a Prior Key"/>
 <link href="#rfc.section.7.5" rel="Chapter" title="7.5 DNS"/>
 <link href="#rfc.section.8" rel="Chapter" title="8 IANA Considerations"/>
-<link href="#rfc.section.9" rel="Chapter" title="9 Security Considerations"/>
-<link href="#rfc.section.9.1" rel="Chapter" title="9.1 Threat model"/>
-<link href="#rfc.section.9.2" rel="Chapter" title="9.2 Integrity of Authorizations"/>
-<link href="#rfc.section.9.3" rel="Chapter" title="9.3 Preventing Authorization Hijacking"/>
-<link href="#rfc.section.9.4" rel="Chapter" title="9.4 Denial-of-Service Considerations"/>
-<link href="#rfc.section.9.5" rel="Chapter" title="9.5 CA Policy Considerations"/>
-<link href="#rfc.section.10" rel="Chapter" title="10 Operational Considerations"/>
-<link href="#rfc.section.10.1" rel="Chapter" title="10.1 Default Virtual Hosts"/>
-<link href="#rfc.section.10.2" rel="Chapter" title="10.2 Use of DNSSEC Resolvers"/>
-<link href="#rfc.section.11" rel="Chapter" title="11 Acknowledgements"/>
-<link href="#rfc.references" rel="Chapter" title="12 References"/>
-<link href="#rfc.references.1" rel="Chapter" title="12.1 Normative References"/>
-<link href="#rfc.references.2" rel="Chapter" title="12.2 Informative References"/>
+<link href="#rfc.section.9" rel="Chapter" title="9 Well-Known URI for the HTTP Challenge"/>
+<link href="#rfc.section.9.1" rel="Chapter" title="9.1 Replay-Nonce HTTP Header"/>
+<link href="#rfc.section.9.2" rel="Chapter" title="9.2 &#x201C;nonce&#x201D; JWS Header Parameter"/>
+<link href="#rfc.section.9.3" rel="Chapter" title="9.3 URN Sub-namespace for ACME (urn:ietf:params:acme)"/>
+<link href="#rfc.section.9.4" rel="Chapter" title="9.4 New Registries"/>
+<link href="#rfc.section.9.4.1" rel="Chapter" title="9.4.1 Error Codes"/>
+<link href="#rfc.section.9.4.2" rel="Chapter" title="9.4.2 Identifier Types"/>
+<link href="#rfc.section.9.4.3" rel="Chapter" title="9.4.3 Challenge Types"/>
+<link href="#rfc.section.10" rel="Chapter" title="10 Security Considerations"/>
+<link href="#rfc.section.10.1" rel="Chapter" title="10.1 Threat model"/>
+<link href="#rfc.section.10.2" rel="Chapter" title="10.2 Integrity of Authorizations"/>
+<link href="#rfc.section.10.3" rel="Chapter" title="10.3 Preventing Authorization Hijacking"/>
+<link href="#rfc.section.10.4" rel="Chapter" title="10.4 Denial-of-Service Considerations"/>
+<link href="#rfc.section.10.5" rel="Chapter" title="10.5 CA Policy Considerations"/>
+<link href="#rfc.section.11" rel="Chapter" title="11 Operational Considerations"/>
+<link href="#rfc.section.11.1" rel="Chapter" title="11.1 Default Virtual Hosts"/>
+<link href="#rfc.section.11.2" rel="Chapter" title="11.2 Use of DNSSEC Resolvers"/>
+<link href="#rfc.section.12" rel="Chapter" title="12 Acknowledgements"/>
+<link href="#rfc.references" rel="Chapter" title="13 References"/>
+<link href="#rfc.references.1" rel="Chapter" title="13.1 Normative References"/>
+<link href="#rfc.references.2" rel="Chapter" title="13.2 Informative References"/>
 <link href="#rfc.authors" rel="Chapter"/>
 
 
@@ -422,19 +430,27 @@ li, p {
 <li>7.4.   <a href="#rfc.section.7.4">Proof of Possession of a Prior Key</a></li>
 <li>7.5.   <a href="#rfc.section.7.5">DNS</a></li>
 </ul><li>8.   <a href="#rfc.section.8">IANA Considerations</a></li>
-<li>9.   <a href="#rfc.section.9">Security Considerations</a></li>
-<ul><li>9.1.   <a href="#rfc.section.9.1">Threat model</a></li>
-<li>9.2.   <a href="#rfc.section.9.2">Integrity of Authorizations</a></li>
-<li>9.3.   <a href="#rfc.section.9.3">Preventing Authorization Hijacking</a></li>
-<li>9.4.   <a href="#rfc.section.9.4">Denial-of-Service Considerations</a></li>
-<li>9.5.   <a href="#rfc.section.9.5">CA Policy Considerations</a></li>
-</ul><li>10.   <a href="#rfc.section.10">Operational Considerations</a></li>
-<ul><li>10.1.   <a href="#rfc.section.10.1">Default Virtual Hosts</a></li>
-<li>10.2.   <a href="#rfc.section.10.2">Use of DNSSEC Resolvers</a></li>
-</ul><li>11.   <a href="#rfc.section.11">Acknowledgements</a></li>
-<li>12.   <a href="#rfc.references">References</a></li>
-<ul><li>12.1.   <a href="#rfc.references.1">Normative References</a></li>
-<li>12.2.   <a href="#rfc.references.2">Informative References</a></li>
+<li>9.   <a href="#rfc.section.9">Well-Known URI for the HTTP Challenge</a></li>
+<ul><li>9.1.   <a href="#rfc.section.9.1">Replay-Nonce HTTP Header</a></li>
+<li>9.2.   <a href="#rfc.section.9.2">&#8220;nonce&#8221; JWS Header Parameter</a></li>
+<li>9.3.   <a href="#rfc.section.9.3">URN Sub-namespace for ACME (urn:ietf:params:acme)</a></li>
+<li>9.4.   <a href="#rfc.section.9.4">New Registries</a></li>
+<ul><li>9.4.1.   <a href="#rfc.section.9.4.1">Error Codes</a></li>
+<li>9.4.2.   <a href="#rfc.section.9.4.2">Identifier Types</a></li>
+<li>9.4.3.   <a href="#rfc.section.9.4.3">Challenge Types</a></li>
+</ul></ul><li>10.   <a href="#rfc.section.10">Security Considerations</a></li>
+<ul><li>10.1.   <a href="#rfc.section.10.1">Threat model</a></li>
+<li>10.2.   <a href="#rfc.section.10.2">Integrity of Authorizations</a></li>
+<li>10.3.   <a href="#rfc.section.10.3">Preventing Authorization Hijacking</a></li>
+<li>10.4.   <a href="#rfc.section.10.4">Denial-of-Service Considerations</a></li>
+<li>10.5.   <a href="#rfc.section.10.5">CA Policy Considerations</a></li>
+</ul><li>11.   <a href="#rfc.section.11">Operational Considerations</a></li>
+<ul><li>11.1.   <a href="#rfc.section.11.1">Default Virtual Hosts</a></li>
+<li>11.2.   <a href="#rfc.section.11.2">Use of DNSSEC Resolvers</a></li>
+</ul><li>12.   <a href="#rfc.section.12">Acknowledgements</a></li>
+<li>13.   <a href="#rfc.references">References</a></li>
+<ul><li>13.1.   <a href="#rfc.references.1">Normative References</a></li>
+<li>13.2.   <a href="#rfc.references.2">Informative References</a></li>
 </ul><li><a href="#rfc.authors">Authors' Addresses</a></li>
 
 
@@ -670,7 +686,7 @@ li, p {
   <thead>
     <tr>
       <th class="left">Code</th>
-      <th class="left">Semantic</th>
+      <th class="left">Description</th>
     </tr>
   </thead>
   <tbody>
@@ -726,7 +742,7 @@ li, p {
 <p id="rfc.section.5.5.p.1">In order to protect ACME resources from any possible replay attacks, ACME requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
 <p id="rfc.section.5.5.p.2">An ACME server MUST include a Replay-Nonce header field in each successful response it provides to a client, with contents as specified below.  In particular, the ACME server MUST provide a Replay-Nonce header field in response to a HEAD request for any valid resource.  (This allows clients to easily obtain a fresh nonce.)  It MAY also provide nonces in error responses.</p>
 <p id="rfc.section.5.5.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
-<p id="rfc.section.5.5.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the ACME error code &#8220;urn:acme:badNonce&#8221;.</p>
+<p id="rfc.section.5.5.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the ACME error code &#8220;urn:ietf:params:acme:error:badNonce&#8221;.</p>
 <p id="rfc.section.5.5.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
 <h1 id="rfc.section.5.5.1"><a href="#rfc.section.5.5.1">5.5.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a></h1>
 <p id="rfc.section.5.5.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server should generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability.</p>
@@ -1249,7 +1265,7 @@ Content-Type: application/problem+json
 Content-Language: en
 
 {
-  "type": "urn:acme:error:unauthorized"
+  "type": "urn:ietf:params:acme:error:unauthorized"
   "detail": "No authorization provided for name example.net"
   "instance": "http://example.com/doc/unauthorized"
 }
@@ -1263,7 +1279,7 @@ Content-Language: en
   <li>Hold the private key of the account key pair used to respond to the challenge</li>
   <li>Control the identifier in question</li>
 </ul>
-<p><a href="#security-considerations">Section 9</a> documents how the challenges defined in this document meet these requirements.  New challenges will need to document how they do.</p>
+<p><a href="#security-considerations">Section 10</a> documents how the challenges defined in this document meet these requirements.  New challenges will need to document how they do.</p>
 <p id="rfc.section.7.p.5">ACME uses an extensible challenge/response framework for identifier validation.  The server presents a set of challenge in the authorization object it sends to a client (as objects in the &#8220;challenges&#8221; array), and the client responds by sending a response object in a POST request to a challenge URI.</p>
 <p id="rfc.section.7.p.6">This section describes an initial set of challenge types.  Each challenge must describe:</p>
 <p/>
@@ -1525,28 +1541,138 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 </ol>
 <p id="rfc.section.7.5.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
 <h1 id="rfc.section.8"><a href="#rfc.section.8">8.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a></h1>
-<p id="rfc.section.8.p.1">TODO</p>
+<p id="rfc.section.8.p.1">[[ Editor&#8217;s Note: Should we create a registry for tokens that go into the various JSON objects used by this protocol, i.e., the field names in the JSON objects? ]]</p>
+<h1 id="rfc.section.9"><a href="#rfc.section.9">9.</a> <a href="#well-known-uri-for-the-http-challenge" id="well-known-uri-for-the-http-challenge">Well-Known URI for the HTTP Challenge</a></h1>
+<p id="rfc.section.9.p.1">The &#8220;Well-Known URIs&#8221; registry should be updated with the following additional value (using the template from <a href="#RFC5785">[RFC5785]</a>):</p>
+<p id="rfc.section.9.p.2">URI suffix: acme-challenge</p>
+<p id="rfc.section.9.p.3">Change controller: IETF</p>
+<p id="rfc.section.9.p.4">Specification document(s): This document, Section <a href="#http">Section 7.2</a></p>
+<p id="rfc.section.9.p.5">Related information: N/A</p>
+<h1 id="rfc.section.9.1"><a href="#rfc.section.9.1">9.1.</a> <a href="#replay-nonce-http-header" id="replay-nonce-http-header">Replay-Nonce HTTP Header</a></h1>
+<p id="rfc.section.9.1.p.1">The &#8220;Message Headers&#8221; registry should be updated with the following additional value:</p>
+<p id="rfc.section.9.1.p.2">| Header Field Name | Protocol | Status   | Reference        | +:&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;+ | Replay-Nonce      | http     | standard | <a href="#replay-nonce">Section 5.5.1</a> |</p>
+<h1 id="rfc.section.9.2"><a href="#rfc.section.9.2">9.2.</a> <a href="#nonce-jws-header-parameter" id="nonce-jws-header-parameter">&#8220;nonce&#8221; JWS Header Parameter</a></h1>
+<p id="rfc.section.9.2.p.1">The &#8220;JSON Web Signature and Encryption Header Parameters&#8221; registry should be updated with the following additional value:</p>
 <p/>
 
 <ul>
-  <li>Register .well-known path</li>
-  <li>Register Replay-Nonce HTTP header</li>
-  <li>Register &#8220;nonce&#8221; JWS header parameter</li>
-  <li>Register &#8220;urn:acme&#8221; namespace</li>
-  <li>Create identifier validation method registry</li>
-  <li>Registries of syntax tokens, e.g., message types / error types?</li>
+  <li>Header Parameter Name: &#8220;nonce&#8221;</li>
+  <li>Header Parameter Description: Nonce</li>
+  <li>Header Parameter Usage Location(s): JWE, JWS</li>
+  <li>Change Controller: IESG</li>
+  <li>Specification Document(s): <a href="#nonce-nonce-jws-header-parameter">Section 5.5.2</a> of RFC XXXX</li>
 </ul>
-<h1 id="rfc.section.9"><a href="#rfc.section.9">9.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a></h1>
-<p id="rfc.section.9.p.1">ACME is a protocol for managing certificates that attest to identifier/key bindings.  Thus the foremost security goal of ACME is to ensure the integrity of this process, i.e., to ensure that the bindings attested by certificates are correct, and that only authorized entities can manage certificates.  ACME identifies clients by their account keys, so this overall goal breaks down into two more precise goals:</p>
+<p id="rfc.section.9.2.p.3">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<h1 id="rfc.section.9.3"><a href="#rfc.section.9.3">9.3.</a> <a href="#urn-sub-namespace-for-acme-urnietfparamsacme" id="urn-sub-namespace-for-acme-urnietfparamsacme">URN Sub-namespace for ACME (urn:ietf:params:acme)</a></h1>
+<p id="rfc.section.9.3.p.1">The &#8220;IETF URN Sub-namespace for Registered Protocol Parameter Identifiers&#8221; registry should be updated with the following additional value, following the template in <a href="#RFC3553">[RFC3553]</a>:</p>
+<p/>
+
+<dl>
+  <dt>Registry name:</dt>
+  <dd style="margin-left: 8">acme</dd>
+  <dt>Specification:</dt>
+  <dd style="margin-left: 8">RFC XXXX</dd>
+  <dt>Repository:</dt>
+  <dd style="margin-left: 8">URL-TBD</dd>
+  <dt>Index value:</dt>
+  <dd style="margin-left: 8">No transformation needed.  The</dd>
+</dl>
+<p id="rfc.section.9.3.p.3">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document, and replace URL-TBD with the URL assigned by IANA for registries of ACME parameters. ]]</p>
+<h1 id="rfc.section.9.4"><a href="#rfc.section.9.4">9.4.</a> <a href="#new-registries" id="new-registries">New Registries</a></h1>
+<p id="rfc.section.9.4.p.1">This document requests that IANA create three new registries:</p>
+<p/>
+
+<ol>
+  <li>ACME Error Codes</li>
+  <li>ACME Identifier Types</li>
+  <li>ACME Challenge Types</li>
+</ol>
+<p id="rfc.section.9.4.p.3">All of these registries should be administered under a Specification Required policy <a href="#RFC5226">[RFC5226]</a>.</p>
+<h1 id="rfc.section.9.4.1"><a href="#rfc.section.9.4.1">9.4.1.</a> <a href="#error-codes" id="error-codes">Error Codes</a></h1>
+<p id="rfc.section.9.4.1.p.1">This registry lists values that are used within URN values that are provided in the &#8220;type&#8221; field of problem documents in ACME.</p>
+<p id="rfc.section.9.4.1.p.2">Template:</p>
+<p/>
+
+<ul>
+  <li>Code: The label to be included in the URN for this error, following &#8220;urn:ietf:params:acme:&#8221;</li>
+  <li>Description: A human-readable description of the error</li>
+  <li>Reference: Where the error is defined</li>
+</ul>
+<p id="rfc.section.9.4.1.p.4">Initial contents: The codes and descriptions in the table in <a href="#errors">Section 5.4</a> above, with the Reference field set to point to this specification.</p>
+<h1 id="rfc.section.9.4.2"><a href="#rfc.section.9.4.2">9.4.2.</a> <a href="#identifier-types" id="identifier-types">Identifier Types</a></h1>
+<p id="rfc.section.9.4.2.p.1">This registry lists the types of identifiers that ACME clients may request authorization to issue in certificates.</p>
+<p id="rfc.section.9.4.2.p.2">Template:</p>
+<p/>
+
+<ul>
+  <li>Label: The value to be put in the &#8220;type&#8221; field of the identifier object</li>
+  <li>Reference: Where the identifier type is defined</li>
+</ul>
+<p id="rfc.section.9.4.2.p.4">Initial contents:</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+  <thead>
+    <tr>
+      <th class="left">Label</th>
+      <th class="left">Reference</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="left">dns</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+  </tbody>
+</table>
+<p id="rfc.section.9.4.2.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<h1 id="rfc.section.9.4.3"><a href="#rfc.section.9.4.3">9.4.3.</a> <a href="#challenge-types" id="challenge-types">Challenge Types</a></h1>
+<p id="rfc.section.9.4.3.p.1">This registry lists the ways that ACME servers can offer to validate control of an identifier.  The &#8220;Identifier Type&#8221; field in template MUST be contained in the Label column of the ACME Identifier Types registry.</p>
+<p id="rfc.section.9.4.3.p.2">Template:</p>
+<p/>
+
+<ul>
+  <li>Label: The value to be put in the &#8220;type&#8221; field of challenge objects using this validation mechanism</li>
+  <li>Identifier Type: The type of identifier that this mechanism applies to</li>
+  <li>Reference: Where the challenge type is defined</li>
+</ul>
+<p id="rfc.section.9.4.3.p.4">Initial Contents</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+  <thead>
+    <tr>
+      <th class="left">Label</th>
+      <th class="left">Identifier Type</th>
+      <th class="left">Reference</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="left">http</td>
+      <td class="left">dns</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">tls-sni</td>
+      <td class="left">dns</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">dns</td>
+      <td class="left">dns</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+  </tbody>
+</table>
+<p id="rfc.section.9.4.3.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<h1 id="rfc.section.10"><a href="#rfc.section.10">10.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a></h1>
+<p id="rfc.section.10.p.1">ACME is a protocol for managing certificates that attest to identifier/key bindings.  Thus the foremost security goal of ACME is to ensure the integrity of this process, i.e., to ensure that the bindings attested by certificates are correct, and that only authorized entities can manage certificates.  ACME identifies clients by their account keys, so this overall goal breaks down into two more precise goals:</p>
 <p/>
 
 <ol>
   <li>Only an entity that controls an identifier can get an account key authorized for that identifier</li>
   <li>Once authorized, an account key&#8217;s authorizations cannot be improperly transferred to another account key</li>
 </ol>
-<p id="rfc.section.9.p.3">In this section, we discuss the threat model that underlies ACME and the ways that ACME achieves these security goals within that threat model.  We also discuss the denial-of-service risks that ACME servers face, and a few other miscellaneous considerations.</p>
-<h1 id="rfc.section.9.1"><a href="#rfc.section.9.1">9.1.</a> <a href="#threat-model" id="threat-model">Threat model</a></h1>
-<p id="rfc.section.9.1.p.1">As a service on the Internet, ACME broadly exists within the Internet threat model <a href="#RFC3552">[RFC3552]</a>.  In analyzing ACME, it is useful to think of an ACME server interacting with other Internet hosts along three &#8220;channels&#8221;:</p>
+<p id="rfc.section.10.p.3">In this section, we discuss the threat model that underlies ACME and the ways that ACME achieves these security goals within that threat model.  We also discuss the denial-of-service risks that ACME servers face, and a few other miscellaneous considerations.</p>
+<h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#threat-model" id="threat-model">Threat model</a></h1>
+<p id="rfc.section.10.1.p.1">As a service on the Internet, ACME broadly exists within the Internet threat model <a href="#RFC3552">[RFC3552]</a>.  In analyzing ACME, it is useful to think of an ACME server interacting with other Internet hosts along three &#8220;channels&#8221;:</p>
 <p/>
 
 <ul>
@@ -1569,12 +1695,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 |   Server   |  Validation Channel
 +------------+
 </pre>
-<p id="rfc.section.9.1.p.3">In practice, the risks to these channels are not entirely separate, but they are different in most cases.  Each of the three channels, for example, uses a different communications pattern: the ACME channel will comprise inbound HTTPS connections to the ACME server, the validation channel outbound HTTP or DNS requests, and the contact channel will use channels such as email and PSTN.</p>
-<p id="rfc.section.9.1.p.4">Broadly speaking, ACME aims to be secure against active and passive attackers on any individual channel.  Some vulnerabilities arise (noted below), when an attacker can exploit both the ACME channel and one of the others.</p>
-<p id="rfc.section.9.1.p.5">On the ACME channel, in addition to network-layer attackers, we also need to account for application-layer man in the middle attacks, and for abusive use of the protocol itself.  Protection against application-layer MitM addresses potential attackers such as Content Distribution Networks (CDNs) and middleboxes with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an attacker with access to the validation or contact channels can&#8217;t obtain illegitimate authorization by acting as an ACME client (legitimately, in terms of the protocol).</p>
-<h1 id="rfc.section.9.2"><a href="#rfc.section.9.2">9.2.</a> <a href="#integrity-of-authorizations" id="integrity-of-authorizations">Integrity of Authorizations</a></h1>
-<p id="rfc.section.9.2.p.1">ACME allows anyone to request challenges for an identifier by registering an account key and sending a new-authorization request under that account key.  The integrity of the authorization process thus depends on the identifier validation challenges to ensure that the challenge can only be completed by someone who both (1) holds the private key of the account key pair, and (2) controls the identifier in question.</p>
-<p id="rfc.section.9.2.p.2">Validation responses need to be bound to an account key pair in order to avoid situations where an ACME MitM can switch out a legitimate domain holder&#8217;s account key for one of his choosing, e.g.:</p>
+<p id="rfc.section.10.1.p.3">In practice, the risks to these channels are not entirely separate, but they are different in most cases.  Each of the three channels, for example, uses a different communications pattern: the ACME channel will comprise inbound HTTPS connections to the ACME server, the validation channel outbound HTTP or DNS requests, and the contact channel will use channels such as email and PSTN.</p>
+<p id="rfc.section.10.1.p.4">Broadly speaking, ACME aims to be secure against active and passive attackers on any individual channel.  Some vulnerabilities arise (noted below), when an attacker can exploit both the ACME channel and one of the others.</p>
+<p id="rfc.section.10.1.p.5">On the ACME channel, in addition to network-layer attackers, we also need to account for application-layer man in the middle attacks, and for abusive use of the protocol itself.  Protection against application-layer MitM addresses potential attackers such as Content Distribution Networks (CDNs) and middleboxes with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an attacker with access to the validation or contact channels can&#8217;t obtain illegitimate authorization by acting as an ACME client (legitimately, in terms of the protocol).</p>
+<h1 id="rfc.section.10.2"><a href="#rfc.section.10.2">10.2.</a> <a href="#integrity-of-authorizations" id="integrity-of-authorizations">Integrity of Authorizations</a></h1>
+<p id="rfc.section.10.2.p.1">ACME allows anyone to request challenges for an identifier by registering an account key and sending a new-authorization request under that account key.  The integrity of the authorization process thus depends on the identifier validation challenges to ensure that the challenge can only be completed by someone who both (1) holds the private key of the account key pair, and (2) controls the identifier in question.</p>
+<p id="rfc.section.10.2.p.2">Validation responses need to be bound to an account key pair in order to avoid situations where an ACME MitM can switch out a legitimate domain holder&#8217;s account key for one of his choosing, e.g.:</p>
 <p/>
 
 <ul>
@@ -1587,7 +1713,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>ACME server performs validation query and sees the response provisioned by the legitimate domain holder</li>
   <li>Because the challenges were issued in response to a message signed account key B, the ACME server grants authorization to account key B (the MitM) instead of account key A (the legitimate domain holder)</li>
 </ul>
-<p id="rfc.section.9.2.p.4">All of the challenges above that require an out-of-band query by the server have a binding to the account private key, such that only the account private key holder can successfully respond to the validation query:</p>
+<p id="rfc.section.10.2.p.4">All of the challenges above that require an out-of-band query by the server have a binding to the account private key, such that only the account private key holder can successfully respond to the validation query:</p>
 <p/>
 
 <ul>
@@ -1596,7 +1722,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>DNS: The MAC covers the account key, and the MAC key is derived from an ECDH public key signed with the account private key.</li>
   <li>Proof of possession of a prior key: The signature by the prior key covers the account public key.</li>
 </ul>
-<p id="rfc.section.9.2.p.6">The association of challenges to identifiers is typically done by requiring the client to perform some action that only someone who effectively controls the identifier can perform.  For the challenges in this document, the actions are:</p>
+<p id="rfc.section.10.2.p.6">The association of challenges to identifiers is typically done by requiring the client to perform some action that only someone who effectively controls the identifier can perform.  For the challenges in this document, the actions are:</p>
 <p/>
 
 <ul>
@@ -1605,10 +1731,10 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>DNS: Provision DNS resource records for the domain</li>
   <li>Proof of possession of a prior key: Sign using the private key specified by the server</li>
 </ul>
-<p id="rfc.section.9.2.p.8">There are several ways that these assumptions can be violated, both by misconfiguration and by attack.  For example, on a web server that allows non-administrative users to write to .well-known, any user can claim to own the server&#8217;s hostname by responding to an HTTP challenge, and likewise for TLS configuration and TLS SNI.</p>
-<p id="rfc.section.9.2.p.9">The use of hosting providers is a particular risk for ACME validation.  If the owner of the domain has outsourced operation of DNS or web services to a hosting provider, there is nothing that can be done against tampering by the hosting provider.  As far as the outside world is concerned, the zone or web site provided by the hosting provider is the real thing.</p>
-<p id="rfc.section.9.2.p.10">More limited forms of delegation can also lead to an unintended party gaining the ability to successfully complete a validation transaction.  For example, suppose an ACME server follows HTTP redirects in HTTP validation and a web site operator provisions a catch-all redirect rule that redirects requests for unknown resources to different domain.  Then the target of the redirect could use that to get a certificate through HTTP validation, since the validation path will not be known to the primary server.</p>
-<p id="rfc.section.9.2.p.11">The DNS is a common point of vulnerability for all of these challenges.  An entity that can provision false DNS records for a domain can attack the DNS challenge directly, and can provision false A/AAAA records to direct the ACME server to send its TLS SNI or HTTP validation query to a server of the attacker&#8217;s choosing.  There are a few different mitigations that ACME servers can apply:</p>
+<p id="rfc.section.10.2.p.8">There are several ways that these assumptions can be violated, both by misconfiguration and by attack.  For example, on a web server that allows non-administrative users to write to .well-known, any user can claim to own the server&#8217;s hostname by responding to an HTTP challenge, and likewise for TLS configuration and TLS SNI.</p>
+<p id="rfc.section.10.2.p.9">The use of hosting providers is a particular risk for ACME validation.  If the owner of the domain has outsourced operation of DNS or web services to a hosting provider, there is nothing that can be done against tampering by the hosting provider.  As far as the outside world is concerned, the zone or web site provided by the hosting provider is the real thing.</p>
+<p id="rfc.section.10.2.p.10">More limited forms of delegation can also lead to an unintended party gaining the ability to successfully complete a validation transaction.  For example, suppose an ACME server follows HTTP redirects in HTTP validation and a web site operator provisions a catch-all redirect rule that redirects requests for unknown resources to different domain.  Then the target of the redirect could use that to get a certificate through HTTP validation, since the validation path will not be known to the primary server.</p>
+<p id="rfc.section.10.2.p.11">The DNS is a common point of vulnerability for all of these challenges.  An entity that can provision false DNS records for a domain can attack the DNS challenge directly, and can provision false A/AAAA records to direct the ACME server to send its TLS SNI or HTTP validation query to a server of the attacker&#8217;s choosing.  There are a few different mitigations that ACME servers can apply:</p>
 <p/>
 
 <ul>
@@ -1616,29 +1742,29 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Querying the DNS from multiple vantage points to address local attackers</li>
   <li>Applying mitigations against DNS off-path attackers, e.g., adding entropy to requests <a href="#I-D.vixie-dnsext-dns0x20">[I-D.vixie-dnsext-dns0x20]</a> or only using TCP</li>
 </ul>
-<p id="rfc.section.9.2.p.13">Given these considerations, the ACME validation process makes it impossible for any attacker on the ACME channel, or a passive attacker on the validation channel to hijack the authorization process to authorize a key of the attacker&#8217;s choice.</p>
-<p id="rfc.section.9.2.p.14">An attacker that can only see the ACME channel would need to convince the validation server to provide a response that would authorize the attacker&#8217;s account key, but this is prevented by binding the validation response to the account key used to request challenges.  A passive attacker on the validation channel can observe the correct validation response and even replay it, but that response can only be used with the account key for which it was generated.</p>
-<p id="rfc.section.9.2.p.15">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.  For identifiers where the server already has some credential associated with the domain this attack can be prevented by requiring the client to complete a proof-of-possession challenge.</p>
-<h1 id="rfc.section.9.3"><a href="#rfc.section.9.3">9.3.</a> <a href="#preventing-authorization-hijacking" id="preventing-authorization-hijacking">Preventing Authorization Hijacking</a></h1>
-<p id="rfc.section.9.3.p.1">The account recovery processes described in <a href="#account-recovery">Section 6.3.2</a> allow authorization to be transferred from one account key to another, in case the former account key pair&#8217;s private key is lost.  ACME needs to prevent these processes from being exploited by an attacker to hijack the authorizations attached to one key and assign them to a key of the attacker&#8217;s choosing.</p>
-<p id="rfc.section.9.3.p.2">Recovery takes place in two steps: 1. Provisioning recovery information (contact or recovery key) 2. Using recovery information to recover an account</p>
-<p id="rfc.section.9.3.p.3">The provisioning process needs to ensure that only the account key holder ends up with information that is useful for recovery.  The recovery process needs to assure that only the (now former) account key holder can successfully execute recovery, i.e., that this entity is the only one that can choose the new account key that receives the capabilities held by the account being recovered.</p>
-<p id="rfc.section.9.3.p.4">Account recovery uses both the ACME channel and the contact channel.  The provisioning process is only visible to an ACME MitM, and even then, the MitM can only observe the contact information provided.  If the ACME attacker does not also have access to the contact channel, there is no risk.</p>
-<p id="rfc.section.9.3.p.5">The security of the recovery process is entirely dependent on the security of the contact channel.  The details of this will depend on the specific out-of-band technique used by the server.  For example:</p>
+<p id="rfc.section.10.2.p.13">Given these considerations, the ACME validation process makes it impossible for any attacker on the ACME channel, or a passive attacker on the validation channel to hijack the authorization process to authorize a key of the attacker&#8217;s choice.</p>
+<p id="rfc.section.10.2.p.14">An attacker that can only see the ACME channel would need to convince the validation server to provide a response that would authorize the attacker&#8217;s account key, but this is prevented by binding the validation response to the account key used to request challenges.  A passive attacker on the validation channel can observe the correct validation response and even replay it, but that response can only be used with the account key for which it was generated.</p>
+<p id="rfc.section.10.2.p.15">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.  For identifiers where the server already has some credential associated with the domain this attack can be prevented by requiring the client to complete a proof-of-possession challenge.</p>
+<h1 id="rfc.section.10.3"><a href="#rfc.section.10.3">10.3.</a> <a href="#preventing-authorization-hijacking" id="preventing-authorization-hijacking">Preventing Authorization Hijacking</a></h1>
+<p id="rfc.section.10.3.p.1">The account recovery processes described in <a href="#account-recovery">Section 6.3.2</a> allow authorization to be transferred from one account key to another, in case the former account key pair&#8217;s private key is lost.  ACME needs to prevent these processes from being exploited by an attacker to hijack the authorizations attached to one key and assign them to a key of the attacker&#8217;s choosing.</p>
+<p id="rfc.section.10.3.p.2">Recovery takes place in two steps: 1. Provisioning recovery information (contact or recovery key) 2. Using recovery information to recover an account</p>
+<p id="rfc.section.10.3.p.3">The provisioning process needs to ensure that only the account key holder ends up with information that is useful for recovery.  The recovery process needs to assure that only the (now former) account key holder can successfully execute recovery, i.e., that this entity is the only one that can choose the new account key that receives the capabilities held by the account being recovered.</p>
+<p id="rfc.section.10.3.p.4">Account recovery uses both the ACME channel and the contact channel.  The provisioning process is only visible to an ACME MitM, and even then, the MitM can only observe the contact information provided.  If the ACME attacker does not also have access to the contact channel, there is no risk.</p>
+<p id="rfc.section.10.3.p.5">The security of the recovery process is entirely dependent on the security of the contact channel.  The details of this will depend on the specific out-of-band technique used by the server.  For example:</p>
 <p/>
 
 <ul>
   <li>If the server requires a user to click a link in a message sent to a contact address, then the contact channel will need to ensure that the message is only available to the legitimate owner of the contact address.  Otherwise, a passive attacker could see the link and click it first, or an active attacker could redirect the message.</li>
   <li>If the server requires a user to respond to a message sent to a contact address containing a secret value, then the contact channel will need to ensure that an attacker cannot observe the secret value and spoof a message from the contact address.</li>
 </ul>
-<p id="rfc.section.9.3.p.7">In practice, many contact channels that can be used to reach many clients do not provide strong assurances of the types noted above.  In designing and deploying recovery schemes, ACME servers operators will need to find an appropriate balance between using contact channels that can reach many clients and using contact-based recovery schemes that achieve an appropriate level of risk using those contact channels.</p>
-<h1 id="rfc.section.9.4"><a href="#rfc.section.9.4">9.4.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a></h1>
-<p id="rfc.section.9.4.p.1">As a protocol run over HTTPS, standard considerations for TCP-based and HTTP-based DoS mitigation also apply to ACME.</p>
-<p id="rfc.section.9.4.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
-<p id="rfc.section.9.4.p.3">In addition, an attacker can also cause the ACME server to send validation requests to a domain of its choosing by submitting authorization requests for the victim domain.</p>
-<p id="rfc.section.9.4.p.4">All of these attacks can be mitigated by the application of appropriate rate limits.  Issues closer to the front end, like POST body validation, can be addressed using HTTP request limiting.  For validation and certificate requests, there are other identifiers on which rate limits can be keyed.  For example, the server might limit the rate at which any individual account key can issue certificates, or the rate at which validation can be requested within a given subtree of the DNS.</p>
-<h1 id="rfc.section.9.5"><a href="#rfc.section.9.5">9.5.</a> <a href="#ca-policy-considerations" id="ca-policy-considerations">CA Policy Considerations</a></h1>
-<p id="rfc.section.9.5.p.1">The controls on issuance enabled by ACME are focused on validating that a certificate applicant controls the identifier he claims.  Before issuing a certificate, however, there are many other checks that a CA might need to perform, for example:</p>
+<p id="rfc.section.10.3.p.7">In practice, many contact channels that can be used to reach many clients do not provide strong assurances of the types noted above.  In designing and deploying recovery schemes, ACME servers operators will need to find an appropriate balance between using contact channels that can reach many clients and using contact-based recovery schemes that achieve an appropriate level of risk using those contact channels.</p>
+<h1 id="rfc.section.10.4"><a href="#rfc.section.10.4">10.4.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a></h1>
+<p id="rfc.section.10.4.p.1">As a protocol run over HTTPS, standard considerations for TCP-based and HTTP-based DoS mitigation also apply to ACME.</p>
+<p id="rfc.section.10.4.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
+<p id="rfc.section.10.4.p.3">In addition, an attacker can also cause the ACME server to send validation requests to a domain of its choosing by submitting authorization requests for the victim domain.</p>
+<p id="rfc.section.10.4.p.4">All of these attacks can be mitigated by the application of appropriate rate limits.  Issues closer to the front end, like POST body validation, can be addressed using HTTP request limiting.  For validation and certificate requests, there are other identifiers on which rate limits can be keyed.  For example, the server might limit the rate at which any individual account key can issue certificates, or the rate at which validation can be requested within a given subtree of the DNS.</p>
+<h1 id="rfc.section.10.5"><a href="#rfc.section.10.5">10.5.</a> <a href="#ca-policy-considerations" id="ca-policy-considerations">CA Policy Considerations</a></h1>
+<p id="rfc.section.10.5.p.1">The controls on issuance enabled by ACME are focused on validating that a certificate applicant controls the identifier he claims.  Before issuing a certificate, however, there are many other checks that a CA might need to perform, for example:</p>
 <p/>
 
 <ul>
@@ -1648,25 +1774,25 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Is the key in the CSR sufficiently strong?</li>
   <li>Is the CSR signed with an acceptable algorithm?</li>
 </ul>
-<p id="rfc.section.9.5.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
-<h1 id="rfc.section.10"><a href="#rfc.section.10">10.</a> <a href="#operational-considerations" id="operational-considerations">Operational Considerations</a></h1>
-<p id="rfc.section.10.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.  For example:</p>
+<p id="rfc.section.10.5.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
+<h1 id="rfc.section.11"><a href="#rfc.section.11">11.</a> <a href="#operational-considerations" id="operational-considerations">Operational Considerations</a></h1>
+<p id="rfc.section.11.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.  For example:</p>
 <p/>
 
 <ul>
   <li>It is advisable to perform DNS queries via TCP to mitigate DNS forgery attacks over UDP</li>
 </ul>
-<p id="rfc.section.10.p.3">[[ TODO: Other operational considerations ]]</p>
-<h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#default-virtual-hosts" id="default-virtual-hosts">Default Virtual Hosts</a></h1>
-<p id="rfc.section.10.1.p.1">In many cases, TLS-based services are deployed on hosted platforms that use the Server Name Indication (SNI) TLS extension to distinguish between different hosted services or &#8220;virtual hosts&#8221;.  When a client initiates a TLS connection with an SNI value indicating a provisioned host, the hosting platform routes the connection to that host.</p>
-<p id="rfc.section.10.1.p.2">When a connection come in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>
-<p id="rfc.section.10.1.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-02&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
-<p id="rfc.section.10.1.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).</p>
-<h1 id="rfc.section.10.2"><a href="#rfc.section.10.2">10.2.</a> <a href="#use-of-dnssec-resolvers" id="use-of-dnssec-resolvers">Use of DNSSEC Resolvers</a></h1>
-<p id="rfc.section.10.2.p.1">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
-<p id="rfc.section.10.2.p.2">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
-<h1 id="rfc.section.11"><a href="#rfc.section.11">11.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a></h1>
-<p id="rfc.section.11.p.1">In addition to the editors listed on the front page, this document has benefited from contributions from a broad set of contributors, all the way back to its inception.</p>
+<p id="rfc.section.11.p.3">[[ TODO: Other operational considerations ]]</p>
+<h1 id="rfc.section.11.1"><a href="#rfc.section.11.1">11.1.</a> <a href="#default-virtual-hosts" id="default-virtual-hosts">Default Virtual Hosts</a></h1>
+<p id="rfc.section.11.1.p.1">In many cases, TLS-based services are deployed on hosted platforms that use the Server Name Indication (SNI) TLS extension to distinguish between different hosted services or &#8220;virtual hosts&#8221;.  When a client initiates a TLS connection with an SNI value indicating a provisioned host, the hosting platform routes the connection to that host.</p>
+<p id="rfc.section.11.1.p.2">When a connection come in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>
+<p id="rfc.section.11.1.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-02&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
+<p id="rfc.section.11.1.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).</p>
+<h1 id="rfc.section.11.2"><a href="#rfc.section.11.2">11.2.</a> <a href="#use-of-dnssec-resolvers" id="use-of-dnssec-resolvers">Use of DNSSEC Resolvers</a></h1>
+<p id="rfc.section.11.2.p.1">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
+<p id="rfc.section.11.2.p.2">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
+<h1 id="rfc.section.12"><a href="#rfc.section.12">12.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a></h1>
+<p id="rfc.section.12.p.1">In addition to the editors listed on the front page, this document has benefited from contributions from a broad set of contributors, all the way back to its inception.</p>
 <p/>
 
 <ul>
@@ -1677,9 +1803,9 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Martin Thomson, Mozilla</li>
   <li>Jakub Warmuz, University of Oxford</li>
 </ul>
-<p id="rfc.section.11.p.3">This document draws on many concepts established by Eric Rescorla&#8217;s &#8220;Automated Certificate Issuance Protocol&#8221; draft.  Martin Thomson provided helpful guidance in the use of HTTP.</p>
-<h1 id="rfc.references"><a href="#rfc.references">12.</a> References</h1>
-<h1 id="rfc.references.1"><a href="#rfc.references.1">12.1.</a> Normative References</h1>
+<p id="rfc.section.12.p.3">This document draws on many concepts established by Eric Rescorla&#8217;s &#8220;Automated Certificate Issuance Protocol&#8221; draft.  Martin Thomson provided helpful guidance in the use of HTTP.</p>
+<h1 id="rfc.references"><a href="#rfc.references">13.</a> References</h1>
+<h1 id="rfc.references.1"><a href="#rfc.references.1">13.1.</a> Normative References</h1>
 <table>
   <tbody>
     <tr>
@@ -1720,6 +1846,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
     </tr>
     <tr>
       <td class="reference">
+        <b id="RFC3553">[RFC3553]</b>
+      </td>
+      <td class="top"><a>Mealling, M.</a>, <a>Masinter, L.</a>, <a>Hardie, T.</a> and <a>G. Klyne</a>, "<a href="http://tools.ietf.org/html/rfc3553">An IETF URN Sub-namespace for Registered Protocol Parameters</a>", BCP 73, RFC 3553, DOI 10.17487/RFC3553, June 2003.</td>
+    </tr>
+    <tr>
+      <td class="reference">
         <b id="RFC4291">[RFC4291]</b>
       </td>
       <td class="top"><a>Hinden, R.</a> and <a>S. Deering</a>, "<a href="http://tools.ietf.org/html/rfc4291">IP Version 6 Addressing Architecture</a>", RFC 4291, DOI 10.17487/RFC4291, February 2006.</td>
@@ -1732,6 +1864,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
     </tr>
     <tr>
       <td class="reference">
+        <b id="RFC5226">[RFC5226]</b>
+      </td>
+      <td class="top"><a>Narten, T.</a> and <a>H. Alvestrand</a>, "<a href="http://tools.ietf.org/html/rfc5226">Guidelines for Writing an IANA Considerations Section in RFCs</a>", BCP 26, RFC 5226, DOI 10.17487/RFC5226, May 2008.</td>
+    </tr>
+    <tr>
+      <td class="reference">
         <b id="RFC5246">[RFC5246]</b>
       </td>
       <td class="top"><a>Dierks, T.</a> and <a>E. Rescorla</a>, "<a href="http://tools.ietf.org/html/rfc5246">The Transport Layer Security (TLS) Protocol Version 1.2</a>", RFC 5246, DOI 10.17487/RFC5246, August 2008.</td>
@@ -1741,6 +1879,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
         <b id="RFC5280">[RFC5280]</b>
       </td>
       <td class="top"><a>Cooper, D.</a>, <a>Santesson, S.</a>, <a>Farrell, S.</a>, <a>Boeyen, S.</a>, <a>Housley, R.</a> and <a>W. Polk</a>, "<a href="http://tools.ietf.org/html/rfc5280">Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile</a>", RFC 5280, DOI 10.17487/RFC5280, May 2008.</td>
+    </tr>
+    <tr>
+      <td class="reference">
+        <b id="RFC5785">[RFC5785]</b>
+      </td>
+      <td class="top"><a>Nottingham, M.</a> and <a>E. Hammer-Lahav</a>, "<a href="http://tools.ietf.org/html/rfc5785">Defining Well-Known Uniform Resource Identifiers (URIs)</a>", RFC 5785, DOI 10.17487/RFC5785, April 2010.</td>
     </tr>
     <tr>
       <td class="reference">
@@ -1810,7 +1954,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
     </tr>
   </tbody>
 </table>
-<h1 id="rfc.references.2"><a href="#rfc.references.2">12.2.</a> Informative References</h1>
+<h1 id="rfc.references.2"><a href="#rfc.references.2">13.2.</a> Informative References</h1>
 <table>
   <tbody>
     <tr>
