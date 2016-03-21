@@ -705,21 +705,20 @@ the service provided by the ACME server.
 
 The following metadata items are defined, all of which are OPTIONAL:
 
-"terms-of-service":
-: A string containing a URI identifying the current terms of service.
+"terms-of-service" (optional, string):
+: A URI identifying the current terms of service.
 
-"website":
-: String containing an HTTP or HTTPS URL locating a website providing more
-information about the ACME server.
+"website" (optional, string):
+: An HTTP or HTTPS URL locating a website providing more information about the
+ACME server.
 
-"caa-identities":
-: If present, MUST be an array of strings. Each string MUST be a lowercase
-hostname which the ACME server recognises as referring to itself for the
-purposes of CAA record validation as defined in {{RFC6844}}.  This allows
-clients to determine the correct issuer domain name to use when configuring CAA
-record.
+"caa-identities" (optional, array of string):
+: Each string in this array MUST be a lowercase hostname which the ACME server
+recognises as referring to itself for the purposes of CAA record validation as
+defined in {{RFC6844}}.  This allows clients to determine the correct issuer
+domain name to use when configuring CAA record.
 
-"account-mgmt":
+"account-mgmt" (optional, string):
 : An HTTP or HTTPS URI indicating a website where a user can perform
 account-managment functions.  For example, this website might allow a user to
 associate a new account key pair to an account by proving possession of a
@@ -740,7 +739,7 @@ Content-Type: application/json
     "terms-of-service": "https://example.com/acme/terms",
     "website": "https://www.example.com/",
     "caa-identities": ["example.com"],
-    "accounts-mgmt": "https://example.com/accounts/"
+    "account-mgmt": "https://example.com/accounts/"
   }
 }
 ~~~~~~~~~~
