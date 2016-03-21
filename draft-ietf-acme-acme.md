@@ -389,7 +389,6 @@ defined in the below table:
 | Resource type        | "resource" value |
 |:---------------------|:-----------------|
 | New registration     | new-reg          |
-| Recover registration | recover-reg      |
 | New authorization    | new-authz        |
 | New certificate      | new-cert         |
 | Revoke certificate   | revoke-cert      |
@@ -499,7 +498,6 @@ In this section, we describe the certificate management functions that ACME
 enables:
 
   * Account Key Registration
-  * Account Recovery
   * Account Key Authorization
   * Certificate Issuance
   * Certificate Renewal
@@ -747,7 +745,6 @@ Content-Type: application/json
 
 {
   "new-reg": "https://example.com/acme/new-reg",
-  "recover-reg": "https://example.com/acme/recover-reg",
   "new-authz": "https://example.com/acme/new-authz",
   "new-cert": "https://example.com/acme/new-cert",
   "revoke-cert": "https://example.com/acme/revoke-cert",
@@ -812,7 +809,6 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 Location: https://example.com/acme/reg/asdf
 Link: <https://example.com/acme/new-authz>;rel="next"
-Link: <https://example.com/acme/recover-reg>;rel="recover"
 Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
@@ -912,100 +908,6 @@ If the update was successful, then the server sends a response with status code
 200 (OK) and the updated registration object as its body.  If the update was not
 successful, then the server responds with an error status code and a problem
 document describing the error.
-
-
-### Account Recovery
-
-Once a client has created an account with an ACME server, it is possible that
-the private key for the account will be lost.  The recovery contacts included in
-the registration allows the client to recover from this situation, as long as
-it still has access to these contacts.
-
-By "recovery", we mean that the information associated with an old account key
-is bound to a new account key.  When a recovery process succeeds, the server
-provides the client with a new registration whose contents are the same as base
-registration object -- except for the "key" field, which is set to the new
-account key.  The server reassigns resources associated with the base
-registration to the new registration (e.g., authorizations and certificates).
-The server SHOULD delete the old registration resource after it has been used as
-a base for recovery.
-
-In addition to the recovery mechanisms defined by ACME, individual client
-implementations may also offer implementation-specific recovery mechanisms.  For
-example, if a client creates account keys deterministically from a seed value,
-then this seed could be used to recover the account key by re-generating it.  Or
-an implementation could escrow an encrypted copy of the account key with a cloud
-storage provider, and give the encryption key to the user as a recovery value.
-
-The client requests recovery by asking that the server send a message to one
-of the contact URIs registered for the account.  That message indicates some
-action that the server requires the client's user to perform, e.g., clicking a
-link in an email.  If the user successfully completes the server's required
-actions, then the server will bind the account to the new account key.
-
-(Note that this process is almost entirely out of band with respect to ACME.
-ACME only allows the client to initiate the process, and the server to indicate
-the result.)
-
-To initiate recovery, the client sends a POST request to the
-server's recover-registration URI, with a body specifying which registration is
-to be recovered.  The body of the request MUST be signed by the client's new
-account key pair.
-
-method (required, string):
-: The string "contact"
-
-base (required, string):
-: The URI for the registration to be recovered.
-
-~~~~~~~~~~
-POST /acme/recover-reg HTTP/1.1
-Host: example.com
-
-{
-  "resource": "recover-reg",
-  "method": "contact",
-  "base": "https://example.com/acme/reg/asdf",
-  "contact": [
-    "mailto:forgetful@example.net"
-  ]
-}
-/* Signed as JWS, with new account key */
-~~~~~~~~~~
-
-If the server agrees to attempt recovery, then it creates a new registration
-resource containing a stub registration object.  The stub registration has the
-client's new account key and contacts, but no authorizations or certificates
-associated.  The server returns the stub contact in a 201 (Created) response,
-along with a Location header field indicating the URI for the new registration
-resource (which will be the registration URI if the recovery succeeds).
-
-~~~~~~~~~~
-HTTP/1.1 201 Created
-Content-Type: application/json
-Location: https://example.com/acme/reg/qwer
-
-{
-  "key": { /* new account key from JWS header */ },
-
-  "contact": [
-    "mailto:forgetful@example.net"
-  ]
-}
-~~~~~~~~~~
-
-After recovery has been initiated, the server follows its chosen recovery
-process, out-of-band to ACME.  While the recovery process is ongoing, the client
-may poll the registration resource's URI for status, by sending a POST request
-with a trivial body ({"resource":"reg"}).  If the recovery process is still
-pending, the server sends a 202 (Accepted) status code, and a Retry-After header
-field. If the recovery process has failed, the server sends an error code (e.g.,
-404), and SHOULD delete the stub registration resource.
-
-If the recovery process has succeeded, then the server will send a 200 (OK)
-response, containing the full registration object, with any necessary
-information copied from the old registration).  The client may now use this in
-the same way as if he had gotten it from a new-registration transaction.
 
 ### Deleting an Account
 
@@ -2115,50 +2017,6 @@ own account key.  The risks due to hosting providers noted above are a
 particular case.  For identifiers where the server already has some public key
 associated with the domain this attack can be prevented by requiring the client
 to prove control of the corresponding private key.
-
-## Preventing Authorization Hijacking
-
-The account recovery processes described in {{account-recovery}} allow
-authorization to be transferred from one account key to another, in case the
-former account key pair's private key is lost.  ACME needs to prevent these
-processes from being exploited by an attacker to hijack the authorizations
-attached to one key and assign them to a key of the attacker's choosing.
-
-Recovery takes place in two steps:
-1. Provisioning recovery information (contact or recovery key)
-2. Using recovery information to recover an account
-
-The provisioning process needs to ensure that only the account key holder ends
-up with information that is useful for recovery.  The recovery process needs to
-assure that only the (now former) account key holder can successfully execute
-recovery, i.e., that this entity is the only one that can choose the new account
-key that receives the capabilities held by the account being recovered.
-
-Account recovery uses both the ACME channel and the contact channel.  The
-provisioning process is only visible to an ACME MitM, and even then, the MitM
-can only observe the contact information provided.  If the ACME attacker does
-not also have access to the contact channel, there is no risk.
-
-The security of the recovery process is entirely dependent on the security of
-the contact channel.  The details of this will depend on the specific
-out-of-band technique used by the server.  For example:
-
-* If the server requires a user to click a link in a message sent to a contact
-  address, then the contact channel will need to ensure that the message is only
-  available to the legitimate owner of the contact address.  Otherwise, a
-  passive attacker could see the link and click it first, or an active attacker
-  could redirect the message.
-* If the server requires a user to respond to a message sent to a contact
-  address containing a secret value, then the contact channel will need to
-  ensure that an attacker cannot observe the secret value and spoof a message
-  from the contact address.
-
-In practice, many contact channels that can be used to reach many clients do not
-provide strong assurances of the types noted above.  In designing and deploying
-recovery schemes, ACME servers operators will need to find an appropriate
-balance between using contact channels that can reach many clients and using
-contact-based recovery schemes that achieve an appropriate level of risk using
-those contact channels.
 
 ## Denial-of-Service Considerations
 
