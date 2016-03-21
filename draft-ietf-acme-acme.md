@@ -1502,22 +1502,8 @@ help the client diagnose why they failed the challenge.
 Different challenges allow the server to obtain proof of different aspects of
 control over an identifier.  In some challenges, like HTTP and TLS SNI, the
 client directly proves its ability to do certain things related to the
-identifier.  In the Proof of Possession challenge, the client proves historical
-control of the identifier, by reference to a prior authorization transaction or
-certificate.
-
-The choice of which challenges to offer to a client under which circumstances is
-a matter of server policy.  A CA may choose different sets of challenges
-depending on whether it has interacted with a domain before, and how.  For
-example:
-
-* New domain with no known certificates: Domain Validation (HTTP or TLS SNI)
-* Domain for which known certs exist from other CAs: DV + Proof of Possession of
-  previous CA-signed key
-* Domain with a cert from this CA, lost account key: DV + PoP of ACME-certified
-  Subject key
-* Domain with a cert from this CA, all keys and recovery mechanisms lost: Out of
-  band proof of authority for the domain
+identifier.  The choice of which challenges to offer to a client under which
+circumstances is a matter of server policy.
 
 The identifier validation challenges described in this section all relate to
 validation of domain names.  If ACME is extended in the future to support other
@@ -1742,123 +1728,6 @@ using these steps:
 
 It is RECOMMENDED that the ACME server validation TLS connections from multiple
 vantage points to reduce the risk of DNS hijacking attacks.
-
-If all of the above verifications succeed, then the validation is successful.
-Otherwise, the validation fails.
-
-## Proof of Possession of a Prior Key
-
-The Proof of Possession challenge verifies that a client possesses a private key
-corresponding to a server-specified public key, as demonstrated by its ability
-to sign with that key.  This challenge is meant to be used when the server knows
-of a public key that is already associated with the identifier being claimed,
-and wishes for new authorizations to be authorized by the holder of the
-corresponding private key.  For DNS identifiers, for example, this can help
-guard against domain hijacking.
-
-This method is useful if a server policy calls for issuing a certificate only to
-an entity that already possesses the subject private key of a particular prior
-related certificate (perhaps issued by a different CA).  It may also help enable
-other kinds of server policy that are related to authenticating a client's
-identity using digital signatures.
-
-This challenge proceeds in much the same way as the proof of possession of the
-authorized key pair in the main ACME flow (challenge + authorizationRequest).
-The server provides a nonce and the client signs over the nonce.  The main
-difference is that rather than signing with the private key of the key pair
-being authorized, the client signs with a private key specified by the server.
-The server can specify which key pair(s) are acceptable directly (by indicating
-a public key), or by asking for the key corresponding to a certificate.
-
-The server provides the following fields as part of the challenge:
-
-type (required, string):
-: The string "proof-of-possession-01"
-
-certs (optional, array of string):
-: An array of certificates, in base64url-encoded DER format, that contain
-acceptable public keys.
-
-
-~~~~~~~~~~
-{
-  "type": "proof-of-possession-01",
-  "certs": ["MIIF7z...bYVQLY"]
-}
-~~~~~~~~~~
-
-In response to this challenge, the client uses the private key corresponding to
-one of the acceptable public keys to sign a JWS object including data related to
-the challenge.  The validation object covered by the signature has the following
-fields:
-
-type (required, string):
-: The string "proof-of-possession"
-
-identifiers (required, identifier):
-: A list of identifiers for which the holder of the prior key authorizes the new key
-
-accountKey (required, JWK):
-: The client's account public key
-
-~~~~~~~~~~
-{
-  "type": "proof-of-possession-01",
-  "identifiers: [{"type": "dns", "value": "example.com"}],
-  "accountKey": { "kty": "RSA", ... }
-}
-~~~~~~~~~~
-
-This JWS is NOT REQUIRED to have a "nonce" header parameter (as with the JWS
-objects that carry ACME request objects).  This allows proof-of-possession
-response objects to be computed off-line.  For example, as part of a domain
-transfer, the new domain owner might require the old domain owner to sign a
-proof-of-possession validation object, so that the new domain owner can present
-that in an ACME transaction later.
-
-The validation JWS MUST contain a "jwk" header parameter indicating the public
-key under which the server should verify the JWS.
-
-The client's response includes the server-provided nonce, together with a
-signature over that nonce by one of the private keys requested by the server.
-
-type (required, string):
-: The string "proof-of-possession"
-
-authorization (required, JWS):
-: The validation JWS
-
-~~~~~~~~~~
-{
-  "type": "proof-of-possession-01",
-  "authorization": {
-    "header": {
-      "alg": "RS256",
-      "jwk": {
-        "kty": "RSA",
-        "e": "AQAB",
-        "n": "AMswMT...3aVtjE"
-      }
-    },
-    "payload": "SfiR1...gSAl7A",
-    "signature": "XcQLfL...cW5beg"
-  }
-}
-~~~~~~~~~~
-
-To validate a proof-of-possession challenge, the server performs the following
-steps:
-
-1. Verify that the public key in the "jwk" header of the "authorization" JWS
-   corresponds to one of the certificates in the "certs" field of the challenge
-2. Verify the "authorization" JWS using the key indicated in its "jwk" header
-3. Decode the payload of the JWS as UTF-8 encoded JSON
-4. Verify that there are exactly three fields in the decoded object, and that:
-  * The "type" field is set to "proof-of-possession"
-  * The "identifier" field contains the identifier for which authorization is
-    being validated
-  * The "accountKey" field matches the account key for which the challenge was
-    issued
 
 If all of the above verifications succeed, then the validation is successful.
 Otherwise, the validation fails.
@@ -2168,8 +2037,6 @@ holder can successfully respond to the validation query:
   key pair.
 * DNS: The MAC covers the account key, and the MAC key is derived from an ECDH
   public key signed with the account private key.
-* Proof of possession of a prior key: The signature by the prior key covers the
-  account public key.
 
 The association of challenges to identifiers is typically done by requiring the
 client to perform some action that only someone who effectively controls the
@@ -2178,8 +2045,6 @@ identifier can perform.  For the challenges in this document, the actions are:
 * HTTP: Provision files under .well-known on a web server for the domain
 * TLS SNI: Configure a TLS server for the domain
 * DNS: Provision DNS resource records for the domain
-* Proof of possession of a prior key: Sign using the private key specified by
-  the server
 
 There are several ways that these assumptions can be violated, both by
 misconfiguration and by attack.  For example, on a web server that allows
