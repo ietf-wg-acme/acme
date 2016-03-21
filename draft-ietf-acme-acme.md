@@ -33,10 +33,13 @@ normative:
   RFC2985:
   RFC2986:
   RFC3339:
+  RFC3553:
   RFC4291:
   RFC4648:
+  RFC5226:
   RFC5246:
   RFC5280:
+  RFC5785:
   RFC5988:
   RFC6066:
   RFC6570:
@@ -512,7 +515,7 @@ To facilitate automatic response
 to errors, this document defines the following standard tokens for use in the
 "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Code            | Semantic                                                  |
+| Code            | Description                                               |
 |:----------------|:----------------------------------------------------------|
 | badCSR          | The CSR is unacceptable (e.g., due to a short key)        |
 | badNonce        | The client sent an unacceptable anti-replay nonce         |
@@ -556,7 +559,7 @@ invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
-ACME error code "urn:acme:badNonce".
+ACME error code "urn:ietf:params:acme:error:badNonce".
 
 The precise method used to generate and track nonces is up to the server.  For
 example, the server could generate a random 128-bit value for each response,
@@ -1431,7 +1434,7 @@ Content-Type: application/problem+json
 Content-Language: en
 
 {
-  "type": "urn:acme:error:unauthorized"
+  "type": "urn:ietf:params:acme:error:unauthorized"
   "detail": "No authorization provided for name example.net"
   "instance": "http://example.com/doc/unauthorized"
 }
@@ -1929,14 +1932,137 @@ checks, then the validation fails.
 
 # IANA Considerations
 
-TODO
+[[ Editor's Note: Should we create a registry for tokens that go into the
+various JSON objects used by this protocol, i.e., the field names in the JSON
+objects? ]]
 
-* Register .well-known path
-* Register Replay-Nonce HTTP header
-* Register "nonce" JWS header parameter
-* Register "urn:acme" namespace
-* Create identifier validation method registry
-* Registries of syntax tokens, e.g., message types / error types?
+# Well-Known URI for the HTTP Challenge
+
+The "Well-Known URIs" registry should be updated with the following additional
+value (using the template from {{RFC5785}}):
+
+URI suffix: acme-challenge
+
+Change controller: IETF
+
+Specification document(s): This document, Section {{http}}
+
+Related information: N/A
+
+## Replay-Nonce HTTP Header
+
+The "Message Headers" registry should be updated with the following additional
+value:
+
+| Header Field Name | Protocol | Status   | Reference        |
++:------------------+:---------+:---------+:-----------------+
+| Replay-Nonce      | http     | standard | {{replay-nonce}} |
+
+## "nonce" JWS Header Parameter
+
+The "JSON Web Signature and Encryption Header Parameters" registry should be
+updated with the following additional value:
+
+*  Header Parameter Name: "nonce"
+*  Header Parameter Description: Nonce
+*  Header Parameter Usage Location(s): JWE, JWS
+*  Change Controller: IESG
+*  Specification Document(s): {{nonce-nonce-jws-header-parameter}} of
+   RFC XXXX
+
+[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
+## URN Sub-namespace for ACME (urn:ietf:params:acme)
+
+The "IETF URN Sub-namespace for Registered Protocol Parameter Identifiers"
+registry should be updated with the following additional value, following the
+template in {{RFC3553}}:
+
+Registry name:
+: acme
+
+Specification:
+: RFC XXXX
+
+Repository:
+: URL-TBD
+
+Index value: 
+: No transformation needed.  The 
+
+[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document, and replace URL-TBD with the URL assigned by IANA for registries of
+ACME parameters. ]]
+
+## New Registries
+
+This document requests that IANA create three new registries:
+
+1. ACME Error Codes
+2. ACME Identifier Types
+3. ACME Challenge Types
+
+All of these registries should be administered under a Specification Required
+policy {{RFC5226}}.
+
+### Error Codes
+
+This registry lists values that are used within URN values that are provided in
+the "type" field of problem documents in ACME.
+
+Template:
+
+* Code: The label to be included in the URN for this error, following
+  "urn:ietf:params:acme:"
+* Description: A human-readable description of the error
+* Reference: Where the error is defined
+
+Initial contents: The codes and descriptions in the table in {{errors}} above,
+with the Reference field set to point to this specification.
+
+### Identifier Types
+
+This registry lists the types of identifiers that ACME clients may request
+authorization to issue in certificates.
+
+Template:
+
+* Label: The value to be put in the "type" field of the identifier object
+* Reference: Where the identifier type is defined
+
+Initial contents:
+
+| Label | Reference |
+|:------|:----------|
+| dns   | RFC XXXX  |
+
+[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
+### Challenge Types
+
+This registry lists the ways that ACME servers can offer to validate control of
+an identifier.  The "Identifier Type" field in template MUST be contained in the
+Label column of the ACME Identifier Types registry.
+
+Template:
+
+* Label: The value to be put in the "type" field of challenge objects using this
+  validation mechanism
+* Identifier Type: The type of identifier that this mechanism applies to
+* Reference: Where the challenge type is defined
+
+Initial Contents
+
+| Label   | Identifier Type | Reference |
+|:--------|:----------------|:----------|
+| http    | dns             | RFC XXXX  |
+| tls-sni | dns             | RFC XXXX  |
+| dns     | dns             | RFC XXXX  |
+
+[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
 
 # Security Considerations
 
