@@ -379,162 +379,6 @@ addressed to, as defined in the below table:
 
 Other fields in ACME request bodies are described below.
 
-## Registration Objects
-
-An ACME registration resource represents a set of metadata associated to an
-account key pair.  Registration resources have the following structure:
-
-key (required, dictionary):
-: The public key of the account key pair, encoded as a JSON Web Key object
-{{RFC7517}}.
-
-contact (optional, array of string):
-: An array of URIs that the server can use to contact the client for issues
-related to this authorization. For example, the server may wish to notify the
-client about server-initiated revocation.
-
-agreement (optional, string):
-: A URI referring to a subscriber agreement or terms of service provided by the
-server (see below).  Including this field indicates the client's agreement with
-the referenced terms.
-
-authorizations (required, string):
-: A URI from which a list of authorizations granted to this account can be
-fetched via a GET request.  The result of the GET request MUST be a JSON object
-whose "authorizations" field is an array of strings, where each string is the
-URI of an authorization belonging to this registration.  The server SHOULD
-include pending authorizations, and SHOULD NOT include authorizations that are
-invalid or expired. The server MAY return an incomplete list, along with a Link
-header with link relation "next" indicating a URL to retrieve further entries.
-
-certificates (required, string):
-: A URI from which a list of certificates issued for this account can be fetched
-via a GET request.  The result of the GET request MUST be a JSON object whose
-"certificates" field is an array of strings, where each string is the URI of a
-certificate.  The server SHOULD NOT include expired or revoked certificates.
-The server MAY return an incomplete list, along with a Link header with link
-relation "next" indicating a URL to retrieve further entries.
-
-~~~~~~~~~~
-{
-  "resource": "new-reg",
-  "contact": [
-    "mailto:cert-admin@example.com",
-    "tel:+12025551212"
-  ],
-  "agreement": "https://example.com/acme/terms",
-  "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert",
-}
-~~~~~~~~~~
-
-## Authorization Objects
-
-An ACME authorization object represents server's authorization for an account to
-represent an identifier.  In addition to the identifier, an authorization
-includes several metadata fields, such as the status of the authorization (e.g.,
-"pending", "valid", or "revoked") and which challenges were used to validate
-possession of the identifier.
-
-The structure of an ACME authorization resource is as follows:
-
-identifier (required, dictionary of string):
-: The identifier that the account is authorized to represent
-
-  type (required, string):
-  : The type of identifier.
-
-  value (required, string):
-  : The identifier itself.
-
-status (required, string):
-: The status of this authorization.  Possible values are: "unknown", "pending",
-"processing", "valid", "invalid" and "revoked".  If this field is missing, then
-the default value is "pending".
-
-expires (optional, string):
-: The timestamp after which the server will consider this authorization invalid,
-encoded in the format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED
-for objects with "valid" in the "status field.
-
-challenges (required, array):
-: The challenges that the client needs to fulfill
-in order to prove possession of the identifier (for pending authorizations).
-For final authorizations, the challenges that were used.  Each array entry is a
-dictionary with parameters required to validate the challenge, as specified in
-{{identifier-validation-challenges}}.
-
-combinations (optional, array of arrays of integers):
-: A collection of sets of
-challenges, each of which would be sufficient to prove possession of the
-identifier. Clients complete a set of challenges that covers at least one
-set in this array. Challenges are identified by their indices in the challenges
-array.  If no "combinations" element is included in an authorization object, the
-client completes all challenges.
-
-The only type of identifier defined by this specification is a fully-qualified
-domain name (type: "dns").  The value of the identifier MUST be the ASCII
-representation of the domain name.  Wildcard domain names (with "*" as the first
-label) MUST NOT be included in authorization requests.  See
-{{certificate-issuance}} below for more information about wildcard domains.
-
-~~~~~~~~~~
-{
-  "status": "valid",
-  "expires": "2015-03-01T14:09:00Z",
-
-  "identifier": {
-    "type": "dns",
-    "value": "example.org"
-  },
-
-  "challenges": [
-    {
-      "type": "http-01",
-      "status": "valid",
-      "validated": "2014-12-01T12:05:00Z",
-      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
-    }
-  ],
-}
-~~~~~~~~~~
-
-
-## Errors
-
-Errors can be reported in ACME both at the HTTP layer and within ACME payloads.
-ACME servers can return responses with an HTTP error response code (4XX or 5XX).
-For example:  If the client submits a request using a method not allowed in this
-document, then the server MAY return status code 405 (Method Not Allowed).
-
-When the server responds with an error status, it SHOULD provide additional
-information using problem document {{I-D.ietf-appsawg-http-problem}}.
-To facilitate automatic response
-to errors, this document defines the following standard tokens for use in the
-"type" field (within the "urn:ietf:params:acme:error:" namespace):
-
-| Code            | Description                                               |
-|:----------------|:----------------------------------------------------------|
-| badCSR          | The CSR is unacceptable (e.g., due to a short key)        |
-| badNonce        | The client sent an unacceptable anti-replay nonce         |
-| connection      | The server could not connect to the client for validation |
-| dnssec          | The server could not validate a DNSSEC signed domain      |
-| malformed       | The request message was malformed                         |
-| serverInternal  | The server experienced an internal error                  |
-| tls             | The server experienced a TLS error during validation      |
-| unauthorized    | The client lacks sufficient authorization                 |
-| unknownHost     | The server could not resolve a domain name                |
-| rateLimited     | The request exceeds a rate limit                          |
-| invalidContact  | The provided contact URI for a registration was invalid   |
-
-This list is not exhaustive. The server MAY return errors whose "type" field is
-set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
-namespace for errors other than the standard types.  Clients SHOULD display the
-"detail" field of such errors.
-
-Authorization and challenge objects can also contain error information to
-indicate why the server was unable to validate authorization.
-
 ## Replay protection
 
 In order to protect ACME resources from any possible replay attacks, ACME
@@ -592,6 +436,41 @@ The value of the "nonce" header parameter MUST be an octet string, encoded
 according to the base64url encoding described in Section 2 of {{RFC7515}}.  If
 the value of a "nonce" header parameter is not valid according to this encoding,
 then the verifier MUST reject the JWS as malformed.
+
+## Errors
+
+Errors can be reported in ACME both at the HTTP layer and within ACME payloads.
+ACME servers can return responses with an HTTP error response code (4XX or 5XX).
+For example:  If the client submits a request using a method not allowed in this
+document, then the server MAY return status code 405 (Method Not Allowed).
+
+When the server responds with an error status, it SHOULD provide additional
+information using problem document {{I-D.ietf-appsawg-http-problem}}.
+To facilitate automatic response
+to errors, this document defines the following standard tokens for use in the
+"type" field (within the "urn:ietf:params:acme:error:" namespace):
+
+| Code            | Description                                               |
+|:----------------|:----------------------------------------------------------|
+| badCSR          | The CSR is unacceptable (e.g., due to a short key)        |
+| badNonce        | The client sent an unacceptable anti-replay nonce         |
+| connection      | The server could not connect to the client for validation |
+| dnssec          | The server could not validate a DNSSEC signed domain      |
+| malformed       | The request message was malformed                         |
+| serverInternal  | The server experienced an internal error                  |
+| tls             | The server experienced a TLS error during validation      |
+| unauthorized    | The client lacks sufficient authorization                 |
+| unknownHost     | The server could not resolve a domain name                |
+| rateLimited     | The request exceeds a rate limit                          |
+| invalidContact  | The provided contact URI for a registration was invalid   |
+
+This list is not exhaustive. The server MAY return errors whose "type" field is
+set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
+namespace for errors other than the standard types.  Clients SHOULD display the
+"detail" field of such errors.
+
+Authorization and challenge objects can also contain error information to
+indicate why the server was unable to validate authorization.
 
 # Certificate Management
 
@@ -679,6 +558,127 @@ certificate, and fetch an updated certificate some time after issuance.  The
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
+
+### Registration Objects
+
+An ACME registration resource represents a set of metadata associated to an
+account key pair.  Registration resources have the following structure:
+
+key (required, dictionary):
+: The public key of the account key pair, encoded as a JSON Web Key object
+{{RFC7517}}.
+
+contact (optional, array of string):
+: An array of URIs that the server can use to contact the client for issues
+related to this authorization. For example, the server may wish to notify the
+client about server-initiated revocation.
+
+agreement (optional, string):
+: A URI referring to a subscriber agreement or terms of service provided by the
+server (see below).  Including this field indicates the client's agreement with
+the referenced terms.
+
+authorizations (required, string):
+: A URI from which a list of authorizations granted to this account can be
+fetched via a GET request.  The result of the GET request MUST be a JSON object
+whose "authorizations" field is an array of strings, where each string is the
+URI of an authorization belonging to this registration.  The server SHOULD
+include pending authorizations, and SHOULD NOT include authorizations that are
+invalid or expired. The server MAY return an incomplete list, along with a Link
+header with link relation "next" indicating a URL to retrieve further entries.
+
+certificates (required, string):
+: A URI from which a list of certificates issued for this account can be fetched
+via a GET request.  The result of the GET request MUST be a JSON object whose
+"certificates" field is an array of strings, where each string is the URI of a
+certificate.  The server SHOULD NOT include expired or revoked certificates.
+The server MAY return an incomplete list, along with a Link header with link
+relation "next" indicating a URL to retrieve further entries.
+
+~~~~~~~~~~
+{
+  "resource": "new-reg",
+  "contact": [
+    "mailto:cert-admin@example.com",
+    "tel:+12025551212"
+  ],
+  "agreement": "https://example.com/acme/terms",
+  "authorizations": "https://example.com/acme/reg/1/authz",
+  "certificates": "https://example.com/acme/reg/1/cert",
+}
+~~~~~~~~~~
+
+### Authorization Objects
+
+An ACME authorization object represents server's authorization for an account to
+represent an identifier.  In addition to the identifier, an authorization
+includes several metadata fields, such as the status of the authorization (e.g.,
+"pending", "valid", or "revoked") and which challenges were used to validate
+possession of the identifier.
+
+The structure of an ACME authorization resource is as follows:
+
+identifier (required, dictionary of string):
+: The identifier that the account is authorized to represent
+
+  type (required, string):
+  : The type of identifier.
+
+  value (required, string):
+  : The identifier itself.
+
+status (required, string):
+: The status of this authorization.  Possible values are: "unknown", "pending",
+"processing", "valid", "invalid" and "revoked".  If this field is missing, then
+the default value is "pending".
+
+expires (optional, string):
+: The timestamp after which the server will consider this authorization invalid,
+encoded in the format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED
+for objects with "valid" in the "status field.
+
+challenges (required, array):
+: The challenges that the client needs to fulfill
+in order to prove possession of the identifier (for pending authorizations).
+For final authorizations, the challenges that were used.  Each array entry is a
+dictionary with parameters required to validate the challenge, as specified in
+{{identifier-validation-challenges}}.
+
+combinations (optional, array of arrays of integers):
+: A collection of sets of
+challenges, each of which would be sufficient to prove possession of the
+identifier. Clients complete a set of challenges that covers at least one
+set in this array. Challenges are identified by their indices in the challenges
+array.  If no "combinations" element is included in an authorization object, the
+client completes all challenges.
+
+The only type of identifier defined by this specification is a fully-qualified
+domain name (type: "dns").  The value of the identifier MUST be the ASCII
+representation of the domain name.  Wildcard domain names (with "*" as the first
+label) MUST NOT be included in authorization requests.  See
+{{certificate-issuance}} below for more information about wildcard domains.
+
+~~~~~~~~~~
+{
+  "status": "valid",
+  "expires": "2015-03-01T14:09:00Z",
+
+  "identifier": {
+    "type": "dns",
+    "value": "example.org"
+  },
+
+  "challenges": [
+    {
+      "type": "http-01",
+      "status": "valid",
+      "validated": "2014-12-01T12:05:00Z",
+      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
+    }
+  ],
+}
+~~~~~~~~~~
+
 
 ## Directory
 
