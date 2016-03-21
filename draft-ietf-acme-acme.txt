@@ -84,19 +84,20 @@ Table of Contents
    2.  Deployment Model and Operator Experience  . . . . . . . . . .   4
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   6
    4.  Protocol Overview . . . . . . . . . . . . . . . . . . . . . .   6
-   5.  Protocol Elements . . . . . . . . . . . . . . . . . . . . . .   9
+   5.  Message Transport . . . . . . . . . . . . . . . . . . . . . .   9
      5.1.  HTTPS Requests  . . . . . . . . . . . . . . . . . . . . .   9
      5.2.  Request Authentication  . . . . . . . . . . . . . . . . .   9
-     5.3.  Registration Objects  . . . . . . . . . . . . . . . . . .  10
-     5.4.  Authorization Objects . . . . . . . . . . . . . . . . . .  11
-     5.5.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  13
-     5.6.  Replay protection . . . . . . . . . . . . . . . . . . . .  14
-       5.6.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  15
-       5.6.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  16
-   6.  Certificate Management  . . . . . . . . . . . . . . . . . . .  16
-     6.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  16
+     5.3.  Request URI Type Integrity  . . . . . . . . . . . . . . .  10
+     5.4.  Replay protection . . . . . . . . . . . . . . . . . . . .  11
+       5.4.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  12
+       5.4.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  12
+     5.5.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+   6.  Certificate Management  . . . . . . . . . . . . . . . . . . .  14
+     6.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  14
+       6.1.1.  Registration Objects  . . . . . . . . . . . . . . . .  16
+       6.1.2.  Authorization Objects . . . . . . . . . . . . . . . .  17
      6.2.  Directory . . . . . . . . . . . . . . . . . . . . . . . .  18
-     6.3.  Registration  . . . . . . . . . . . . . . . . . . . . . .  19
+     6.3.  Registration  . . . . . . . . . . . . . . . . . . . . . .  20
        6.3.1.  Account Key Roll-over . . . . . . . . . . . . . . . .  22
        6.3.2.  Account Recovery  . . . . . . . . . . . . . . . . . .  23
        6.3.3.  Deleting an Account . . . . . . . . . . . . . . . . .  25
@@ -105,7 +106,6 @@ Table of Contents
        6.4.2.  Deleting an Authorization . . . . . . . . . . . . . .  30
      6.5.  Certificate Issuance  . . . . . . . . . . . . . . . . . .  31
      6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  34
-   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  35
 
 
 
@@ -114,6 +114,7 @@ Barnes, et al.            Expires April 6, 2016                 [Page 2]
 Internet-Draft                    ACME                      October 2015
 
 
+   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  35
      7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  37
      7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  38
      7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  40
@@ -140,7 +141,7 @@ Internet-Draft                    ACME                      October 2015
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  57
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  57
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  57
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  59
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  60
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  60
 
 1.  Introduction
@@ -160,8 +161,7 @@ Internet-Draft                    ACME                      October 2015
 
    o  Prove ownership of the domain by one of the following methods:
 
-      *  Put a CA-provided challenge at a specific place on the web
-         server.
+
 
 
 
@@ -169,6 +169,9 @@ Barnes, et al.            Expires April 6, 2016                 [Page 3]
 
 Internet-Draft                    ACME                      October 2015
 
+
+      *  Put a CA-provided challenge at a specific place on the web
+         server.
 
       *  Put a CA-provided challenge at a DNS location corresponding to
          the target domain.
@@ -215,9 +218,6 @@ Internet-Draft                    ACME                      October 2015
    effective control of the web server and/or DNS server for the domain,
    but does not explicitly attempt to verify their real-world identity.
    (This is as opposed to "Organization Validation" (OV) and "Extended
-   Validation" (EV) certificates, where the process is intended to also
-   verify the real-world identity of the requester.)
-
 
 
 
@@ -225,6 +225,9 @@ Barnes, et al.            Expires April 6, 2016                 [Page 4]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   Validation" (EV) certificates, where the process is intended to also
+   verify the real-world identity of the requester.)
 
    DV certificate validation commonly checks claims about properties
    related to control of a domain name - properties that can be observed
@@ -269,9 +272,6 @@ Internet-Draft                    ACME                      October 2015
    for example, can allow the immediate and automated deployment of
    certificates as they are issued, optionally sparing the human
    administrator from additional configuration work.
-
-
-
 
 
 
@@ -450,19 +450,28 @@ Barnes, et al.            Expires April 6, 2016                 [Page 8]
 Internet-Draft                    ACME                      October 2015
 
 
-5.  Protocol Elements
+5.  Message Transport
 
-   This section describes several components that are used by ACME, and
-   general rules that apply to ACME transactions.
+   ACME uses a combination of HTTPS and JWS to create a messaging layer
+   with a few important security properties.
+
+   Communications between an ACME client and an ACME server are done
+   over HTTPS, using JWS to provide som additional security properties
+   for messages sent from the client to the server.  HTTPS provides
+   server authentication and confidentiality.  With some ACME-specific
+   extensions, JWS provides authentication of the client's request
+   payloads, anti-replay protection, and a degree of integrity for the
+   HTTPS request URI.
 
 5.1.  HTTPS Requests
 
    Each ACME function is accomplished by the client sending a sequence
-   of HTTPS requests to the server, carrying JSON messages.  Use of
-   HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning
-   [RFC7469], and servers SHOULD emit pinning headers.  Each subsection
-   of Section 6 below describes the message formats used by the
-   function, and the order in which messages are sent.
+   of HTTPS requests to the server, carrying JSON messages
+   [RFC2818][RFC7159].  Use of HTTPS is REQUIRED.  Clients SHOULD
+   support HTTP public key pinning [RFC7469], and servers SHOULD emit
+   pinning headers.  Each subsection of Section 6 below describes the
+   message formats used by the function, and the order in which messages
+   are sent.
 
    In all HTTPS transactions used by ACME, the ACME client is the HTTPS
    client and the ACME server is the HTTPS server.
@@ -490,6 +499,13 @@ Internet-Draft                    ACME                      October 2015
    JWS objects sent in ACME requests MUST meet the following additional
    criteria:
 
+
+
+Barnes, et al.            Expires April 6, 2016                 [Page 9]
+
+Internet-Draft                    ACME                      October 2015
+
+
    o  The JWS MUST use the Flattened JSON Serialization
 
    o  The JWS MUST be encoded using UTF-8
@@ -499,13 +515,6 @@ Internet-Draft                    ACME                      October 2015
 
    o  The JWS MUST NOT have the value "none" in its "alg" field
 
-
-
-Barnes, et al.            Expires April 6, 2016                 [Page 9]
-
-Internet-Draft                    ACME                      October 2015
-
-
    o  The JWS Protected Header MUST include the "nonce" field (defined
       below)
 
@@ -513,12 +522,45 @@ Internet-Draft                    ACME                      October 2015
    Servers MUST NOT respond to GET requests for resources that might be
    considered sensitive.
 
+5.3.  Request URI Type Integrity
+
+   It is common in deployment the entity terminating TLS for HTTPS to be
+   different from the entity operating the logical HTTPS server, with a
+   "request routing" layer in the middle.  For example, an ACME CA might
+   have a content delivery network terminate TLS connections from
+   clients so that it can inspect client requests for denial-of-service
+   protection.
+
+   These intermediaries can also change values in the request that are
+   not signed in the HTTPS request, e.g., the request URI and headers.
+   ACME uses JWS to provides a limited integrity mechanism, which
+   protects against an intermediary changing the request URI to anothe
+   ACME URI of a different type.  (It does not protect against changing
+   between URIs of the same type, e.g., from one authorization URI to
+   another).
+
    An ACME request carries a JSON dictionary that provides the details
-   of the client's request to the server.  In order to avoid attacks
-   that might arise from sending a request object to a resource of the
-   wrong type, each request object MUST have a "resource" field that
-   indicates what type of resource the request is addressed to, as
-   defined in the below table:
+   of the client's request to the server.  Each request object MUST have
+   a "resource" field that indicates what type of resource the request
+   is addressed to, as defined in the below table:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 10]
+
+Internet-Draft                    ACME                      October 2015
+
 
                 +----------------------+------------------+
                 | Resource type        | "resource" value |
@@ -544,72 +586,30 @@ Internet-Draft                    ACME                      October 2015
 
    Other fields in ACME request bodies are described below.
 
-5.3.  Registration Objects
+5.4.  Replay protection
 
-   An ACME registration resource represents a set of metadata associated
-   to an account key pair.  Registration resources have the following
-   structure:
+   In order to protect ACME resources from any possible replay attacks,
+   ACME requests have a mandatory anti-replay mechanism.  This mechanism
+   is based on the server maintaining a list of nonces that it has
+   issued to clients, and requiring any signed request from the client
+   to carry such a nonce.
 
-   key (required, dictionary):  The public key of the account key pair,
-      encoded as a JSON Web Key object [RFC7517].
+   An ACME server MUST include a Replay-Nonce header field in each
+   successful response it provides to a client, with contents as
+   specified below.  In particular, the ACME server MUST provide a
+   Replay-Nonce header field in response to a HEAD request for any valid
+   resource.  (This allows clients to easily obtain a fresh nonce.)  It
+   MAY also provide nonces in error responses.
+
+   Every JWS sent by an ACME client MUST include, in its protected
+   header, the "nonce" header parameter, with contents as defined below.
+   As part of JWS verification, the ACME server MUST verify that the
+   value of the "nonce" header is a value that the server previously
+   provided in a Replay-Nonce header field.  Once a nonce value has
+   appeared in an ACME request, the server MUST consider it invalid, in
+   the same way as a value it had never issued.
 
 
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 10]
-
-Internet-Draft                    ACME                      October 2015
-
-
-   contact (optional, array of string):  An array of URIs that the
-      server can use to contact the client for issues related to this
-      authorization.  For example, the server may wish to notify the
-      client about server-initiated revocation.
-
-   agreement (optional, string):  A URI referring to a subscriber
-      agreement or terms of service provided by the server (see below).
-      Including this field indicates the client's agreement with the
-      referenced terms.
-
-   authorizations (required, string):  A URI from which a list of
-      authorizations granted to this account can be fetched via a GET
-      request.  The result of the GET request MUST be a JSON object
-      whose "authorizations" field is an array of strings, where each
-      string is the URI of an authorization belonging to this
-      registration.  The server SHOULD include pending authorizations,
-      and SHOULD NOT include authorizations that are invalid or expired.
-      The server MAY return an incomplete list, along with a Link header
-      with link relation "next" indicating a URL to retrieve further
-      entries.
-
-   certificates (required, string):  A URI from which a list of
-      certificates issued for this account can be fetched via a GET
-      request.  The result of the GET request MUST be a JSON object
-      whose "certificates" field is an array of strings, where each
-      string is the URI of a certificate.  The server SHOULD NOT include
-      expired or revoked certificates.  The server MAY return an
-      incomplete list, along with a Link header with link relation
-      "next" indicating a URL to retrieve further entries.
-
-   {
-     "resource": "new-reg",
-     "contact": [
-       "mailto:cert-admin@example.com",
-       "tel:+12025551212"
-     ],
-     "agreement": "https://example.com/acme/terms",
-     "authorizations": "https://example.com/acme/reg/1/authz",
-     "certificates": "https://example.com/acme/reg/1/cert",
-   }
-
-5.4.  Authorization Objects
-
-   An ACME authorization object represents server's authorization for an
-   account to represent an identifier.  In addition to the identifier,
-   an authorization includes several metadata fields, such as the status
-   of the authorization (e.g., "pending", "valid", or "revoked") and
-   which challenges were used to validate possession of the identifier.
 
 
 
@@ -618,80 +618,46 @@ Barnes, et al.            Expires April 6, 2016                [Page 11]
 Internet-Draft                    ACME                      October 2015
 
 
-   The structure of an ACME authorization resource is as follows:
+   When a server rejects a request because its nonce value was
+   unacceptable (or not present), it SHOULD provide HTTP status code 400
+   (Bad Request), and indicate the ACME error code
+   "urn:ietf:params:acme:error:badNonce".
 
-   identifier (required, dictionary of string):  The identifier that the
-      account is authorized to represent
+   The precise method used to generate and track nonces is up to the
+   server.  For example, the server could generate a random 128-bit
+   value for each response, keep a list of issued nonces, and strike
+   nonces from this list as they are used.
 
-      type (required, string):  The type of identifier.
+5.4.1.  Replay-Nonce
 
-      value (required, string):  The identifier itself.
+   The "Replay-Nonce" header field includes a server-generated value
+   that the server can use to detect unauthorized replay in future
+   client requests.  The server should generate the value provided in
+   Replay-Nonce in such a way that they are unique to each message, with
+   high probability.
 
-   status (required, string):  The status of this authorization.
-      Possible values are: "unknown", "pending", "processing", "valid",
-      "invalid" and "revoked".  If this field is missing, then the
-      default value is "pending".
+   The value of the Replay-Nonce field MUST be an octet string encoded
+   according to the base64url encoding described in Section 2 of
+   [RFC7515].  Clients MUST ignore invalid Replay-Nonce values.
 
-   expires (optional, string):  The timestamp after which the server
-      will consider this authorization invalid, encoded in the format
-      specified in RFC 3339 [RFC3339].  This field is REQUIRED for
-      objects with "valid" in the "status field.
+     base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
 
-   challenges (required, array):  The challenges that the client needs
-      to fulfill in order to prove possession of the identifier (for
-      pending authorizations).  For final authorizations, the challenges
-      that were used.  Each array entry is a dictionary with parameters
-      required to validate the challenge, as specified in Section 7.
+     Replay-Nonce = *base64url
 
-   combinations (optional, array of arrays of integers):  A collection
-      of sets of challenges, each of which would be sufficient to prove
-      possession of the identifier.  Clients complete a set of
-      challenges that covers at least one set in this array.  Challenges
-      are identified by their indices in the challenges array.  If no
-      "combinations" element is included in an authorization object, the
-      client completes all challenges.
+   The Replay-Nonce header field SHOULD NOT be included in HTTP request
+   messages.
 
-   The only type of identifier defined by this specification is a fully-
-   qualified domain name (type: "dns").  The value of the identifier
-   MUST be the ASCII representation of the domain name.  Wildcard domain
-   names (with "*" as the first label) MUST NOT be included in
-   authorization requests.  See Section 6.5 below for more information
-   about wildcard domains.
+5.4.2.  "nonce" (Nonce) JWS header parameter
 
+   The "nonce" header parameter provides a unique value that enables the
+   verifier of a JWS to recognize when replay has occurred.  The "nonce"
+   header parameter MUST be carried in the protected header of the JWS.
 
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 12]
-
-Internet-Draft                    ACME                      October 2015
-
-
-   {
-     "status": "valid",
-     "expires": "2015-03-01T14:09:00Z",
-
-     "identifier": {
-       "type": "dns",
-       "value": "example.org"
-     },
-
-     "challenges": [
-       {
-         "type": "http-01",
-         "status": "valid",
-         "validated": "2014-12-01T12:05:00Z",
-         "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
-       }
-     ],
-   }
+   The value of the "nonce" header parameter MUST be an octet string,
+   encoded according to the base64url encoding described in Section 2 of
+   [RFC7515].  If the value of a "nonce" header parameter is not valid
+   according to this encoding, then the verifier MUST reject the JWS as
+   malformed.
 
 5.5.  Errors
 
@@ -701,34 +667,19 @@ Internet-Draft                    ACME                      October 2015
    request using a method not allowed in this document, then the server
    MAY return status code 405 (Method Not Allowed).
 
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 12]
+
+Internet-Draft                    ACME                      October 2015
+
+
    When the server responds with an error status, it SHOULD provide
    additional information using problem document
    [I-D.ietf-appsawg-http-problem].  To facilitate automatic response to
    errors, this document defines the following standard tokens for use
    in the "type" field (within the "urn:ietf:params:acme:error:"
    namespace):
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 13]
-
-Internet-Draft                    ACME                      October 2015
-
 
    +----------------+--------------------------------------------------+
    | Code           | Description                                      |
@@ -772,87 +723,12 @@ Internet-Draft                    ACME                      October 2015
    information to indicate why the server was unable to validate
    authorization.
 
-5.6.  Replay protection
-
-   In order to protect ACME resources from any possible replay attacks,
-   ACME requests have a mandatory anti-replay mechanism.  This mechanism
-   is based on the server maintaining a list of nonces that it has
 
 
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 14]
+Barnes, et al.            Expires April 6, 2016                [Page 13]
 
 Internet-Draft                    ACME                      October 2015
 
-
-   issued to clients, and requiring any signed request from the client
-   to carry such a nonce.
-
-   An ACME server MUST include a Replay-Nonce header field in each
-   successful response it provides to a client, with contents as
-   specified below.  In particular, the ACME server MUST provide a
-   Replay-Nonce header field in response to a HEAD request for any valid
-   resource.  (This allows clients to easily obtain a fresh nonce.)  It
-   MAY also provide nonces in error responses.
-
-   Every JWS sent by an ACME client MUST include, in its protected
-   header, the "nonce" header parameter, with contents as defined below.
-   As part of JWS verification, the ACME server MUST verify that the
-   value of the "nonce" header is a value that the server previously
-   provided in a Replay-Nonce header field.  Once a nonce value has
-   appeared in an ACME request, the server MUST consider it invalid, in
-   the same way as a value it had never issued.
-
-   When a server rejects a request because its nonce value was
-   unacceptable (or not present), it SHOULD provide HTTP status code 400
-   (Bad Request), and indicate the ACME error code
-   "urn:ietf:params:acme:error:badNonce".
-
-   The precise method used to generate and track nonces is up to the
-   server.  For example, the server could generate a random 128-bit
-   value for each response, keep a list of issued nonces, and strike
-   nonces from this list as they are used.
-
-5.6.1.  Replay-Nonce
-
-   The "Replay-Nonce" header field includes a server-generated value
-   that the server can use to detect unauthorized replay in future
-   client requests.  The server should generate the value provided in
-   Replay-Nonce in such a way that they are unique to each message, with
-   high probability.
-
-   The value of the Replay-Nonce field MUST be an octet string encoded
-   according to the base64url encoding described in Section 2 of
-   [RFC7515].  Clients MUST ignore invalid Replay-Nonce values.
-
-     base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
-
-     Replay-Nonce = *base64url
-
-   The Replay-Nonce header field SHOULD NOT be included in HTTP request
-   messages.
-
-
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 15]
-
-Internet-Draft                    ACME                      October 2015
-
-
-5.6.2.  "nonce" (Nonce) JWS header parameter
-
-   The "nonce" header parameter provides a unique value that enables the
-   verifier of a JWS to recognize when replay has occurred.  The "nonce"
-   header parameter MUST be carried in the protected header of the JWS.
-
-   The value of the "nonce" header parameter MUST be an octet string,
-   encoded according to the base64url encoding described in Section 2 of
-   [RFC7515].  If the value of a "nonce" header parameter is not valid
-   according to this encoding, then the verifier MUST reject the JWS as
-   malformed.
 
 6.  Certificate Management
 
@@ -890,14 +766,6 @@ Internet-Draft                    ACME                      October 2015
 
    o  A "new-registration" resource
 
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 16]
-
-Internet-Draft                    ACME                      October 2015
-
-
    o  A "new-authorization" resource
 
    o  A "new-certificate" resource
@@ -910,6 +778,14 @@ Internet-Draft                    ACME                      October 2015
 
    ACME uses different URIs for different management functions.  Each
    function is listed in a directory along with its corresponding URI,
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 14]
+
+Internet-Draft                    ACME                      October 2015
+
+
    so clients only need to be configured with the directory URI.  These
    URIs are connected by a few different link relations [RFC5988].
 
@@ -946,17 +822,25 @@ Internet-Draft                    ACME                      October 2015
 
    The following table illustrates a typical sequence of requests
    required to establish a new account with the server, prove control of
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 17]
-
-Internet-Draft                    ACME                      October 2015
-
-
    an identifier, issue a certificate, and fetch an updated certificate
    some time after issuance.  The "->" is a mnemonic for a Location
    header pointing to a created resource.
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 15]
+
+Internet-Draft                    ACME                      October 2015
+
 
           +--------------------+----------------+--------------+
           | Action             | Request        | Response     |
@@ -977,6 +861,139 @@ Internet-Draft                    ACME                      October 2015
    The remainder of this section provides the details of how these
    resources are structured and how the ACME protocol makes use of them.
 
+6.1.1.  Registration Objects
+
+   An ACME registration resource represents a set of metadata associated
+   to an account key pair.  Registration resources have the following
+   structure:
+
+   key (required, dictionary):  The public key of the account key pair,
+      encoded as a JSON Web Key object [RFC7517].
+
+   contact (optional, array of string):  An array of URIs that the
+      server can use to contact the client for issues related to this
+      authorization.  For example, the server may wish to notify the
+      client about server-initiated revocation.
+
+   agreement (optional, string):  A URI referring to a subscriber
+      agreement or terms of service provided by the server (see below).
+      Including this field indicates the client's agreement with the
+      referenced terms.
+
+   authorizations (required, string):  A URI from which a list of
+      authorizations granted to this account can be fetched via a GET
+      request.  The result of the GET request MUST be a JSON object
+      whose "authorizations" field is an array of strings, where each
+      string is the URI of an authorization belonging to this
+      registration.  The server SHOULD include pending authorizations,
+      and SHOULD NOT include authorizations that are invalid or expired.
+      The server MAY return an incomplete list, along with a Link header
+      with link relation "next" indicating a URL to retrieve further
+      entries.
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 16]
+
+Internet-Draft                    ACME                      October 2015
+
+
+   certificates (required, string):  A URI from which a list of
+      certificates issued for this account can be fetched via a GET
+      request.  The result of the GET request MUST be a JSON object
+      whose "certificates" field is an array of strings, where each
+      string is the URI of a certificate.  The server SHOULD NOT include
+      expired or revoked certificates.  The server MAY return an
+      incomplete list, along with a Link header with link relation
+      "next" indicating a URL to retrieve further entries.
+
+   {
+     "resource": "new-reg",
+     "contact": [
+       "mailto:cert-admin@example.com",
+       "tel:+12025551212"
+     ],
+     "agreement": "https://example.com/acme/terms",
+     "authorizations": "https://example.com/acme/reg/1/authz",
+     "certificates": "https://example.com/acme/reg/1/cert",
+   }
+
+6.1.2.  Authorization Objects
+
+   An ACME authorization object represents server's authorization for an
+   account to represent an identifier.  In addition to the identifier,
+   an authorization includes several metadata fields, such as the status
+   of the authorization (e.g., "pending", "valid", or "revoked") and
+   which challenges were used to validate possession of the identifier.
+
+   The structure of an ACME authorization resource is as follows:
+
+   identifier (required, dictionary of string):  The identifier that the
+      account is authorized to represent
+
+      type (required, string):  The type of identifier.
+
+      value (required, string):  The identifier itself.
+
+   status (required, string):  The status of this authorization.
+      Possible values are: "unknown", "pending", "processing", "valid",
+      "invalid" and "revoked".  If this field is missing, then the
+      default value is "pending".
+
+   expires (optional, string):  The timestamp after which the server
+      will consider this authorization invalid, encoded in the format
+      specified in RFC 3339 [RFC3339].  This field is REQUIRED for
+      objects with "valid" in the "status field.
+
+
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 17]
+
+Internet-Draft                    ACME                      October 2015
+
+
+   challenges (required, array):  The challenges that the client needs
+      to fulfill in order to prove possession of the identifier (for
+      pending authorizations).  For final authorizations, the challenges
+      that were used.  Each array entry is a dictionary with parameters
+      required to validate the challenge, as specified in Section 7.
+
+   combinations (optional, array of arrays of integers):  A collection
+      of sets of challenges, each of which would be sufficient to prove
+      possession of the identifier.  Clients complete a set of
+      challenges that covers at least one set in this array.  Challenges
+      are identified by their indices in the challenges array.  If no
+      "combinations" element is included in an authorization object, the
+      client completes all challenges.
+
+   The only type of identifier defined by this specification is a fully-
+   qualified domain name (type: "dns").  The value of the identifier
+   MUST be the ASCII representation of the domain name.  Wildcard domain
+   names (with "*" as the first label) MUST NOT be included in
+   authorization requests.  See Section 6.5 below for more information
+   about wildcard domains.
+
+   {
+     "status": "valid",
+     "expires": "2015-03-01T14:09:00Z",
+
+     "identifier": {
+       "type": "dns",
+       "value": "example.org"
+     },
+
+     "challenges": [
+       {
+         "type": "http-01",
+         "status": "valid",
+         "validated": "2014-12-01T12:05:00Z",
+         "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
+       }
+     ],
+   }
+
 6.2.  Directory
 
    In order to help clients configure themselves with the right URIs for
@@ -985,6 +1002,13 @@ Internet-Draft                    ACME                      October 2015
    dictionary, whose keys are the "resource" values listed in
    Section 5.1, and whose values are the URIs used to accomplish the
    corresponding function.
+
+
+
+Barnes, et al.            Expires April 6, 2016                [Page 18]
+
+Internet-Draft                    ACME                      October 2015
+
 
    There is no constraint on the actual URI of the directory except that
    it should be different from the other ACME server resources' URIs,
@@ -1002,13 +1026,6 @@ Internet-Draft                    ACME                      October 2015
    metadata relating to the service provided by the ACME server.
 
    The following metadata items are defined, all of which are OPTIONAL:
-
-
-
-Barnes, et al.            Expires April 6, 2016                [Page 18]
-
-Internet-Draft                    ACME                      October 2015
-
 
    "terms-of-service":  A string containing a URI identifying the
       current terms of service.
@@ -1042,29 +1059,19 @@ Internet-Draft                    ACME                      October 2015
      }
    }
 
-6.3.  Registration
-
-   A client creates a new account with the server by sending a POST
-   request to the server's new-registration URI.  The body of the
-   request is a stub registration object containing only the "contact"
-   field (along with the required "resource" field).
-
-
-
-
-
-
-
-
-
-
-
 
 
 Barnes, et al.            Expires April 6, 2016                [Page 19]
 
 Internet-Draft                    ACME                      October 2015
 
+
+6.3.  Registration
+
+   A client creates a new account with the server by sending a POST
+   request to the server's new-registration URI.  The body of the
+   request is a stub registration object containing only the "contact"
+   field (along with the required "resource" field).
 
    POST /acme/new-registration HTTP/1.1
    Host: example.com
@@ -1107,13 +1114,6 @@ Internet-Draft                    ACME                      October 2015
    field, with the terms URI as its value.  When these terms change in a
    way that requires an agreement update, the server MUST use a
    different URI in the Link header.
-
-
-
-
-
-
-
 
 
 
@@ -2564,7 +2564,7 @@ Internet-Draft                    ACME                      October 2015
 
    | Header Field Name | Protocol | Status | Reference |
    +:------------+:------+:------+:-----------+ | Replay-Nonce | http |
-   standard | Section 5.6.1 |
+   standard | Section 5.4.1 |
 
 
 
@@ -2591,7 +2591,7 @@ Internet-Draft                    ACME                      October 2015
 
    o  Change Controller: IESG
 
-   o  Specification Document(s): Section 5.6.2 of RFC XXXX
+   o  Specification Document(s): Section 5.4.2 of RFC XXXX
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -3181,10 +3181,10 @@ Internet-Draft                    ACME                      October 2015
               Version 1.5", RFC 2314, DOI 10.17487/RFC2314, March 1998,
               <http://www.rfc-editor.org/info/rfc2314>.
 
-   [RFC2985]  Nystrom, M. and B. Kaliski, "PKCS #9: Selected Object
-              Classes and Attribute Types Version 2.0", RFC 2985,
-              DOI 10.17487/RFC2985, November 2000,
-              <http://www.rfc-editor.org/info/rfc2985>.
+   [RFC2818]  Rescorla, E., "HTTP Over TLS", RFC 2818,
+              DOI 10.17487/RFC2818, May 2000,
+              <http://www.rfc-editor.org/info/rfc2818>.
+
 
 
 
@@ -3193,6 +3193,11 @@ Barnes, et al.            Expires April 6, 2016                [Page 57]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   [RFC2985]  Nystrom, M. and B. Kaliski, "PKCS #9: Selected Object
+              Classes and Attribute Types Version 2.0", RFC 2985,
+              DOI 10.17487/RFC2985, November 2000,
+              <http://www.rfc-editor.org/info/rfc2985>.
 
    [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
               Request Syntax Specification Version 1.7", RFC 2986,
@@ -3237,11 +3242,6 @@ Internet-Draft                    ACME                      October 2015
               DOI 10.17487/RFC5785, April 2010,
               <http://www.rfc-editor.org/info/rfc5785>.
 
-   [RFC5988]  Nottingham, M., "Web Linking", RFC 5988,
-              DOI 10.17487/RFC5988, October 2010,
-              <http://www.rfc-editor.org/info/rfc5988>.
-
-
 
 
 
@@ -3249,6 +3249,10 @@ Barnes, et al.            Expires April 6, 2016                [Page 58]
 
 Internet-Draft                    ACME                      October 2015
 
+
+   [RFC5988]  Nottingham, M., "Web Linking", RFC 5988,
+              DOI 10.17487/RFC5988, October 2010,
+              <http://www.rfc-editor.org/info/rfc5988>.
 
    [RFC6066]  Eastlake 3rd, D., "Transport Layer Security (TLS)
               Extensions: Extension Definitions", RFC 6066,
@@ -3293,10 +3297,6 @@ Internet-Draft                    ACME                      October 2015
               Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
               2015, <http://www.rfc-editor.org/info/rfc7638>.
 
-13.2.  Informative References
-
-
-
 
 
 
@@ -3306,14 +3306,12 @@ Barnes, et al.            Expires April 6, 2016                [Page 59]
 Internet-Draft                    ACME                      October 2015
 
 
+13.2.  Informative References
+
    [I-D.vixie-dnsext-dns0x20]
               Vixie, P. and D. Dagon, "Use of Bit 0x20 in DNS Labels to
               Improve Transaction Identity", draft-vixie-dnsext-
               dns0x20-00 (work in progress), March 2008.
-
-   [RFC2818]  Rescorla, E., "HTTP Over TLS", RFC 2818,
-              DOI 10.17487/RFC2818, May 2000,
-              <http://www.rfc-editor.org/info/rfc2818>.
 
    [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
               Text on Security Considerations", BCP 72, RFC 3552,
@@ -3349,6 +3347,8 @@ Authors' Addresses
    University of Michigan
 
    Email: jdkasten@umich.edu
+
+
 
 
 

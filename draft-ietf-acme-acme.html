@@ -272,17 +272,18 @@ li, p {
 <link href="#rfc.section.2" rel="Chapter" title="2 Deployment Model and Operator Experience"/>
 <link href="#rfc.section.3" rel="Chapter" title="3 Terminology"/>
 <link href="#rfc.section.4" rel="Chapter" title="4 Protocol Overview"/>
-<link href="#rfc.section.5" rel="Chapter" title="5 Protocol Elements"/>
+<link href="#rfc.section.5" rel="Chapter" title="5 Message Transport"/>
 <link href="#rfc.section.5.1" rel="Chapter" title="5.1 HTTPS Requests"/>
 <link href="#rfc.section.5.2" rel="Chapter" title="5.2 Request Authentication"/>
-<link href="#rfc.section.5.3" rel="Chapter" title="5.3 Registration Objects"/>
-<link href="#rfc.section.5.4" rel="Chapter" title="5.4 Authorization Objects"/>
+<link href="#rfc.section.5.3" rel="Chapter" title="5.3 Request URI Type Integrity"/>
+<link href="#rfc.section.5.4" rel="Chapter" title="5.4 Replay protection"/>
+<link href="#rfc.section.5.4.1" rel="Chapter" title="5.4.1 Replay-Nonce"/>
+<link href="#rfc.section.5.4.2" rel="Chapter" title="5.4.2 &#x201C;nonce&#x201D; (Nonce) JWS header parameter"/>
 <link href="#rfc.section.5.5" rel="Chapter" title="5.5 Errors"/>
-<link href="#rfc.section.5.6" rel="Chapter" title="5.6 Replay protection"/>
-<link href="#rfc.section.5.6.1" rel="Chapter" title="5.6.1 Replay-Nonce"/>
-<link href="#rfc.section.5.6.2" rel="Chapter" title="5.6.2 &#x201C;nonce&#x201D; (Nonce) JWS header parameter"/>
 <link href="#rfc.section.6" rel="Chapter" title="6 Certificate Management"/>
 <link href="#rfc.section.6.1" rel="Chapter" title="6.1 Resources"/>
+<link href="#rfc.section.6.1.1" rel="Chapter" title="6.1.1 Registration Objects"/>
+<link href="#rfc.section.6.1.2" rel="Chapter" title="6.1.2 Authorization Objects"/>
 <link href="#rfc.section.6.2" rel="Chapter" title="6.2 Directory"/>
 <link href="#rfc.section.6.3" rel="Chapter" title="6.3 Registration"/>
 <link href="#rfc.section.6.3.1" rel="Chapter" title="6.3.1 Account Key Roll-over"/>
@@ -404,18 +405,19 @@ li, p {
 <li>2.   <a href="#rfc.section.2">Deployment Model and Operator Experience</a></li>
 <li>3.   <a href="#rfc.section.3">Terminology</a></li>
 <li>4.   <a href="#rfc.section.4">Protocol Overview</a></li>
-<li>5.   <a href="#rfc.section.5">Protocol Elements</a></li>
+<li>5.   <a href="#rfc.section.5">Message Transport</a></li>
 <ul><li>5.1.   <a href="#rfc.section.5.1">HTTPS Requests</a></li>
 <li>5.2.   <a href="#rfc.section.5.2">Request Authentication</a></li>
-<li>5.3.   <a href="#rfc.section.5.3">Registration Objects</a></li>
-<li>5.4.   <a href="#rfc.section.5.4">Authorization Objects</a></li>
-<li>5.5.   <a href="#rfc.section.5.5">Errors</a></li>
-<li>5.6.   <a href="#rfc.section.5.6">Replay protection</a></li>
-<ul><li>5.6.1.   <a href="#rfc.section.5.6.1">Replay-Nonce</a></li>
-<li>5.6.2.   <a href="#rfc.section.5.6.2">&#8220;nonce&#8221; (Nonce) JWS header parameter</a></li>
-</ul></ul><li>6.   <a href="#rfc.section.6">Certificate Management</a></li>
+<li>5.3.   <a href="#rfc.section.5.3">Request URI Type Integrity</a></li>
+<li>5.4.   <a href="#rfc.section.5.4">Replay protection</a></li>
+<ul><li>5.4.1.   <a href="#rfc.section.5.4.1">Replay-Nonce</a></li>
+<li>5.4.2.   <a href="#rfc.section.5.4.2">&#8220;nonce&#8221; (Nonce) JWS header parameter</a></li>
+</ul><li>5.5.   <a href="#rfc.section.5.5">Errors</a></li>
+</ul><li>6.   <a href="#rfc.section.6">Certificate Management</a></li>
 <ul><li>6.1.   <a href="#rfc.section.6.1">Resources</a></li>
-<li>6.2.   <a href="#rfc.section.6.2">Directory</a></li>
+<ul><li>6.1.1.   <a href="#rfc.section.6.1.1">Registration Objects</a></li>
+<li>6.1.2.   <a href="#rfc.section.6.1.2">Authorization Objects</a></li>
+</ul><li>6.2.   <a href="#rfc.section.6.2">Directory</a></li>
 <li>6.3.   <a href="#rfc.section.6.3">Registration</a></li>
 <ul><li>6.3.1.   <a href="#rfc.section.6.3.1">Account Key Roll-over</a></li>
 <li>6.3.2.   <a href="#rfc.section.6.3.2">Account Recovery</a></li>
@@ -547,10 +549,11 @@ li, p {
                                    &lt;--------                 Result
 </pre>
 <p id="rfc.section.4.p.12">Note that while ACME is defined with enough flexibility to handle different types of identifiers in principle, the primary use case addressed by this document is the case where domain names are used as identifiers.  For example, all of the identifier validation challenges described in <a href="#identifier-validation-challenges">Section 7</a> below address validation of domain names.  The use of ACME for other protocols will require further specification, in order to describe how these identifiers are encoded in the protocol, and what types of validation challenges the server might require.</p>
-<h1 id="rfc.section.5"><a href="#rfc.section.5">5.</a> <a href="#protocol-elements" id="protocol-elements">Protocol Elements</a></h1>
-<p id="rfc.section.5.p.1">This section describes several components that are used by ACME, and general rules that apply to ACME transactions.</p>
+<h1 id="rfc.section.5"><a href="#rfc.section.5">5.</a> <a href="#message-transport" id="message-transport">Message Transport</a></h1>
+<p id="rfc.section.5.p.1">ACME uses a combination of HTTPS and JWS to create a messaging layer with a few important security properties.</p>
+<p id="rfc.section.5.p.2">Communications between an ACME client and an ACME server are done over HTTPS, using JWS to provide som additional security properties for messages sent from the client to the server.  HTTPS provides server authentication and confidentiality.  With some ACME-specific extensions, JWS provides authentication of the client&#8217;s request payloads, anti-replay protection, and a degree of integrity for the HTTPS request URI.</p>
 <h1 id="rfc.section.5.1"><a href="#rfc.section.5.1">5.1.</a> <a href="#https-requests" id="https-requests">HTTPS Requests</a></h1>
-<p id="rfc.section.5.1.p.1">Each ACME function is accomplished by the client sending a sequence of HTTPS requests to the server, carrying JSON messages.  Use of HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning <a href="#RFC7469">[RFC7469]</a>, and servers SHOULD emit pinning headers.  Each subsection of <a href="#certificate-management">Section 6</a> below describes the message formats used by the function, and the order in which messages are sent.</p>
+<p id="rfc.section.5.1.p.1">Each ACME function is accomplished by the client sending a sequence of HTTPS requests to the server, carrying JSON messages <a href="#RFC2818">[RFC2818]</a><a href="#RFC7159">[RFC7159]</a>.  Use of HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning <a href="#RFC7469">[RFC7469]</a>, and servers SHOULD emit pinning headers.  Each subsection of <a href="#certificate-management">Section 6</a> below describes the message formats used by the function, and the order in which messages are sent.</p>
 <p id="rfc.section.5.1.p.2">In all HTTPS transactions used by ACME, the ACME client is the HTTPS client and the ACME server is the HTTPS server.</p>
 <p id="rfc.section.5.1.p.3">ACME servers that are intended to be generally accessible need to use Cross-Origin Resource Sharing (CORS) in order to be accessible from browser-based clients <a href="#W3C.CR-cors-20130129">[W3C.CR-cors-20130129]</a>.  Such servers SHOULD set the Access-Control-Allow-Origin header field to the value &#8220;*&#8221;.</p>
 <p id="rfc.section.5.1.p.4">Binary fields in the JSON objects used by ACME are encoded using base64url encoding described in <a href="#RFC4648">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
@@ -567,7 +570,10 @@ li, p {
   <li>The JWS Protected Header MUST include the &#8220;nonce&#8221; field (defined below)</li>
 </ul>
 <p id="rfc.section.5.2.p.4">Note that this implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
-<p id="rfc.section.5.2.p.5">An ACME request carries a JSON dictionary that provides the details of the client&#8217;s request to the server.  In order to avoid attacks that might arise from sending a request object to a resource of the wrong type, each request object MUST have a &#8220;resource&#8221; field that indicates what type of resource the request is addressed to, as defined in the below table:</p>
+<h1 id="rfc.section.5.3"><a href="#rfc.section.5.3">5.3.</a> <a href="#request-uri-type-integrity" id="request-uri-type-integrity">Request URI Type Integrity</a></h1>
+<p id="rfc.section.5.3.p.1">It is common in deployment the entity terminating TLS for HTTPS to be different from the entity operating the logical HTTPS server, with a &#8220;request routing&#8221; layer in the middle.  For example, an ACME CA might have a content delivery network terminate TLS connections from clients so that it can inspect client requests for denial-of-service protection.</p>
+<p id="rfc.section.5.3.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to provides a limited integrity mechanism, which protects against an intermediary changing the request URI to anothe ACME URI of a different type.  (It does not protect against changing between URIs of the same type, e.g., from one authorization URI to another).</p>
+<p id="rfc.section.5.3.p.3">An ACME request carries a JSON dictionary that provides the details of the client&#8217;s request to the server.  Each request object MUST have a &#8220;resource&#8221; field that indicates what type of resource the request is addressed to, as defined in the below table:</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
@@ -614,73 +620,25 @@ li, p {
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.5.2.p.6">Other fields in ACME request bodies are described below.</p>
-<h1 id="rfc.section.5.3"><a href="#rfc.section.5.3">5.3.</a> <a href="#registration-objects" id="registration-objects">Registration Objects</a></h1>
-<p id="rfc.section.5.3.p.1">An ACME registration resource represents a set of metadata associated to an account key pair.  Registration resources have the following structure:</p>
-<p/>
-
-<dl>
-  <dt>key (required, dictionary):</dt>
-  <dd style="margin-left: 8">The public key of the account key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>.</dd>
-  <dt>contact (optional, array of string):</dt>
-  <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this authorization. For example, the server may wish to notify the client about server-initiated revocation.</dd>
-  <dt>agreement (optional, string):</dt>
-  <dd style="margin-left: 8">A URI referring to a subscriber agreement or terms of service provided by the server (see below).  Including this field indicates the client&#8217;s agreement with the referenced terms.</dd>
-  <dt>authorizations (required, string):</dt>
-  <dd style="margin-left: 8">A URI from which a list of authorizations granted to this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;authorizations&#8221; field is an array of strings, where each string is the URI of an authorization belonging to this registration.  The server SHOULD include pending authorizations, and SHOULD NOT include authorizations that are invalid or expired. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</dd>
-  <dt>certificates (required, string):</dt>
-  <dd style="margin-left: 8">A URI from which a list of certificates issued for this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;certificates&#8221; field is an array of strings, where each string is the URI of a certificate.  The server SHOULD NOT include expired or revoked certificates.  The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</dd>
-</dl>
+<p id="rfc.section.5.3.p.4">Other fields in ACME request bodies are described below.</p>
+<h1 id="rfc.section.5.4"><a href="#rfc.section.5.4">5.4.</a> <a href="#replay-protection" id="replay-protection">Replay protection</a></h1>
+<p id="rfc.section.5.4.p.1">In order to protect ACME resources from any possible replay attacks, ACME requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
+<p id="rfc.section.5.4.p.2">An ACME server MUST include a Replay-Nonce header field in each successful response it provides to a client, with contents as specified below.  In particular, the ACME server MUST provide a Replay-Nonce header field in response to a HEAD request for any valid resource.  (This allows clients to easily obtain a fresh nonce.)  It MAY also provide nonces in error responses.</p>
+<p id="rfc.section.5.4.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
+<p id="rfc.section.5.4.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the ACME error code &#8220;urn:ietf:params:acme:error:badNonce&#8221;.</p>
+<p id="rfc.section.5.4.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
+<h1 id="rfc.section.5.4.1"><a href="#rfc.section.5.4.1">5.4.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a></h1>
+<p id="rfc.section.5.4.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server should generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability.</p>
+<p id="rfc.section.5.4.1.p.2">The value of the Replay-Nonce field MUST be an octet string encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  Clients MUST ignore invalid Replay-Nonce values.</p>
 <pre>
-{
-  "resource": "new-reg",
-  "contact": [
-    "mailto:cert-admin@example.com",
-    "tel:+12025551212"
-  ],
-  "agreement": "https://example.com/acme/terms",
-  "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert",
-}
+  base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
+
+  Replay-Nonce = *base64url
 </pre>
-<h1 id="rfc.section.5.4"><a href="#rfc.section.5.4">5.4.</a> <a href="#authorization-objects" id="authorization-objects">Authorization Objects</a></h1>
-<p id="rfc.section.5.4.p.1">An ACME authorization object represents server&#8217;s authorization for an account to represent an identifier.  In addition to the identifier, an authorization includes several metadata fields, such as the status of the authorization (e.g., &#8220;pending&#8221;, &#8220;valid&#8221;, or &#8220;revoked&#8221;) and which challenges were used to validate possession of the identifier.</p>
-<p id="rfc.section.5.4.p.2">The structure of an ACME authorization resource is as follows:</p>
-<p/>
-
-<dl>
-  <dt>identifier (required, dictionary of string):</dt>
-  <dd style="margin-left: 8">The identifier that the account is authorized to represent <dl><dt>type (required, string):</dt><dd style="margin-left: 8">The type of identifier.</dd><dt>value (required, string):</dt><dd style="margin-left: 8">The identifier itself.</dd></dl><p> </p></dd>
-  <dt>status (required, string):</dt>
-  <dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;unknown&#8221;, &#8220;pending&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, &#8220;invalid&#8221; and &#8220;revoked&#8221;.  If this field is missing, then the default value is &#8220;pending&#8221;.</dd>
-  <dt>expires (optional, string):</dt>
-  <dd style="margin-left: 8">The timestamp after which the server will consider this authorization invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;valid&#8221; in the &#8220;status field.</dd>
-  <dt>challenges (required, array):</dt>
-  <dd style="margin-left: 8">The challenges that the client needs to fulfill in order to prove possession of the identifier (for pending authorizations).  For final authorizations, the challenges that were used.  Each array entry is a dictionary with parameters required to validate the challenge, as specified in <a href="#identifier-validation-challenges">Section 7</a>.</dd>
-  <dt>combinations (optional, array of arrays of integers):</dt>
-  <dd style="margin-left: 8">A collection of sets of challenges, each of which would be sufficient to prove possession of the identifier. Clients complete a set of challenges that covers at least one set in this array. Challenges are identified by their indices in the challenges array.  If no &#8220;combinations&#8221; element is included in an authorization object, the client completes all challenges.</dd>
-</dl>
-<p id="rfc.section.5.4.p.4">The only type of identifier defined by this specification is a fully-qualified domain name (type: &#8220;dns&#8221;).  The value of the identifier MUST be the ASCII representation of the domain name.  Wildcard domain names (with &#8220;*&#8221; as the first label) MUST NOT be included in authorization requests.  See <a href="#certificate-issuance">Section 6.5</a> below for more information about wildcard domains.</p>
-<pre>
-{
-  "status": "valid",
-  "expires": "2015-03-01T14:09:00Z",
-
-  "identifier": {
-    "type": "dns",
-    "value": "example.org"
-  },
-
-  "challenges": [
-    {
-      "type": "http-01",
-      "status": "valid",
-      "validated": "2014-12-01T12:05:00Z",
-      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
-    }
-  ],
-}
-</pre>
+<p id="rfc.section.5.4.1.p.3">The Replay-Nonce header field SHOULD NOT be included in HTTP request messages.</p>
+<h1 id="rfc.section.5.4.2"><a href="#rfc.section.5.4.2">5.4.2.</a> <a href="#nonce-nonce-jws-header-parameter" id="nonce-nonce-jws-header-parameter">&#8220;nonce&#8221; (Nonce) JWS header parameter</a></h1>
+<p id="rfc.section.5.4.2.p.1">The &#8220;nonce&#8221; header parameter provides a unique value that enables the verifier of a JWS to recognize when replay has occurred. The &#8220;nonce&#8221; header parameter MUST be carried in the protected header of the JWS.</p>
+<p id="rfc.section.5.4.2.p.2">The value of the &#8220;nonce&#8221; header parameter MUST be an octet string, encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  If the value of a &#8220;nonce&#8221; header parameter is not valid according to this encoding, then the verifier MUST reject the JWS as malformed.</p>
 <h1 id="rfc.section.5.5"><a href="#rfc.section.5.5">5.5.</a> <a href="#errors" id="errors">Errors</a></h1>
 <p id="rfc.section.5.5.p.1">Errors can be reported in ACME both at the HTTP layer and within ACME payloads.  ACME servers can return responses with an HTTP error response code (4XX or 5XX).  For example:  If the client submits a request using a method not allowed in this document, then the server MAY return status code 405 (Method Not Allowed).</p>
 <p id="rfc.section.5.5.p.2">When the server responds with an error status, it SHOULD provide additional information using problem document <a href="#I-D.ietf-appsawg-http-problem">[I-D.ietf-appsawg-http-problem]</a>.  To facilitate automatic response to errors, this document defines the following standard tokens for use in the &#8220;type&#8221; field (within the &#8220;urn:ietf:params:acme:error:&#8221; namespace):</p>
@@ -740,24 +698,6 @@ li, p {
 </table>
 <p id="rfc.section.5.5.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of such errors.</p>
 <p id="rfc.section.5.5.p.4">Authorization and challenge objects can also contain error information to indicate why the server was unable to validate authorization.</p>
-<h1 id="rfc.section.5.6"><a href="#rfc.section.5.6">5.6.</a> <a href="#replay-protection" id="replay-protection">Replay protection</a></h1>
-<p id="rfc.section.5.6.p.1">In order to protect ACME resources from any possible replay attacks, ACME requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
-<p id="rfc.section.5.6.p.2">An ACME server MUST include a Replay-Nonce header field in each successful response it provides to a client, with contents as specified below.  In particular, the ACME server MUST provide a Replay-Nonce header field in response to a HEAD request for any valid resource.  (This allows clients to easily obtain a fresh nonce.)  It MAY also provide nonces in error responses.</p>
-<p id="rfc.section.5.6.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
-<p id="rfc.section.5.6.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the ACME error code &#8220;urn:ietf:params:acme:error:badNonce&#8221;.</p>
-<p id="rfc.section.5.6.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
-<h1 id="rfc.section.5.6.1"><a href="#rfc.section.5.6.1">5.6.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a></h1>
-<p id="rfc.section.5.6.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server should generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability.</p>
-<p id="rfc.section.5.6.1.p.2">The value of the Replay-Nonce field MUST be an octet string encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  Clients MUST ignore invalid Replay-Nonce values.</p>
-<pre>
-  base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
-
-  Replay-Nonce = *base64url
-</pre>
-<p id="rfc.section.5.6.1.p.3">The Replay-Nonce header field SHOULD NOT be included in HTTP request messages.</p>
-<h1 id="rfc.section.5.6.2"><a href="#rfc.section.5.6.2">5.6.2.</a> <a href="#nonce-nonce-jws-header-parameter" id="nonce-nonce-jws-header-parameter">&#8220;nonce&#8221; (Nonce) JWS header parameter</a></h1>
-<p id="rfc.section.5.6.2.p.1">The &#8220;nonce&#8221; header parameter provides a unique value that enables the verifier of a JWS to recognize when replay has occurred. The &#8220;nonce&#8221; header parameter MUST be carried in the protected header of the JWS.</p>
-<p id="rfc.section.5.6.2.p.2">The value of the &#8220;nonce&#8221; header parameter MUST be an octet string, encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  If the value of a &#8220;nonce&#8221; header parameter is not valid according to this encoding, then the verifier MUST reject the JWS as malformed.</p>
 <h1 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#certificate-management" id="certificate-management">Certificate Management</a></h1>
 <p id="rfc.section.6.p.1">In this section, we describe the certificate management functions that ACME enables:</p>
 <p/>
@@ -851,6 +791,72 @@ li, p {
   </tbody>
 </table>
 <p id="rfc.section.6.1.p.9">The remainder of this section provides the details of how these resources are structured and how the ACME protocol makes use of them.</p>
+<h1 id="rfc.section.6.1.1"><a href="#rfc.section.6.1.1">6.1.1.</a> <a href="#registration-objects" id="registration-objects">Registration Objects</a></h1>
+<p id="rfc.section.6.1.1.p.1">An ACME registration resource represents a set of metadata associated to an account key pair.  Registration resources have the following structure:</p>
+<p/>
+
+<dl>
+  <dt>key (required, dictionary):</dt>
+  <dd style="margin-left: 8">The public key of the account key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>.</dd>
+  <dt>contact (optional, array of string):</dt>
+  <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this authorization. For example, the server may wish to notify the client about server-initiated revocation.</dd>
+  <dt>agreement (optional, string):</dt>
+  <dd style="margin-left: 8">A URI referring to a subscriber agreement or terms of service provided by the server (see below).  Including this field indicates the client&#8217;s agreement with the referenced terms.</dd>
+  <dt>authorizations (required, string):</dt>
+  <dd style="margin-left: 8">A URI from which a list of authorizations granted to this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;authorizations&#8221; field is an array of strings, where each string is the URI of an authorization belonging to this registration.  The server SHOULD include pending authorizations, and SHOULD NOT include authorizations that are invalid or expired. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</dd>
+  <dt>certificates (required, string):</dt>
+  <dd style="margin-left: 8">A URI from which a list of certificates issued for this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;certificates&#8221; field is an array of strings, where each string is the URI of a certificate.  The server SHOULD NOT include expired or revoked certificates.  The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</dd>
+</dl>
+<pre>
+{
+  "resource": "new-reg",
+  "contact": [
+    "mailto:cert-admin@example.com",
+    "tel:+12025551212"
+  ],
+  "agreement": "https://example.com/acme/terms",
+  "authorizations": "https://example.com/acme/reg/1/authz",
+  "certificates": "https://example.com/acme/reg/1/cert",
+}
+</pre>
+<h1 id="rfc.section.6.1.2"><a href="#rfc.section.6.1.2">6.1.2.</a> <a href="#authorization-objects" id="authorization-objects">Authorization Objects</a></h1>
+<p id="rfc.section.6.1.2.p.1">An ACME authorization object represents server&#8217;s authorization for an account to represent an identifier.  In addition to the identifier, an authorization includes several metadata fields, such as the status of the authorization (e.g., &#8220;pending&#8221;, &#8220;valid&#8221;, or &#8220;revoked&#8221;) and which challenges were used to validate possession of the identifier.</p>
+<p id="rfc.section.6.1.2.p.2">The structure of an ACME authorization resource is as follows:</p>
+<p/>
+
+<dl>
+  <dt>identifier (required, dictionary of string):</dt>
+  <dd style="margin-left: 8">The identifier that the account is authorized to represent <dl><dt>type (required, string):</dt><dd style="margin-left: 8">The type of identifier.</dd><dt>value (required, string):</dt><dd style="margin-left: 8">The identifier itself.</dd></dl><p> </p></dd>
+  <dt>status (required, string):</dt>
+  <dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;unknown&#8221;, &#8220;pending&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, &#8220;invalid&#8221; and &#8220;revoked&#8221;.  If this field is missing, then the default value is &#8220;pending&#8221;.</dd>
+  <dt>expires (optional, string):</dt>
+  <dd style="margin-left: 8">The timestamp after which the server will consider this authorization invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;valid&#8221; in the &#8220;status field.</dd>
+  <dt>challenges (required, array):</dt>
+  <dd style="margin-left: 8">The challenges that the client needs to fulfill in order to prove possession of the identifier (for pending authorizations).  For final authorizations, the challenges that were used.  Each array entry is a dictionary with parameters required to validate the challenge, as specified in <a href="#identifier-validation-challenges">Section 7</a>.</dd>
+  <dt>combinations (optional, array of arrays of integers):</dt>
+  <dd style="margin-left: 8">A collection of sets of challenges, each of which would be sufficient to prove possession of the identifier. Clients complete a set of challenges that covers at least one set in this array. Challenges are identified by their indices in the challenges array.  If no &#8220;combinations&#8221; element is included in an authorization object, the client completes all challenges.</dd>
+</dl>
+<p id="rfc.section.6.1.2.p.4">The only type of identifier defined by this specification is a fully-qualified domain name (type: &#8220;dns&#8221;).  The value of the identifier MUST be the ASCII representation of the domain name.  Wildcard domain names (with &#8220;*&#8221; as the first label) MUST NOT be included in authorization requests.  See <a href="#certificate-issuance">Section 6.5</a> below for more information about wildcard domains.</p>
+<pre>
+{
+  "status": "valid",
+  "expires": "2015-03-01T14:09:00Z",
+
+  "identifier": {
+    "type": "dns",
+    "value": "example.org"
+  },
+
+  "challenges": [
+    {
+      "type": "http-01",
+      "status": "valid",
+      "validated": "2014-12-01T12:05:00Z",
+      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
+    }
+  ],
+}
+</pre>
 <h1 id="rfc.section.6.2"><a href="#rfc.section.6.2">6.2.</a> <a href="#directory" id="directory">Directory</a></h1>
 <p id="rfc.section.6.2.p.1">In order to help clients configure themselves with the right URIs for each ACME operation, ACME servers provide a directory object. This should be the only URL needed to configure clients. It is a JSON dictionary, whose keys are the &#8220;resource&#8221; values listed in <a href="#https-requests">Section 5.1</a>, and whose values are the URIs used to accomplish the corresponding function.</p>
 <p id="rfc.section.6.2.p.2">There is no constraint on the actual URI of the directory except that it should be different from the other ACME server resources&#8217; URIs, and that it should not clash with other services. For instance:</p>
@@ -1552,7 +1558,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <p id="rfc.section.9.p.5">Related information: N/A</p>
 <h1 id="rfc.section.9.1"><a href="#rfc.section.9.1">9.1.</a> <a href="#replay-nonce-http-header" id="replay-nonce-http-header">Replay-Nonce HTTP Header</a></h1>
 <p id="rfc.section.9.1.p.1">The &#8220;Message Headers&#8221; registry should be updated with the following additional value:</p>
-<p id="rfc.section.9.1.p.2">| Header Field Name | Protocol | Status   | Reference        | +:&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;+ | Replay-Nonce      | http     | standard | <a href="#replay-nonce">Section 5.6.1</a> |</p>
+<p id="rfc.section.9.1.p.2">| Header Field Name | Protocol | Status   | Reference        | +:&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;+ | Replay-Nonce      | http     | standard | <a href="#replay-nonce">Section 5.4.1</a> |</p>
 <h1 id="rfc.section.9.2"><a href="#rfc.section.9.2">9.2.</a> <a href="#nonce-jws-header-parameter" id="nonce-jws-header-parameter">&#8220;nonce&#8221; JWS Header Parameter</a></h1>
 <p id="rfc.section.9.2.p.1">The &#8220;JSON Web Signature and Encryption Header Parameters&#8221; registry should be updated with the following additional value:</p>
 <p/>
@@ -1562,7 +1568,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Header Parameter Description: Nonce</li>
   <li>Header Parameter Usage Location(s): JWE, JWS</li>
   <li>Change Controller: IESG</li>
-  <li>Specification Document(s): <a href="#nonce-nonce-jws-header-parameter">Section 5.6.2</a> of RFC XXXX</li>
+  <li>Specification Document(s): <a href="#nonce-nonce-jws-header-parameter">Section 5.4.2</a> of RFC XXXX</li>
 </ul>
 <p id="rfc.section.9.2.p.3">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.9.3"><a href="#rfc.section.9.3">9.3.</a> <a href="#urn-sub-namespace-for-acme-urnietfparamsacme" id="urn-sub-namespace-for-acme-urnietfparamsacme">URN Sub-namespace for ACME (urn:ietf:params:acme)</a></h1>
@@ -1830,6 +1836,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
     </tr>
     <tr>
       <td class="reference">
+        <b id="RFC2818">[RFC2818]</b>
+      </td>
+      <td class="top"><a>Rescorla, E.</a>, "<a href="http://tools.ietf.org/html/rfc2818">HTTP Over TLS</a>", RFC 2818, DOI 10.17487/RFC2818, May 2000.</td>
+    </tr>
+    <tr>
+      <td class="reference">
         <b id="RFC2985">[RFC2985]</b>
       </td>
       <td class="top"><a>Nystrom, M.</a> and <a>B. Kaliski</a>, "<a href="http://tools.ietf.org/html/rfc2985">PKCS #9: Selected Object Classes and Attribute Types Version 2.0</a>", RFC 2985, DOI 10.17487/RFC2985, November 2000.</td>
@@ -1964,12 +1976,6 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
         <b id="I-D.vixie-dnsext-dns0x20">[I-D.vixie-dnsext-dns0x20]</b>
       </td>
       <td class="top"><a>Vixie, P.</a> and <a>D. Dagon</a>, "<a href="http://tools.ietf.org/html/draft-vixie-dnsext-dns0x20-00">Use of Bit 0x20 in DNS Labels to Improve Transaction Identity</a>", Internet-Draft draft-vixie-dnsext-dns0x20-00, March 2008.</td>
-    </tr>
-    <tr>
-      <td class="reference">
-        <b id="RFC2818">[RFC2818]</b>
-      </td>
-      <td class="top"><a>Rescorla, E.</a>, "<a href="http://tools.ietf.org/html/rfc2818">HTTP Over TLS</a>", RFC 2818, DOI 10.17487/RFC2818, May 2000.</td>
     </tr>
     <tr>
       <td class="reference">
