@@ -537,15 +537,9 @@ indicate why the server was unable to validate authorization.
 
 ## Rate limits
 
-Creation of resources can be rate limited to ensure fair usage and prevent abuse. If rate limits are in place, the server SHOULD send the following three headers fields:
+Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code "rateLimited".  Additionally, the server SHOULD send a "Retry-After" header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.
 
-| Header name           | Value                                         |
-|:----------------------|:----------------------------------------------|
-| RateLimit-Limit       | Total limit in the given time window.         |
-| RateLimit-Remaining   | Remaining creations in the given time window. |
-| RateLimit-Reset       | Time in seconds until the limit is reset.     |
-
-Once the rate limit is exceeded, the server responds with an error with the code "rateLimited".
+In addition to the human readable "detail" field of the error response, the server MAY send one or multiple tokens in the "Link" header pointing to documentation about the specific hit rate limits using the "rate-limit" relation.
 
 ## Replay protection
 
