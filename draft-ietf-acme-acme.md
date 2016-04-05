@@ -318,7 +318,7 @@ ACME uses a combination of HTTPS and JWS to create a messaging layer with a few
 important security properties.
 
 Communications between an ACME client and an ACME server are done over HTTPS,
-using JWS to provide som additional security properties for messages sent from
+using JWS to provide some additional security properties for messages sent from
 the client to the server.  HTTPS provides server authentication and
 confidentiality.  With some ACME-specific extensions, JWS provides
 authentication of the client's request payloads, anti-replay protection, and a
