@@ -1380,7 +1380,7 @@ document meet these requirements.  New challenges will need to document how they
 do.
 
 ACME uses an extensible challenge/response framework for identifier validation.
-The server presents a set of challenge in the authorization object it sends to a
+The server presents a set of challenges in the authorization object it sends to a
 client (as objects in the "challenges" array), and the client responds by
 sending a response object in a POST request to a challenge URI.
 
