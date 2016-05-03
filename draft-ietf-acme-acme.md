@@ -496,8 +496,9 @@ indicate why the server was unable to validate authorization.
 In this section, we describe the certificate management functions that ACME
 enables:
 
-  * Account Key Registration
-  * Account Key Authorization
+  * Account Registration
+  * Account Authorization
+  * Account Deletion
   * Certificate Issuance
   * Certificate Renewal
   * Certificate Revocation
@@ -580,11 +581,38 @@ structured and how the ACME protocol makes use of them.
 ### Registration Objects
 
 An ACME registration resource represents a set of metadata associated to an
-account key pair.  Registration resources have the following structure:
+account.  Registration resources have the following structure:
+
+active (required, boolean):
+: For a new account, it is "true" initially.  It can be set to false by the
+owner to prohibit most operations with this account.  If a user wishes to delete
+his/her account, it is possible to either fully delete the account and revoke
+all associated certificates, or to set the account to not active.  An inactive
+account can not issue new certificates, but it is still possible to revoke the
+certificates.  This is helpful when the account key gets compromised: The
+attacker can not issue certificates and then fully delete alone the account
+to prevent revocation.
+
+registertime (required, date):
+: If "active" is true, "registertime" contains the date and time of the account
+creation timestamp.  Else, if "active" was set to false, it is the date and time
+when "active" was set to false.  The exact storage format may be choosen by
+server implementations, however, transmissions to clients should contain the
+value formatted like described in {{RFC3339}}.
 
 key (required, dictionary):
 : The public key of the account key pair, encoded as a JSON Web Key object
 {{RFC7517}}.
+
+oldkeys (required, array of dictionary):
+: Old values of "key" if "key" got changed by the account owner.  Each key again
+is a JSON Web Key object, with an additional "changetime" in each key object.
+The value "changetime" is the time the key object got inserted in "oldkeys".
+The same format restrictions as for "registertime" apply.  For a new account,
+the array is initially empty.  Similar to "active", "oldkeys" is meant to
+prevent situations where first the account is compromised and then the key is
+changed to prevent deletion: The old keys can still be used for deletion (only),
+within a certain timespan.
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
@@ -615,7 +643,15 @@ relation "next" indicating a URL to retrieve further entries.
 
 ~~~~~~~~~~
 {
-  "resource": "new-reg",
+  "resource": "reg",
+  "active": true,
+  "registertime": "12345678",
+  "key": {...},
+  "oldkeys": [
+    {...},
+    {...},
+	...
+  ],
   "contact": [
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
@@ -625,6 +661,20 @@ relation "next" indicating a URL to retrieve further entries.
   "certificates": "https://example.com/acme/reg/1/cert",
 }
 ~~~~~~~~~~
+
+There are several mandatory cleanup tasks related to the dates in registration
+objects.  The server MUST perform following actions at least once per week:
+
+* Accounts where "active" is set to false, and "registerdate" is older than the
+maximum certificate validity time span by this server, MUST be deleted
+completely.  The server MUST NOT delete inactive accounte before, as there still
+might be valid certificates.
+
+* Key objects in the "olykeys" array of an account that, according to their own
+timestamp, were created more than three times the maximum certificate validity
+time span ago, MUST be deleted.  They MUST NOT be deleted before, to give the
+rightful owner of an compromised account time to notice the breach and react
+to it.
 
 ### Authorization Objects
 
@@ -2036,8 +2086,8 @@ limits.  Issues closer to the front end, like POST body validation, can be
 addressed using HTTP request limiting.  For validation and certificate requests,
 there are other identifiers on which rate limits can be keyed.  For example, the
 server might limit the rate at which any individual account key can issue
-certificates, or the rate at which validation can be requested within a given
-subtree of the DNS.
+certificates, the rate at which validation can be requested within a given
+subtree of the DNS, or the rate how often account keys can be rolled over.
 
 
 ## CA Policy Considerations
@@ -2085,10 +2135,10 @@ hosting platform to terminate the TLS connection.  However, some hosting
 platforms will choose a virtual host to be the "default", and route connections
 with unknown SNI values to that host.
 
-In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., "tls-sni-02")
-for any domain with an A record that points to the hosting platform.  This could
-  result in mis-issuance in cases where there are multiple hosts with different
-  owners resident on the hosting platform.
+In such cases, the owner of the default virtual host can complete a TLS-based
+challenge (e.g., "tls-sni-02") for any domain with an A record that points to
+the hosting platform.  This could result in mis-issuance in cases where there
+are multiple hosts with different owners resident on the hosting platform.
 
 A CA that accepts TLS-based proof of domain control should attempt to check
 whether a domain is hosted on a domain with a default virtual host before
