@@ -1034,7 +1034,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
       "uri": "https://example.com/authz/asdf/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
-  },
+  ],
 
   "combinations": [[0], [1]]
 }
