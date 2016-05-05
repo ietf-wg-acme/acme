@@ -496,8 +496,9 @@ indicate why the server was unable to validate authorization.
 In this section, we describe the certificate management functions that ACME
 enables:
 
-  * Account Key Registration
-  * Account Key Authorization
+  * Account Registration
+  * Account Authorization
+  * Deletion of Accounts and Authorizations
   * Certificate Issuance
   * Certificate Renewal
   * Certificate Revocation
@@ -580,11 +581,38 @@ structured and how the ACME protocol makes use of them.
 ### Registration Objects
 
 An ACME registration resource represents a set of metadata associated to an
-account key pair.  Registration resources have the following structure:
+account.  Registration resources have the following structure:
+
+active (required, boolean):
+: For a new account, it is "true" initially.  It can be set to false by the
+owner to prohibit most operations with this account.  If a user wishes to delete
+his/her account, it is possible to either fully delete the account and revoke
+all associated certificates, or to set the account to not active.  An inactive
+account can not issue new certificates, but it is still possible to revoke the
+certificates.  This is helpful when the account key gets compromised: The
+attacker can not issue certificates and then fully delete alone the account
+to prevent revocation.
+
+registertime (required, date):
+: If "active" is true, "registertime" contains the date and time of the account
+creation timestamp.  Else, if "active" was set to false, it is the date and time
+when "active" was set to false.  The exact storage format may be choosen by
+server implementations, however, transmissions to clients should contain the
+value formatted like described in {{RFC3339}}.
 
 key (required, dictionary):
 : The public key of the account key pair, encoded as a JSON Web Key object
 {{RFC7517}}.
+
+oldkeys (required, array of dictionary):
+: Old values of "key" if "key" got changed by the account owner.  Each key again
+is a JSON Web Key object, with an additional "changetime" in each key object.
+The value "changetime" is the time the key object got inserted in "oldkeys".
+The same format restrictions as for "registertime" apply.  For a new account,
+the array is initially empty.  Similar to "active", "oldkeys" is meant to
+prevent situations where first the account is compromised and then the key is
+changed to prevent deletion: The old keys can still be used for deletion (only),
+within a certain timespan.
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
@@ -615,7 +643,15 @@ relation "next" indicating a URL to retrieve further entries.
 
 ~~~~~~~~~~
 {
-  "resource": "new-reg",
+  "resource": "reg",
+  "active": true,
+  "registertime": "12345678",
+  "key": {...},
+  "oldkeys": [
+    {...},
+    {...},
+	...
+  ],
   "contact": [
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
@@ -625,6 +661,21 @@ relation "next" indicating a URL to retrieve further entries.
   "certificates": "https://example.com/acme/reg/1/cert",
 }
 ~~~~~~~~~~
+
+There are several mandatory cleanup tasks related to the dates in registration
+objects.  The server MUST perform following actions at least once per week:
+
+* Accounts where "active" is set to false, and the difference between the
+current timestamp and "registertime" is larger than this servers maximum
+certificate validity, MUST be deleted completely.  All associated authorization
+objects MUST be deleted too.  The server MUST NOT delete inactive accounts
+before, as there still might be valid certificates.
+
+* Key objects in the "olykeys" array of an account that, according to their own
+timestamp, were created more than two times the maximum certificate validity
+time span ago, MUST be deleted.  They MUST NOT be deleted before, to give the
+rightful owner of an compromised account time to notice the breach and react
+to it.
 
 ### Authorization Objects
 
@@ -697,6 +748,11 @@ label) MUST NOT be included in authorization requests.  See
 }
 ~~~~~~~~~~
 
+Authorizations which expired more than this servers maximum certificate validity
+ago according to "expires", MUST be deleted completely, independent of if they
+are "invalid" or "revoked"  The server MUST NOT delete authorizations
+before, as they might be necessary to revoke certificates after breaches
+even in their expired state.
 
 ## Directory
 
@@ -776,23 +832,23 @@ Host: example.com
 /* Signed as JWS */
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", "authorizations", and
-"certificates" fields in registration bodies sent by the client, as well as any
-other fields that it does not recognize.  If new fields are specified in the
-future, the specification of those fields MUST describe whether they may be
-provided by the client.
+The server MUST ignore any other fields and values in registration bodies sent
+by the client.  If new fields are specified in the future, the specification of
+those fields MUST describe whether they may be provided by the client.
 
 The server creates a registration object with the included contact information.
 The "key" element of the registration is set to the public key used to verify
-the JWS (i.e., the "jwk" element of the JWS header).  The server returns this
-registration object in a 201 (Created) response, with the registration URI in a
-Location header field.  The server SHOULD also indicate its new-authorization
-URI using the "next" link relation.
+the JWS (i.e., the "jwk" element of the JWS header), "active" is set to true,
+"registertime" to the current time, and "oldkeys" to an empty array.  The server
+returns this registration object in a 201 (Created) response, with the
+registration URI in a Location header field.  The server SHOULD also indicate
+its new-authorization URI using the "next" link relation.
 
-If the server already has a registration object with the provided account key,
-then it MUST return a 409 (Conflict) response and provide the URI of that
-registration in a Location header field.  This allows a client that has an
-account key but not the corresponding registration URI to recover the
+If the server already has a registration object with the provided account key
+being the account key or one of the keys in "oldkeys", and with either value
+of "active", then it MUST return a 409 (Conflict) response and provide the URI
+of that registration in a Location header field.  This allows a client that has
+an account key but not the corresponding registration URI to recover the
 registration URI.
 
 If the server wishes to present the client with terms under which the ACME
@@ -813,7 +869,10 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
   "key": { /* JWK from JWS header */ },
-
+  "active": true,
+  "registertime": "12345678",
+  "oldkeys": [
+  ],
   "contact": [
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
@@ -823,9 +882,10 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the registration URI.  The server MUST
-ignore any updates to the "key", "authorizations, or "certificates" fields, and
-MUST verify that the request is signed with the private key corresponding to the
-"key" field of the request before updating the registration.
+ignore any updates to the "key", "oldkeys", "active", "registertime",
+"authorizations, or "certificates" fields, and MUST verify that the account is
+active and that the request is signed with the private key corresponding to the
+"key" field (not "oldkeys") of the request before updating the registration.
 
 For example, to update the contact information in the above registration, the
 client could send the following request:
@@ -898,9 +958,11 @@ the server MUST perform the following steps:
 4. Check that the "resource" field of the object has the value "reg"
 5. Check that the "oldKey" field of the object contains the JWK thumbprint of
    the account key for this registration
+6. Check if the accounts "active" value is true
 
-If all of these checks pass, then the server updates the registration by
-replacing the old account key with the public key carried in the "jwk" header
+If all of these checks pass, then the server updates the registration by first
+adding the old key to the array "oldkeys", with the current timestamp as
+"changetime", then setting "key" to public key carried in the "jwk" header
 parameter of the "newKey" JWS object.
 
 If the update was successful, then the server sends a response with status code
@@ -911,14 +973,18 @@ document describing the error.
 ### Deleting an Account
 
 If a client no longer wishes to have an account key registered with the server,
-it may request that the server delete its account by sending a POST request to
-the account URI containing the "delete" field.
+it may request that the server revoke or delete its account by sending a POST
+request to the account URI containing following fields:
 
 delete (required, boolean):
 The boolean value "true".
 
+destroyall (optional, boolean):
+If not set, the default value is "false".
+
 The request object MUST contain the "resource" field as required above (with the
-value "reg").  It MUST NOT contain any fields besides "resource" and "delete".
+value "reg").  It MUST NOT contain any fields besides "resource", "delete",
+and optionally "destroyall":
 
 Note that although this object is very simple, the risk of replay or fraudulent
 generation via signing oracles is mitigated by the need for an anti-replay
@@ -931,22 +997,57 @@ Host: example.com
 {
   "resource": "reg",
   "delete": true,
+  "destroyall": false,
 }
 /* Signed as JWS */
 ~~~~~~~~~~
 
-On receiving a POST to an account URI containing a "delete" field, the server
-MUST verify that no other fields were sent in the object (other than
-"resource"), and it MUST verify that the value of the "delete" field is "true"
-(as a boolean, not a string).  If either of these checks fails, then the server
-MUST reject the request with status code 400 (Bad Request).
+Unlike most other ACME requests, revocation requests can not only be signed
+with the account key from an active account. On receiving a POST to an account
+URI containing a "delete" field, the server MUST verify that
+1) no other fields than the allowed three were sent
+2) delete is "true" (boolean value, not string)
+3) resource contains reg
+4) destroyall, if it exists, has a valid value (true/false)
+5) The message was signed either with the "key" or any of the existing
+"oldkeys", ie. the account can be identified and authenticated by all possible
+keys that are saved. The accounts "active" variable can be either true or false,
+both values are allowed. This, together with the time limits described in the
+Registration object, makes it possible for owners of compromised account keys
+to revoke their account and certificates even if the attacker deletes the
+account or changes the key after issuing new certificates.
 
-If the server accepts the deletion request, then it MUST delete the account and
-all related objects and send a response with a 200 (OK) status code and an empty
-body.  The server SHOULD delete any authorization objects related to the deleted
-account, since they can no longer be used.  The server SHOULD NOT delete
-certificate objects related to the account, since certificates issued under the
-account continue to be valid until they expire or are revoked.
+If either of these checks fails, then the server MUST reject the request with
+status code 400 (Bad Request) or 403 (Forbidden) respectively.
+
+If the request is accepted, the subsequent actions depend on "active" from the
+account and "destroyall" from the request message. Either way, after executing
+it, the server MUST send a response with a 200 (OK) status code and an empty
+body.
+
+#### Account inactive, destroyall is false
+The server MUST NOT do anything, other than respondign 200 OK.
+
+#### Account active, destroyall is false
+The accounts "active" variable MUST be set to false, and "registertime" MUST be
+set to the current timestamp. The server MUST NOT do anything else.
+
+This means the account can not issue certificates anymore, but it is kept for
+some time to make the revocation of all keys possible, like described in the
+next paragraph:
+
+#### Destroyall is true, the account is either active or not.
+
+A "destroyable" certificate is an certificate where this account has
+authorizations for at least each identifier of the certificate, even if some or
+all of the authorizations are not "valid", but "invalid" (expired) or "revoked".
+Note that latter two types get deleted after some time, only the existing ones
+are important.
+
+First, all "destroyable" certificates MUST be immediately revoked. Next, all
+authorizations of this account, independent of their state and other values,
+MUST be completely deleted. Finally, the registration object of the account
+itself MUST be completely deleted too.
 
 ## Identifier Authorization
 
@@ -968,8 +1069,8 @@ To begin the key authorization process, the client sends a POST request to the
 server's new-authorization resource.  The body of the POST request MUST contain
 a JWS object, whose payload is a partial authorization object.  This JWS object
 MUST contain only the "identifier" field, so that the server knows what
-identifier is being authorized.  The server MUST ignore any other fields present
-in the client's request object.
+identifier is being authorized.  The server MUST ignore any other fields
+present in the client's request object.
 
 The authorization object is implicitly tied to the account key used to sign the
 request. Once created, the authorization may only be updated by that account.
@@ -988,12 +1089,14 @@ Host: example.com
 /* Signed as JWS */
 ~~~~~~~~~~
 
-Before processing the authorization further, the server SHOULD determine whether
-it is willing to issue certificates for the identifier.  For example, the server
-should check that the identifier is of a supported type.  Servers might also
-check names against a blacklist of known high-value identifiers.  If the server
-is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
-error, with a problem document describing the reason for the rejection.
+Before processing the authorization further, the server MUST check if the
+accounts "active" is true, and it MUST check that the message was signed with
+"key" (not "oldkeys"). The server SHOULD determine whether it is willing to
+issue certificates for the identifier.  For example, the server should check
+that the identifier is of a supported type.  Servers might also check names
+against a blacklist of known high-value identifiers.  If the server is unwilling
+to issue for the identifier, it SHOULD return a 403 (Forbidden) error, with a
+problem document describing the reason for the rejection.
 
 If the server is willing to proceed, it builds a pending authorization object
 from the initial authorization object submitted by the client.
@@ -1131,13 +1234,12 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
-### Deleting an Authorization
+### Revoking an Authorization
 
 If a client wishes to relinquish its authorization to issue certificates for an
-identifier, then it may request that the server delete the authorization.  The
+identifier, then it may request that the server revokes the authorization.  The
 client makes this request by sending a POST request to the authorization URI
-containing a payload in the same format as in {{deleting-an-account}}.  The only
-difference is that the value of the "resource" field is "authz".
+containing containing the "delete" field:
 
 ~~~~~~~~~~
 POST /acme/authz/asdf HTTP/1.1
@@ -1150,21 +1252,40 @@ Host: example.com
 /* Signed as JWS */
 ~~~~~~~~~~
 
-The server MUST perform the same validity checks as in {{deleting-an-account}}
-and reject the request if they fail.  If the server deletes the account then it
-MUST send a response with a 200 (OK) status code and an empty body.
+The request object MUST contain the "resource" field as required above (with the
+value "authz").  It MUST NOT contain any fields besides "resource" and "delete".
+Note that although this object is very simple, the risk of replay or fraudulent
+generation via signing oracles is mitigated by the need for an anti-replay
+token in the protected header of the JWS.
+
+On receiving a POST to an authz URI containing a "delete" field, the server
+MUST verify that
+1) no other fields were sent in the object (other than "resource")
+2) the value of the "delete" field is "true" (as a boolean, not a string)
+3) the accounts "active" is true
+4) the request was signed with "key" (not "oldkeys")
+
+If either of these checks fails, then the server MUST reject the
+request with status code 400 (Bad Request) for the former two, and 403
+(Forbidden) for the latter two.
+
+If the server accepts the deletion request, then it MUST set the state of the
+authorization to "revoked" and send a response with a 200 (OK) status code and
+an empty body. The server MUST NOT delete the authorization completely because
+of a deletion request.
 
 ## Certificate Issuance
 
-The holder of an account key pair authorized for one or more identifiers may use
-ACME to request that a certificate be issued for any subset of those
-identifiers.  The client makes this request by sending a POST request to the
-server's new-certificate resource.  The body of the POST is a JWS object whose
-JSON payload contains a Certificate Signing Request (CSR) {{RFC2986}}.  The CSR
-encodes the parameters of the requested certificate; authority to issue is
-demonstrated by the JWS signature by an account key, from which the server can
-look up related authorizations.  Some attributes which cannot be reflected in a
-CSR are placed directly in the certificate request.
+The holder of an account key pair ("key", not "oldkeys") authorized for one or
+more identifiers may use ACME to request that a certificate be issued for any
+subset of those identifiers.  The authorization needs to be "valid".  The client
+makes this request by sending a POST request to the server's new-certificate
+resource.  The body of the POST is a JWS object whose JSON payload contains a
+Certificate Signing Request (CSR) {{RFC2986}}.  The CSR encodes the parameters
+of the requested certificate; authority to issue is demonstrated by the JWS
+signature by an account key, from which the server can look up related
+authorizations.  Some attributes which cannot be reflected in a CSR are placed
+directly in the certificate request.
 
 csr (required, string):
 : A CSR encoding the parameters for the certificate being requested.  The CSR is
@@ -1211,7 +1332,7 @@ client's account key.  A server MAY consider a client authorized for a wildcard
 domain if it is authorized for the underlying domain name (without the "*"
 label).  Servers SHOULD NOT extend authorization across identifier types.  For
 example, if a client is authorized for "example.com", then the server should not
-allow the client to issue a certificate with an iPAddress subjectAltName, even
+allow the client to issue a certificate with an IP-Address subjectAltName, even
 if it contains an IP address to which example.com resolves.
 
 If the CA decides to issue a certificate, then the server creates a new
@@ -1328,16 +1449,18 @@ Host: example.com
 /* Signed as JWS */
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME request in that they can be
-signed either with an account key pair or the key pair in the certificate.
-Before revoking a certificate, the server MUST verify that the key used to sign
-the request is authorized to revoke the certificate.  The server SHOULD consider
-at least the following keys authorized for a given certificate:
+Unlike most other ACME requests, revocation requests can not only be signed
+with the account key.  Before revoking a certificate, the server MUST verify
+that the key used to sign the request is "authorized" to revoke the certificate.
+The server SHOULD consider at least the following keys authorized for a
+given certificate:
+
+* an account key ("key", not "oldkeys") that has valid, non-expired and
+  non-revoked authorizations to act for all of the identifier(s) in the
+  certificate. The value of "active" in the corresponding registration
+  object MUST be true.
 
 * the public key in the certificate.
-
-* an account key that is authorized to act for all of the identifier(s) in the
-  certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
 the revocation fails, the server returns an error.
@@ -2036,8 +2159,8 @@ limits.  Issues closer to the front end, like POST body validation, can be
 addressed using HTTP request limiting.  For validation and certificate requests,
 there are other identifiers on which rate limits can be keyed.  For example, the
 server might limit the rate at which any individual account key can issue
-certificates, or the rate at which validation can be requested within a given
-subtree of the DNS.
+certificates, the rate at which validation can be requested within a given
+subtree of the DNS, or the rate how often account keys can be rolled over.
 
 
 ## CA Policy Considerations
@@ -2085,10 +2208,10 @@ hosting platform to terminate the TLS connection.  However, some hosting
 platforms will choose a virtual host to be the "default", and route connections
 with unknown SNI values to that host.
 
-In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., "tls-sni-02")
-for any domain with an A record that points to the hosting platform.  This could
-  result in mis-issuance in cases where there are multiple hosts with different
-  owners resident on the hosting platform.
+In such cases, the owner of the default virtual host can complete a TLS-based
+challenge (e.g., "tls-sni-02") for any domain with an A record that points to
+the hosting platform.  This could result in mis-issuance in cases where there
+are multiple hosts with different owners resident on the hosting platform.
 
 A CA that accepts TLS-based proof of domain control should attempt to check
 whether a domain is hosted on a domain with a default virtual host before
@@ -2129,3 +2252,4 @@ inception.
 This document draws on many concepts established by Eric Rescorla's "Automated
 Certificate Issuance Protocol" draft.  Martin Thomson provided helpful guidance
 in the use of HTTP.
+
