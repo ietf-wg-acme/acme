@@ -482,6 +482,7 @@ to errors, this document defines the following standard tokens for use in the
 | unknownHost     | The server could not resolve a domain name                |
 | rateLimited     | The request exceeds a rate limit                          |
 | invalidContact  | The provided contact URI for a registration was invalid   |
+| precondition    | The client needs to perform an action before this request |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -490,6 +491,113 @@ namespace for errors other than the standard types.  Clients SHOULD display the
 
 Authorization and challenge objects can also contain error information to
 indicate why the server was unable to validate authorization.
+
+## Preconditions
+
+Sometimes a client might make a request of an ACME-enabled CA without having
+performed some actions that the CA requires before processing the request.  For
+example, the client might request a certificate without having completed the
+required authorizations, or request authorization without having agreed to a
+subscriber agreement.
+
+The CA can indicate to the client what actions are required by returning a
+"precondition" error response.  Such an error response MUST use status code 412
+(Precondition Failed), and return an error document with "type" value
+"urn:ietf:params:acme:error:precondition".  The error document MUST also contain
+a "preconditions" element that specifies the preconditions:
+
+preconditions (required, array of dictionary):
+: The actions that the client must take before the request can be fulfilled.
+
+The entries in the "preconditions" array are objects describing actions
+requested by the CA.  The only general requirement on these objects is that they
+have a "type" field that indicates the type of action being requested.  The
+value of the "type" field specifies any remaining required fields, as well as
+what action the client should take to fulfil the precondition.  An initial set
+of preconditions is described below.
+
+For example, suppose a client skipped straight from initial registration to
+requesting a new certificate containing three different domain names.  The
+server could request that the client agree to its terms, obtain authorization
+for each of the names, and pay for the certificate by sending the following
+  precondition response:
+
+~~~~~~~~~~
+POST /acme/new-cert HTTP/1.1
+Host: example.com
+
+/* New-cert request */
+
+
+HTTP/1.1 412 Precondition Failed
+Content-Type: application/problem+json
+
+{
+  "type": "urn:ietf:params:acme:error:precondition",
+  "title": "Wow, you were really unprepared for this.",
+  "preconditions": [{
+    "type": "registration",
+    "required": ["contact", "terms"]
+  }, {
+    "type": "authorization",
+    "url": "https://example.com/acme/authz/asdf1"
+  }, {
+    "type": "authorization",
+    "url": "https://example.com/acme/authz/asdf2"
+  }, {
+    "type": "authorization",
+    "url": "https://example.com/acme/authz/asdf3"
+  }, {
+    "type": "out-of-band",
+    "url": "https://example.com/acme/payment?txn=asdf"
+  }]
+}
+~~~~~~~~~~
+
+A client receiving a precondition response MUST NOT retry the request until it
+has fulfilled all of the specified preconditions.  Note that fulfilling the
+preconditions may not be sufficient for the request to succeed; there may be
+other errors in the request that the CA deferred until the preconditions were
+met.
+
+## Registration Update
+
+A precondition with type "registration" requests that the ACME client update its
+registration to populate the fields indicated.
+
+required (required, array of string):
+: The fields that must be populated in the registration object
+
+To fulfill this precondition, the ACME client should update its registration by
+sending a POST request that provides the required fields.
+
+## Authorization
+
+A precondition with type "authorization" requests that the ACME client complete
+an authorization transaction.  The server specifies the authorization by
+pre-provisioning a pending authorization resource and providing the URI for this
+resource in the precondition.
+
+url (required, string):
+: The URL for the authorization resource
+
+To fulfill this challenge, the ACME client should fetch the authorization object
+from the indicated URL, then follow the process for obtaining authorization as
+specified in {{identifier-authorization}}.
+
+## Out-of-band
+
+A precondition with type "out-of-band" requests that the ACME client have a
+human user visit a web page in order to receive further instructions for how to
+fulfill the precondition.  The precondition object provides a URI for the web
+page to be visited.
+
+url (required, string):
+: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
+
+To fulfill this precondition, the ACME client should direct the user to the
+indicated web page.
+
 
 # Certificate Management
 
@@ -1207,9 +1315,14 @@ authorized).
 
 It is up to the server's local policy to decide which names are acceptable in a
 certificate, given the authorizations that the server associates with the
-client's account key.  A server MAY consider a client authorized for a wildcard
-domain if it is authorized for the underlying domain name (without the "*"
-label).  Servers SHOULD NOT extend authorization across identifier types.  For
+client's account key.  For example, a server might have a policy that it will
+consider a client authorized for a wildcard domain if it is authorized for some
+set of names that match the wildcard.  If the client does not yet have
+sufficient authorization to issue the requested certificate, the server can
+request that the client obtain additional authorization using a precondition
+response (see {{preconditions}}).
+
+Servers SHOULD NOT extend authorization across identifier types.  For
 example, if a client is authorized for "example.com", then the server should not
 allow the client to issue a certificate with an iPAddress subjectAltName, even
 if it contains an IP address to which example.com resolves.
