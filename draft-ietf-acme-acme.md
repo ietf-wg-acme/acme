@@ -593,6 +593,9 @@ key (required, dictionary):
 : The public key of the account key pair, encoded as a JSON Web Key object
 {{RFC7517}}.
 
+status (required, string):
+: "good" or "deactivated"
+
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
 related to this authorization. For example, the server may wish to notify the
@@ -821,6 +824,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
   "key": { /* JWK from JWS header */ },
+  "status": "good",
 
   "contact": [
     "mailto:cert-admin@example.com",
@@ -918,21 +922,11 @@ If the update was successful, then the server sends a response with status code
 successful, then the server responds with an error status code and a problem
 document describing the error.
 
-### Deleting an Account
+### Account deactivation
 
-If a client no longer wishes to have an account key registered with the server,
-it may request that the server delete its account by sending a POST request to
-the account URI containing the "delete" field.
-
-delete (required, boolean):
-The boolean value "true".
-
-The request object MUST contain the "resource" field as required above (with the
-value "reg").  It MUST NOT contain any fields besides "resource" and "delete".
-
-Note that although this object is very simple, the risk of replay or fraudulent
-generation via signing oracles is mitigated by the need for an anti-replay
-token in the protected header of the JWS.
+A client may deactivate an account by posting a signed update to the server with
+a status field of "deactivated." Clients may wish to do this when the account
+key is compromised.
 
 ~~~~~~~~~~
 POST /acme/reg/asdf HTTP/1.1
@@ -941,23 +935,20 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "reg",
-  "delete": true
+  "status": "deactivated"
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
 
-On receiving a POST to an account URI containing a "delete" field, the server
-MUST verify that no other fields were sent in the object (other than
-"resource"), and it MUST verify that the value of the "delete" field is "true"
-(as a boolean, not a string).  If either of these checks fails, then the server
-MUST reject the request with status code 400 (Bad Request).
+The server MUST verify that the request is signed by the account key. If the
+server accepts the deactivation request, it should reply with a 200 (OK) status
+code and the current contents of the registration object.
 
-If the server accepts the deletion request, then it MUST delete the account and
-all related objects and send a response with a 200 (OK) status code and an empty
-body.  The server SHOULD delete any authorization objects related to the deleted
-account, since they can no longer be used.  The server SHOULD NOT delete
-certificate objects related to the account, since certificates issued under the
-account continue to be valid until they expire or are revoked.
+Once an account is deactivated, the server MUST NOT accept further requests
+authorized by that account's key. It is up to server policy how long to retain
+data related to that account, whether to revoke certificates issued by that
+account, and whether to send email to that account's contacts. ACME does not
+proviate a way to reactivate a deactivated account.
 
 ## Identifier Authorization
 
@@ -1161,13 +1152,11 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
-### Deleting an Authorization
+### Deactivating an Authorization
 
 If a client wishes to relinquish its authorization to issue certificates for an
-identifier, then it may request that the server delete the authorization.  The
-client makes this request by sending a POST request to the authorization URI
-containing a payload in the same format as in {{deleting-an-account}}.  The only
-difference is that the value of the "resource" field is "authz".
+identifier, then it may request that the server deactivate each authorization
+associated with that identifier.
 
 ~~~~~~~~~~
 POST /acme/authz/asdf HTTP/1.1
@@ -1176,14 +1165,18 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "authz",
-  "delete": true
+  "status": "deactivated"
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
 
-The server MUST perform the same validity checks as in {{deleting-an-account}}
-and reject the request if they fail.  If the server deletes the account then it
-MUST send a response with a 200 (OK) status code and an empty body.
+The server MUST verify that the request is signed by the account key
+corresponding to the account that owns the authorization. If the server accepts
+the deactivation, it should reply with a 200 (OK) status code and the current
+contents of the registration object.
+
+The server MUST NOT treat deactivated authorization objects as sufficient for
+issuing certificates.
 
 ## Certificate Issuance
 
