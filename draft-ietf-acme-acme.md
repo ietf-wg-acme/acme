@@ -375,7 +375,7 @@ requests for denial-of-service protection.
 
 These intermediaries can also change values in the request that are not signed
 in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to
-provides a limited integrity mechanism, which protects against an intermediary
+provide a limited integrity mechanism, which protects against an intermediary
 changing the request URI to another ACME URI of a different type.  (It does not
 protect against changing between URIs of the same type, e.g., from one
 authorization URI to another).
