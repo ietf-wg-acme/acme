@@ -475,6 +475,7 @@ to errors, this document defines the following standard tokens for use in the
 | badNonce        | The client sent an unacceptable anti-replay nonce         |
 | connection      | The server could not connect to the client for validation |
 | dnssec          | The server could not validate a DNSSEC signed domain      |
+| caa             | The CA is not authorized to issue based on CAA records    |
 | malformed       | The request message was malformed                         |
 | serverInternal  | The server experienced an internal error                  |
 | tls             | The server experienced a TLS error during validation      |
