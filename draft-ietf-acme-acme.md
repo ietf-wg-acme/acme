@@ -773,6 +773,7 @@ field).
 POST /acme/new-registration HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-reg",
   "contact": [
@@ -780,7 +781,7 @@ Host: example.com
     "tel:+12025551212"
   ],
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server MUST ignore any values provided in the "key", "authorizations", and
@@ -841,6 +842,7 @@ client could send the following request:
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "reg",
   "contact": [
@@ -848,7 +850,7 @@ Host: example.com
     "tel:+12125551212"
   ],
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 Servers SHOULD NOT respond to GET requests for registration resources as these
@@ -888,11 +890,12 @@ signature as a JWS.  The client then sends this JWS to the server in the
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body (using original key) */
 {
   "resource": "reg",
-  "newKey": /* JSON object signed as JWS with new key */
+  "newKey": /* JSON object signed with new key */
 }
-/* Signed as JWS with original key */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 On receiving a request to the registration URL with the "newKey" attribute set,
@@ -935,11 +938,12 @@ token in the protected header of the JWS.
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "reg",
   "delete": true,
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 On receiving a POST to an account URI containing a "delete" field, the server
@@ -990,6 +994,7 @@ as described below.
 POST /acme/new-authorization HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-authz",
   "identifier": {
@@ -998,7 +1003,7 @@ Host: example.com
   },
   "existing": "accept"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 If the authorization request specifies "existing" with a value of "accept" or "require",
@@ -1086,12 +1091,13 @@ above authorization, it would send the following request:
 POST /acme/authz/asdf/0 HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "challenge",
   "type": "http-01",
   "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server updates the authorization document by updating its representation of
@@ -1167,11 +1173,12 @@ difference is that the value of the "resource" field is "authz".
 POST /acme/authz/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "authz",
   "delete": true,
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server MUST perform the same validity checks as in {{deleting-an-account}}
@@ -1209,13 +1216,14 @@ POST /acme/new-cert HTTP/1.1
 Host: example.com
 Accept: application/pkix-cert
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-cert",
   "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The CSR encodes the client's requests with regard to the content of the
@@ -1266,12 +1274,17 @@ Retry-After: 120
 
 The default format of the certificate is DER (application/pkix-cert).  The
 client may request other formats by including an Accept header in its request.
+For example, the client may use the media type application/x-pem-file to request
+the certificate in PEM format.
 
 The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST include a Link relation header field {{RFC5988}}
-with relation "up" to provide a certificate under which this certificate was
-issued, and one with relation "author" to indicate the registration under which
-this certificate was issued.
+particular, the server send MUST one or more link relation header fields
+{{RFC5988}} with relation "up", each indicating a single certificate resource
+for the issuer of this certificate.  The server MAY also include the "up" links
+from these resources to enable the client to build a full certificate chain.
+
+The server MUST also provide a link relation header field with relation "author"
+to indicate the registration under which this certificate was issued.
 
 If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
 may want to provide the client with a Signed Certificate Timestamp (SCT) that
@@ -1322,11 +1335,12 @@ elsewhere in this document, so it is different from PEM.)
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "revoke-cert",
   "certificate": "MIIEDTCCAvegAwIBAgIRAP8..."
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 Revocation requests are different from other ACME request in that they can be
@@ -1532,10 +1546,11 @@ arbitrarily choosing an IP from the set of A and AAAA records to which the
 domain name resolves.
 
 ~~~~~~~~~~
+/* BEGIN JWS-signed content */
 {
   "keyAuthorization": "evaGxfADs...62jcerQ"
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
@@ -1620,10 +1635,11 @@ keyAuthorization (required, string):
 from the challenge and the client's account key.
 
 ~~~~~~~~~~
+/* BEGIN JWS-signed content */
 {
   "keyAuthorization": "evaGxfADs...62jcerQ",
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
@@ -1698,10 +1714,11 @@ keyAuthorization (required, string):
 from the challenge and the client's account key.
 
 ~~~~~~~~~~
+/* BEGIN JWS-signed content */
 {
   "keyAuthorization": "evaGxfADs...62jcerQ",
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
