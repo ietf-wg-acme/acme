@@ -985,6 +985,11 @@ in the client's request object.
 The authorization object is implicitly tied to the account key used to sign the
 request. Once created, the authorization may only be updated by that account.
 
+When submitting a new authorization request, the key "existing" with
+a string value MAY be included in the resource object. This object is not
+considered part of an authorization resource but controls request processing
+as described below.
+
 ~~~~~~~~~~
 POST /acme/new-authorization HTTP/1.1
 Host: example.com
@@ -995,10 +1000,22 @@ Host: example.com
   "identifier": {
     "type": "dns",
     "value": "example.org"
-  }
+  },
+  "existing": "accept"
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
+
+If the authorization request specifies "existing" with a value of "accept" or "require",
+before proceeding, the server SHOULD determine if there are any existing
+authorization resources for the account and given identifier which are
+presently valid. If one or more such authorizations exists, a response SHOULD
+returned with status code 303 (See Other) and a Location header pointing to the
+existing resource URL; processing of the request then stops. If there are
+multiple such authorizations, the authorization with the latest expiry date
+SHOULD be returned. Otherwise, if the "existing" item was "require", status
+code 404 (Not Found) is returned; if it was "accept" or was any other value or
+was absent, processing continues as follows.
 
 Before processing the authorization further, the server SHOULD determine whether
 it is willing to issue certificates for the identifier.  For example, the server
@@ -1269,10 +1286,6 @@ from these resources to enable the client to build a full certificate chain.
 The server MUST also provide a link relation header field with relation "author"
 to indicate the registration under which this certificate was issued.
 
-The server MAY include an Expires header as a hint to the client about when to
-renew the certificate.  (Of course, the real expiration of the certificate is
-controlled by the notAfter time in the certificate itself.)
-
 If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
 may want to provide the client with a Signed Certificate Timestamp (SCT) that
 can be used to prove that a certificate was submitted to a CT log.  An SCT can
@@ -1294,37 +1307,18 @@ Link: <https://example.com/acme/reg/asdf>;rel="author"
 Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 Location: https://example.com/acme/cert/asdf
-Content-Location: https://example.com/acme/cert-seq/12345
 
 [DER-encoded certificate]
 ~~~~~~~~~~
 
-A certificate resource always represents the most recent certificate issued for
-the name/key binding expressed in the CSR.  If the CA allows a certificate to be
-renewed, then it publishes renewed versions of the certificate through the same
-certificate URI.
+A certificate resource represents a single, immutable certificate. If the client
+wishes to obtain a renewed certificate, the client initiates a new-certificate
+transaction to request one.
 
-Clients retrieve renewed versions of the certificate using a GET query to the
-certificate URI, which the server should then return in a 200 (OK) response.
-The server SHOULD provide a stable URI for each specific certificate in the
-Content-Location header field, as shown above.  Requests to stable certificate
-URIs MUST always result in the same certificate.
-
-To avoid unnecessary renewals, the CA may choose not to issue a renewed
-certificate until it receives such a request (if it even allows renewal at all).
-In such cases, if the CA requires some time to generate the new certificate, the
-CA MUST return a 202 (Accepted) response, with a Retry-After header field that
-indicates when the new certificate will be available.  The CA MAY include the
-current (non-renewed) certificate as the body of the response.
-
-Likewise, in order to prevent unnecessary renewal due to queries by parties
-other than the account key holder, certificate URIs should be structured as
-capability URLs {{W3C.WD-capability-urls-20140218}}.
-
-From the client's perspective, there is no difference between a certificate URI
-that allows renewal and one that does not.  If the client wishes to obtain a
-renewed certificate, and a GET request to the certificate URI does not yield
-one, then the client may initiate a new-certificate transaction to request one.
+Because certificate resources are immutable once issuance is complete, the
+server MAY enable the caching of the resource by adding Expires and
+Cache-Control headers specifying a point in time in the distant future. These
+headers have no relation to the certificate's period of validity.
 
 ## Certificate Revocation
 
