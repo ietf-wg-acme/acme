@@ -1257,6 +1257,8 @@ Retry-After: 120
 
 The default format of the certificate is DER (application/pkix-cert).  The
 client may request other formats by including an Accept header in its request.
+For example, the client may use the media type application/x-pem-file to request
+the certificate in PEM format.
 
 The server provides metadata about the certificate in HTTP headers.  In
 particular, the server MUST include a Link relation header field {{RFC5988}}
