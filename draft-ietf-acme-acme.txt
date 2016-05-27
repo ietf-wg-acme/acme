@@ -105,7 +105,7 @@ Table of Contents
        6.4.1.  Responding to Challenges  . . . . . . . . . . . . . .  27
        6.4.2.  Deleting an Authorization . . . . . . . . . . . . . .  29
      6.5.  Certificate Issuance  . . . . . . . . . . . . . . . . . .  30
-     6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  32
+     6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  33
 
 
 
@@ -114,32 +114,32 @@ Barnes, et al.          Expires November 28, 2016               [Page 2]
 Internet-Draft                    ACME                          May 2016
 
 
-   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  33
-     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  35
-     7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  36
-     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  38
-     7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  40
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  41
+   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  34
+     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  36
+     7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  37
+     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  39
+     7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  41
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  42
    9.  Well-Known URI for the HTTP Challenge . . . . . . . . . . . .  42
-     9.1.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  42
-     9.2.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  42
-     9.3.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  42
-     9.4.  New Registries  . . . . . . . . . . . . . . . . . . . . .  43
-       9.4.1.  Error Codes . . . . . . . . . . . . . . . . . . . . .  43
-       9.4.2.  Identifier Types  . . . . . . . . . . . . . . . . . .  43
-       9.4.3.  Challenge Types . . . . . . . . . . . . . . . . . . .  44
+     9.1.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  43
+     9.2.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  43
+     9.3.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  43
+     9.4.  New Registries  . . . . . . . . . . . . . . . . . . . . .  44
+       9.4.1.  Error Codes . . . . . . . . . . . . . . . . . . . . .  44
+       9.4.2.  Identifier Types  . . . . . . . . . . . . . . . . . .  44
+       9.4.3.  Challenge Types . . . . . . . . . . . . . . . . . . .  45
    10. Security Considerations . . . . . . . . . . . . . . . . . . .  45
-     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  45
-     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  46
-     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  49
-     10.4.  CA Policy Considerations . . . . . . . . . . . . . . . .  49
-   11. Operational Considerations  . . . . . . . . . . . . . . . . .  50
-     11.1.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  50
-     11.2.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  51
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  51
+     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  46
+     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  47
+     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  50
+     10.4.  CA Policy Considerations . . . . . . . . . . . . . . . .  50
+   11. Operational Considerations  . . . . . . . . . . . . . . . . .  51
+     11.1.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  51
+     11.2.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  52
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  52
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  52
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  52
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  54
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  55
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  55
 
 1.  Introduction
@@ -1132,6 +1132,7 @@ Internet-Draft                    ACME                          May 2016
    POST /acme/new-registration HTTP/1.1
    Host: example.com
 
+   /* BEGIN JWS-signed request body */
    {
      "resource": "new-reg",
      "contact": [
@@ -1139,7 +1140,7 @@ Internet-Draft                    ACME                          May 2016
        "tel:+12025551212"
      ],
    }
-   /* Signed as JWS */
+   /* END JWS-signed request body */
 
    The server MUST ignore any values provided in the "key",
    "authorizations", and "certificates" fields in registration bodies
@@ -1168,8 +1169,7 @@ Internet-Draft                    ACME                          May 2016
    service".  As noted above, the client may indicate its agreement with
    these terms by updating its registration to include the "agreement"
    field, with the terms URI as its value.  When these terms change in a
-   way that requires an agreement update, the server MUST use a
-   different URI in the Link header.
+
 
 
 
@@ -1177,6 +1177,9 @@ Barnes, et al.          Expires November 28, 2016              [Page 21]
 
 Internet-Draft                    ACME                          May 2016
 
+
+   way that requires an agreement update, the server MUST use a
+   different URI in the Link header.
 
    HTTP/1.1 201 Created
    Content-Type: application/json
@@ -1207,6 +1210,7 @@ Internet-Draft                    ACME                          May 2016
    POST /acme/reg/asdf HTTP/1.1
    Host: example.com
 
+   /* BEGIN JWS-signed request body */
    {
      "resource": "reg",
      "contact": [
@@ -1214,7 +1218,7 @@ Internet-Draft                    ACME                          May 2016
        "tel:+12125551212"
      ],
    }
-   /* Signed as JWS */
+   /* END JWS-signed request body */
 
    Servers SHOULD NOT respond to GET requests for registration resources
    as these requests are not authenticated.  If a client wishes to query
@@ -1222,10 +1226,6 @@ Internet-Draft                    ACME                          May 2016
    "contact" or "certificates" fields), then it SHOULD do so by sending
    a POST request with an empty update.  That is, it should send a JWS
    whose payload is trivial ({"resource":"reg"}).  In this case the
-   server reply MUST contain the same link headers sent for a new
-   registration, to allow a client to retrieve the "new-authorization"
-   and "terms-of-service" URI
-
 
 
 
@@ -1233,6 +1233,10 @@ Barnes, et al.          Expires November 28, 2016              [Page 22]
 
 Internet-Draft                    ACME                          May 2016
 
+
+   server reply MUST contain the same link headers sent for a new
+   registration, to allow a client to retrieve the "new-authorization"
+   and "terms-of-service" URI
 
 6.3.1.  Account Key Roll-over
 
@@ -1259,11 +1263,12 @@ Internet-Draft                    ACME                          May 2016
    POST /acme/reg/asdf HTTP/1.1
    Host: example.com
 
+   /* BEGIN JWS-signed request body (using original key) */
    {
      "resource": "reg",
-     "newKey": /* JSON object signed as JWS with new key */
+     "newKey": /* JSON object signed with new key */
    }
-   /* Signed as JWS with original key */
+   /* END JWS-signed request body */
 
    On receiving a request to the registration URL with the "newKey"
    attribute set, the server MUST perform the following steps:
@@ -1277,11 +1282,6 @@ Internet-Draft                    ACME                          May 2016
 
    4.  Check that the "resource" field of the object has the value "reg"
 
-   5.  Check that the "oldKey" field of the object contains the JWK
-       thumbprint of the account key for this registration
-
-
-
 
 
 
@@ -1289,6 +1289,9 @@ Barnes, et al.          Expires November 28, 2016              [Page 23]
 
 Internet-Draft                    ACME                          May 2016
 
+
+   5.  Check that the "oldKey" field of the object contains the JWK
+       thumbprint of the account key for this registration
 
    If all of these checks pass, then the server updates the registration
    by replacing the old account key with the public key carried in the
@@ -1319,11 +1322,12 @@ Internet-Draft                    ACME                          May 2016
    POST /acme/reg/asdf HTTP/1.1
    Host: example.com
 
+   /* BEGIN JWS-signed request body */
    {
      "resource": "reg",
      "delete": true,
    }
-   /* Signed as JWS */
+   /* END JWS-signed request body */
 
    On receiving a POST to an account URI containing a "delete" field,
    the server MUST verify that no other fields were sent in the object
@@ -1334,10 +1338,6 @@ Internet-Draft                    ACME                          May 2016
 
    If the server accepts the deletion request, then it MUST delete the
    account and all related objects and send a response with a 200 (OK)
-   status code and an empty body.  The server SHOULD delete any
-   authorization objects related to the deleted account, since they can
-   no longer be used.  The server SHOULD NOT delete certificate objects
-
 
 
 
@@ -1346,6 +1346,9 @@ Barnes, et al.          Expires November 28, 2016              [Page 24]
 Internet-Draft                    ACME                          May 2016
 
 
+   status code and an empty body.  The server SHOULD delete any
+   authorization objects related to the deleted account, since they can
+   no longer be used.  The server SHOULD NOT delete certificate objects
    related to the account, since certificates issued under the account
    continue to be valid until they expire or are revoked.
 
@@ -1394,9 +1397,6 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-
-
-
 Barnes, et al.          Expires November 28, 2016              [Page 25]
 
 Internet-Draft                    ACME                          May 2016
@@ -1405,6 +1405,7 @@ Internet-Draft                    ACME                          May 2016
    POST /acme/new-authorization HTTP/1.1
    Host: example.com
 
+   /* BEGIN JWS-signed request body */
    {
      "resource": "new-authz",
      "identifier": {
@@ -1413,7 +1414,7 @@ Internet-Draft                    ACME                          May 2016
      },
      "existing": "accept"
    }
-   /* Signed as JWS */
+   /* END JWS-signed request body */
 
    If the authorization request specifies "existing" with a value of
    "accept" or "require", before proceeding, the server SHOULD determine
@@ -1448,7 +1449,6 @@ Internet-Draft                    ACME                          May 2016
 
    o  "challenges" and "combinations": As selected by the server's
       policy for this identifier
-
 
 
 
@@ -1520,12 +1520,13 @@ Internet-Draft                    ACME                          May 2016
    POST /acme/authz/asdf/0 HTTP/1.1
    Host: example.com
 
+   /* BEGIN JWS-signed request body */
    {
      "resource": "challenge",
      "type": "http-01",
      "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
    }
-   /* Signed as JWS */
+   /* END JWS-signed request body */
 
    The server updates the authorization document by updating its
    representation of the challenge with the response fields provided by
@@ -1560,8 +1561,7 @@ Internet-Draft                    ACME                          May 2016
    from the server), the client SHOULD NOT begin polling until it has
    seen the validation request from the server.
 
-   To check on the status of an authorization, the client sends a GET
-   request to the authorization URI, and the server responds with the
+
 
 
 
@@ -1570,6 +1570,8 @@ Barnes, et al.          Expires November 28, 2016              [Page 28]
 Internet-Draft                    ACME                          May 2016
 
 
+   To check on the status of an authorization, the client sends a GET
+   request to the authorization URI, and the server responds with the
    current authorization object.  In responding to poll requests while
    the validation is still in progress, the server MUST return a 202
    (Accepted) response, and MAY include a Retry-After header field to
@@ -1609,14 +1611,12 @@ Internet-Draft                    ACME                          May 2016
    same format as in Section 6.3.2.  The only difference is that the
    value of the "resource" field is "authz".
 
-   POST /acme/authz/asdf HTTP/1.1
-   Host: example.com
 
-   {
-     "resource": "authz",
-     "delete": true,
-   }
-   /* Signed as JWS */
+
+
+
+
+
 
 
 
@@ -1625,6 +1625,16 @@ Barnes, et al.          Expires November 28, 2016              [Page 29]
 
 Internet-Draft                    ACME                          May 2016
 
+
+   POST /acme/authz/asdf HTTP/1.1
+   Host: example.com
+
+   /* BEGIN JWS-signed request body */
+   {
+     "resource": "authz",
+     "delete": true,
+   }
+   /* END JWS-signed request body */
 
    The server MUST perform the same validity checks as in Section 6.3.2
    and reject the request if they fail.  If the server deletes the
@@ -1657,23 +1667,13 @@ Internet-Draft                    ACME                          May 2016
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339]
 
-   POST /acme/new-cert HTTP/1.1
-   Host: example.com
-   Accept: application/pkix-cert
 
-   {
-     "resource": "new-cert",
-     "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
-     "notBefore": "2016-01-01T00:00:00Z",
-     "notAfter": "2016-01-08T00:00:00Z"
-   }
-   /* Signed as JWS */
 
-   The CSR encodes the client's requests with regard to the content of
-   the certificate to be issued.  The CSR MUST indicate the requested
-   identifiers, either in the commonName portion of the requested
-   subject name, or in an extensionRequest attribute [RFC2985]
-   requesting a subjectAltName extension.
+
+
+
+
+
 
 
 
@@ -1681,6 +1681,25 @@ Barnes, et al.          Expires November 28, 2016              [Page 30]
 
 Internet-Draft                    ACME                          May 2016
 
+
+   POST /acme/new-cert HTTP/1.1
+   Host: example.com
+   Accept: application/pkix-cert
+
+   /* BEGIN JWS-signed request body */
+   {
+     "resource": "new-cert",
+     "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+     "notBefore": "2016-01-01T00:00:00Z",
+     "notAfter": "2016-01-08T00:00:00Z"
+   }
+   /* END JWS-signed request body */
+
+   The CSR encodes the client's requests with regard to the content of
+   the certificate to be issued.  The CSR MUST indicate the requested
+   identifiers, either in the commonName portion of the requested
+   subject name, or in an extensionRequest attribute [RFC2985]
+   requesting a subjectAltName extension.
 
    The values provided in the CSR are only a request, and are not
    guaranteed.  The server SHOULD return an error if it cannot fulfil
@@ -1711,6 +1730,14 @@ Internet-Draft                    ACME                          May 2016
    the certificate, the body of this response will be empty.  The client
    should then send a GET request to the certificate URI to poll for the
    certificate.  As long as the certificate is unavailable, the server
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 31]
+
+Internet-Draft                    ACME                          May 2016
+
+
    MUST provide a 202 (Accepted) response and include a Retry-After
    header to indicate when the server believes the certificate will be
    issued (as in the example above).
@@ -1724,22 +1751,19 @@ Internet-Draft                    ACME                          May 2016
 
    The default format of the certificate is DER (application/pkix-cert).
    The client may request other formats by including an Accept header in
-   its request.
+   its request.  For example, the client may use the media type
+   application/x-pem-file to request the certificate in PEM format.
 
    The server provides metadata about the certificate in HTTP headers.
-   In particular, the server MUST include a Link relation header field
-   [RFC5988] with relation "up" to provide a certificate under which
+   In particular, the server send MUST one or more link relation header
+   fields [RFC5988] with relation "up", each indicating a single
+   certificate resource for the issuer of this certificate.  The server
+   MAY also include the "up" links from these resources to enable the
+   client to build a full certificate chain.
 
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 31]
-
-Internet-Draft                    ACME                          May 2016
-
-
-   this certificate was issued, and one with relation "author" to
-   indicate the registration under which this certificate was issued.
+   The server MUST also provide a link relation header field with
+   relation "author" to indicate the registration under which this
+   certificate was issued.
 
    If the CA participates in Certificate Transparency (CT) [RFC6962],
    then they may want to provide the client with a Signed Certificate
@@ -1749,6 +1773,26 @@ Internet-Draft                    ACME                          May 2016
    The server can also provide the client with direct access to an SCT
    for a certificate using a Link relation header field with relation
    "ct-sct".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 32]
+
+Internet-Draft                    ACME                          May 2016
+
 
    GET /acme/cert/asdf HTTP/1.1
    Host: example.com
@@ -1787,21 +1831,24 @@ Internet-Draft                    ACME                          May 2016
       field uses the same modified Base64 encoding rules used elsewhere
       in this document, so it is different from PEM.)
 
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 32]
-
-Internet-Draft                    ACME                          May 2016
-
-
    POST /acme/revoke-cert HTTP/1.1
    Host: example.com
 
+   /* BEGIN JWS-signed request body */
    {
      "resource": "revoke-cert",
      "certificate": "MIIEDTCCAvegAwIBAgIRAP8..."
    }
-   /* Signed as JWS */
+   /* END JWS-signed request body */
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 33]
+
+Internet-Draft                    ACME                          May 2016
+
 
    Revocation requests are different from other ACME request in that
    they can be signed either with an account key pair or the key pair in
@@ -1841,15 +1888,6 @@ Internet-Draft                    ACME                          May 2016
    an entity applying for a certificate with a given identifier actually
    controls that identifier.
 
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 33]
-
-Internet-Draft                    ACME                          May 2016
-
-
    Challenges provide the server with assurance that an account key
    holder is also the entity that controls an identifier.  For each type
    of challenge, it must be the case that in order for an entity to
@@ -1859,6 +1897,14 @@ Internet-Draft                    ACME                          May 2016
       the challenge
 
    o  Control the identifier in question
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 34]
+
+Internet-Draft                    ACME                          May 2016
+
 
    Section 10 documents how the challenges defined in this document meet
    these requirements.  New challenges will need to document how they
@@ -1898,14 +1944,6 @@ Internet-Draft                    ACME                          May 2016
 
    error (optional, dictionary of string):  The error that occurred
       while the server was validating the challenge, if any.  This field
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 34]
-
-Internet-Draft                    ACME                          May 2016
-
-
       is structured as a problem document
       [I-D.ietf-appsawg-http-problem].
 
@@ -1916,6 +1954,14 @@ Internet-Draft                    ACME                          May 2016
 
    Different challenges allow the server to obtain proof of different
    aspects of control over an identifier.  In some challenges, like HTTP
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 35]
+
+Internet-Draft                    ACME                          May 2016
+
+
    and TLS SNI, the client directly proves its ability to do certain
    things related to the identifier.  The choice of which challenges to
    offer to a client under which circumstances is a matter of server
@@ -1954,14 +2000,6 @@ Internet-Draft                    ACME                          May 2016
    The "JWK_Thumbprint" step indicates the computation specified in
    [RFC7638], using the SHA-256 digest.  As specified in the individual
    challenges below, the token for a challenge is a JSON string
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 35]
-
-Internet-Draft                    ACME                          May 2016
-
-
    comprised entirely of characters in the URL-safe Base64 alphabet.
    The "||" operator indicates concatenation of strings.
 
@@ -1972,6 +2010,14 @@ Internet-Draft                    ACME                          May 2016
 
    An example of how to compute a JWK thumbprint can be found in
    Section 3.1 of [RFC7638].  Note that some cryptographic libraries
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 36]
+
+Internet-Draft                    ACME                          May 2016
+
+
    prepend a zero octet to the representation of the RSA public key
    parameters N and E, in order to avoid ambiguity with regard to the
    sign of the number.  As noted in JWA [RFC7518], a JWK object MUST NOT
@@ -2009,15 +2055,6 @@ Internet-Draft                    ACME                          May 2016
    A client responds to this challenge by constructing a key
    authorization from the "token" value provided in the challenge and
    the client's account key.  The client then provisions the key
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 36]
-
-Internet-Draft                    ACME                          May 2016
-
-
    authorization as a resource on the HTTP server for the domain in
    question.
 
@@ -2027,6 +2064,15 @@ Internet-Draft                    ACME                          May 2016
    representation of the key authorization.
 
   .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 37]
+
+Internet-Draft                    ACME                          May 2016
+
 
    The client's response to this challenge indicates its agreement to
    this challenge by sending the server the key authorization covering
@@ -2046,10 +2092,11 @@ Internet-Draft                    ACME                          May 2016
       instead of arbitrarily choosing an IP from the set of A and AAAA
       records to which the domain name resolves.
 
+   /* BEGIN JWS-signed content */
    {
      "keyAuthorization": "evaGxfADs...62jcerQ"
    }
-   /* Signed as JWS */
+   /* END JWS-signed content */
 
    On receiving a response, the server MUST verify that the key
    authorization in the response matches the "token" value in the
@@ -2066,14 +2113,6 @@ Internet-Draft                    ACME                          May 2016
 
        *  the domain field is set to the domain name being verified; and
 
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 37]
-
-Internet-Draft                    ACME                          May 2016
-
-
        *  the token field is set to the token in the challenge.
 
    2.  Verify that the resulting URI is well-formed.
@@ -2082,6 +2121,14 @@ Internet-Draft                    ACME                          May 2016
        address is included in the A or AAAA records to which the domain
        name resolves.  If the address is not included in the result, the
        validation fails.
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 38]
+
+Internet-Draft                    ACME                          May 2016
+
 
    4.  Dereference the URI using an HTTP GET request.  If an address was
        supplied by the client, use that address to establish the HTTP
@@ -2121,15 +2168,6 @@ Internet-Draft                    ACME                          May 2016
      "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
    }
 
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 38]
-
-Internet-Draft                    ACME                          May 2016
-
-
    A client responds to this challenge by constructing a self-signed
    certificate which the client MUST provision at the domain name
    concerned in order to pass the challenge.
@@ -2140,6 +2178,14 @@ Internet-Draft                    ACME                          May 2016
 
    SAN A MUST be constructed as follows: compute the SHA-256 digest of
    the UTF-8-encoded challenge token and encode it in lowercase
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 39]
+
+Internet-Draft                    ACME                          May 2016
+
+
    hexadecimal form.  The dNSName is "x.y.token.acme.invalid", where x
    is the first half of the hexadecimal representation and y is the
    second half.
@@ -2160,10 +2206,11 @@ Internet-Draft                    ACME                          May 2016
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
 
+   /* BEGIN JWS-signed content */
    {
      "keyAuthorization": "evaGxfADs...62jcerQ",
    }
-   /* Signed as JWS */
+   /* END JWS-signed content */
 
    On receiving a response, the server MUST verify that the key
    authorization in the response matches the "token" value in the
@@ -2177,15 +2224,6 @@ Internet-Draft                    ACME                          May 2016
 
    1.  Compute SAN A and SAN B in the same way as the client.
 
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 39]
-
-Internet-Draft                    ACME                          May 2016
-
-
    2.  Open a TLS connection to the domain name being validated on the
        requested port, presenting SAN A in the SNI field.  In the
        ClientHello initiating the TLS handshake, the server MUST include
@@ -2196,6 +2234,14 @@ Internet-Draft                    ACME                          May 2016
 
    3.  Verify that the certificate contains a subjectAltName extension
        containing dNSName entries of SAN A and SAN B and no other
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 40]
+
+Internet-Draft                    ACME                          May 2016
+
+
        entries.  The comparison MUST be insensitive to case and ordering
        of names.
 
@@ -2234,14 +2280,6 @@ Internet-Draft                    ACME                          May 2016
 
    The record provisioned to the DNS is the base64url encoding of this
    digest.  The client constructs the validation domain name by
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 40]
-
-Internet-Draft                    ACME                          May 2016
-
-
    prepending the label "_acme-challenge" to the domain name being
    validated, then provisions a TXT record with the digest value under
    that name.  For example, if the domain name being validated is
@@ -2249,6 +2287,16 @@ Internet-Draft                    ACME                          May 2016
    record:
 
    _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 41]
+
+Internet-Draft                    ACME                          May 2016
+
 
    The response to the DNS challenge provides the computed key
    authorization to acknowledge that the client is ready to fulfill this
@@ -2258,10 +2306,11 @@ Internet-Draft                    ACME                          May 2016
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
 
+   /* BEGIN JWS-signed content */
    {
      "keyAuthorization": "evaGxfADs...62jcerQ",
    }
-   /* Signed as JWS */
+   /* END JWS-signed content */
 
    On receiving a response, the server MUST verify that the key
    authorization in the response matches the "token" value in the
@@ -2288,16 +2337,6 @@ Internet-Draft                    ACME                          May 2016
    the various JSON objects used by this protocol, i.e., the field names
    in the JSON objects? ]]
 
-
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 41]
-
-Internet-Draft                    ACME                          May 2016
-
-
 9.  Well-Known URI for the HTTP Challenge
 
    The "Well-Known URIs" registry should be updated with the following
@@ -2306,6 +2345,14 @@ Internet-Draft                    ACME                          May 2016
    URI suffix: acme-challenge
 
    Change controller: IETF
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 42]
+
+Internet-Draft                    ACME                          May 2016
+
 
    Specification document(s): This document, Section Section 7.2
 
@@ -2346,14 +2393,6 @@ Internet-Draft                    ACME                          May 2016
 
    Registry name:  acme
 
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 42]
-
-Internet-Draft                    ACME                          May 2016
-
-
    Specification:  RFC XXXX
 
    Repository:  URL-TBD
@@ -2363,6 +2402,13 @@ Internet-Draft                    ACME                          May 2016
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document, and replace URL-TBD with the URL assigned by IANA
    for registries of ACME parameters. ]]
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 43]
+
+Internet-Draft                    ACME                          May 2016
+
 
 9.4.  New Registries
 
@@ -2402,20 +2448,23 @@ Internet-Draft                    ACME                          May 2016
 
    Template:
 
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 43]
-
-Internet-Draft                    ACME                          May 2016
-
-
    o  Label: The value to be put in the "type" field of the identifier
       object
 
    o  Reference: Where the identifier type is defined
 
    Initial contents:
+
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 44]
+
+Internet-Draft                    ACME                          May 2016
+
 
                            +-------+-----------+
                            | Label | Reference |
@@ -2458,14 +2507,6 @@ Internet-Draft                    ACME                          May 2016
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 44]
-
-Internet-Draft                    ACME                          May 2016
-
-
 10.  Security Considerations
 
    ACME is a protocol for managing certificates that attest to
@@ -2473,6 +2514,14 @@ Internet-Draft                    ACME                          May 2016
    to ensure the integrity of this process, i.e., to ensure that the
    bindings attested by certificates are correct, and that only
    authorized entities can manage certificates.  ACME identifies clients
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 45]
+
+Internet-Draft                    ACME                          May 2016
+
+
    by their account keys, so this overall goal breaks down into two more
    precise goals:
 
@@ -2503,25 +2552,6 @@ Internet-Draft                    ACME                          May 2016
    o  A contact channel, over which the ACME server sends messages to
       the registered contacts for ACME clients
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 45]
-
-Internet-Draft                    ACME                          May 2016
-
-
    +------------+
    |    ACME    |     ACME Channel
    |   Client   |--------------------+
@@ -2540,6 +2570,14 @@ Internet-Draft                    ACME                          May 2016
    but they are different in most cases.  Each of the three channels,
    for example, uses a different communications pattern: the ACME
    channel will comprise inbound HTTPS connections to the ACME server,
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 46]
+
+Internet-Draft                    ACME                          May 2016
+
+
    the validation channel outbound HTTP or DNS requests, and the contact
    channel will use channels such as email and PSTN.
 
@@ -2568,16 +2606,6 @@ Internet-Draft                    ACME                          May 2016
    private key of the account key pair, and (2) controls the identifier
    in question.
 
-
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 46]
-
-Internet-Draft                    ACME                          May 2016
-
-
    Validation responses need to be bound to an account key pair in order
    to avoid situations where an ACME MitM can switch out a legitimate
    domain holder's account key for one of his choosing, e.g.:
@@ -2596,6 +2624,15 @@ Internet-Draft                    ACME                          May 2016
       legitimate domain holder
 
    o  Legitimate domain holder provisions the validation response
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 47]
+
+Internet-Draft                    ACME                          May 2016
+
 
    o  ACME server performs validation query and sees the response
       provisioned by the legitimate domain holder
@@ -2627,13 +2664,6 @@ Internet-Draft                    ACME                          May 2016
    o  HTTP: Provision files under .well-known on a web server for the
       domain
 
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 47]
-
-Internet-Draft                    ACME                          May 2016
-
-
    o  TLS SNI: Configure a TLS server for the domain
 
    o  DNS: Provision DNS resource records for the domain
@@ -2650,6 +2680,15 @@ Internet-Draft                    ACME                          May 2016
    be done against tampering by the hosting provider.  As far as the
    outside world is concerned, the zone or web site provided by the
    hosting provider is the real thing.
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 48]
+
+Internet-Draft                    ACME                          May 2016
+
 
    More limited forms of delegation can also lead to an unintended party
    gaining the ability to successfully complete a validation
@@ -2681,15 +2720,6 @@ Internet-Draft                    ACME                          May 2016
    attacker on the validation channel to hijack the authorization
    process to authorize a key of the attacker's choice.
 
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 48]
-
-Internet-Draft                    ACME                          May 2016
-
-
    An attacker that can only see the ACME channel would need to convince
    the validation server to provide a response that would authorize the
    attacker's account key, but this is prevented by binding the
@@ -2705,6 +2735,16 @@ Internet-Draft                    ACME                          May 2016
    where the server already has some public key associated with the
    domain this attack can be prevented by requiring the client to prove
    control of the corresponding private key.
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 49]
+
+Internet-Draft                    ACME                          May 2016
+
 
 10.3.  Denial-of-Service Considerations
 
@@ -2739,13 +2779,6 @@ Internet-Draft                    ACME                          May 2016
 
    o  Has the client agreed to a subscriber agreement?
 
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 49]
-
-Internet-Draft                    ACME                          May 2016
-
-
    o  Is the claimed identifier syntactically valid?
 
    o  For domain names:
@@ -2760,6 +2793,14 @@ Internet-Draft                    ACME                          May 2016
       *  Is the name a known phishing domain?
 
    o  Is the key in the CSR sufficiently strong?
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 50]
+
+Internet-Draft                    ACME                          May 2016
+
 
    o  Is the CSR signed with an acceptable algorithm?
 
@@ -2794,14 +2835,6 @@ Internet-Draft                    ACME                          May 2016
    In such cases, the owner of the default virtual host can complete a
    TLS-based challenge (e.g., "tls-sni-02") for any domain with an A
    record that points to the hosting platform.  This could result in
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 50]
-
-Internet-Draft                    ACME                          May 2016
-
-
    mis-issuance in cases where there are multiple hosts with different
    owners resident on the hosting platform.
 
@@ -2812,6 +2845,18 @@ Internet-Draft                    ACME                          May 2016
    initiating TLS connections to the host with random SNI values within
    the namespace used for the TLS-based challenge (the "acme.invalid"
    namespace for "tls-sni-02").
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 51]
+
+Internet-Draft                    ACME                          May 2016
+
 
 11.2.  Use of DNSSEC Resolvers
 
@@ -2849,15 +2894,6 @@ Internet-Draft                    ACME                          May 2016
 
    o  Jakub Warmuz, University of Oxford
 
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 51]
-
-Internet-Draft                    ACME                          May 2016
-
-
    This document draws on many concepts established by Eric Rescorla's
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
@@ -2870,6 +2906,13 @@ Internet-Draft                    ACME                          May 2016
               mnot, m. and E. Wilde, "Problem Details for HTTP APIs",
               draft-ietf-appsawg-http-problem-03 (work in progress),
               January 2016.
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 52]
+
+Internet-Draft                    ACME                          May 2016
+
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -2907,13 +2950,6 @@ Internet-Draft                    ACME                          May 2016
               Architecture", RFC 4291, DOI 10.17487/RFC4291, February
               2006, <http://www.rfc-editor.org/info/rfc4291>.
 
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 52]
-
-Internet-Draft                    ACME                          May 2016
-
-
    [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <http://www.rfc-editor.org/info/rfc4648>.
@@ -2922,6 +2958,17 @@ Internet-Draft                    ACME                          May 2016
               IANA Considerations Section in RFCs", BCP 26, RFC 5226,
               DOI 10.17487/RFC5226, May 2008,
               <http://www.rfc-editor.org/info/rfc5226>.
+
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 53]
+
+Internet-Draft                    ACME                          May 2016
+
 
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
@@ -2962,14 +3009,6 @@ Internet-Draft                    ACME                          May 2016
               Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
               <http://www.rfc-editor.org/info/rfc6962>.
 
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 53]
-
-Internet-Draft                    ACME                          May 2016
-
-
    [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
               Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
               2014, <http://www.rfc-editor.org/info/rfc7159>.
@@ -2977,6 +3016,15 @@ Internet-Draft                    ACME                          May 2016
    [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
               2015, <http://www.rfc-editor.org/info/rfc7469>.
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 54]
+
+Internet-Draft                    ACME                          May 2016
+
 
    [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
               Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
@@ -3017,21 +3065,21 @@ Internet-Draft                    ACME                          May 2016
               February 2014,
               <http://www.w3.org/TR/2014/WD-capability-urls-20140218>.
 
-
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 54]
-
-Internet-Draft                    ACME                          May 2016
-
-
 Authors' Addresses
 
    Richard Barnes
    Mozilla
 
    Email: rlb@ipv.sx
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 55]
+
+Internet-Draft                    ACME                          May 2016
 
 
    Jacob Hoffman-Andrews
@@ -3077,4 +3125,12 @@ Authors' Addresses
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 55]
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 56]

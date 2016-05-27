@@ -899,6 +899,7 @@ Content-Type: application/json
 POST /acme/new-registration HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-reg",
   "contact": [
@@ -906,7 +907,7 @@ Host: example.com
     "tel:+12025551212"
   ],
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.3.p.2">The server MUST ignore any values provided in the &#8220;key&#8221;, &#8220;authorizations&#8221;, and &#8220;certificates&#8221; fields in registration bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they may be provided by the client.</p>
 <p id="rfc.section.6.3.p.3">The server creates a registration object with the included contact information.  The &#8220;key&#8221; element of the registration is set to the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header).  The server returns this registration object in a 201 (Created) response, with the registration URI in a Location header field.  The server SHOULD also indicate its new-authorization URI using the &#8220;next&#8221; link relation.</p>
@@ -935,6 +936,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "reg",
   "contact": [
@@ -942,7 +944,7 @@ Host: example.com
     "tel:+12125551212"
   ],
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.3.p.8">Servers SHOULD NOT respond to GET requests for registration resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is trivial ({&#8220;resource&#8221;:&#8221;reg&#8221;}).  In this case the server reply MUST contain the same link headers sent for a new registration, to allow a client to retrieve the &#8220;new-authorization&#8221; and &#8220;terms-of-service&#8221; URI</p>
 <h1 id="rfc.section.6.3.1"><a href="#rfc.section.6.3.1">6.3.1.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a></h1>
@@ -966,11 +968,12 @@ Host: example.com
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body (using original key) */
 {
   "resource": "reg",
-  "newKey": /* JSON object signed as JWS with new key */
+  "newKey": /* JSON object signed with new key */
 }
-/* Signed as JWS with original key */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.3.1.p.4">On receiving a request to the registration URL with the &#8220;newKey&#8221; attribute set, the server MUST perform the following steps:</p>
 <p/>
@@ -993,11 +996,12 @@ Host: example.com
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "reg",
   "delete": true,
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.3.2.p.5">On receiving a POST to an account URI containing a &#8220;delete&#8221; field, the server MUST verify that no other fields were sent in the object (other than &#8220;resource&#8221;), and it MUST verify that the value of the &#8220;delete&#8221; field is &#8220;true&#8221; (as a boolean, not a string).  If either of these checks fails, then the server MUST reject the request with status code 400 (Bad Request).</p>
 <p id="rfc.section.6.3.2.p.6">If the server accepts the deletion request, then it MUST delete the account and all related objects and send a response with a 200 (OK) status code and an empty body.  The server SHOULD delete any authorization objects related to the deleted account, since they can no longer be used.  The server SHOULD NOT delete certificate objects related to the account, since certificates issued under the account continue to be valid until they expire or are revoked.</p>
@@ -1011,6 +1015,7 @@ Host: example.com
 POST /acme/new-authorization HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-authz",
   "identifier": {
@@ -1019,7 +1024,7 @@ Host: example.com
   },
   "existing": "accept"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.4.p.6">If the authorization request specifies &#8220;existing&#8221; with a value of &#8220;accept&#8221; or &#8220;require&#8221;, before proceeding, the server SHOULD determine if there are any existing authorization resources for the account and given identifier which are presently valid. If one or more such authorizations exists, a response SHOULD returned with status code 303 (See Other) and a Location header pointing to the existing resource URL; processing of the request then stops. If there are multiple such authorizations, the authorization with the latest expiry date SHOULD be returned. Otherwise, if the &#8220;existing&#8221; item was &#8220;require&#8221;, status code 404 (Not Found) is returned; if it was &#8220;accept&#8221; or was any other value or was absent, processing continues as follows.</p>
 <p id="rfc.section.6.4.p.7">Before processing the authorization further, the server SHOULD determine whether it is willing to issue certificates for the identifier.  For example, the server should check that the identifier is of a supported type.  Servers might also check names against a blacklist of known high-value identifiers.  If the server is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden) error, with a problem document describing the reason for the rejection.</p>
@@ -1071,12 +1076,13 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 POST /acme/authz/asdf/0 HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "challenge",
   "type": "http-01",
   "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.4.1.p.4">The server updates the authorization document by updating its representation of the challenge with the response fields provided by the client.  The server MUST ignore any fields in the response object that are not specified as response fields for this type of challenge.  The server provides a 200 (OK) response with the updated challenge object as its body.</p>
 <p id="rfc.section.6.4.1.p.5">If the client&#8217;s response is invalid for some reason, or does not provide the server with appropriate information to validate the challenge, then the server MUST return an HTTP error.  On receiving such an error, the client SHOULD undo any actions that have been taken to fulfill the challenge, e.g., removing files that have been provisioned to a web server.</p>
@@ -1115,11 +1121,12 @@ HTTP/1.1 200 OK
 POST /acme/authz/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "authz",
   "delete": true,
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.4.2.p.2">The server MUST perform the same validity checks as in <a href="#deleting-an-account">Section 6.3.2</a> and reject the request if they fail.  If the server deletes the account then it MUST send a response with a 200 (OK) status code and an empty body.</p>
 <h1 id="rfc.section.6.5"><a href="#rfc.section.6.5">6.5.</a> <a href="#certificate-issuance" id="certificate-issuance">Certificate Issuance</a></h1>
@@ -1139,13 +1146,14 @@ POST /acme/new-cert HTTP/1.1
 Host: example.com
 Accept: application/pkix-cert
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-cert",
   "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.5.p.3">The CSR encodes the client&#8217;s requests with regard to the content of the certificate to be issued.  The CSR MUST indicate the requested identifiers, either in the commonName portion of the requested subject name, or in an extensionRequest attribute <a href="#RFC2985">[RFC2985]</a> requesting a subjectAltName extension.</p>
 <p id="rfc.section.6.5.p.4">The values provided in the CSR are only a request, and are not guaranteed.  The server SHOULD return an error if it cannot fulfil the request as specified, but MAY issue a certificate with contents other than those requested, according to its local policy (e.g., removing identifiers for which the client is not authorized).</p>
@@ -1164,9 +1172,10 @@ Accept: application/pkix-cert
 HTTP/1.1 202 Accepted
 Retry-After: 120
 </pre>
-<p id="rfc.section.6.5.p.8">The default format of the certificate is DER (application/pkix-cert).  The client may request other formats by including an Accept header in its request.</p>
-<p id="rfc.section.6.5.p.9">The server provides metadata about the certificate in HTTP headers.  In particular, the server MUST include a Link relation header field <a href="#RFC5988">[RFC5988]</a> with relation &#8220;up&#8221; to provide a certificate under which this certificate was issued, and one with relation &#8220;author&#8221; to indicate the registration under which this certificate was issued.</p>
-<p id="rfc.section.6.5.p.10">If the CA participates in Certificate Transparency (CT) <a href="#RFC6962">[RFC6962]</a>, then they may want to provide the client with a Signed Certificate Timestamp (SCT) that can be used to prove that a certificate was submitted to a CT log.  An SCT can be included as an extension in the certificate or as an extension to OCSP responses for the certificate.  The server can also provide the client with direct access to an SCT for a certificate using a Link relation header field with relation &#8220;ct-sct&#8221;.</p>
+<p id="rfc.section.6.5.p.8">The default format of the certificate is DER (application/pkix-cert).  The client may request other formats by including an Accept header in its request.  For example, the client may use the media type application/x-pem-file to request the certificate in PEM format.</p>
+<p id="rfc.section.6.5.p.9">The server provides metadata about the certificate in HTTP headers.  In particular, the server send MUST one or more link relation header fields <a href="#RFC5988">[RFC5988]</a> with relation &#8220;up&#8221;, each indicating a single certificate resource for the issuer of this certificate.  The server MAY also include the &#8220;up&#8221; links from these resources to enable the client to build a full certificate chain.</p>
+<p id="rfc.section.6.5.p.10">The server MUST also provide a link relation header field with relation &#8220;author&#8221; to indicate the registration under which this certificate was issued.</p>
+<p id="rfc.section.6.5.p.11">If the CA participates in Certificate Transparency (CT) <a href="#RFC6962">[RFC6962]</a>, then they may want to provide the client with a Signed Certificate Timestamp (SCT) that can be used to prove that a certificate was submitted to a CT log.  An SCT can be included as an extension in the certificate or as an extension to OCSP responses for the certificate.  The server can also provide the client with direct access to an SCT for a certificate using a Link relation header field with relation &#8220;ct-sct&#8221;.</p>
 <pre>
 GET /acme/cert/asdf HTTP/1.1
 Host: example.com
@@ -1183,8 +1192,8 @@ Location: https://example.com/acme/cert/asdf
 
 [DER-encoded certificate]
 </pre>
-<p id="rfc.section.6.5.p.11">A certificate resource represents a single, immutable certificate. If the client wishes to obtain a renewed certificate, the client initiates a new-certificate transaction to request one.</p>
-<p id="rfc.section.6.5.p.12">Because certificate resources are immutable once issuance is complete, the server MAY enable the caching of the resource by adding Expires and Cache-Control headers specifying a point in time in the distant future. These headers have no relation to the certificate&#8217;s period of validity.</p>
+<p id="rfc.section.6.5.p.12">A certificate resource represents a single, immutable certificate. If the client wishes to obtain a renewed certificate, the client initiates a new-certificate transaction to request one.</p>
+<p id="rfc.section.6.5.p.13">Because certificate resources are immutable once issuance is complete, the server MAY enable the caching of the resource by adding Expires and Cache-Control headers specifying a point in time in the distant future. These headers have no relation to the certificate&#8217;s period of validity.</p>
 <h1 id="rfc.section.6.6"><a href="#rfc.section.6.6">6.6.</a> <a href="#certificate-revocation" id="certificate-revocation">Certificate Revocation</a></h1>
 <p id="rfc.section.6.6.p.1">To request that a certificate be revoked, the client sends a POST request to the ACME server&#8217;s revoke-cert URI.  The body of the POST is a JWS object whose JSON payload contains the certificate to be revoked:</p>
 <p/>
@@ -1197,11 +1206,12 @@ Location: https://example.com/acme/cert/asdf
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "revoke-cert",
   "certificate": "MIIEDTCCAvegAwIBAgIRAP8..."
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.6.p.3">Revocation requests are different from other ACME request in that they can be signed either with an account key pair or the key pair in the certificate.  Before revoking a certificate, the server MUST verify that the key used to sign the request is authorized to revoke the certificate.  The server SHOULD consider at least the following keys authorized for a given certificate:</p>
 <p/>
@@ -1306,10 +1316,11 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dd style="margin-left: 8">An IPv4 or IPv6 address, in dotted decimal form or <a href="#RFC4291">[RFC4291]</a> form, respectively.  If given, this address MUST be included in the set of IP addresses to which the domain name resolves when the server attempts validation.  If given, the server SHOULD connect to that specific IP address instead of arbitrarily choosing an IP from the set of A and AAAA records to which the domain name resolves.</dd>
 </dl>
 <pre>
+/* BEGIN JWS-signed content */
 {
   "keyAuthorization": "evaGxfADs...62jcerQ"
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 </pre>
 <p id="rfc.section.7.2.p.8">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
 <p id="rfc.section.7.2.p.9">Given a challenge/response pair, the server verifies the client&#8217;s control of the domain by verifying that the resource was provisioned as expected.</p>
@@ -1353,10 +1364,11 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dd style="margin-left: 8">The key authorization for this challenge.  This value MUST match the token from the challenge and the client&#8217;s account key.</dd>
 </dl>
 <pre>
+/* BEGIN JWS-signed content */
 {
   "keyAuthorization": "evaGxfADs...62jcerQ",
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 </pre>
 <p id="rfc.section.7.3.p.10">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
 <p id="rfc.section.7.3.p.11">Given a challenge/response pair, the ACME server verifies the client&#8217;s control of the domain by verifying that the TLS server was configured appropriately, using these steps:</p>
@@ -1398,10 +1410,11 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <dd style="margin-left: 8">The key authorization for this challenge.  This value MUST match the token from the challenge and the client&#8217;s account key.</dd>
 </dl>
 <pre>
+/* BEGIN JWS-signed content */
 {
   "keyAuthorization": "evaGxfADs...62jcerQ",
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 </pre>
 <p id="rfc.section.7.4.p.7">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
 <p id="rfc.section.7.4.p.8">To validate a DNS challenge, the server performs the following steps:</p>
