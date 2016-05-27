@@ -956,38 +956,38 @@ Host: example.com
 <dl>
   <dt>resource (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;reg&#8221;, indicating an update to the registration.</dd>
-  <dt>oldKey (required, string):</dt>
-  <dd style="margin-left: 8">The JWK thumbprint of the old key <a href="#RFC7638">[RFC7638]</a>, base64url-encoded</dd>
+  <dt>newKey (required, string):</dt>
+  <dd style="margin-left: 8">The JWK thumbprint of the new key <a href="#RFC7638">[RFC7638]</a>, base64url-encoded</dd>
 </dl>
 <pre>
 {
   "resource": "reg",
-  "oldKey": "D7J9RL1f-RWUl68JP-gW1KSl2TkIrJB7hK6rLFFeYMU"
+  "newKey": "D7J9RL1f-RWUl68JP-gW1KSl2TkIrJB7hK6rLFFeYMU"
 }
 </pre>
-<p id="rfc.section.6.3.1.p.3">The client signs this object with the new key pair and encodes the object and signature as a JWS.  The client then sends this JWS to the server in the &#8220;newKey&#8221; field of a request to update the registration.</p>
+<p id="rfc.section.6.3.1.p.3">The client signs this object with the old key pair and encodes the object and signature as a JWS.  The client then sends this JWS to the server in the &#8220;rollover&#8221; field of a request to update the registration.</p>
 <pre>
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
-/* BEGIN JWS-signed request body (using original key) */
+/* BEGIN JWS-signed request body (using new key) */
 {
   "resource": "reg",
-  "newKey": /* JSON object signed with new key */
+  "rollover": /* JSON object signed with old key */
 }
 /* END JWS-signed request body */
 </pre>
-<p id="rfc.section.6.3.1.p.4">On receiving a request to the registration URL with the &#8220;newKey&#8221; attribute set, the server MUST perform the following steps:</p>
+<p id="rfc.section.6.3.1.p.4">On receiving a request to the registration URL with the &#8220;rollover&#8221; attribute set, the server MUST perform the following steps:</p>
 <p/>
 
 <ol>
-  <li>Check that the contents of the &#8220;newKey&#8221; attribute are a valid JWS</li>
-  <li>Check that the &#8220;newKey&#8221; JWS verifies using the key in the &#8220;jwk&#8221; header parameter of the JWS</li>
+  <li>Check that the contents of the &#8220;rollover&#8221; attribute are a valid JWS</li>
+  <li>Check that the &#8220;rollover&#8221; JWS verifies using the account key correspdonding to this registration</li>
   <li>Check that the payload of the JWS is a valid JSON object</li>
   <li>Check that the &#8220;resource&#8221; field of the object has the value &#8220;reg&#8221;</li>
-  <li>Check that the &#8220;oldKey&#8221; field of the object contains the JWK thumbprint of the account key for this registration</li>
+  <li>Check that the &#8220;newKey&#8221; field of the object contains the JWK thumbprint of the account key used to sign the request</li>
 </ol>
-<p id="rfc.section.6.3.1.p.6">If all of these checks pass, then the server updates the registration by replacing the old account key with the public key carried in the &#8220;jwk&#8221; header parameter of the &#8220;newKey&#8221; JWS object.</p>
+<p id="rfc.section.6.3.1.p.6">If all of these checks pass, then the server updates the registration by replacing the old account key with the public key carried in the &#8220;jwk&#8221; header of the request JWS.</p>
 <p id="rfc.section.6.3.1.p.7">If the update was successful, then the server sends a response with status code 200 (OK) and the updated registration object as its body.  If the update was not successful, then the server responds with an error status code and a problem document describing the error.</p>
 <h1 id="rfc.section.6.3.2"><a href="#rfc.section.6.3.2">6.3.2.</a> <a href="#deleting-an-account" id="deleting-an-account">Deleting an Account</a></h1>
 <p id="rfc.section.6.3.2.p.1">If a client no longer wishes to have an account key registered with the server, it may request that the server delete its account by sending a POST request to the account URI containing the &#8220;delete&#8221; field.</p>
