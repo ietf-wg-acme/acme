@@ -1261,10 +1261,13 @@ For example, the client may use the media type application/x-pem-file to request
 the certificate in PEM format.
 
 The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST include a Link relation header field {{RFC5988}}
-with relation "up" to provide a certificate under which this certificate was
-issued, and one with relation "author" to indicate the registration under which
-this certificate was issued.
+particular, the server send MUST one or more link relation header fields
+{{RFC5988}} with relation "up", each indicating a single certificate resource
+for the issuer of this certificate.  The server MAY also include the "up" links
+from these resources to enable the client to build a full certificate chain.
+
+The server MUST also provide a link relation header field with relation "author"
+to indicate the registration under which this certificate was issued.
 
 The server MAY include an Expires header as a hint to the client about when to
 renew the certificate.  (Of course, the real expiration of the certificate is
