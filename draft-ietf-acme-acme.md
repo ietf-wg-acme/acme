@@ -1636,7 +1636,7 @@ from the challenge and the client's account key.
 ~~~~~~~~~~
 /* BEGIN JWS-signed content */
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ",
+  "keyAuthorization": "evaGxfADs...62jcerQ"
 }
 /* END JWS-signed content */
 ~~~~~~~~~~
@@ -1715,7 +1715,7 @@ from the challenge and the client's account key.
 ~~~~~~~~~~
 /* BEGIN JWS-signed content */
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ",
+  "keyAuthorization": "evaGxfADs...62jcerQ"
 }
 /* END JWS-signed content */
 ~~~~~~~~~~
@@ -1734,6 +1734,51 @@ To validate a DNS challenge, the server performs the following steps:
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
+
+## Out-of-Band
+
+There may be cases where a server cannot perform automated validation of an
+identifier, for example if validation requires some manual steps.  In such
+cases, the server may provide an "out of band" (OOB) challenge to request that
+the client perform some action outside of ACME in order to validate possession
+of the identifier.
+
+The OOB challenge requests that the client have a human user visit a web page to
+receive instructions on how to validate possession of the identifier, by
+providing a URL for that web page.
+
+type (required, string):
+: The string "oob-01"
+
+url (required, string):
+: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
+
+~~~~~~~~~~
+{
+  "type": "oob-01",
+  "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+}
+~~~~~~~~~~
+
+A client responds to this challenge by presenting the indicated URL for a human
+user to navigate to.  If the user choses to complete this challege (by vising
+the website and completing its instructions), the client indicates this by
+sending a simple acknowledgement response to the server.
+
+type (required, string):
+: The string "oob-01"
+
+~~~~~~~~~~
+/* BEGIN JWS-signed content */
+{
+  "type": "oob-01"
+}
+/* END JWS-signed content */
+~~~~~~~~~~
+
+On receiving a response, the server MUST verify that the value of the "type"
+field is as required.  Otherwise, the steps the server takes to validate
+identifier possession are determined by the server's local policy.
 
 # IANA Considerations
 
