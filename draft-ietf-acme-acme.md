@@ -398,6 +398,12 @@ defined in the below table:
 
 Other fields in ACME request bodies are described below.
 
+## Rate limits
+
+Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code "rateLimited".  Additionally, the server SHOULD send a "Retry-After" header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.
+
+In addition to the human readable "detail" field of the error response, the server MAY send one or multiple tokens in the "Link" header pointing to documentation about the specific hit rate limits using the "rate-limit" relation.
+
 ## Replay protection
 
 In order to protect ACME resources from any possible replay attacks, ACME
