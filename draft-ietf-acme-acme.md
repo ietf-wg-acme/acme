@@ -872,46 +872,46 @@ update the registration:
 resource (required, string):
 : The string "reg", indicating an update to the registration.
 
-oldKey (required, string):
-: The JWK thumbprint of the old key {{RFC7638}}, base64url-encoded
+newKey (required, string):
+: The JWK thumbprint of the new key {{RFC7638}}, base64url-encoded
 
 ~~~~~~~~~~
 {
   "resource": "reg",
-  "oldKey": "D7J9RL1f-RWUl68JP-gW1KSl2TkIrJB7hK6rLFFeYMU"
+  "newKey": "D7J9RL1f-RWUl68JP-gW1KSl2TkIrJB7hK6rLFFeYMU"
 }
 ~~~~~~~~~~
 
-The client signs this object with the new key pair and encodes the object and
+The client signs this object with the old key pair and encodes the object and
 signature as a JWS.  The client then sends this JWS to the server in the
-"newKey" field of a request to update the registration.
+"rollover" field of a request to update the registration.
 
 ~~~~~~~~~~
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
-/* BEGIN JWS-signed request body (using original key) */
+/* BEGIN JWS-signed request body (using new key) */
 {
   "resource": "reg",
-  "newKey": /* JSON object signed with new key */
+  "rollover": /* JSON object signed with old key */
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
 
-On receiving a request to the registration URL with the "newKey" attribute set,
-the server MUST perform the following steps:
+On receiving a request to the registration URL with the "rollover" attribute
+set, the server MUST perform the following steps:
 
-1. Check that the contents of the "newKey" attribute are a valid JWS
-2. Check that the "newKey" JWS verifies using the key in the "jwk" header
-   parameter of the JWS
+1. Check that the contents of the "rollover" attribute are a valid JWS
+2. Check that the "rollover" JWS verifies using the account key correspdonding
+   to this registration
 3. Check that the payload of the JWS is a valid JSON object
 4. Check that the "resource" field of the object has the value "reg"
-5. Check that the "oldKey" field of the object contains the JWK thumbprint of
-   the account key for this registration
+5. Check that the "newKey" field of the object contains the JWK thumbprint of
+   the account key used to sign the request
 
 If all of these checks pass, then the server updates the registration by
 replacing the old account key with the public key carried in the "jwk" header
-parameter of the "newKey" JWS object.
+of the request JWS.
 
 If the update was successful, then the server sends a response with status code
 200 (OK) and the updated registration object as its body.  If the update was not
