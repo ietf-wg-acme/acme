@@ -1231,11 +1231,10 @@ certificate to be issued.  The CSR MUST indicate the requested identifiers,
 either in the commonName portion of the requested subject name, or in an
 extensionRequest attribute {{RFC2985}} requesting a subjectAltName extension.
 
-The values provided in the CSR are only a request, and are not guaranteed.  The
-server SHOULD return an error if it cannot fulfil the request as specified, but
-MAY issue a certificate with contents other than those requested, according to
-its local policy (e.g., removing identifiers for which the client is not
-authorized).
+The server MUST return an error if it cannot fulfil the request as specified,
+and MUST NOT issue a certificate with contents other than those requested.  If
+the server requires the request to be modified in a certain way, it should
+indicate the required changes using an appropriate error code and description.
 
 It is up to the server's local policy to decide which names are acceptable in a
 certificate, given the authorizations that the server associates with the
