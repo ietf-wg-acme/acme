@@ -119,28 +119,29 @@ Internet-Draft                    ACME                          May 2016
      7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  37
      7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  39
      7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  41
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  42
-   9.  Well-Known URI for the HTTP Challenge . . . . . . . . . . . .  42
-     9.1.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  43
-     9.2.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  43
-     9.3.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  43
-     9.4.  New Registries  . . . . . . . . . . . . . . . . . . . . .  44
-       9.4.1.  Error Codes . . . . . . . . . . . . . . . . . . . . .  44
-       9.4.2.  Identifier Types  . . . . . . . . . . . . . . . . . .  44
-       9.4.3.  Challenge Types . . . . . . . . . . . . . . . . . . .  45
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  45
-     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  46
-     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  47
-     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  50
-     10.4.  CA Policy Considerations . . . . . . . . . . . . . . . .  50
-   11. Operational Considerations  . . . . . . . . . . . . . . . . .  51
-     11.1.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  51
-     11.2.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  52
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  52
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  52
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  52
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  55
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  55
+     7.5.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  42
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  43
+   9.  Well-Known URI for the HTTP Challenge . . . . . . . . . . . .  43
+     9.1.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  44
+     9.2.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  44
+     9.3.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  44
+     9.4.  New Registries  . . . . . . . . . . . . . . . . . . . . .  45
+       9.4.1.  Error Codes . . . . . . . . . . . . . . . . . . . . .  45
+       9.4.2.  Identifier Types  . . . . . . . . . . . . . . . . . .  45
+       9.4.3.  Challenge Types . . . . . . . . . . . . . . . . . . .  46
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  46
+     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  47
+     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  48
+     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  51
+     10.4.  CA Policy Considerations . . . . . . . . . . . . . . . .  51
+   11. Operational Considerations  . . . . . . . . . . . . . . . . .  52
+     11.1.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  52
+     11.2.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  53
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  53
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  53
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  53
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  56
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  56
 
 1.  Introduction
 
@@ -161,7 +162,6 @@ Internet-Draft                    ACME                          May 2016
 
       *  Put a CA-provided challenge at a specific place on the web
          server.
-
 
 
 
@@ -2208,7 +2208,7 @@ Internet-Draft                    ACME                          May 2016
 
    /* BEGIN JWS-signed content */
    {
-     "keyAuthorization": "evaGxfADs...62jcerQ",
+     "keyAuthorization": "evaGxfADs...62jcerQ"
    }
    /* END JWS-signed content */
 
@@ -2308,7 +2308,7 @@ Internet-Draft                    ACME                          May 2016
 
    /* BEGIN JWS-signed content */
    {
-     "keyAuthorization": "evaGxfADs...62jcerQ",
+     "keyAuthorization": "evaGxfADs...62jcerQ"
    }
    /* END JWS-signed content */
 
@@ -2331,6 +2331,56 @@ Internet-Draft                    ACME                          May 2016
    successful.  If no DNS record is found, or DNS record and response
    payload do not pass these checks, then the validation fails.
 
+7.5.  Out-of-Band
+
+   There may be cases where a server cannot perform automated validation
+   of an identifier, for example if validation requires some manual
+   steps.  In such cases, the server may provide an "out of band" (OOB)
+   challenge to request that the client perform some action outside of
+   ACME in order to validate possession of the identifier.
+
+   The OOB challenge requests that the client have a human user visit a
+   web page to receive instructions on how to validate possession of the
+   identifier, by providing a URL for that web page.
+
+   type (required, string):  The string "oob-01"
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 42]
+
+Internet-Draft                    ACME                          May 2016
+
+
+   url (required, string):  The URL to be visited.  The scheme of this
+      URL MUST be "http" or "https"
+
+   {
+     "type": "oob-01",
+     "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+   }
+
+   A client responds to this challenge by presenting the indicated URL
+   for a human user to navigate to.  If the user choses to complete this
+   challege (by vising the website and completing its instructions), the
+   client indicates this by sending a simple acknowledgement response to
+   the server.
+
+   type (required, string):  The string "oob-01"
+
+   /* BEGIN JWS-signed content */
+   {
+     "type": "oob-01"
+   }
+   /* END JWS-signed content */
+
+   On receiving a response, the server MUST verify that the value of the
+   "type" field is as required.  Otherwise, the steps the server takes
+   to validate identifier possession are determined by the server's
+   local policy.
+
 8.  IANA Considerations
 
    [[ Editor's Note: Should we create a registry for tokens that go into
@@ -2346,17 +2396,19 @@ Internet-Draft                    ACME                          May 2016
 
    Change controller: IETF
 
-
-
-
-Barnes, et al.          Expires November 28, 2016              [Page 42]
-
-Internet-Draft                    ACME                          May 2016
-
-
    Specification document(s): This document, Section Section 7.2
 
    Related information: N/A
+
+
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 43]
+
+Internet-Draft                    ACME                          May 2016
+
 
 9.1.  Replay-Nonce HTTP Header
 
@@ -2405,7 +2457,11 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 43]
+
+
+
+
+Barnes, et al.          Expires November 28, 2016              [Page 44]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2461,7 +2517,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 44]
+Barnes, et al.          Expires November 28, 2016              [Page 45]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2517,7 +2573,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 45]
+Barnes, et al.          Expires November 28, 2016              [Page 46]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2573,7 +2629,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 46]
+Barnes, et al.          Expires November 28, 2016              [Page 47]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2629,7 +2685,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 47]
+Barnes, et al.          Expires November 28, 2016              [Page 48]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2685,7 +2741,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 48]
+Barnes, et al.          Expires November 28, 2016              [Page 49]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2741,7 +2797,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 49]
+Barnes, et al.          Expires November 28, 2016              [Page 50]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2797,7 +2853,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 50]
+Barnes, et al.          Expires November 28, 2016              [Page 51]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2853,7 +2909,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 51]
+Barnes, et al.          Expires November 28, 2016              [Page 52]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2909,7 +2965,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 52]
+Barnes, et al.          Expires November 28, 2016              [Page 53]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -2965,7 +3021,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 53]
+Barnes, et al.          Expires November 28, 2016              [Page 54]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -3021,7 +3077,7 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 54]
+Barnes, et al.          Expires November 28, 2016              [Page 55]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -3077,7 +3133,7 @@ Authors' Addresses
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 55]
+Barnes, et al.          Expires November 28, 2016              [Page 56]
 
 Internet-Draft                    ACME                          May 2016
 
@@ -3133,4 +3189,4 @@ Internet-Draft                    ACME                          May 2016
 
 
 
-Barnes, et al.          Expires November 28, 2016              [Page 56]
+Barnes, et al.          Expires November 28, 2016              [Page 57]

@@ -299,6 +299,7 @@ li, p {
 <link href="#rfc.section.7.2" rel="Chapter" title="7.2 HTTP"/>
 <link href="#rfc.section.7.3" rel="Chapter" title="7.3 TLS with Server Name Indication (TLS SNI)"/>
 <link href="#rfc.section.7.4" rel="Chapter" title="7.4 DNS"/>
+<link href="#rfc.section.7.5" rel="Chapter" title="7.5 Out-of-Band"/>
 <link href="#rfc.section.8" rel="Chapter" title="8 IANA Considerations"/>
 <link href="#rfc.section.9" rel="Chapter" title="9 Well-Known URI for the HTTP Challenge"/>
 <link href="#rfc.section.9.1" rel="Chapter" title="9.1 Replay-Nonce HTTP Header"/>
@@ -430,6 +431,7 @@ li, p {
 <li>7.2.   <a href="#rfc.section.7.2">HTTP</a></li>
 <li>7.3.   <a href="#rfc.section.7.3">TLS with Server Name Indication (TLS SNI)</a></li>
 <li>7.4.   <a href="#rfc.section.7.4">DNS</a></li>
+<li>7.5.   <a href="#rfc.section.7.5">Out-of-Band</a></li>
 </ul><li>8.   <a href="#rfc.section.8">IANA Considerations</a></li>
 <li>9.   <a href="#rfc.section.9">Well-Known URI for the HTTP Challenge</a></li>
 <ul><li>9.1.   <a href="#rfc.section.9.1">Replay-Nonce HTTP Header</a></li>
@@ -1366,7 +1368,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 <pre>
 /* BEGIN JWS-signed content */
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ",
+  "keyAuthorization": "evaGxfADs...62jcerQ"
 }
 /* END JWS-signed content */
 </pre>
@@ -1412,7 +1414,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <pre>
 /* BEGIN JWS-signed content */
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ",
+  "keyAuthorization": "evaGxfADs...62jcerQ"
 }
 /* END JWS-signed content */
 </pre>
@@ -1426,6 +1428,38 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Verify that the contents of one of the TXT records matches the digest value</li>
 </ol>
 <p id="rfc.section.7.4.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
+<h1 id="rfc.section.7.5"><a href="#rfc.section.7.5">7.5.</a> <a href="#out-of-band" id="out-of-band">Out-of-Band</a></h1>
+<p id="rfc.section.7.5.p.1">There may be cases where a server cannot perform automated validation of an identifier, for example if validation requires some manual steps.  In such cases, the server may provide an &#8220;out of band&#8221; (OOB) challenge to request that the client perform some action outside of ACME in order to validate possession of the identifier.</p>
+<p id="rfc.section.7.5.p.2">The OOB challenge requests that the client have a human user visit a web page to receive instructions on how to validate possession of the identifier, by providing a URL for that web page.</p>
+<p/>
+
+<dl>
+  <dt>type (required, string):</dt>
+  <dd style="margin-left: 8">The string &#8220;oob-01&#8221;</dd>
+  <dt>url (required, string):</dt>
+  <dd style="margin-left: 8">The URL to be visited.  The scheme of this URL MUST be &#8220;http&#8221; or &#8220;https&#8221;</dd>
+</dl>
+<pre>
+{
+  "type": "oob-01",
+  "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+}
+</pre>
+<p id="rfc.section.7.5.p.4">A client responds to this challenge by presenting the indicated URL for a human user to navigate to.  If the user choses to complete this challege (by vising the website and completing its instructions), the client indicates this by sending a simple acknowledgement response to the server.</p>
+<p/>
+
+<dl>
+  <dt>type (required, string):</dt>
+  <dd style="margin-left: 8">The string &#8220;oob-01&#8221;</dd>
+</dl>
+<pre>
+/* BEGIN JWS-signed content */
+{
+  "type": "oob-01"
+}
+/* END JWS-signed content */
+</pre>
+<p id="rfc.section.7.5.p.6">On receiving a response, the server MUST verify that the value of the &#8220;type&#8221; field is as required.  Otherwise, the steps the server takes to validate identifier possession are determined by the server&#8217;s local policy.</p>
 <h1 id="rfc.section.8"><a href="#rfc.section.8">8.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a></h1>
 <p id="rfc.section.8.p.1">[[ Editor&#8217;s Note: Should we create a registry for tokens that go into the various JSON objects used by this protocol, i.e., the field names in the JSON objects? ]]</p>
 <h1 id="rfc.section.9"><a href="#rfc.section.9">9.</a> <a href="#well-known-uri-for-the-http-challenge" id="well-known-uri-for-the-http-challenge">Well-Known URI for the HTTP Challenge</a></h1>
