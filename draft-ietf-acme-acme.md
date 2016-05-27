@@ -981,6 +981,11 @@ in the client's request object.
 The authorization object is implicitly tied to the account key used to sign the
 request. Once created, the authorization may only be updated by that account.
 
+When submitting a new authorization request, the key "existing" with
+a string value MAY be included in the resource object. This object is not
+considered part of an authorization resource but controls request processing
+as described below.
+
 ~~~~~~~~~~
 POST /acme/new-authorization HTTP/1.1
 Host: example.com
@@ -990,10 +995,22 @@ Host: example.com
   "identifier": {
     "type": "dns",
     "value": "example.org"
-  }
+  },
+  "existing": "accept"
 }
 /* Signed as JWS */
 ~~~~~~~~~~
+
+If the authorization request specifies "existing" with a value of "accept" or "require",
+before proceeding, the server SHOULD determine if there are any existing
+authorization resources for the account and given identifier which are
+presently valid. If one or more such authorizations exists, a response SHOULD
+returned with status code 303 (See Other) and a Location header pointing to the
+existing resource URL; processing of the request then stops. If there are
+multiple such authorizations, the authorization with the latest expiry date
+SHOULD be returned. Otherwise, if the "existing" item was "require", status
+code 404 (Not Found) is returned; if it was "accept" or was any other value or
+was absent, processing continues as follows.
 
 Before processing the authorization further, the server SHOULD determine whether
 it is willing to issue certificates for the identifier.  For example, the server
