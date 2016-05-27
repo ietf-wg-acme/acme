@@ -1006,6 +1006,7 @@ Host: example.com
 <p id="rfc.section.6.4.p.2">As illustrated by the figure in the overview section above, the authorization process proceeds in two phases.  The client first requests a new authorization, and the server issues challenges, then the client responds to those challenges and the server validates the client&#8217;s responses.</p>
 <p id="rfc.section.6.4.p.3">To begin the key authorization process, the client sends a POST request to the server&#8217;s new-authorization resource.  The body of the POST request MUST contain a JWS object, whose payload is a partial authorization object.  This JWS object MUST contain only the &#8220;identifier&#8221; field, so that the server knows what identifier is being authorized.  The server MUST ignore any other fields present in the client&#8217;s request object.</p>
 <p id="rfc.section.6.4.p.4">The authorization object is implicitly tied to the account key used to sign the request. Once created, the authorization may only be updated by that account.</p>
+<p id="rfc.section.6.4.p.5">When submitting a new authorization request, the key &#8220;existing&#8221; with a string value MAY be included in the resource object. This object is not considered part of an authorization resource but controls request processing as described below.</p>
 <pre>
 POST /acme/new-authorization HTTP/1.1
 Host: example.com
@@ -1015,12 +1016,14 @@ Host: example.com
   "identifier": {
     "type": "dns",
     "value": "example.org"
-  }
+  },
+  "existing": "accept"
 }
 /* Signed as JWS */
 </pre>
-<p id="rfc.section.6.4.p.5">Before processing the authorization further, the server SHOULD determine whether it is willing to issue certificates for the identifier.  For example, the server should check that the identifier is of a supported type.  Servers might also check names against a blacklist of known high-value identifiers.  If the server is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden) error, with a problem document describing the reason for the rejection.</p>
-<p id="rfc.section.6.4.p.6">If the server is willing to proceed, it builds a pending authorization object from the initial authorization object submitted by the client.</p>
+<p id="rfc.section.6.4.p.6">If the authorization request specifies &#8220;existing&#8221; with a value of &#8220;accept&#8221; or &#8220;require&#8221;, before proceeding, the server SHOULD determine if there are any existing authorization resources for the account and given identifier which are presently valid. If one or more such authorizations exists, a response SHOULD returned with status code 303 (See Other) and a Location header pointing to the existing resource URL; processing of the request then stops. If there are multiple such authorizations, the authorization with the latest expiry date SHOULD be returned. Otherwise, if the &#8220;existing&#8221; item was &#8220;require&#8221;, status code 404 (Not Found) is returned; if it was &#8220;accept&#8221; or was any other value or was absent, processing continues as follows.</p>
+<p id="rfc.section.6.4.p.7">Before processing the authorization further, the server SHOULD determine whether it is willing to issue certificates for the identifier.  For example, the server should check that the identifier is of a supported type.  Servers might also check names against a blacklist of known high-value identifiers.  If the server is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden) error, with a problem document describing the reason for the rejection.</p>
+<p id="rfc.section.6.4.p.8">If the server is willing to proceed, it builds a pending authorization object from the initial authorization object submitted by the client.</p>
 <p/>
 
 <ul>
@@ -1028,7 +1031,7 @@ Host: example.com
   <li>&#8220;status&#8221;: MUST be &#8220;pending&#8221; unless the server has out-of-band information about the client&#8217;s authorization status</li>
   <li>&#8220;challenges&#8221; and &#8220;combinations&#8221;: As selected by the server&#8217;s policy for this identifier</li>
 </ul>
-<p id="rfc.section.6.4.p.8">The server allocates a new URI for this authorization, and returns a 201 (Created) response, with the authorization URI in a Location header field, and the JSON authorization object in the body.</p>
+<p id="rfc.section.6.4.p.10">The server allocates a new URI for this authorization, and returns a 201 (Created) response, with the authorization URI in a Location header field, and the JSON authorization object in the body.</p>
 <pre>
 HTTP/1.1 201 Created
 Content-Type: application/json
