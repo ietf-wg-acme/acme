@@ -1544,6 +1544,10 @@ If given, the server SHOULD connect to that specific IP address instead of
 arbitrarily choosing an IP from the set of A and AAAA records to which the
 domain name resolves.
 
+port (optional, integer):
+: A TCP port between 1 and 1023 (inclusive). If given, the server MUST connect
+on this port instead of the default TCP port (80).
+
 ~~~~~~~~~~
 /* BEGIN JWS-signed content */
 {
@@ -1632,6 +1636,10 @@ ready to fulfill this challenge.
 keyAuthorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
 from the challenge and the client's account key.
+
+port (optional, integer):
+: A TCP port between 1 and 1023 (inclusive). If given, the server MUST connect
+on this port instead of the default TCP port (443).
 
 ~~~~~~~~~~
 /* BEGIN JWS-signed content */
