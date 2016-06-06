@@ -629,7 +629,7 @@ relation "next" indicating a URL to retrieve further entries.
   ],
   "agreement": "https://example.com/acme/terms",
   "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert",
+  "certificates": "https://example.com/acme/reg/1/cert"
 }
 ~~~~~~~~~~
 
@@ -700,7 +700,7 @@ label) MUST NOT be included in authorization requests.  See
       "validated": "2014-12-01T12:05:00Z",
       "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
     }
-  ],
+  ]
 }
 ~~~~~~~~~~
 
@@ -941,7 +941,7 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "reg",
-  "delete": true,
+  "delete": true
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
@@ -1176,7 +1176,7 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "authz",
-  "delete": true,
+  "delete": true
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
@@ -1509,7 +1509,7 @@ NOT contain any padding characters ("=").
 ~~~~~~~~~~
 {
   "type": "http-01",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
