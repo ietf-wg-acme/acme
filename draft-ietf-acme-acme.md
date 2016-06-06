@@ -710,7 +710,7 @@ label) MUST NOT be included in authorization requests.  See
 In order to help clients configure themselves with the right URIs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
 needed to configure clients. It is a JSON dictionary, whose keys are the
-"resource" values listed in {{https-requests}}, and whose values are the
+"resource" values listed in {{resources}}, and whose values are the
 URIs used to accomplish the corresponding function.
 
 There is no constraint on the actual URI of the directory except that it
