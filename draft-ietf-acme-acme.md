@@ -710,7 +710,7 @@ label) MUST NOT be included in authorization requests.  See
 In order to help clients configure themselves with the right URIs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
 needed to configure clients. It is a JSON dictionary, whose keys are the
-"resource" values listed in {{https-requests}}, and whose values are the
+"resource" values listed in {{resources}}, and whose values are the
 URIs used to accomplish the corresponding function.
 
 There is no constraint on the actual URI of the directory except that it
@@ -902,7 +902,7 @@ On receiving a request to the registration URL with the "rollover" attribute
 set, the server MUST perform the following steps:
 
 1. Check that the contents of the "rollover" attribute are a valid JWS
-2. Check that the "rollover" JWS verifies using the account key correspdonding
+2. Check that the "rollover" JWS verifies using the account key corresponding
    to this registration
 3. Check that the payload of the JWS is a valid JSON object
 4. Check that the "resource" field of the object has the value "reg"
