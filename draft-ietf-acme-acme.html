@@ -288,10 +288,10 @@ li, p {
 <link href="#rfc.section.6.2" rel="Chapter" title="6.2 Directory"/>
 <link href="#rfc.section.6.3" rel="Chapter" title="6.3 Registration"/>
 <link href="#rfc.section.6.3.1" rel="Chapter" title="6.3.1 Account Key Roll-over"/>
-<link href="#rfc.section.6.3.2" rel="Chapter" title="6.3.2 Deleting an Account"/>
+<link href="#rfc.section.6.3.2" rel="Chapter" title="6.3.2 Account deactivation"/>
 <link href="#rfc.section.6.4" rel="Chapter" title="6.4 Identifier Authorization"/>
 <link href="#rfc.section.6.4.1" rel="Chapter" title="6.4.1 Responding to Challenges"/>
-<link href="#rfc.section.6.4.2" rel="Chapter" title="6.4.2 Deleting an Authorization"/>
+<link href="#rfc.section.6.4.2" rel="Chapter" title="6.4.2 Deactivating an Authorization"/>
 <link href="#rfc.section.6.5" rel="Chapter" title="6.5 Certificate Issuance"/>
 <link href="#rfc.section.6.6" rel="Chapter" title="6.6 Certificate Revocation"/>
 <link href="#rfc.section.7" rel="Chapter" title="7 Identifier Validation Challenges"/>
@@ -329,7 +329,7 @@ li, p {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-02" />
-  <meta name="dct.issued" scheme="ISO8601" content="2016-6-06" />
+  <meta name="dct.issued" scheme="ISO8601" content="2016-6-09" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -353,7 +353,7 @@ li, p {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: December 8, 2016</td>
+  <td class="left">Expires: December 11, 2016</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -366,7 +366,7 @@ li, p {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">June 06, 2016</td>
+  <td class="right">June 09, 2016</td>
 </tr>
 
     	
@@ -388,7 +388,7 @@ li, p {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on December 8, 2016.</p>
+<p>This Internet-Draft will expire on December 11, 2016.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -420,10 +420,10 @@ li, p {
 </ul><li>6.2.   <a href="#rfc.section.6.2">Directory</a></li>
 <li>6.3.   <a href="#rfc.section.6.3">Registration</a></li>
 <ul><li>6.3.1.   <a href="#rfc.section.6.3.1">Account Key Roll-over</a></li>
-<li>6.3.2.   <a href="#rfc.section.6.3.2">Deleting an Account</a></li>
+<li>6.3.2.   <a href="#rfc.section.6.3.2">Account deactivation</a></li>
 </ul><li>6.4.   <a href="#rfc.section.6.4">Identifier Authorization</a></li>
 <ul><li>6.4.1.   <a href="#rfc.section.6.4.1">Responding to Challenges</a></li>
-<li>6.4.2.   <a href="#rfc.section.6.4.2">Deleting an Authorization</a></li>
+<li>6.4.2.   <a href="#rfc.section.6.4.2">Deactivating an Authorization</a></li>
 </ul><li>6.5.   <a href="#rfc.section.6.5">Certificate Issuance</a></li>
 <li>6.6.   <a href="#rfc.section.6.6">Certificate Revocation</a></li>
 </ul><li>7.   <a href="#rfc.section.7">Identifier Validation Challenges</a></li>
@@ -798,6 +798,8 @@ li, p {
 <dl>
   <dt>key (required, dictionary):</dt>
   <dd style="margin-left: 8">The public key of the account key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>.</dd>
+  <dt>status (required, string):</dt>
+  <dd style="margin-left: 8">&#8220;good&#8221; or &#8220;deactivated&#8221;</dd>
   <dt>contact (optional, array of string):</dt>
   <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this authorization. For example, the server may wish to notify the client about server-initiated revocation.</dd>
   <dt>agreement (optional, string):</dt>
@@ -925,6 +927,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
 {
   "key": { /* JWK from JWS header */ },
+  "status": "good",
 
   "contact": [
     "mailto:cert-admin@example.com",
@@ -989,11 +992,8 @@ Host: example.com
 </ol>
 <p id="rfc.section.6.3.1.p.6">If all of these checks pass, then the server updates the registration by replacing the old account key with the public key carried in the &#8220;jwk&#8221; header of the request JWS.</p>
 <p id="rfc.section.6.3.1.p.7">If the update was successful, then the server sends a response with status code 200 (OK) and the updated registration object as its body.  If the update was not successful, then the server responds with an error status code and a problem document describing the error.</p>
-<h1 id="rfc.section.6.3.2"><a href="#rfc.section.6.3.2">6.3.2.</a> <a href="#deleting-an-account" id="deleting-an-account">Deleting an Account</a></h1>
-<p id="rfc.section.6.3.2.p.1">If a client no longer wishes to have an account key registered with the server, it may request that the server delete its account by sending a POST request to the account URI containing the &#8220;delete&#8221; field.</p>
-<p id="rfc.section.6.3.2.p.2">delete (required, boolean): The boolean value &#8220;true&#8221;.</p>
-<p id="rfc.section.6.3.2.p.3">The request object MUST contain the &#8220;resource&#8221; field as required above (with the value &#8220;reg&#8221;).  It MUST NOT contain any fields besides &#8220;resource&#8221; and &#8220;delete&#8221;.</p>
-<p id="rfc.section.6.3.2.p.4">Note that although this object is very simple, the risk of replay or fraudulent generation via signing oracles is mitigated by the need for an anti-replay token in the protected header of the JWS.</p>
+<h1 id="rfc.section.6.3.2"><a href="#rfc.section.6.3.2">6.3.2.</a> <a href="#account-deactivation" id="account-deactivation">Account deactivation</a></h1>
+<p id="rfc.section.6.3.2.p.1">A client may deactivate an account by posting a signed update to the server with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised.</p>
 <pre>
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
@@ -1001,12 +1001,12 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "reg",
-  "delete": true
+  "status": "deactivated"
 }
 /* END JWS-signed request body */
 </pre>
-<p id="rfc.section.6.3.2.p.5">On receiving a POST to an account URI containing a &#8220;delete&#8221; field, the server MUST verify that no other fields were sent in the object (other than &#8220;resource&#8221;), and it MUST verify that the value of the &#8220;delete&#8221; field is &#8220;true&#8221; (as a boolean, not a string).  If either of these checks fails, then the server MUST reject the request with status code 400 (Bad Request).</p>
-<p id="rfc.section.6.3.2.p.6">If the server accepts the deletion request, then it MUST delete the account and all related objects and send a response with a 200 (OK) status code and an empty body.  The server SHOULD delete any authorization objects related to the deleted account, since they can no longer be used.  The server SHOULD NOT delete certificate objects related to the account, since certificates issued under the account continue to be valid until they expire or are revoked.</p>
+<p id="rfc.section.6.3.2.p.2">The server MUST verify that the request is signed by the account key. If the server accepts the deactivation request, it should reply with a 200 (OK) status code and the current contents of the registration object.</p>
+<p id="rfc.section.6.3.2.p.3">Once an account is deactivated, the server MUST NOT accept further requests authorized by that account&#8217;s key. It is up to server policy how long to retain data related to that account, whether to revoke certificates issued by that account, and whether to send email to that account&#8217;s contacts. ACME does not proviate a way to reactivate a deactivated account.</p>
 <h1 id="rfc.section.6.4"><a href="#rfc.section.6.4">6.4.</a> <a href="#identifier-authorization" id="identifier-authorization">Identifier Authorization</a></h1>
 <p id="rfc.section.6.4.p.1">The identifier authorization process establishes the authorization of an account to manage certificates for a given identifier.  This process must assure the server of two things: First, that the client controls the private key of the account key pair, and second, that the client holds the identifier in question.  This process may be repeated to associate multiple identifiers to a key pair (e.g., to request certificates with multiple identifiers), or to associate multiple accounts with an identifier (e.g., to allow multiple entities to manage certificates).</p>
 <p id="rfc.section.6.4.p.2">As illustrated by the figure in the overview section above, the authorization process proceeds in two phases.  The client first requests a new authorization, and the server issues challenges, then the client responds to those challenges and the server validates the client&#8217;s responses.</p>
@@ -1117,8 +1117,8 @@ HTTP/1.1 200 OK
   ]
 }
 </pre>
-<h1 id="rfc.section.6.4.2"><a href="#rfc.section.6.4.2">6.4.2.</a> <a href="#deleting-an-authorization" id="deleting-an-authorization">Deleting an Authorization</a></h1>
-<p id="rfc.section.6.4.2.p.1">If a client wishes to relinquish its authorization to issue certificates for an identifier, then it may request that the server delete the authorization.  The client makes this request by sending a POST request to the authorization URI containing a payload in the same format as in <a href="#deleting-an-account">Section 6.3.2</a>.  The only difference is that the value of the &#8220;resource&#8221; field is &#8220;authz&#8221;.</p>
+<h1 id="rfc.section.6.4.2"><a href="#rfc.section.6.4.2">6.4.2.</a> <a href="#deactivating-an-authorization" id="deactivating-an-authorization">Deactivating an Authorization</a></h1>
+<p id="rfc.section.6.4.2.p.1">If a client wishes to relinquish its authorization to issue certificates for an identifier, then it may request that the server deactivate each authorization associated with that identifier.</p>
 <pre>
 POST /acme/authz/asdf HTTP/1.1
 Host: example.com
@@ -1126,11 +1126,12 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "authz",
-  "delete": true
+  "status": "deactivated"
 }
 /* END JWS-signed request body */
 </pre>
-<p id="rfc.section.6.4.2.p.2">The server MUST perform the same validity checks as in <a href="#deleting-an-account">Section 6.3.2</a> and reject the request if they fail.  If the server deletes the account then it MUST send a response with a 200 (OK) status code and an empty body.</p>
+<p id="rfc.section.6.4.2.p.2">The server MUST verify that the request is signed by the account key corresponding to the account that owns the authorization. If the server accepts the deactivation, it should reply with a 200 (OK) status code and the current contents of the registration object.</p>
+<p id="rfc.section.6.4.2.p.3">The server MUST NOT treat deactivated authorization objects as sufficient for issuing certificates.</p>
 <h1 id="rfc.section.6.5"><a href="#rfc.section.6.5">6.5.</a> <a href="#certificate-issuance" id="certificate-issuance">Certificate Issuance</a></h1>
 <p id="rfc.section.6.5.p.1">The holder of an account key pair authorized for one or more identifiers may use ACME to request that a certificate be issued for any subset of those identifiers.  The client makes this request by sending a POST request to the server&#8217;s new-certificate resource.  The body of the POST is a JWS object whose JSON payload contains a Certificate Signing Request (CSR) <a href="#RFC2986">[RFC2986]</a>.  The CSR encodes the parameters of the requested certificate; authority to issue is demonstrated by the JWS signature by an account key, from which the server can look up related authorizations.  Some attributes which cannot be reflected in a CSR are placed directly in the certificate request.</p>
 <p/>
