@@ -2127,10 +2127,6 @@ perform all necessary checks before issuing.
 
 There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
-For example:
-
-* It is advisable to perform DNS queries via TCP to mitigate DNS forgery
-  attacks over UDP
 
 [[ TODO: Other operational considerations ]]
 
