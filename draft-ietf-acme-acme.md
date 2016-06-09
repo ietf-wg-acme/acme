@@ -395,6 +395,7 @@ defined in the below table:
 | Authorization        | authz            |
 | Challenge            | challenge        |
 | Certificate          | cert             |
+| Key change           | key-change       |
 
 Other fields in ACME request bodies are described below.
 
@@ -524,6 +525,7 @@ ACME is structured as a REST application with a few types of resources:
 * A "new-authorization" resource
 * A "new-certificate" resource
 * A "revoke-certificate" resource
+* A "key-change" resource
 
 For the "new-X" resources above, the server MUST have exactly one resource for
 each function.  This resource may be addressed by multiple URIs, but all must
@@ -757,6 +759,7 @@ Content-Type: application/json
   "new-authz": "https://example.com/acme/new-authz",
   "new-cert": "https://example.com/acme/new-cert",
   "revoke-cert": "https://example.com/acme/revoke-cert",
+  "key-change": "https://example.com/acme/key-change",
   "meta": {
     "terms-of-service": "https://example.com/acme/terms",
     "website": "https://www.example.com/",
@@ -869,58 +872,47 @@ new registration, to allow a client to retrieve the "new-authorization" and
 ### Account Key Roll-over
 
 A client may wish to change the public key that is associated with a
-registration, e.g., in order to mitigate the risk of key compromise.  To do
-this, the client first constructs a JSON object representing a request to
-update the registration:
+registration in order to recover from a key compromise or proactively mitigate
+the impact of an unnoticed key compromise.
 
-resource (required, string):
-: The string "reg", indicating an update to the registration.
-
-newKey (required, string):
-: The JWK thumbprint of the new key {{RFC7638}}, base64url-encoded
-
-~~~~~~~~~~
-{
-  "resource": "reg",
-  "newKey": "D7J9RL1f-RWUl68JP-gW1KSl2TkIrJB7hK6rLFFeYMU"
-}
-~~~~~~~~~~
-
-The client signs this object with the old key pair and encodes the object and
-signature as a JWS.  The client then sends this JWS to the server in the
-"rollover" field of a request to update the registration.
+To change the key associate with an account, the client POSTs a key-change
+object with a "key" field containing a JWK representation of the new public key.
+The JWS of this POST must have two signatures: one signature from the existing
+key on the account, and one signature from the new key that the client proposes
+to use. This demonstrates that the client actually has control of the
+private key corresponding to the new public key. The protected header must
+contain a JWK field containing the current account key.
 
 ~~~~~~~~~~
-POST /acme/reg/asdf HTTP/1.1
+POST /acme/key-change HTTP/1.1
 Host: example.com
 
-/* BEGIN JWS-signed request body (using new key) */
+/* BEGIN JWS-signed request body (with two signatures) */
 {
-  "resource": "reg",
-  "rollover": /* JSON object signed with old key */
+  "resource": "key-change",
+  "key": /* New key in JWK form */
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
 
-On receiving a request to the registration URL with the "rollover" attribute
-set, the server MUST perform the following steps:
+On receiving key-change request, the server MUST perform the following steps in
+addition to the typical JWS validation:
 
-1. Check that the contents of the "rollover" attribute are a valid JWS
-2. Check that the "rollover" JWS verifies using the account key corresponding
-   to this registration
-3. Check that the payload of the JWS is a valid JSON object
-4. Check that the "resource" field of the object has the value "reg"
-5. Check that the "newKey" field of the object contains the JWK thumbprint of
-   the account key used to sign the request
+1. Check that the JWS protected header container a "jwk" field containing a
+   key that matches a currently active account.
+2. Check that there are exactly two signatures on the JWS.
+3. Check that one of the signatures validates using the account key from (1).
+4. Check that the "key" field contains a well-formed JWK that meets key strength
+   requirements.
+5. Check that the "key" field is not equivalent to the current account key or
+   any other currently active account key.
+5. Check that one of the two signatures on the JWS validates using the JWK from
+   the "key" field.
 
-If all of these checks pass, then the server updates the registration by
-replacing the old account key with the public key carried in the "jwk" header
-of the request JWS.
-
-If the update was successful, then the server sends a response with status code
-200 (OK) and the updated registration object as its body.  If the update was not
-successful, then the server responds with an error status code and a problem
-document describing the error.
+If all of these checks pass, then the server updates the corresponding
+registration by replacing the old account key with the new public key and
+returns status code 200. Otherwise, the server responds with an error status
+code and a problem document describing the error.
 
 ### Account deactivation
 
