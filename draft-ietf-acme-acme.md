@@ -1270,7 +1270,7 @@ For example, the client may use the media type application/x-pem-file to request
 the certificate in PEM format.
 
 The server provides metadata about the certificate in HTTP headers.  In
-particular, the server send MUST one or more link relation header fields
+particular, the server MUST send one or more link relation header fields
 {{RFC5988}} with relation "up", each indicating a single certificate resource
 for the issuer of this certificate.  The server MAY also include the "up" links
 from these resources to enable the client to build a full certificate chain.
