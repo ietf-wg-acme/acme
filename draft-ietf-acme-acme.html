@@ -329,7 +329,7 @@ li, p {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-02" />
-  <meta name="dct.issued" scheme="ISO8601" content="2016-6-09" />
+  <meta name="dct.issued" scheme="ISO8601" content="2016-6-18" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -353,7 +353,7 @@ li, p {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: December 11, 2016</td>
+  <td class="left">Expires: December 20, 2016</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -366,7 +366,7 @@ li, p {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">June 09, 2016</td>
+  <td class="right">June 18, 2016</td>
 </tr>
 
     	
@@ -388,7 +388,7 @@ li, p {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on December 11, 2016.</p>
+<p>This Internet-Draft will expire on December 20, 2016.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -1176,7 +1176,7 @@ HTTP/1.1 202 Accepted
 Retry-After: 120
 </pre>
 <p id="rfc.section.6.5.p.8">The default format of the certificate is DER (application/pkix-cert).  The client may request other formats by including an Accept header in its request.  For example, the client may use the media type application/x-pem-file to request the certificate in PEM format.</p>
-<p id="rfc.section.6.5.p.9">The server provides metadata about the certificate in HTTP headers.  In particular, the server send MUST one or more link relation header fields <a href="#RFC5988">[RFC5988]</a> with relation &#8220;up&#8221;, each indicating a single certificate resource for the issuer of this certificate.  The server MAY also include the &#8220;up&#8221; links from these resources to enable the client to build a full certificate chain.</p>
+<p id="rfc.section.6.5.p.9">The server provides metadata about the certificate in HTTP headers.  In particular, the server MUST send one or more link relation header fields <a href="#RFC5988">[RFC5988]</a> with relation &#8220;up&#8221;, each indicating a single certificate resource for the issuer of this certificate.  The server MAY also include the &#8220;up&#8221; links from these resources to enable the client to build a full certificate chain.</p>
 <p id="rfc.section.6.5.p.10">The server MUST also provide a link relation header field with relation &#8220;author&#8221; to indicate the registration under which this certificate was issued.</p>
 <p id="rfc.section.6.5.p.11">If the CA participates in Certificate Transparency (CT) <a href="#RFC6962">[RFC6962]</a>, then they may want to provide the client with a Signed Certificate Timestamp (SCT) that can be used to prove that a certificate was submitted to a CT log.  An SCT can be included as an extension in the certificate or as an extension to OCSP responses for the certificate.  The server can also provide the client with direct access to an SCT for a certificate using a Link relation header field with relation &#8220;ct-sct&#8221;.</p>
 <pre>
