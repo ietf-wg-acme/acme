@@ -475,20 +475,21 @@ To facilitate automatic response
 to errors, this document defines the following standard tokens for use in the
 "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Code            | Description                                               |
-|:----------------|:----------------------------------------------------------|
-| badCSR          | The CSR is unacceptable (e.g., due to a short key)        |
-| badNonce        | The client sent an unacceptable anti-replay nonce         |
-| connection      | The server could not connect to the client for validation |
-| dnssec          | The server could not validate a DNSSEC signed domain      |
-| caa             | The CA is not authorized to issue based on CAA records    |
-| malformed       | The request message was malformed                         |
-| serverInternal  | The server experienced an internal error                  |
-| tls             | The server experienced a TLS error during validation      |
-| unauthorized    | The client lacks sufficient authorization                 |
-| unknownHost     | The server could not resolve a domain name                |
-| rateLimited     | The request exceeds a rate limit                          |
-| invalidContact  | The provided contact URI for a registration was invalid   |
+| Code               | Description                                            |
+|:-------------------|:-------------------------------------------------------|
+| badCSR             | The CSR is unacceptable (e.g., due to a short key)     |
+| badNonce           | The client sent an unacceptable anti-replay nonce      |
+| connection         | The server could not connect to validation target      |
+| dnssec             | The server could not validate a DNSSEC signed domain   |
+| caa                | The CA is not authorized to issue based on CAA records |
+| malformed          | The request message was malformed                      |
+| serverInternal     | The server experienced an internal error               |
+| tls                | The server experienced a TLS error during validation   |
+| unauthorized       | The client lacks sufficient authorization              |
+| unknownHost        | The server could not resolve a domain name             |
+| rateLimited        | The request exceeds a rate limit                       |
+| invalidContact     | The contact URI for a registration was invalid         |
+| rejectedIdentifier | The server will not issue for the identifier           |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
