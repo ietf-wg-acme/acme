@@ -2037,7 +2037,7 @@ More limited forms of delegation can also lead to an unintended party gaining
 the ability to successfully complete a validation transaction.  For example,
 suppose an ACME server follows HTTP redirects in HTTP validation and a
 web site operator provisions a catch-all redirect rule that redirects requests
-for unknown resources to different domain.  Then the target of the redirect
+for unknown resources to a different domain.  Then the target of the redirect
 could use that to get a certificate through HTTP validation, since the
 validation path will not be known to the primary server.
 
