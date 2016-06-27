@@ -2136,7 +2136,7 @@ different hosted services or "virtual hosts".  When a client initiates a
 TLS connection with an SNI value indicating a provisioned host, the hosting
 platform routes the connection to that host.
 
-When a connection come in with an unknown SNI value, one might expect the
+When a connection comes in with an unknown SNI value, one might expect the
 hosting platform to terminate the TLS connection.  However, some hosting
 platforms will choose a virtual host to be the "default", and route connections
 with unknown SNI values to that host.
