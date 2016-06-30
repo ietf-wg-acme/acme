@@ -329,7 +329,7 @@ li, p {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-02" />
-  <meta name="dct.issued" scheme="ISO8601" content="2016-6-27" />
+  <meta name="dct.issued" scheme="ISO8601" content="2016-6-30" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -353,7 +353,7 @@ li, p {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: December 29, 2016</td>
+  <td class="left">Expires: January 1, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -366,7 +366,7 @@ li, p {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">June 27, 2016</td>
+  <td class="right">June 30, 2016</td>
 </tr>
 
     	
@@ -388,7 +388,7 @@ li, p {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on December 29, 2016.</p>
+<p>This Internet-Draft will expire on January 1, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -661,11 +661,11 @@ li, p {
     </tr>
     <tr>
       <td class="left">dnssec</td>
-      <td class="left">The server could not validate a DNSSEC signed domain</td>
+      <td class="left">DNSSEC validation failed</td>
     </tr>
     <tr>
       <td class="left">caa</td>
-      <td class="left">The CA is not authorized to issue based on CAA records</td>
+      <td class="left">CAA records forbid the CA from issuing</td>
     </tr>
     <tr>
       <td class="left">malformed</td>
@@ -677,7 +677,7 @@ li, p {
     </tr>
     <tr>
       <td class="left">tls</td>
-      <td class="left">The server experienced a TLS error during validation</td>
+      <td class="left">The server received a TLS error during validation</td>
     </tr>
     <tr>
       <td class="left">unauthorized</td>
@@ -698,6 +698,10 @@ li, p {
     <tr>
       <td class="left">rejectedIdentifier</td>
       <td class="left">The server will not issue for the identifier</td>
+    </tr>
+    <tr>
+      <td class="left">unsupportedIdentifier</td>
+      <td class="left">Identifier is not supported, but may be in future</td>
     </tr>
   </tbody>
 </table>
