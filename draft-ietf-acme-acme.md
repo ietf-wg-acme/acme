@@ -2038,7 +2038,7 @@ More limited forms of delegation can also lead to an unintended party gaining
 the ability to successfully complete a validation transaction.  For example,
 suppose an ACME server follows HTTP redirects in HTTP validation and a
 web site operator provisions a catch-all redirect rule that redirects requests
-for unknown resources to different domain.  Then the target of the redirect
+for unknown resources to a different domain.  Then the target of the redirect
 could use that to get a certificate through HTTP validation, since the
 validation path will not be known to the primary server.
 
@@ -2137,7 +2137,7 @@ different hosted services or "virtual hosts".  When a client initiates a
 TLS connection with an SNI value indicating a provisioned host, the hosting
 platform routes the connection to that host.
 
-When a connection come in with an unknown SNI value, one might expect the
+When a connection comes in with an unknown SNI value, one might expect the
 hosting platform to terminate the TLS connection.  However, some hosting
 platforms will choose a virtual host to be the "default", and route connections
 with unknown SNI values to that host.
