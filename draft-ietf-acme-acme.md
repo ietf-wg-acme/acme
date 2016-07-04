@@ -375,8 +375,8 @@ requests for denial-of-service protection.
 
 These intermediaries can also change values in the request that are not signed
 in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to
-provides a limited integrity mechanism, which protects against an intermediary
-changing the request URI to anothe ACME URI of a different type.  (It does not
+provide a limited integrity mechanism, which protects against an intermediary
+changing the request URI to another ACME URI of a different type.  (It does not
 protect against changing between URIs of the same type, e.g., from one
 authorization URI to another).
 
@@ -397,6 +397,12 @@ defined in the below table:
 | Certificate          | cert             |
 
 Other fields in ACME request bodies are described below.
+
+## Rate limits
+
+Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code "rateLimited".  Additionally, the server SHOULD send a "Retry-After" header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.
+
+In addition to the human readable "detail" field of the error response, the server MAY send one or multiple tokens in the "Link" header pointing to documentation about the specific hit rate limits using the "rate-limit" relation.
 
 ## Replay protection
 
@@ -475,6 +481,7 @@ to errors, this document defines the following standard tokens for use in the
 | badNonce        | The client sent an unacceptable anti-replay nonce         |
 | connection      | The server could not connect to the client for validation |
 | dnssec          | The server could not validate a DNSSEC signed domain      |
+| caa             | The CA is not authorized to issue based on CAA records    |
 | malformed       | The request message was malformed                         |
 | serverInternal  | The server experienced an internal error                  |
 | tls             | The server experienced a TLS error during validation      |
@@ -874,6 +881,7 @@ field).
 POST /acme/new-registration HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-reg",
   "contact": [
@@ -881,7 +889,7 @@ Host: example.com
     "tel:+12025551212"
   ],
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server MUST ignore any values provided in the "key", "authorizations", and
@@ -942,6 +950,7 @@ client could send the following request:
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "reg",
   "contact": [
@@ -949,7 +958,7 @@ Host: example.com
     "tel:+12125551212"
   ],
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 Servers SHOULD NOT respond to GET requests for registration resources as these
@@ -989,11 +998,12 @@ signature as a JWS.  The client then sends this JWS to the server in the
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body (using original key) */
 {
   "resource": "reg",
-  "newKey": /* JSON object signed as JWS with new key */
+  "newKey": /* JSON object signed with new key */
 }
-/* Signed as JWS with original key */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 On receiving a request to the registration URL with the "newKey" attribute set,
@@ -1036,11 +1046,12 @@ token in the protected header of the JWS.
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "reg",
   "delete": true,
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 On receiving a POST to an account URI containing a "delete" field, the server
@@ -1082,19 +1093,37 @@ in the client's request object.
 The authorization object is implicitly tied to the account key used to sign the
 request. Once created, the authorization may only be updated by that account.
 
+When submitting a new authorization request, the key "existing" with
+a string value MAY be included in the resource object. This object is not
+considered part of an authorization resource but controls request processing
+as described below.
+
 ~~~~~~~~~~
 POST /acme/new-authorization HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-authz",
   "identifier": {
     "type": "dns",
     "value": "example.org"
-  }
+  },
+  "existing": "accept"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
+
+If the authorization request specifies "existing" with a value of "accept" or "require",
+before proceeding, the server SHOULD determine if there are any existing
+authorization resources for the account and given identifier which are
+presently valid. If one or more such authorizations exists, a response SHOULD
+returned with status code 303 (See Other) and a Location header pointing to the
+existing resource URL; processing of the request then stops. If there are
+multiple such authorizations, the authorization with the latest expiry date
+SHOULD be returned. Otherwise, if the "existing" item was "require", status
+code 404 (Not Found) is returned; if it was "accept" or was any other value or
+was absent, processing continues as follows.
 
 Before processing the authorization further, the server SHOULD determine whether
 it is willing to issue certificates for the identifier.  For example, the server
@@ -1170,12 +1199,13 @@ above authorization, it would send the following request:
 POST /acme/authz/asdf/0 HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "challenge",
   "type": "http-01",
   "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server updates the authorization document by updating its representation of
@@ -1251,11 +1281,12 @@ difference is that the value of the "resource" field is "authz".
 POST /acme/authz/asdf HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "authz",
   "delete": true,
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server MUST perform the same validity checks as in {{deleting-an-account}}
@@ -1293,13 +1324,14 @@ POST /acme/new-cert HTTP/1.1
 Host: example.com
 Accept: application/pkix-cert
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "new-cert",
   "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z"
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The CSR encodes the client's requests with regard to the content of the
@@ -1307,11 +1339,10 @@ certificate to be issued.  The CSR MUST indicate the requested identifiers,
 either in the commonName portion of the requested subject name, or in an
 extensionRequest attribute {{RFC2985}} requesting a subjectAltName extension.
 
-The values provided in the CSR are only a request, and are not guaranteed.  The
-server SHOULD return an error if it cannot fulfil the request as specified, but
-MAY issue a certificate with contents other than those requested, according to
-its local policy (e.g., removing identifiers for which the client is not
-authorized).
+The server MUST return an error if it cannot fulfil the request as specified,
+and MUST NOT issue a certificate with contents other than those requested.  If
+the server requires the request to be modified in a certain way, it should
+indicate the required changes using an appropriate error code and description.
 
 It is up to the server's local policy to decide which names are acceptable in a
 certificate, given the authorizations that the server associates with the
@@ -1355,16 +1386,17 @@ Retry-After: 120
 
 The default format of the certificate is DER (application/pkix-cert).  The
 client may request other formats by including an Accept header in its request.
+For example, the client may use the media type application/x-pem-file to request
+the certificate in PEM format.
 
 The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST include a Link relation header field {{RFC5988}}
-with relation "up" to provide a certificate under which this certificate was
-issued, and one with relation "author" to indicate the registration under which
-this certificate was issued.
+particular, the server send MUST one or more link relation header fields
+{{RFC5988}} with relation "up", each indicating a single certificate resource
+for the issuer of this certificate.  The server MAY also include the "up" links
+from these resources to enable the client to build a full certificate chain.
 
-The server MAY include an Expires header as a hint to the client about when to
-renew the certificate.  (Of course, the real expiration of the certificate is
-controlled by the notAfter time in the certificate itself.)
+The server MUST also provide a link relation header field with relation "author"
+to indicate the registration under which this certificate was issued.
 
 If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
 may want to provide the client with a Signed Certificate Timestamp (SCT) that
@@ -1387,37 +1419,18 @@ Link: <https://example.com/acme/reg/asdf>;rel="author"
 Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 Location: https://example.com/acme/cert/asdf
-Content-Location: https://example.com/acme/cert-seq/12345
 
 [DER-encoded certificate]
 ~~~~~~~~~~
 
-A certificate resource always represents the most recent certificate issued for
-the name/key binding expressed in the CSR.  If the CA allows a certificate to be
-renewed, then it publishes renewed versions of the certificate through the same
-certificate URI.
+A certificate resource represents a single, immutable certificate. If the client
+wishes to obtain a renewed certificate, the client initiates a new-certificate
+transaction to request one.
 
-Clients retrieve renewed versions of the certificate using a GET query to the
-certificate URI, which the server should then return in a 200 (OK) response.
-The server SHOULD provide a stable URI for each specific certificate in the
-Content-Location header field, as shown above.  Requests to stable certificate
-URIs MUST always result in the same certificate.
-
-To avoid unnecessary renewals, the CA may choose not to issue a renewed
-certificate until it receives such a request (if it even allows renewal at all).
-In such cases, if the CA requires some time to generate the new certificate, the
-CA MUST return a 202 (Accepted) response, with a Retry-After header field that
-indicates when the new certificate will be available.  The CA MAY include the
-current (non-renewed) certificate as the body of the response.
-
-Likewise, in order to prevent unnecessary renewal due to queries by parties
-other than the account key holder, certificate URIs should be structured as
-capability URLs {{W3C.WD-capability-urls-20140218}}.
-
-From the client's perspective, there is no difference between a certificate URI
-that allows renewal and one that does not.  If the client wishes to obtain a
-renewed certificate, and a GET request to the certificate URI does not yield
-one, then the client may initiate a new-certificate transaction to request one.
+Because certificate resources are immutable once issuance is complete, the
+server MAY enable the caching of the resource by adding Expires and
+Cache-Control headers specifying a point in time in the distant future. These
+headers have no relation to the certificate's period of validity.
 
 ## Certificate Revocation
 
@@ -1434,11 +1447,12 @@ elsewhere in this document, so it is different from PEM.)
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
 
+/* BEGIN JWS-signed request body */
 {
   "resource": "revoke-cert",
   "certificate": "MIIEDTCCAvegAwIBAgIRAP8..."
 }
-/* Signed as JWS */
+/* END JWS-signed request body */
 ~~~~~~~~~~
 
 Revocation requests are different from other ACME request in that they can be
@@ -1644,10 +1658,11 @@ arbitrarily choosing an IP from the set of A and AAAA records to which the
 domain name resolves.
 
 ~~~~~~~~~~
+/* BEGIN JWS-signed content */
 {
   "keyAuthorization": "evaGxfADs...62jcerQ"
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
@@ -1732,10 +1747,11 @@ keyAuthorization (required, string):
 from the challenge and the client's account key.
 
 ~~~~~~~~~~
+/* BEGIN JWS-signed content */
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ",
+  "keyAuthorization": "evaGxfADs...62jcerQ"
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
@@ -1810,10 +1826,11 @@ keyAuthorization (required, string):
 from the challenge and the client's account key.
 
 ~~~~~~~~~~
+/* BEGIN JWS-signed content */
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ",
+  "keyAuthorization": "evaGxfADs...62jcerQ"
 }
-/* Signed as JWS */
+/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
@@ -1830,6 +1847,51 @@ To validate a DNS challenge, the server performs the following steps:
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
+
+## Out-of-Band
+
+There may be cases where a server cannot perform automated validation of an
+identifier, for example if validation requires some manual steps.  In such
+cases, the server may provide an "out of band" (OOB) challenge to request that
+the client perform some action outside of ACME in order to validate possession
+of the identifier.
+
+The OOB challenge requests that the client have a human user visit a web page to
+receive instructions on how to validate possession of the identifier, by
+providing a URL for that web page.
+
+type (required, string):
+: The string "oob-01"
+
+url (required, string):
+: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
+
+~~~~~~~~~~
+{
+  "type": "oob-01",
+  "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+}
+~~~~~~~~~~
+
+A client responds to this challenge by presenting the indicated URL for a human
+user to navigate to.  If the user choses to complete this challege (by vising
+the website and completing its instructions), the client indicates this by
+sending a simple acknowledgement response to the server.
+
+type (required, string):
+: The string "oob-01"
+
+~~~~~~~~~~
+/* BEGIN JWS-signed content */
+{
+  "type": "oob-01"
+}
+/* END JWS-signed content */
+~~~~~~~~~~
+
+On receiving a response, the server MUST verify that the value of the "type"
+field is as required.  Otherwise, the steps the server takes to validate
+identifier possession are determined by the server's local policy.
 
 # IANA Considerations
 
