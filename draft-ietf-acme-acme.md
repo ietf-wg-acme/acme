@@ -1325,6 +1325,13 @@ certificate (required, string):
 format.  (Note: This field uses the same modified Base64 encoding rules used
 elsewhere in this document, so it is different from PEM.)
 
+reason (optional, int):
+: One of the revocation reasonCodes defined in RFC 5280 {{RFC5280}} Section 5.3.1
+to be used when generating OCSP responses and CRLs. If this field is not set
+the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
+responses and CRLs. The server MAY disallow a subset of reasonCodes from being
+used by the user.
+
 ~~~~~~~~~~
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
@@ -1332,7 +1339,8 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "revoke-cert",
-  "certificate": "MIIEDTCCAvegAwIBAgIRAP8..."
+  "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+  "reason": 1
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
