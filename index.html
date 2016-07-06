@@ -1292,7 +1292,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 <p id="rfc.section.7.1.p.4">An example of how to compute a JWK thumbprint can be found in Section 3.1 of <a href="#RFC7638">[RFC7638]</a>.  Note that some cryptographic libraries prepend a zero octet to the representation of the RSA public key parameters N and E, in order to avoid ambiguity with regard to the sign of the number.  As noted in JWA <a href="#RFC7518">[RFC7518]</a>, a JWK object MUST NOT include this zero octet.  That is, any initial zero octets MUST be stripped before the values are base64url-encoded.</p>
 <h1 id="rfc.section.7.2"><a href="#rfc.section.7.2">7.2.</a> <a href="#http" id="http">HTTP</a></h1>
 <p id="rfc.section.7.2.p.1">With HTTP validation, the client in an ACME transaction proves its control over a domain name by proving that it can provision resources on an HTTP server that responds for that domain name.  The ACME server challenges the client to provision a file at a specific path, with a specific string as its content.</p>
-<p id="rfc.section.7.2.p.2">As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will connect to at least one of the hosts found in A and AAAA records.  Because many web servers allocate a default HTTPS virtual host to a particular low-privilege tenant user in a subtle and non-intuitive manner, the challenge must be completed over HTTP, not HTTPS.</p>
+<p id="rfc.section.7.2.p.2">As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will connect to at least one of the hosts found in A and AAAA records, at its discretion.  Because many webservers allocate a default HTTPS virtual host to a particular low-privilege tenant user in a subtle and non-intuitive manner, the challenge must be completed over HTTP, not HTTPS.</p>
 <p/>
 
 <dl>
@@ -1318,8 +1318,6 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 <dl>
   <dt>keyAuthorization (required, string):</dt>
   <dd style="margin-left: 8">The key authorization for this challenge.  This value MUST match the token from the challenge and the client&#8217;s account key.</dd>
-  <dt>address (optional, string):</dt>
-  <dd style="margin-left: 8">An IPv4 or IPv6 address, in dotted decimal form or <a href="#RFC4291">[RFC4291]</a> form, respectively.  If given, this address MUST be included in the set of IP addresses to which the domain name resolves when the server attempts validation.  If given, the server SHOULD connect to that specific IP address instead of arbitrarily choosing an IP from the set of A and AAAA records to which the domain name resolves.</dd>
 </dl>
 <pre>
 /* BEGIN JWS-signed content */
@@ -1335,8 +1333,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 <ol>
   <li>Form a URI by populating the URI template <a href="#RFC6570">[RFC6570]</a> &#8220;http://{domain}/.well-known/acme-challenge/{token}&#8221;, where: <ul><li>the domain field is set to the domain name being verified; and</li><li>the token field is set to the token in the challenge.</li></ul></li>
   <li>Verify that the resulting URI is well-formed.</li>
-  <li>If the client has supplied an address to use, verify that the address is included in the A or AAAA records to which the domain name resolves.  If the address is not included in the result, the validation fails.</li>
-  <li>Dereference the URI using an HTTP GET request.  If an address was supplied by the client, use that address to establish the HTTP connection.</li>
+  <li>Dereference the URI using an HTTP GET request.</li>
   <li>Verify that the body of the response is well-formed key authorization.  The server SHOULD ignore whitespace characters at the end of the body.</li>
   <li>Verify that key authorization provided by the server matches the token for this challenge and the client&#8217;s account key.</li>
 </ol>
