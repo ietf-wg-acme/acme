@@ -329,7 +329,7 @@ li, p {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-02" />
-  <meta name="dct.issued" scheme="ISO8601" content="2016-7-05" />
+  <meta name="dct.issued" scheme="ISO8601" content="2016-7-06" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -353,7 +353,7 @@ li, p {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: January 6, 2017</td>
+  <td class="left">Expires: January 7, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -366,7 +366,7 @@ li, p {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">July 05, 2016</td>
+  <td class="right">July 06, 2016</td>
 </tr>
 
     	
@@ -388,7 +388,7 @@ li, p {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on January 6, 2017.</p>
+<p>This Internet-Draft will expire on January 7, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -612,6 +612,10 @@ li, p {
       <td class="left">Certificate</td>
       <td class="left">cert</td>
     </tr>
+    <tr>
+      <td class="left">Key change</td>
+      <td class="left">key-change</td>
+    </tr>
   </tbody>
 </table>
 <p id="rfc.section.5.3.p.4">Other fields in ACME request bodies are described below.</p>
@@ -732,6 +736,7 @@ li, p {
   <li>A &#8220;new-authorization&#8221; resource</li>
   <li>A &#8220;new-certificate&#8221; resource</li>
   <li>A &#8220;revoke-certificate&#8221; resource</li>
+  <li>A &#8220;key-change&#8221; resource</li>
 </ul>
 <p id="rfc.section.6.1.p.3">For the &#8220;new-X&#8221; resources above, the server MUST have exactly one resource for each function.  This resource may be addressed by multiple URIs, but all must provide equivalent functionality.</p>
 <p id="rfc.section.6.1.p.4">ACME uses different URIs for different management functions. Each function is listed in a directory along with its corresponding URI, so clients only need to be configured with the directory URI.  These URIs are connected by a few different link relations <a href="#RFC5988">[RFC5988]</a>.</p>
@@ -898,6 +903,7 @@ Content-Type: application/json
   "new-authz": "https://example.com/acme/new-authz",
   "new-cert": "https://example.com/acme/new-cert",
   "revoke-cert": "https://example.com/acme/revoke-cert",
+  "key-change": "https://example.com/acme/key-change",
   "meta": {
     "terms-of-service": "https://example.com/acme/terms",
     "website": "https://www.example.com/",
@@ -961,45 +967,31 @@ Host: example.com
 </pre>
 <p id="rfc.section.6.3.p.8">Servers SHOULD NOT respond to GET requests for registration resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is trivial ({&#8220;resource&#8221;:&#8221;reg&#8221;}).  In this case the server reply MUST contain the same link headers sent for a new registration, to allow a client to retrieve the &#8220;new-authorization&#8221; and &#8220;terms-of-service&#8221; URI</p>
 <h1 id="rfc.section.6.3.1"><a href="#rfc.section.6.3.1">6.3.1.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a></h1>
-<p id="rfc.section.6.3.1.p.1">A client may wish to change the public key that is associated with a registration, e.g., in order to mitigate the risk of key compromise.  To do this, the client first constructs a JSON object representing a request to update the registration:</p>
-<p/>
-
-<dl>
-  <dt>resource (required, string):</dt>
-  <dd style="margin-left: 8">The string &#8220;reg&#8221;, indicating an update to the registration.</dd>
-  <dt>newKey (required, string):</dt>
-  <dd style="margin-left: 8">The JWK thumbprint of the new key <a href="#RFC7638">[RFC7638]</a>, base64url-encoded</dd>
-</dl>
+<p id="rfc.section.6.3.1.p.1">A client may wish to change the public key that is associated with a registration in order to recover from a key compromise or proactively mitigate the impact of an unnoticed key compromise.</p>
+<p id="rfc.section.6.3.1.p.2">To change the key associate with an account, the client POSTs a key-change object with a &#8220;key&#8221; field containing a JWK representation of the new public key.  The JWS of this POST must have two signatures: one signature from the existing key on the account, and one signature from the new key that the client proposes to use. This demonstrates that the client actually has control of the private key corresponding to the new public key. The protected header must contain a JWK field containing the current account key.</p>
 <pre>
-{
-  "resource": "reg",
-  "newKey": "D7J9RL1f-RWUl68JP-gW1KSl2TkIrJB7hK6rLFFeYMU"
-}
-</pre>
-<p id="rfc.section.6.3.1.p.3">The client signs this object with the old key pair and encodes the object and signature as a JWS.  The client then sends this JWS to the server in the &#8220;rollover&#8221; field of a request to update the registration.</p>
-<pre>
-POST /acme/reg/asdf HTTP/1.1
+POST /acme/key-change HTTP/1.1
 Host: example.com
 
-/* BEGIN JWS-signed request body (using new key) */
+/* BEGIN JWS-signed request body (with two signatures) */
 {
-  "resource": "reg",
-  "rollover": /* JSON object signed with old key */
+  "resource": "key-change",
+  "key": /* New key in JWK form */
 }
 /* END JWS-signed request body */
 </pre>
-<p id="rfc.section.6.3.1.p.4">On receiving a request to the registration URL with the &#8220;rollover&#8221; attribute set, the server MUST perform the following steps:</p>
+<p id="rfc.section.6.3.1.p.3">On receiving key-change request, the server MUST perform the following steps in addition to the typical JWS validation:</p>
 <p/>
 
 <ol>
-  <li>Check that the contents of the &#8220;rollover&#8221; attribute are a valid JWS</li>
-  <li>Check that the &#8220;rollover&#8221; JWS verifies using the account key corresponding to this registration</li>
-  <li>Check that the payload of the JWS is a valid JSON object</li>
-  <li>Check that the &#8220;resource&#8221; field of the object has the value &#8220;reg&#8221;</li>
-  <li>Check that the &#8220;newKey&#8221; field of the object contains the JWK thumbprint of the account key used to sign the request</li>
+  <li>Check that the JWS protected header container a &#8220;jwk&#8221; field containing a key that matches a currently active account.</li>
+  <li>Check that there are exactly two signatures on the JWS.</li>
+  <li>Check that one of the signatures validates using the account key from (1).</li>
+  <li>Check that the &#8220;key&#8221; field contains a well-formed JWK that meets key strength requirements.</li>
+  <li>Check that the &#8220;key&#8221; field is not equivalent to the current account key or any other currently active account key.</li>
+  <li>Check that one of the two signatures on the JWS validates using the JWK from the &#8220;key&#8221; field.</li>
 </ol>
-<p id="rfc.section.6.3.1.p.6">If all of these checks pass, then the server updates the registration by replacing the old account key with the public key carried in the &#8220;jwk&#8221; header of the request JWS.</p>
-<p id="rfc.section.6.3.1.p.7">If the update was successful, then the server sends a response with status code 200 (OK) and the updated registration object as its body.  If the update was not successful, then the server responds with an error status code and a problem document describing the error.</p>
+<p id="rfc.section.6.3.1.p.5">If all of these checks pass, then the server updates the corresponding registration by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>
 <h1 id="rfc.section.6.3.2"><a href="#rfc.section.6.3.2">6.3.2.</a> <a href="#account-deactivation" id="account-deactivation">Account deactivation</a></h1>
 <p id="rfc.section.6.3.2.p.1">A client may deactivate an account by posting a signed update to the server with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised.</p>
 <pre>
