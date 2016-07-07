@@ -395,6 +395,7 @@ defined in the below table:
 | Authorization        | authz            |
 | Challenge            | challenge        |
 | Certificate          | cert             |
+| Key change           | key-change       |
 
 Other fields in ACME request bodies are described below.
 
@@ -475,21 +476,22 @@ To facilitate automatic response
 to errors, this document defines the following standard tokens for use in the
 "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Code            | Description                                               |
-|:----------------|:----------------------------------------------------------|
-| badCSR          | The CSR is unacceptable (e.g., due to a short key)        |
-| badNonce        | The client sent an unacceptable anti-replay nonce         |
-| connection      | The server could not connect to the client for validation |
-| dnssec          | The server could not validate a DNSSEC signed domain      |
-| caa             | The CA is not authorized to issue based on CAA records    |
-| malformed       | The request message was malformed                         |
-| serverInternal  | The server experienced an internal error                  |
-| tls             | The server experienced a TLS error during validation      |
-| unauthorized    | The client lacks sufficient authorization                 |
-| unknownHost     | The server could not resolve a domain name                |
-| rateLimited     | The request exceeds a rate limit                          |
-| invalidContact  | The provided contact URI for a registration was invalid   |
-| precondition    | The client needs to perform an action before this request |
+| Code                  | Description                                        |
+|:----------------------|:---------------------------------------------------|
+| badCSR                | The CSR is unacceptable (e.g., due to a short key) |
+| badNonce              | The client sent an unacceptable anti-replay nonce  |
+| connection            | The server could not connect to validation target  |
+| dnssec                | DNSSEC validation failed                           |
+| caa                   | CAA records forbid the CA from issuing             |
+| malformed             | The request message was malformed                  |
+| serverInternal        | The server experienced an internal error           |
+| tls                   | The server received a TLS error during validation  |
+| unauthorized          | The client lacks sufficient authorization          |
+| unknownHost           | The server could not resolve a domain name         |
+| rateLimited           | The request exceeds a rate limit                   |
+| invalidContact        | The contact URI for a registration was invalid     |
+| rejectedIdentifier    | The server will not issue for the identifier       |
+| unsupportedIdentifier | Identifier is not supported, but may be in future  |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -632,6 +634,7 @@ ACME is structured as a REST application with a few types of resources:
 * A "new-authorization" resource
 * A "new-certificate" resource
 * A "revoke-certificate" resource
+* A "key-change" resource
 
 For the "new-X" resources above, the server MUST have exactly one resource for
 each function.  This resource may be addressed by multiple URIs, but all must
@@ -701,6 +704,9 @@ key (required, dictionary):
 : The public key of the account key pair, encoded as a JSON Web Key object
 {{RFC7517}}.
 
+status (required, string):
+: "good" or "deactivated"
+
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
 related to this authorization. For example, the server may wish to notify the
@@ -737,7 +743,7 @@ relation "next" indicating a URL to retrieve further entries.
   ],
   "agreement": "https://example.com/acme/terms",
   "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert",
+  "certificates": "https://example.com/acme/reg/1/cert"
 }
 ~~~~~~~~~~
 
@@ -808,7 +814,7 @@ label) MUST NOT be included in authorization requests.  See
       "validated": "2014-12-01T12:05:00Z",
       "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
     }
-  ],
+  ]
 }
 ~~~~~~~~~~
 
@@ -818,7 +824,7 @@ label) MUST NOT be included in authorization requests.  See
 In order to help clients configure themselves with the right URIs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
 needed to configure clients. It is a JSON dictionary, whose keys are the
-"resource" values listed in {{https-requests}}, and whose values are the
+"resource" values listed in {{resources}}, and whose values are the
 URIs used to accomplish the corresponding function.
 
 There is no constraint on the actual URI of the directory except that it
@@ -862,6 +868,7 @@ Content-Type: application/json
   "new-authz": "https://example.com/acme/new-authz",
   "new-cert": "https://example.com/acme/new-cert",
   "revoke-cert": "https://example.com/acme/revoke-cert",
+  "key-change": "https://example.com/acme/key-change",
   "meta": {
     "terms-of-service": "https://example.com/acme/terms",
     "website": "https://www.example.com/",
@@ -929,6 +936,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
   "key": { /* JWK from JWS header */ },
+  "status": "good",
 
   "contact": [
     "mailto:cert-admin@example.com",
@@ -973,74 +981,53 @@ new registration, to allow a client to retrieve the "new-authorization" and
 ### Account Key Roll-over
 
 A client may wish to change the public key that is associated with a
-registration, e.g., in order to mitigate the risk of key compromise.  To do
-this, the client first constructs a JSON object representing a request to
-update the registration:
+registration in order to recover from a key compromise or proactively mitigate
+the impact of an unnoticed key compromise.
 
-resource (required, string):
-: The string "reg", indicating an update to the registration.
-
-oldKey (required, string):
-: The JWK thumbprint of the old key {{RFC7638}}, base64url-encoded
-
-~~~~~~~~~~
-{
-  "resource": "reg",
-  "oldKey": "D7J9RL1f-RWUl68JP-gW1KSl2TkIrJB7hK6rLFFeYMU"
-}
-~~~~~~~~~~
-
-The client signs this object with the new key pair and encodes the object and
-signature as a JWS.  The client then sends this JWS to the server in the
-"newKey" field of a request to update the registration.
+To change the key associate with an account, the client POSTs a key-change
+object with a "key" field containing a JWK representation of the new public key.
+The JWS of this POST must have two signatures: one signature from the existing
+key on the account, and one signature from the new key that the client proposes
+to use. This demonstrates that the client actually has control of the
+private key corresponding to the new public key. The protected header must
+contain a JWK field containing the current account key.
 
 ~~~~~~~~~~
-POST /acme/reg/asdf HTTP/1.1
+POST /acme/key-change HTTP/1.1
 Host: example.com
 
-/* BEGIN JWS-signed request body (using original key) */
+/* BEGIN JWS-signed request body (with two signatures) */
 {
-  "resource": "reg",
-  "newKey": /* JSON object signed with new key */
+  "resource": "key-change",
+  "key": /* New key in JWK form */
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
 
-On receiving a request to the registration URL with the "newKey" attribute set,
-the server MUST perform the following steps:
+On receiving key-change request, the server MUST perform the following steps in
+addition to the typical JWS validation:
 
-1. Check that the contents of the "newKey" attribute are a valid JWS
-2. Check that the "newKey" JWS verifies using the key in the "jwk" header
-   parameter of the JWS
-3. Check that the payload of the JWS is a valid JSON object
-4. Check that the "resource" field of the object has the value "reg"
-5. Check that the "oldKey" field of the object contains the JWK thumbprint of
-   the account key for this registration
+1. Check that the JWS protected header container a "jwk" field containing a
+   key that matches a currently active account.
+2. Check that there are exactly two signatures on the JWS.
+3. Check that one of the signatures validates using the account key from (1).
+4. Check that the "key" field contains a well-formed JWK that meets key strength
+   requirements.
+5. Check that the "key" field is not equivalent to the current account key or
+   any other currently active account key.
+5. Check that one of the two signatures on the JWS validates using the JWK from
+   the "key" field.
 
-If all of these checks pass, then the server updates the registration by
-replacing the old account key with the public key carried in the "jwk" header
-parameter of the "newKey" JWS object.
+If all of these checks pass, then the server updates the corresponding
+registration by replacing the old account key with the new public key and
+returns status code 200. Otherwise, the server responds with an error status
+code and a problem document describing the error.
 
-If the update was successful, then the server sends a response with status code
-200 (OK) and the updated registration object as its body.  If the update was not
-successful, then the server responds with an error status code and a problem
-document describing the error.
+### Account deactivation
 
-### Deleting an Account
-
-If a client no longer wishes to have an account key registered with the server,
-it may request that the server delete its account by sending a POST request to
-the account URI containing the "delete" field.
-
-delete (required, boolean):
-The boolean value "true".
-
-The request object MUST contain the "resource" field as required above (with the
-value "reg").  It MUST NOT contain any fields besides "resource" and "delete".
-
-Note that although this object is very simple, the risk of replay or fraudulent
-generation via signing oracles is mitigated by the need for an anti-replay
-token in the protected header of the JWS.
+A client may deactivate an account by posting a signed update to the server with
+a status field of "deactivated." Clients may wish to do this when the account
+key is compromised.
 
 ~~~~~~~~~~
 POST /acme/reg/asdf HTTP/1.1
@@ -1049,23 +1036,20 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "reg",
-  "delete": true,
+  "status": "deactivated"
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
 
-On receiving a POST to an account URI containing a "delete" field, the server
-MUST verify that no other fields were sent in the object (other than
-"resource"), and it MUST verify that the value of the "delete" field is "true"
-(as a boolean, not a string).  If either of these checks fails, then the server
-MUST reject the request with status code 400 (Bad Request).
+The server MUST verify that the request is signed by the account key. If the
+server accepts the deactivation request, it should reply with a 200 (OK) status
+code and the current contents of the registration object.
 
-If the server accepts the deletion request, then it MUST delete the account and
-all related objects and send a response with a 200 (OK) status code and an empty
-body.  The server SHOULD delete any authorization objects related to the deleted
-account, since they can no longer be used.  The server SHOULD NOT delete
-certificate objects related to the account, since certificates issued under the
-account continue to be valid until they expire or are revoked.
+Once an account is deactivated, the server MUST NOT accept further requests
+authorized by that account's key. It is up to server policy how long to retain
+data related to that account, whether to revoke certificates issued by that
+account, and whether to send email to that account's contacts. ACME does not
+proviate a way to reactivate a deactivated account.
 
 ## Identifier Authorization
 
@@ -1269,13 +1253,11 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
-### Deleting an Authorization
+### Deactivating an Authorization
 
 If a client wishes to relinquish its authorization to issue certificates for an
-identifier, then it may request that the server delete the authorization.  The
-client makes this request by sending a POST request to the authorization URI
-containing a payload in the same format as in {{deleting-an-account}}.  The only
-difference is that the value of the "resource" field is "authz".
+identifier, then it may request that the server deactivate each authorization
+associated with that identifier.
 
 ~~~~~~~~~~
 POST /acme/authz/asdf HTTP/1.1
@@ -1284,14 +1266,18 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "authz",
-  "delete": true,
+  "status": "deactivated"
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
 
-The server MUST perform the same validity checks as in {{deleting-an-account}}
-and reject the request if they fail.  If the server deletes the account then it
-MUST send a response with a 200 (OK) status code and an empty body.
+The server MUST verify that the request is signed by the account key
+corresponding to the account that owns the authorization. If the server accepts
+the deactivation, it should reply with a 200 (OK) status code and the current
+contents of the registration object.
+
+The server MUST NOT treat deactivated authorization objects as sufficient for
+issuing certificates.
 
 ## Certificate Issuance
 
@@ -1390,7 +1376,7 @@ For example, the client may use the media type application/x-pem-file to request
 the certificate in PEM format.
 
 The server provides metadata about the certificate in HTTP headers.  In
-particular, the server send MUST one or more link relation header fields
+particular, the server MUST send one or more link relation header fields
 {{RFC5988}} with relation "up", each indicating a single certificate resource
 for the issuer of this certificate.  The server MAY also include the "up" links
 from these resources to enable the client to build a full certificate chain.
@@ -1443,6 +1429,13 @@ certificate (required, string):
 format.  (Note: This field uses the same modified Base64 encoding rules used
 elsewhere in this document, so it is different from PEM.)
 
+reason (optional, int):
+: One of the revocation reasonCodes defined in RFC 5280 {{RFC5280}} Section 5.3.1
+to be used when generating OCSP responses and CRLs. If this field is not set
+the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
+responses and CRLs. The server MAY disallow a subset of reasonCodes from being
+used by the user.
+
 ~~~~~~~~~~
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
@@ -1450,7 +1443,8 @@ Host: example.com
 /* BEGIN JWS-signed request body */
 {
   "resource": "revoke-cert",
-  "certificate": "MIIEDTCCAvegAwIBAgIRAP8..."
+  "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+  "reason": 1
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
@@ -1605,10 +1599,10 @@ responds for that domain name.  The ACME server challenges the client to
 provision a file at a specific path, with a specific string as its content.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
-connect to at least one of the hosts found in A and AAAA records.  Because many
-web servers allocate a default HTTPS virtual host to a particular low-privilege
-tenant user in a subtle and non-intuitive manner, the challenge must be
-completed over HTTP, not HTTPS.
+connect to at least one of the hosts found in A and AAAA records, at its
+discretion.  Because many webservers allocate a default HTTPS virtual host to a
+particular low-privilege tenant user in a subtle and non-intuitive manner, the
+challenge must be completed over HTTP, not HTTPS.
 
 type (required, string):
 : The string "http-01"
@@ -1622,7 +1616,7 @@ NOT contain any padding characters ("=").
 ~~~~~~~~~~
 {
   "type": "http-01",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
 
@@ -1649,14 +1643,6 @@ keyAuthorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
 from the challenge and the client's account key.
 
-address (optional, string):
-: An IPv4 or IPv6 address, in dotted decimal form or {{RFC4291}} form,
-respectively.  If given, this address MUST be included in the set of IP
-addresses to which the domain name resolves when the server attempts validation.
-If given, the server SHOULD connect to that specific IP address instead of
-arbitrarily choosing an IP from the set of A and AAAA records to which the
-domain name resolves.
-
 ~~~~~~~~~~
 /* BEGIN JWS-signed content */
 {
@@ -1678,14 +1664,10 @@ domain by verifying that the resource was provisioned as expected.
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
-3. If the client has supplied an address to use, verify that the address is
-   included in the A or AAAA records to which the domain name resolves.  If
-   the address is not included in the result, the validation fails.
-4. Dereference the URI using an HTTP GET request.  If an address was supplied
-   by the client, use that address to establish the HTTP connection.
-5. Verify that the body of the response is well-formed key authorization.  The
+3. Dereference the URI using an HTTP GET request.
+4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
-6. Verify that key authorization provided by the server matches the token for
+5. Verify that key authorization provided by the server matches the token for
    this challenge and the client's account key.
 
 If all of the above verifications succeed, then the validation is successful.
@@ -2156,7 +2138,7 @@ More limited forms of delegation can also lead to an unintended party gaining
 the ability to successfully complete a validation transaction.  For example,
 suppose an ACME server follows HTTP redirects in HTTP validation and a
 web site operator provisions a catch-all redirect rule that redirects requests
-for unknown resources to different domain.  Then the target of the redirect
+for unknown resources to a different domain.  Then the target of the redirect
 could use that to get a certificate through HTTP validation, since the
 validation path will not be known to the primary server.
 
@@ -2255,7 +2237,7 @@ different hosted services or "virtual hosts".  When a client initiates a
 TLS connection with an SNI value indicating a provisioned host, the hosting
 platform routes the connection to that host.
 
-When a connection come in with an unknown SNI value, one might expect the
+When a connection comes in with an unknown SNI value, one might expect the
 hosting platform to terminate the TLS connection.  However, some hosting
 platforms will choose a virtual host to be the "default", and route connections
 with unknown SNI values to that host.
