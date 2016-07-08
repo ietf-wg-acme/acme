@@ -1388,10 +1388,10 @@ Internet-Draft                    ACME                         July 2016
    To change the key associate with an account, the client sends a POST
    request containing a key-change object with the following fields:
 
-   oldKey (required, JWS):  The JWS representation of the original key
+   oldKey (required, JWK):  The JWK representation of the original key
       (i.e., the client's current account key)
 
-   newKey (requrired, JWS):  The JWS representation of the new key
+   newKey (requrired, JWK):  The JWK representation of the new key
 
 
 

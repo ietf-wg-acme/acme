@@ -1058,10 +1058,10 @@ Content-Type: application/jose+json
 <p/>
 
 <dl>
-  <dt>oldKey (required, JWS):</dt>
-  <dd style="margin-left: 8">The JWS representation of the original key (i.e., the client&#8217;s current account key)</dd>
-  <dt>newKey (requrired, JWS):</dt>
-  <dd style="margin-left: 8">The JWS representation of the new key</dd>
+  <dt>oldKey (required, JWK):</dt>
+  <dd style="margin-left: 8">The JWK representation of the original key (i.e., the client&#8217;s current account key)</dd>
+  <dt>newKey (requrired, JWK):</dt>
+  <dd style="margin-left: 8">The JWK representation of the new key</dd>
 </dl>
 <p id="rfc.section.6.2.1.p.4">The JWS of this POST must have two signatures: one signature from the existing key on the account, and one signature from the new key that the client proposes to use. This demonstrates that the client actually has control of the private key corresponding to the new public key. The protected header must contain a JWK field containing the current account key.</p>
 <pre>
