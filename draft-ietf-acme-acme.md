@@ -344,6 +344,11 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 Note that this implies that GET requests are not authenticated.  Servers MUST
 NOT respond to GET requests for resources that might be considered sensitive.
 
+In the examples below, JWS objects are shown in the JSON or flattened JSON
+serialization, with the protected header and payload expressed as
+base64url(content) instead of the actual base64-encoded value, so that the content
+is readable.  Some fields are omitted for brevity, marked with "...".
+
 ## Request URI Type Integrity
 
 It is common in deployment the entity terminating TLS for HTTPS to be different
@@ -900,17 +905,25 @@ server's new-registration URI.  The body of the request is a stub registration
 object containing only the "contact" field.
 
 ~~~~~~~~~~
-POST /acme/new-registration HTTP/1.1
+POST /acme/new-reg HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "contact": [
-    "mailto:cert-admin@example.com",
-    "tel:+12025551212"
-  ],
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "6S8IqOGY7eL2lsGoTZYifg",
+    "url": "https://example.com/acme/new-reg"
+  })
+  "payload": base64url({
+    "contact": [
+      "mailto:cert-admin@example.com",
+      "tel:+12025551212"
+    ]
+  }),
+  "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
 }
-/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server MUST ignore any values provided in the "key", "authorizations", and
@@ -969,15 +982,23 @@ client could send the following request:
 ~~~~~~~~~~
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "contact": [
-    "mailto:certificates@example.com",
-    "tel:+12125551212"
-  ],
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
+    "url": "https://example.com/acme/reg/asdf"
+  })
+  "payload": base64url({
+    "contact": [
+      "mailto:certificates@example.com",
+      "tel:+12125551212"
+    ]
+  }),
+  "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
 }
-/* END JWS-signed request body */
 ~~~~~~~~~~
 
 Servers SHOULD NOT respond to GET requests for registration resources as these
@@ -992,8 +1013,16 @@ A client may wish to change the public key that is associated with a
 registration in order to recover from a key compromise or proactively mitigate
 the impact of an unnoticed key compromise.
 
-To change the key associate with an account, the client POSTs a key-change
-object with a "key" field containing a JWK representation of the new public key.
+To change the key associate with an account, the client sends a POST request
+containing a key-change object with the following fields:
+
+oldKey (required, JWS):
+: The JWS representation of the original key (i.e., the client's current account
+key)
+
+newKey (requrired, JWS):
+: The JWS representation of the new key
+
 The JWS of this POST must have two signatures: one signature from the existing
 key on the account, and one signature from the new key that the client proposes
 to use. This demonstrates that the client actually has control of the
@@ -1003,12 +1032,31 @@ contain a JWK field containing the current account key.
 ~~~~~~~~~~
 POST /acme/key-change HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body (with two signatures) */
 {
-  "key": /* New key in JWK form */
+  "payload": base64url({
+    "oldKey": /* Old key in JWK form */
+    "newKey": /* New key in JWK form */
+  }),
+  "signatures": [{
+    "protected": base64url({
+      "alg": "ES256",
+      "jwk": /* old key */,
+      "nonce": "pq00v-D1KB0sReG4jFfqVg",
+      "url": "https://example.com/acme/key-change"
+    }),
+    "signature": "XFvVbo9diBlIBvhE...UI62sNT6MZsCJpQo"
+  }, {
+    "protected": base64url({
+      "alg": "ES256",
+      "jwk": /* new key */,
+      "nonce": "vYjyueEYhMjpVQHe_unw4g",
+      "url": "https://example.com/acme/key-change"
+    }),
+    "signature": "q20gG1f1r9cD6tBM...a48h0CkP11tl5Doo"
+  }]
 }
-/* END JWS-signed request body */
 ~~~~~~~~~~
 
 On receiving key-change request, the server MUST perform the following steps in
@@ -1039,12 +1087,20 @@ key is compromised.
 ~~~~~~~~~~
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "status": "deactivated"
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "ntuJWWSic4WVNSqeUmshgg",
+    "url": "https://example.com/acme/reg/asdf"
+  })
+  "payload": base64url({
+    "status": "deactivated"
+  }),
+  "signature": "earzVLd3m5M4xJzR...bVTqn7R08AKOVf3Y"
 }
-/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server MUST verify that the request is signed by the account key. If the
@@ -1083,14 +1139,22 @@ format defined in {{RFC3339}}
 ~~~~~~~~~~
 POST /acme/new-app HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
-  "notBefore": "2016-01-01T00:00:00Z",
-  "notAfter": "2016-01-08T00:00:00Z"
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "5XJ1L3lEkMG7tR6pA00clA",
+    "url": "https://example.com/acme/new-app"
+  })
+  "payload": base64url({
+    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+    "notBefore": "2016-01-01T00:00:00Z",
+    "notAfter": "2016-01-08T00:00:00Z"
+  }),
+  "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
 }
-/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The CSR encodes the client's requests with regard to the content of the
@@ -1300,13 +1364,21 @@ above authorization, it would send the following request:
 ~~~~~~~~~~
 POST /acme/authz/asdf/0 HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "type": "http-01",
-  "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
+    "url": "https://example.com/acme/authz/asdf/0"
+  })
+  "payload": base64url({
+    "type": "http-01",
+    "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
+  }),
+  "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
 }
-/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server updates the authorization document by updating its representation of
@@ -1374,17 +1446,26 @@ HTTP/1.1 200 OK
 
 If a client wishes to relinquish its authorization to issue certificates for an
 identifier, then it may request that the server deactivate each authorization
-associated with that identifier.
+associated with that identifier by sending a POST request with the static object
+{"status": "deactivated"}.
 
 ~~~~~~~~~~
 POST /acme/authz/asdf HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "status": "deactivated"
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "xWCM9lGbIyCgue8di6ueWQ",
+    "url": "https://example.com/acme/authz/asdf"
+  })
+  "payload": base64url({
+    "status": "deactivated"
+  }),
+  "signature": "srX9Ji7Le9bjszhu...WTFdtujObzMtZcx4"
 }
-/* END JWS-signed request body */
 ~~~~~~~~~~
 
 The server MUST verify that the request is signed by the account key
@@ -1416,13 +1497,21 @@ used by the user.
 ~~~~~~~~~~
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
-  "reason": 1
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/revoke-cert"
+  })
+  "payload": base64url({
+    "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+    "reason": 1
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed request body */
 ~~~~~~~~~~
 
 Revocation requests are different from other ACME request in that they can be
