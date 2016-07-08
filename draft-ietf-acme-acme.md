@@ -208,7 +208,8 @@ The first phase of ACME is for the client to register with the ACME server.  The
 client generates an asymmetric key pair and associates this key pair with a set
 of contact information by signing the contact information.  The server
 acknowledges the registration by replying with a registration object echoing the
-client's input.
+client's input.  The server can also provide terms of service at this stage,
+which the client can present to a human user.
 
 ~~~~~~~~~~
       Client                                                  Server
@@ -217,77 +218,52 @@ client's input.
       Signature                     ------->
 
                                     <-------            Registration
+                                                    Terms of Service
 ~~~~~~~~~~
 
-Before a client can issue certificates, it must establish an authorization with
-the server for an account key pair to act for the identifier(s) that it wishes
-to include in the certificate.  To do this, the client must demonstrate to the
-server both (1) that it holds the private key of the account key pair, and (2)
-that it has authority over the identifier being claimed.
 
-Proof of possession of the account key is built into the ACME protocol.  All
-messages from the client to the server are signed by the client, and the server
-verifies them using the public key of the account key pair.
+Once the client is registered, there are three major steps it needs to take to
+get a certificate:
 
-To verify that the client controls the identifier being claimed, the server
-issues the client a set of challenges.  Because there are many different ways to
-validate possession of different types of identifiers, the server will choose
-from an extensible set of challenges that are appropriate for the identifier
-being claimed.  The client responds with a set of responses that tell the server
-which challenges the client has completed.  The server then validates the
-challenges to check that the client has accomplished the challenge.
+1. Apply for a certificate to be issued
+2. Fulfill the server's requirements for issuance
+3. Finalize the application and request issuance
 
-For example, if the client requests a domain name, the server might challenge
-the client to provision a record in the DNS under that name, or to provision a
-file on a web server referenced by an A or AAAA record under that name.  The
-server would then query the DNS for the record in question, or send an HTTP
-request for the file.  If the client provisioned the DNS or the web server as
-expected, then the server considers the client authorized for the domain name.
+The client's application for a certificate describes the desired certificate
+using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields
+that capture semantics that are not supported in the CSR format.  If the server
+is willing to consider issuing such a certificate, it responds with a list of
+requirements that the client must satisfy before the certificate will be issued.
+
+For example, in most cases, the server will require the client to demonstrate
+that it controls the identifiers in the requested certificate.  Because there
+are many different ways to validate possession of different types of
+identifiers, the server will choose from an extensible set of challenges that
+are appropriate for the identifier being claimed.  The client responds with a
+set of responses that tell the server which challenges the client has completed.
+The server then validates the challenges to check that the client has
+accomplished the challenge.
+
+Once the validation process is complete and the server is satisfied that the
+client has met its requirements, the server can either proactively issue the
+requested certificate or wait for the client to request that the application be
+"finalized", at which point the certificate will be issued and provided to the
+client.
 
 ~~~~~~~~~~
-      Client                                                  Server
-
-      Identifier
+      Application
       Signature                     ------->
-
-                                    <-------              Challenges
+                                    <-------            Requirements
+                                                  (e.g., Challenges)
 
       Responses
       Signature                     ------->
 
-                                    <-------       Updated Challenge
-
                           <~~~~~~~~Validation~~~~~~~~>
 
-      Poll                          ------->
-
-                                    <-------           Authorization
-~~~~~~~~~~
-
-Once the client has authorized an account key pair for an identifier, it can use
-the key pair to authorize the issuance of certificates for the identifier.  To
-do this, the client sends a PKCS#10 Certificate Signing Request (CSR) to the
-  server (indicating the identifier(s) to be included in the issued certificate)
-  and a signature over the CSR by the private key of the account key pair.
-
-Note that as a result, the CSR is signed twice: One by the private key
-corresponding to the public key in the CSR, and once by the private key of the
-account key pair.  The former signature indicates that the holder of the key in
-the CSR is willing to act for the indicated identifiers, and the latter
-signature indicates to the server that the issuance of the certificate is
-authorized by the client (i.e., the domain holder).
-
-If the server agrees to issue the certificate, then it creates the certificate
-and provides it in its response.  The certificate is assigned a URI, which the
-client can use to fetch updated versions of the certificate.
-
-~~~~~~~~~~
-      Client                                                 Server
-
-      CSR
-      Signature                    -------->
-
-                                   <--------            Certificate
+      Finalize application
+      Signature                     ------->
+                                    <-------             Certificate
 ~~~~~~~~~~
 
 To revoke a certificate, the client simply sends a revocation request indicating
@@ -388,10 +364,10 @@ defined in the below table:
 | Resource type        | "resource" value |
 |:---------------------|:-----------------|
 | New registration     | new-reg          |
-| New authorization    | new-authz        |
-| New certificate      | new-cert         |
+| New application      | new-app          |
 | Revoke certificate   | revoke-cert      |
 | Registration         | reg              |
+| Application          | app              |
 | Authorization        | authz            |
 | Challenge            | challenge        |
 | Certificate          | cert             |
@@ -501,112 +477,6 @@ namespace for errors other than the standard types.  Clients SHOULD display the
 Authorization and challenge objects can also contain error information to
 indicate why the server was unable to validate authorization.
 
-## Preconditions
-
-Sometimes a client might make a request of an ACME-enabled CA without having
-performed some actions that the CA requires before processing the request.  For
-example, the client might request a certificate without having completed the
-required authorizations, or request authorization without having agreed to a
-subscriber agreement.
-
-The CA can indicate to the client what actions are required by returning a
-"precondition" error response.  Such an error response MUST use status code 412
-(Precondition Failed), and return an error document with "type" value
-"urn:ietf:params:acme:error:precondition".  The error document MUST also contain
-a "preconditions" element that specifies the preconditions:
-
-preconditions (required, array of dictionary):
-: The actions that the client must take before the request can be fulfilled.
-
-The entries in the "preconditions" array are objects describing actions
-requested by the CA.  The only general requirement on these objects is that they
-have a "type" field that indicates the type of action being requested.  The
-value of the "type" field specifies any remaining required fields, as well as
-what action the client should take to fulfil the precondition.  An initial set
-of preconditions is described below.
-
-For example, suppose a client skipped straight from initial registration to
-requesting a new certificate containing three different domain names.  The
-server could request that the client agree to its terms, obtain authorization
-for each of the names, and pay for the certificate by sending the following
-  precondition response:
-
-~~~~~~~~~~
-POST /acme/new-cert HTTP/1.1
-Host: example.com
-
-/* New-cert request */
-
-
-HTTP/1.1 412 Precondition Failed
-Content-Type: application/problem+json
-
-{
-  "type": "urn:ietf:params:acme:error:precondition",
-  "title": "Wow, you were really unprepared for this.",
-  "preconditions": [{
-    "type": "registration",
-    "required": ["contact", "terms"]
-  }, {
-    "type": "authorization",
-    "url": "https://example.com/acme/authz/asdf1"
-  }, {
-    "type": "authorization",
-    "url": "https://example.com/acme/authz/asdf2"
-  }, {
-    "type": "authorization",
-    "url": "https://example.com/acme/authz/asdf3"
-  }, {
-    "type": "out-of-band",
-    "url": "https://example.com/acme/payment?txn=asdf"
-  }]
-}
-~~~~~~~~~~
-
-A client receiving a precondition response MUST NOT retry the request until it
-has fulfilled all of the specified preconditions.  Note that fulfilling the
-preconditions may not be sufficient for the request to succeed; there may be
-other errors in the request that the CA deferred until the preconditions were
-met.
-
-## Registration Update
-
-A precondition with type "registration" requests that the ACME client update its
-registration to populate the fields indicated.
-
-required (required, array of string):
-: The fields that must be populated in the registration object
-
-To fulfill this precondition, the ACME client should update its registration by
-sending a POST request that provides the required fields.
-
-## Authorization
-
-A precondition with type "authorization" requests that the ACME client complete
-an authorization transaction.  The server specifies the authorization by
-pre-provisioning a pending authorization resource and providing the URI for this
-resource in the precondition.
-
-url (required, string):
-: The URL for the authorization resource
-
-To fulfill this challenge, the ACME client should fetch the authorization object
-from the indicated URL, then follow the process for obtaining authorization as
-specified in {{identifier-authorization}}.
-
-## Out-of-band
-
-A precondition with type "out-of-band" requests that the ACME client have a
-human user visit a web page in order to receive further instructions for how to
-fulfill the precondition.  The precondition object provides a URI for the web
-page to be visited.
-
-url (required, string):
-: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
-
-To fulfill this precondition, the ACME client should direct the user to the
-indicated web page.
-
 
 # Certificate Management
 
@@ -614,9 +484,9 @@ In this section, we describe the certificate management functions that ACME
 enables:
 
   * Account Key Registration
+  * Application for a Certificate
   * Account Key Authorization
   * Certificate Issuance
-  * Certificate Renewal
   * Certificate Revocation
 
 ## Resources
@@ -624,6 +494,7 @@ enables:
 ACME is structured as a REST application with a few types of resources:
 
 * Registration resources, representing information about an account
+* Application resources, represnting an account's requests to issue certificates
 * Authorization resources, representing an account's authorization to act for an
   identifier
 * Challenge resources, representing a challenge to prove control of an
@@ -631,8 +502,7 @@ ACME is structured as a REST application with a few types of resources:
 * Certificate resources, representing issued certificates
 * A "directory" resource
 * A "new-registration" resource
-* A "new-authorization" resource
-* A "new-certificate" resource
+* A "new-application" resource
 * A "revoke-certificate" resource
 * A "key-change" resource
 
@@ -664,18 +534,22 @@ in a 201 (Created) response.
                                    .
                                    .
        ....................................................
-       .                  .                  .            .
-       .                  .                  .            .
-       V     "next"       V      "next"      V            V
-    new-reg ---+----> new-authz ---+----> new-cert    revoke-cert
-       .       |          .        |         .            ^
-       .       |          .        |         .            | "revoke"
-       V       |          V        |         V            |
-      reg* ----+        authz -----+       cert-----------+
-                         . ^                 |
-                         . | "up"            | "up"
-                         V |                 V
-                       challenge         cert-chain
+       .                  .                               .
+       .                  .                               .
+       V                  V                               V
+    new-reg            new-app                       revoke-cert
+       .                  .                               ^
+       .                  .                               | "revoke"
+       V                  V                               |
+      reg - - - - - - -> app - - - - - - -> cert ---------+
+                         . ^                  |
+                         . | "up"             | "up"
+                         V |                  V
+                        authz             cert-chain
+                         . ^
+                         . | "up"
+                         V |
+                       challenge
 ~~~~~~~~~~
 
 The following table illustrates a typical sequence of requests required to
@@ -683,14 +557,15 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action             | Request        | Response     |
-|:-------------------|:---------------|:-------------|
-| Register           | POST new-reg   | 201 -> reg   |
-| Request challenges | POST new-authz | 201 -> authz |
-| Answer challenges  | POST challenge | 200          |
-| Poll for status    | GET  authz     | 200          |
-| Request issuance   | POST new-cert  | 201 -> cert  |
-| Check for new cert | GET  cert      | 200          |
+| Action             | Request        | Response   |
+|:-------------------|:---------------|:-----------|
+| Register           | POST new-reg   | 201 -> reg |
+| Apply for a cert   | POST new-app   | 201 -> app |
+| Fetch challenges   | GET  authz     | 200        |
+| Answer challenges  | POST challenge | 200        |
+| Poll for status    | GET  authz     | 200        |
+| Request issuance   | POST app       | 200        |
+| Check for new cert | GET  cert      | 200        |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -717,14 +592,14 @@ agreement (optional, string):
 server (see below).  Including this field indicates the client's agreement with
 the referenced terms.
 
-authorizations (required, string):
-: A URI from which a list of authorizations granted to this account can be
+applications (required, string):
+: A URI from which a list of authorizations submitted by this account can be
 fetched via a GET request.  The result of the GET request MUST be a JSON object
-whose "authorizations" field is an array of strings, where each string is the
-URI of an authorization belonging to this registration.  The server SHOULD
-include pending authorizations, and SHOULD NOT include authorizations that are
-invalid or expired. The server MAY return an incomplete list, along with a Link
-header with link relation "next" indicating a URL to retrieve further entries.
+whose "applications" field is an array of strings, where each string is the URI
+of an authorization belonging to this registration.  The server SHOULD include
+pending applications, and SHOULD NOT include applications that are invalid. The
+server MAY return an incomplete list, along with a Link header with link
+relation "next" indicating a URL to retrieve further entries.
 
 certificates (required, string):
 : A URI from which a list of certificates issued for this account can be fetched
@@ -746,6 +621,135 @@ relation "next" indicating a URL to retrieve further entries.
   "certificates": "https://example.com/acme/reg/1/cert"
 }
 ~~~~~~~~~~
+
+### Application Objects
+
+An ACME registration resource represents a client's request for a certificate,
+and is used to track the progress of that application through to issuance.
+Thus, the object contains information about the requested certificate, the
+server's requirements, and any certificates that have resulted from this
+application.
+
+status (required, string):
+: The status of this authorization.  Possible values are: "unknown", "pending",
+"processing", "valid", and "invalid".
+
+expires (optional, string):
+: The timestamp after which the server will consider this application invalid,
+encoded in the format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED
+for objects with "pending" or "valid" in the status field.
+
+csr (required, string):
+: A CSR encoding the parameters for the certificate being requested {{RFC2986}}.
+The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This
+field uses the same modified Base64 encoding rules used elsewhere in this
+document, so it is different from PEM.)
+
+notBefore (optional, string):
+: The requested value of the notBefore field in the certificate, in the date
+format defined in {{RFC3339}}
+
+notAfter (optional, string):
+: The requested value of the notAfter field in the certificate, in the date
+format defined in {{RFC3339}}
+
+requirements (required, array):
+: The requirements that the client needs to fulfill before the requested
+certificate can be granted (for pending applications).  For final applications,
+the requirements that were met.  Each entry is a dictionary with parameters
+describing the requirement (see below).
+
+certificate (optional, string):
+: A URL for the certificate that has been issued in response to this
+application.
+
+~~~~~~~~~~
+{
+  "status": "pending",
+  "expires": "2015-03-01T14:09:00Z",
+
+  "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z",
+
+  "requirements": [
+    {
+      "type": "authorization",
+      "status": "valid",
+      "url": "https://example.com/acme/authz/1234"
+    },
+    {
+      "type": "out-of-band",
+      "status": "pending",
+      "url": "https://example.com/acme/payment/1234"
+    }
+  ]
+
+  "certificate": "https://example.com/acme/cert/1234"
+}
+~~~~~~~~~~
+
+[[ Open issue: There are two possible behaviors for the CA here.  Either (a) the
+CA automatically issues once all the requirements are fulfilled, or (b) the CA
+waits for confirmation from the client that it should issue.  If we allow both,
+we will need a signal in the application object of whether confirmation is
+required.  I would prefer that auto-issue be the default, which would imply a
+syntax like "confirm": true ]]
+
+[[ Open issue: Should this syntax allow multiple certificates?  That would
+support reissuance / renewal in a straightforward way, especially if the CSR /
+notBefore / notAfter could be updated. ]]
+
+The elements of the "requirements" array are immutable once set, except for
+their "status" fields.  If any other part of the object changes after the object
+is created, the client MUST consider the application invalid.
+
+The "requirements" array in the challenge SHOULD reflect everything that the CA
+required the client to do before issuance, even if some requirements were
+fulfilled in earlier applications.  For example, if a CA allows multiple
+applications to be fufilled based on a single authorization transaction, then it
+must reflect that authorization in all of the applications.
+
+Each entry in the "requirements" array expresses a requirement from the CA for
+the client to takek a particular action.  All requirements objects have the
+following basic fields:
+
+type (required, string):
+: The type of requirement (see below for defined types)
+
+status (required, string):
+: The status of this requirement.  Possible values are: "pending", "valid", and
+"invalid".
+
+All additional fields are specified by the requirement type.
+
+## Authorization Requirement
+
+A requirement with type "authorization" requests that the ACME client complete
+an authorization transaction.  The server specifies the authorization by
+pre-provisioning a pending authorization resource and providing the URI for this
+resource in the requirement.
+
+url (required, string):
+: The URL for the authorization resource
+
+To fulfill this requirement, the ACME client should fetch the authorization object
+from the indicated URL, then follow the process for obtaining authorization as
+specified in {{identifier-authorization}}.
+
+## Out-of-Band Requirement
+
+A requirement with type "out-of-band" requests that the ACME client have a
+human user visit a web page in order to receive further instructions for how to
+fulfill the requirement.  The requirement object provides a URI for the web
+page to be visited.
+
+url (required, string):
+: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
+
+To fulfill this requirement, the ACME client should direct the user to the
+indicated web page.
+
 
 ### Authorization Objects
 
@@ -775,6 +779,13 @@ expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
 encoded in the format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED
 for objects with "valid" in the "status field.
+
+scope (optional, string):
+: If this field is present, then it MUST contain a URI for an application
+resource, such that this authorization is only valid for that resource.  If this
+field is absent, then the CA MUST consider this authorization valid for all
+applications until the authorization expires. [[ Open issue: More flexible
+scoping? ]]
 
 challenges (required, array):
 : The challenges that the client needs to fulfill
@@ -865,8 +876,7 @@ Content-Type: application/json
 
 {
   "new-reg": "https://example.com/acme/new-reg",
-  "new-authz": "https://example.com/acme/new-authz",
-  "new-cert": "https://example.com/acme/new-cert",
+  "new-app": "https://example.com/acme/new-app",
   "revoke-cert": "https://example.com/acme/revoke-cert",
   "key-change": "https://example.com/acme/key-change",
   "meta": {
@@ -909,8 +919,7 @@ The server creates a registration object with the included contact information.
 The "key" element of the registration is set to the public key used to verify
 the JWS (i.e., the "jwk" element of the JWS header).  The server returns this
 registration object in a 201 (Created) response, with the registration URI in a
-Location header field.  The server SHOULD also indicate its new-authorization
-URI using the "next" link relation.
+Location header field.
 
 If the server already has a registration object with the provided account key,
 then it MUST return a 409 (Conflict) response and provide the URI of that
@@ -930,7 +939,6 @@ use a different URI in the Link header.
 HTTP/1.1 201 Created
 Content-Type: application/json
 Location: https://example.com/acme/reg/asdf
-Link: <https://example.com/acme/new-authz>;rel="next"
 Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
@@ -974,9 +982,6 @@ requests are not authenticated.  If a client wishes to query the server for
 information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
 That is, it should send a JWS whose payload is trivial ({"resource":"reg"}).
-In this case the server reply MUST contain the same link headers sent for a
-new registration, to allow a client to retrieve the "new-authorization" and
-"terms-of-service" URI
 
 ### Account Key Roll-over
 
@@ -1049,7 +1054,176 @@ Once an account is deactivated, the server MUST NOT accept further requests
 authorized by that account's key. It is up to server policy how long to retain
 data related to that account, whether to revoke certificates issued by that
 account, and whether to send email to that account's contacts. ACME does not
-proviate a way to reactivate a deactivated account.
+provide a way to reactivate a deactivated account.
+
+## Applying for Certificate Issuance
+
+The holder of an account key pair may use ACME to submit an application for a
+certificate to be issued.  The client makes this request by sending a POST
+request to the server's new-application resource.  The body of the POST is a JWS
+object whose JSON payload is a subset of the application object defined in
+{{application-objects}}, containing the fields that describe the certificate to
+be issued:
+
+csr (required, string):
+: A CSR encoding the parameters for the certificate being requested {{RFC2986}}.
+The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This
+field uses the same modified Base64 encoding rules used elsewhere in this
+document, so it is different from PEM.)
+
+notBefore (optional, string):
+: The requested value of the notBefore field in the certificate, in the date
+format defined in {{RFC3339}}
+
+notAfter (optional, string):
+: The requested value of the notAfter field in the certificate, in the date
+format defined in {{RFC3339}}
+
+~~~~~~~~~~
+POST /acme/new-app HTTP/1.1
+Host: example.com
+
+/* BEGIN JWS-signed request body */
+{
+  "resource": "new-app",
+  "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z"
+}
+/* END JWS-signed request body */
+~~~~~~~~~~
+
+The CSR encodes the client's requests with regard to the content of the
+certificate to be issued.  The CSR MUST indicate the requested identifiers,
+either in the commonName portion of the requested subject name, or in an
+extensionRequest attribute {{RFC2985}} requesting a subjectAltName extension.
+
+The server MUST return an error if it cannot fulfil the request as specified,
+and MUST NOT issue a certificate with contents other than those requested.  If
+the server requires the request to be modified in a certain way, it should
+indicate the required changes using an appropriate error code and description.
+
+If the server is willing to issue the requested certificate, it responds with a
+201 (Created) response.  The body of this response is an application object
+reflecting the client's request and any requirements the client must fulfill
+before the certificate will be issued.
+
+~~~~~~~~~~
+HTTP/1.1 201 Created
+Location: https://example.com/acme/app/asdf
+
+{
+  "status": "pending",
+  "expires": "2015-03-01T14:09:00Z",
+
+  "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z",
+
+  "requirements": [
+    {
+      "type": "authorization",
+      "status": "valid",
+      "url": "https://example.com/acme/authz/1234"
+    },
+    {
+      "type": "out-of-band",
+      "status": "pending",
+      "url": "https://example.com/acme/payment/1234"
+    }
+  ]
+}
+~~~~~~~~~~
+
+The application object returned by the server represents a promise that if the
+client fulfills the server's requirements before the "expires" time, then the
+server will issue the requested certificate.  In the application object, any
+object in the "requirements" array whose status is "pending" represents an
+action that the client must perform before the server will issue the
+certificate.  If the client fails to complete the required actions before the
+"expires" time, then the server SHOULD change the status of the application to
+"invalid" and MAY delete the application resource.
+
+The server SHOULD issue the requested certificate and update the application
+resource with a URL for the certificate as soon as the client has fulfilled the
+server's requirements.   If the client has already satisfied the server's
+requirements at the time of this request (e.g., by obtaining authorization for
+all of the identifiers in the certificate in previous transactions), then the
+server MAY proactively issue the requested certificate and provide a URL for it
+in the "certificate" field of the application.  The server MUST, however, still
+list the satisfied requirements in the "requirements" array, with the state
+"valid".
+
+Once the client believes it has fulfilled the server's requirements, it should
+send a GET request to the application resource to obtain its current state.  The
+status of the application will indicate what action the client should take:
+
+* "invalid": The certificate will not be issued.  Consider this application
+  process abandoned.
+
+* "pending": The server does not believe that the client has fulfilled the
+  requirements.  Check the "requirements" array for requirements that are still
+  pending.
+
+* "processing": The server agrees that the requirements have been fulfilled, and
+  is in the process of generating the certificate.  Retry after the time given
+  in the "Retry-After" header field of the response, if any.
+
+* "valid": The server has issued the certificate and provisioned its URL to the
+  "certificate" field of the application.  Download the certificate.
+
+
+### Downloading the Certificate
+
+To download the issued certificate, the client simply sends a GET request to the
+certificate URL.
+
+The default format of the certificate is DER (application/pkix-cert).  The
+client may request other formats by including an Accept header in its request.
+For example, the client may use the media type application/x-pem-file to request
+the certificate in PEM format.
+
+The server provides metadata about the certificate in HTTP headers.  In
+particular, the server MUST send one or more link relation header fields
+{{RFC5988}} with relation "up", each indicating a single certificate resource
+for the issuer of this certificate.  The server MAY also include the "up" links
+from these resources to enable the client to build a full certificate chain.
+
+The server MUST also provide a link relation header field with relation "author"
+to indicate the application under which this certificate was issued.
+
+If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
+may want to provide the client with a Signed Certificate Timestamp (SCT) that
+can be used to prove that a certificate was submitted to a CT log.  An SCT can
+be included as an extension in the certificate or as an extension to OCSP
+responses for the certificate.  The server can also provide the client with
+direct access to an SCT for a certificate using a Link relation header field
+with relation "ct-sct".
+
+~~~~~~~~~~
+GET /acme/cert/asdf HTTP/1.1
+Host: example.com
+Accept: application/pkix-cert
+
+HTTP/1.1 200 OK
+Content-Type: application/pkix-cert
+Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
+Link: <https://example.com/acme/revoke-cert>;rel="revoke"
+Link: <https://example.com/acme/app/asdf>;rel="author"
+Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
+Link: <https://example.com/acme/some-directory>;rel="directory"
+
+[DER-encoded certificate]
+~~~~~~~~~~
+
+A certificate resource represents a single, immutable certificate. If the client
+wishes to obtain a renewed certificate, the client initiates a new application
+process to request one.
+
+Because certificate resources are immutable once issuance is complete, the
+server MAY enable the caching of the resource by adding Expires and
+Cache-Control headers specifying a point in time in the distant future. These
+headers have no relation to the certificate's period of validity.
 
 ## Identifier Authorization
 
@@ -1059,81 +1233,26 @@ server of two things: First, that the client controls the private key of the
 account key pair, and second, that the client holds the identifier in question.
 This process may be repeated to associate multiple identifiers to a key pair
 (e.g., to request certificates with multiple identifiers), or to associate
-multiple accounts with an identifier (e.g., to allow multiple entities to
-manage certificates).
+multiple accounts with an identifier (e.g., to allow multiple entities to manage
+certificates).  The server may declare that an authorization is only valid for a
+specific application by setting the "scope" field of the authorization to the
+URI for that application.
 
-As illustrated by the figure in the overview section above, the authorization
-process proceeds in two phases.  The client first requests a new authorization,
-and the server issues challenges, then the client responds to those challenges
-and the server validates the client's responses.
+Authorization resources are created by the server in response to certificate
+applications submitted by an account key holder; their URLs are provided to the
+client in "authorization" requirement objects.  The authorization object is
+implicitly tied to the account key used to sign the new-application request.
 
-To begin the key authorization process, the client sends a POST request to the
-server's new-authorization resource.  The body of the POST request MUST contain
-a JWS object, whose payload is a partial authorization object.  This JWS object
-MUST contain only the "identifier" field, so that the server knows what
-identifier is being authorized.  The server MUST ignore any other fields present
-in the client's request object.
-
-The authorization object is implicitly tied to the account key used to sign the
-request. Once created, the authorization may only be updated by that account.
-
-When submitting a new authorization request, the key "existing" with
-a string value MAY be included in the resource object. This object is not
-considered part of an authorization resource but controls request processing
-as described below.
+When a client receives an application from the server with an "authorization"
+requirement, it downloads the authorization resource by sending a GET request to
+the indicated URL.
 
 ~~~~~~~~~~
-POST /acme/new-authorization HTTP/1.1
+GET /acme/authz/1234 HTTP/1.1
 Host: example.com
 
-/* BEGIN JWS-signed request body */
-{
-  "resource": "new-authz",
-  "identifier": {
-    "type": "dns",
-    "value": "example.org"
-  },
-  "existing": "accept"
-}
-/* END JWS-signed request body */
-~~~~~~~~~~
-
-If the authorization request specifies "existing" with a value of "accept" or "require",
-before proceeding, the server SHOULD determine if there are any existing
-authorization resources for the account and given identifier which are
-presently valid. If one or more such authorizations exists, a response SHOULD
-returned with status code 303 (See Other) and a Location header pointing to the
-existing resource URL; processing of the request then stops. If there are
-multiple such authorizations, the authorization with the latest expiry date
-SHOULD be returned. Otherwise, if the "existing" item was "require", status
-code 404 (Not Found) is returned; if it was "accept" or was any other value or
-was absent, processing continues as follows.
-
-Before processing the authorization further, the server SHOULD determine whether
-it is willing to issue certificates for the identifier.  For example, the server
-should check that the identifier is of a supported type.  Servers might also
-check names against a blacklist of known high-value identifiers.  If the server
-is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
-error, with a problem document describing the reason for the rejection.
-
-If the server is willing to proceed, it builds a pending authorization object
-from the initial authorization object submitted by the client.
-
-* "identifier" the identifier submitted by the client
-* "status": MUST be "pending" unless the server has out-of-band information
-  about the client's authorization status
-* "challenges" and "combinations": As selected by the server's policy for this
-  identifier
-
-The server allocates a new URI for this authorization, and returns a 201
-(Created) response, with the authorization URI in a Location header field, and
-the JSON authorization object in the body.
-
-~~~~~~~~~~
-HTTP/1.1 201 Created
+HTTP/1.1 200 OK
 Content-Type: application/json
-Location: https://example.com/authz/asdf
-Link: <https://example.com/acme/new-cert>;rel="next"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
@@ -1163,7 +1282,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 ### Responding to Challenges
 
-To prove control of the identifer and receive authorization, the client needs to
+To prove control of the identifier and receive authorization, the client needs to
 respond with information to complete the challenges.  To do this, the client
 updates the authorization object received from the server by filling in any
 required information in the elements of the "challenges" dictionary.  (This is
@@ -1172,9 +1291,8 @@ challenge.)
 
 The client sends these updates back to the server in the form of a JSON object
 with the response fields required by the challenge type, carried in a POST
-request to the challenge URI (not authorization URI or the new-authorization
-URI).  This allows the client to send information only for challenges it is
-responding to.
+request to the challenge URI (not authorization URI).  This allows the client to
+send information only for challenges it is responding to.
 
 For example, if the client were to respond to the "http-01" challenge in the
 above authorization, it would send the following request:
@@ -1278,145 +1396,6 @@ contents of the registration object.
 
 The server MUST NOT treat deactivated authorization objects as sufficient for
 issuing certificates.
-
-## Certificate Issuance
-
-The holder of an account key pair authorized for one or more identifiers may use
-ACME to request that a certificate be issued for any subset of those
-identifiers.  The client makes this request by sending a POST request to the
-server's new-certificate resource.  The body of the POST is a JWS object whose
-JSON payload contains a Certificate Signing Request (CSR) {{RFC2986}}.  The CSR
-encodes the parameters of the requested certificate; authority to issue is
-demonstrated by the JWS signature by an account key, from which the server can
-look up related authorizations.  Some attributes which cannot be reflected in a
-CSR are placed directly in the certificate request.
-
-csr (required, string):
-: A CSR encoding the parameters for the certificate being requested.  The CSR is
-sent in the Base64url-encoded version of the DER format.  (Note: This field uses
-the same modified Base64 encoding rules used elsewhere in this document, so it
-is different from PEM.)
-
-notBefore (optional, string):
-: The requested value of the notBefore field in the certificate, in the date
-format defined in {{RFC3339}}
-
-notAfter (optional, string):
-: The requested value of the notAfter field in the certificate, in the date
-format defined in {{RFC3339}}
-
-~~~~~~~~~~
-POST /acme/new-cert HTTP/1.1
-Host: example.com
-Accept: application/pkix-cert
-
-/* BEGIN JWS-signed request body */
-{
-  "resource": "new-cert",
-  "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
-  "notBefore": "2016-01-01T00:00:00Z",
-  "notAfter": "2016-01-08T00:00:00Z"
-}
-/* END JWS-signed request body */
-~~~~~~~~~~
-
-The CSR encodes the client's requests with regard to the content of the
-certificate to be issued.  The CSR MUST indicate the requested identifiers,
-either in the commonName portion of the requested subject name, or in an
-extensionRequest attribute {{RFC2985}} requesting a subjectAltName extension.
-
-The server MUST return an error if it cannot fulfil the request as specified,
-and MUST NOT issue a certificate with contents other than those requested.  If
-the server requires the request to be modified in a certain way, it should
-indicate the required changes using an appropriate error code and description.
-
-It is up to the server's local policy to decide which names are acceptable in a
-certificate, given the authorizations that the server associates with the
-client's account key.  For example, a server might have a policy that it will
-consider a client authorized for a wildcard domain if it is authorized for some
-set of names that match the wildcard.  If the client does not yet have
-sufficient authorization to issue the requested certificate, the server can
-request that the client obtain additional authorization using a precondition
-response (see {{preconditions}}).
-
-Servers SHOULD NOT extend authorization across identifier types.  For
-example, if a client is authorized for "example.com", then the server should not
-allow the client to issue a certificate with an iPAddress subjectAltName, even
-if it contains an IP address to which example.com resolves.
-
-If the CA decides to issue a certificate, then the server creates a new
-certificate resource and returns a URI for it in the Location header field of a
-201 (Created) response.
-
-~~~~~~~~~~
-HTTP/1.1 201 Created
-Location: https://example.com/acme/cert/asdf
-~~~~~~~~~~
-
-If the certificate is available at the time of the response, it is provided in
-the body of the response.  If the CA has not yet issued the certificate, the
-body of this response will be empty.  The client should then send a GET request
-to the certificate URI to poll for the certificate.  As long as the certificate
-is unavailable, the server MUST provide a 202 (Accepted) response and include a
-Retry-After header to indicate when the server believes the certificate will be
-issued (as in the example above).
-
-~~~~~~~~~~
-GET /acme/cert/asdf HTTP/1.1
-Host: example.com
-Accept: application/pkix-cert
-
-HTTP/1.1 202 Accepted
-Retry-After: 120
-~~~~~~~~~~
-
-The default format of the certificate is DER (application/pkix-cert).  The
-client may request other formats by including an Accept header in its request.
-For example, the client may use the media type application/x-pem-file to request
-the certificate in PEM format.
-
-The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST send one or more link relation header fields
-{{RFC5988}} with relation "up", each indicating a single certificate resource
-for the issuer of this certificate.  The server MAY also include the "up" links
-from these resources to enable the client to build a full certificate chain.
-
-The server MUST also provide a link relation header field with relation "author"
-to indicate the registration under which this certificate was issued.
-
-If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
-may want to provide the client with a Signed Certificate Timestamp (SCT) that
-can be used to prove that a certificate was submitted to a CT log.  An SCT can
-be included as an extension in the certificate or as an extension to OCSP
-responses for the certificate.  The server can also provide the client with
-direct access to an SCT for a certificate using a Link relation header field
-with relation "ct-sct".
-
-~~~~~~~~~~
-GET /acme/cert/asdf HTTP/1.1
-Host: example.com
-Accept: application/pkix-cert
-
-HTTP/1.1 200 OK
-Content-Type: application/pkix-cert
-Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
-Link: <https://example.com/acme/revoke-cert>;rel="revoke"
-Link: <https://example.com/acme/reg/asdf>;rel="author"
-Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
-Link: <https://example.com/acme/some-directory>;rel="directory"
-Location: https://example.com/acme/cert/asdf
-
-[DER-encoded certificate]
-~~~~~~~~~~
-
-A certificate resource represents a single, immutable certificate. If the client
-wishes to obtain a renewed certificate, the client initiates a new-certificate
-transaction to request one.
-
-Because certificate resources are immutable once issuance is complete, the
-server MAY enable the caching of the resource by adding Expires and
-Cache-Control headers specifying a point in time in the distant future. These
-headers have no relation to the certificate's period of validity.
 
 ## Certificate Revocation
 
@@ -1523,7 +1502,7 @@ uri (required, string):
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "valid",
-and "invalid".  If this field is missing, then the default value is "pending".
+and "invalid".
 
 validated (optional, string):
 : The time at which this challenge was completed by the server, encoded in the
