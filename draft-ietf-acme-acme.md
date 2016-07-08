@@ -1860,7 +1860,7 @@ identifier possession are determined by the server's local policy.
 various JSON objects used by this protocol, i.e., the field names in the JSON
 objects? ]]
 
-# Well-Known URI for the HTTP Challenge
+## Well-Known URI for the HTTP Challenge
 
 The "Well-Known URIs" registry should be updated with the following additional
 value (using the template from {{RFC5785}}):
@@ -2057,7 +2057,7 @@ of the protocol).
 ## Integrity of Authorizations
 
 ACME allows anyone to request challenges for an identifier by registering an
-account key and sending a new-authorization request under that account key.  The
+account key and sending a new-application request under that account key.  The
 integrity of the authorization process thus depends on the identifier validation
 challenges to ensure that the challenge can only be completed by someone who
 both (1) holds the private key of the account key pair, and (2) controls the
@@ -2069,7 +2069,7 @@ account key for one of his choosing, e.g.:
 
 * Legitimate domain holder registers account key pair A
 * MitM registers account key pair B
-* Legitimate domain holder sends a new-authorization request signed under
+* Legitimate domain holder sends a new-application request signed under
   account key A
 * MitM suppresses the legitimate request, but sends the same request signed
   under account key B
@@ -2082,16 +2082,10 @@ account key for one of his choosing, e.g.:
   B, the ACME server grants authorization to account key B (the MitM) instead of
   account key A (the legitimate domain holder)
 
-All of the challenges above that require an out-of-band query by the server have
-a binding to the account private key, such that only the account private key
-holder can successfully respond to the validation query:
-
-* HTTP: The value provided in the validation request is signed by the
-  account private key.
-* TLS SNI: The validation TLS request uses the account key pair as the server's
-  key pair.
-* DNS: The MAC covers the account key, and the MAC key is derived from an ECDH
-  public key signed with the account private key.
+All of the challenges above have a binding between the account private key and
+the validation query made by the server, via the key authorization.  The key
+authorization is signed by the account private key, reflects the corresponding
+public key, and is provided to the server in the validation response.
 
 The association of challenges to identifiers is typically done by requiring the
 client to perform some action that only someone who effectively controls the
