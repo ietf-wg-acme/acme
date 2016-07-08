@@ -2277,13 +2277,18 @@ response (in order to facilitate debugging).  Such implementations enable an
 attacker to extract this information from any web server that is accessible to
 the ACME server, even if it is not accessible to the ACME client.
 
-The risk of SSRF through this channel is limited by the fact that the attacker
-can only control the domain of the URL, not the path.  Nonetheless, in order to
-further limit the SSRF risk, ACME server operators should ensure that validation
-queries can only be sent to servers on the public Internet, and not, say, web
-services within the server operator's internal network.  Since the attacker
-could make requests to these public servers himself, he can't gain anything
-extra through an SSRF attack on ACME aside from a layer of anonymization.
+It might seem that the risk of SSRF through this channel is limited by the fact
+that the attacker can only control the domain of the URL, not the path.
+However, if the attacker first sets the domain to one they control, then they
+can send the server an HTTP redirect (e.g., a 302 response) which will cause the
+server to query an arbitrary URI.
+
+In order to further limit the SSRF risk, ACME server operators should ensure
+that validation queries can only be sent to servers on the public Internet, and
+not, say, web services within the server operator's internal network.  Since the
+attacker could make requests to these public servers himself, he can't gain
+anything extra through an SSRF attack on ACME aside from a layer of
+anonymization.
 
 ## CA Policy Considerations
 
