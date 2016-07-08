@@ -317,10 +317,12 @@ li, p {
 <link href="#rfc.section.9.1" rel="Chapter" title="9.1 Threat model"/>
 <link href="#rfc.section.9.2" rel="Chapter" title="9.2 Integrity of Authorizations"/>
 <link href="#rfc.section.9.3" rel="Chapter" title="9.3 Denial-of-Service Considerations"/>
-<link href="#rfc.section.9.4" rel="Chapter" title="9.4 CA Policy Considerations"/>
+<link href="#rfc.section.9.4" rel="Chapter" title="9.4 Server-Side Request Forgery"/>
+<link href="#rfc.section.9.5" rel="Chapter" title="9.5 CA Policy Considerations"/>
 <link href="#rfc.section.10" rel="Chapter" title="10 Operational Considerations"/>
-<link href="#rfc.section.10.1" rel="Chapter" title="10.1 Default Virtual Hosts"/>
-<link href="#rfc.section.10.2" rel="Chapter" title="10.2 Use of DNSSEC Resolvers"/>
+<link href="#rfc.section.10.1" rel="Chapter" title="10.1 DNS over TCP"/>
+<link href="#rfc.section.10.2" rel="Chapter" title="10.2 Default Virtual Hosts"/>
+<link href="#rfc.section.10.3" rel="Chapter" title="10.3 Use of DNSSEC Resolvers"/>
 <link href="#rfc.section.11" rel="Chapter" title="11 Acknowledgements"/>
 <link href="#rfc.references" rel="Chapter" title="12 References"/>
 <link href="#rfc.references.1" rel="Chapter" title="12.1 Normative References"/>
@@ -453,10 +455,12 @@ li, p {
 <ul><li>9.1.   <a href="#rfc.section.9.1">Threat model</a></li>
 <li>9.2.   <a href="#rfc.section.9.2">Integrity of Authorizations</a></li>
 <li>9.3.   <a href="#rfc.section.9.3">Denial-of-Service Considerations</a></li>
-<li>9.4.   <a href="#rfc.section.9.4">CA Policy Considerations</a></li>
+<li>9.4.   <a href="#rfc.section.9.4">Server-Side Request Forgery</a></li>
+<li>9.5.   <a href="#rfc.section.9.5">CA Policy Considerations</a></li>
 </ul><li>10.   <a href="#rfc.section.10">Operational Considerations</a></li>
-<ul><li>10.1.   <a href="#rfc.section.10.1">Default Virtual Hosts</a></li>
-<li>10.2.   <a href="#rfc.section.10.2">Use of DNSSEC Resolvers</a></li>
+<ul><li>10.1.   <a href="#rfc.section.10.1">DNS over TCP</a></li>
+<li>10.2.   <a href="#rfc.section.10.2">Default Virtual Hosts</a></li>
+<li>10.3.   <a href="#rfc.section.10.3">Use of DNSSEC Resolvers</a></li>
 </ul><li>11.   <a href="#rfc.section.11">Acknowledgements</a></li>
 <li>12.   <a href="#rfc.references">References</a></li>
 <ul><li>12.1.   <a href="#rfc.references.1">Normative References</a></li>
@@ -1744,8 +1748,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <p id="rfc.section.9.3.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
 <p id="rfc.section.9.3.p.3">In addition, an attacker can also cause the ACME server to send validation requests to a domain of its choosing by submitting authorization requests for the victim domain.</p>
 <p id="rfc.section.9.3.p.4">All of these attacks can be mitigated by the application of appropriate rate limits.  Issues closer to the front end, like POST body validation, can be addressed using HTTP request limiting.  For validation and certificate requests, there are other identifiers on which rate limits can be keyed.  For example, the server might limit the rate at which any individual account key can issue certificates, or the rate at which validation can be requested within a given subtree of the DNS.</p>
-<h1 id="rfc.section.9.4"><a href="#rfc.section.9.4">9.4.</a> <a href="#ca-policy-considerations" id="ca-policy-considerations">CA Policy Considerations</a></h1>
-<p id="rfc.section.9.4.p.1">The controls on issuance enabled by ACME are focused on validating that a certificate applicant controls the identifier he claims.  Before issuing a certificate, however, there are many other checks that a CA might need to perform, for example:</p>
+<h1 id="rfc.section.9.4"><a href="#rfc.section.9.4">9.4.</a> <a href="#server-side-request-forgery" id="server-side-request-forgery">Server-Side Request Forgery</a></h1>
+<p id="rfc.section.9.4.p.1">Server-Side Request Forgery (SSRF) attacks can arise when an attacker can cause a server to perform HTTP requests to an attacker-chosen URL.  In the ACME HTTP challenge validation process, the ACME server performs an HTTP GET request to a URL in which the attacker can choose the domain.  This request is made before the server has verified that the client controls the domain, so any client can cause a query to any domain.</p>
+<p id="rfc.section.9.4.p.2">Some server implementations include information from the validation server&#8217;s response (in order to facilitate debugging).  Such implementations enable an attacker to extract this information from any web server that is accessible to the ACME server, even if it is not accessible to the ACME client.</p>
+<p id="rfc.section.9.4.p.3">The risk of SSRF through this channel is limited by the fact that the attacker can only control the domain of the URL, not the path.  Nonetheless, in order to further limit the SSRF risk, ACME server operators should ensure that validation queries can only be sent to servers on the public Internet, and not, say, web services within the server operator&#8217;s internal network.  Since the attacker could make requests to these public servers himself, he can&#8217;t gain anything extra through an SSRF attack on ACME aside from a layer of anonymization.</p>
+<h1 id="rfc.section.9.5"><a href="#rfc.section.9.5">9.5.</a> <a href="#ca-policy-considerations" id="ca-policy-considerations">CA Policy Considerations</a></h1>
+<p id="rfc.section.9.5.p.1">The controls on issuance enabled by ACME are focused on validating that a certificate applicant controls the identifier he claims.  Before issuing a certificate, however, there are many other checks that a CA might need to perform, for example:</p>
 <p/>
 
 <ul>
@@ -1755,23 +1763,19 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Is the key in the CSR sufficiently strong?</li>
   <li>Is the CSR signed with an acceptable algorithm?</li>
 </ul>
-<p id="rfc.section.9.4.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
+<p id="rfc.section.9.5.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
 <h1 id="rfc.section.10"><a href="#rfc.section.10">10.</a> <a href="#operational-considerations" id="operational-considerations">Operational Considerations</a></h1>
 <p id="rfc.section.10.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.  For example:</p>
-<p/>
-
-<ul>
-  <li>It is advisable to perform DNS queries via TCP to mitigate DNS forgery attacks over UDP</li>
-</ul>
-<p id="rfc.section.10.p.3">[[ TODO: Other operational considerations ]]</p>
-<h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#default-virtual-hosts" id="default-virtual-hosts">Default Virtual Hosts</a></h1>
-<p id="rfc.section.10.1.p.1">In many cases, TLS-based services are deployed on hosted platforms that use the Server Name Indication (SNI) TLS extension to distinguish between different hosted services or &#8220;virtual hosts&#8221;.  When a client initiates a TLS connection with an SNI value indicating a provisioned host, the hosting platform routes the connection to that host.</p>
-<p id="rfc.section.10.1.p.2">When a connection comes in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>
-<p id="rfc.section.10.1.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-02&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
-<p id="rfc.section.10.1.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).</p>
-<h1 id="rfc.section.10.2"><a href="#rfc.section.10.2">10.2.</a> <a href="#use-of-dnssec-resolvers" id="use-of-dnssec-resolvers">Use of DNSSEC Resolvers</a></h1>
-<p id="rfc.section.10.2.p.1">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
-<p id="rfc.section.10.2.p.2">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
+<h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#dns-over-tcp" id="dns-over-tcp">DNS over TCP</a></h1>
+<p id="rfc.section.10.1.p.1">As noted above, DNS forgery attacks against the ACME server can result in the server making incorrect decisions about domain control and thus mis-issuing certificates.  Servers SHOULD verify DNSSEC when it is available for a domain.  When DNSSEC is not available, servers SHOULD perform DNS queries over TCP, which provides better resistance to some forgery attacks than DNS over UDP.</p>
+<h1 id="rfc.section.10.2"><a href="#rfc.section.10.2">10.2.</a> <a href="#default-virtual-hosts" id="default-virtual-hosts">Default Virtual Hosts</a></h1>
+<p id="rfc.section.10.2.p.1">In many cases, TLS-based services are deployed on hosted platforms that use the Server Name Indication (SNI) TLS extension to distinguish between different hosted services or &#8220;virtual hosts&#8221;.  When a client initiates a TLS connection with an SNI value indicating a provisioned host, the hosting platform routes the connection to that host.</p>
+<p id="rfc.section.10.2.p.2">When a connection comes in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>
+<p id="rfc.section.10.2.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-02&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
+<p id="rfc.section.10.2.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).</p>
+<h1 id="rfc.section.10.3"><a href="#rfc.section.10.3">10.3.</a> <a href="#use-of-dnssec-resolvers" id="use-of-dnssec-resolvers">Use of DNSSEC Resolvers</a></h1>
+<p id="rfc.section.10.3.p.1">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
+<p id="rfc.section.10.3.p.2">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
 <h1 id="rfc.section.11"><a href="#rfc.section.11">11.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a></h1>
 <p id="rfc.section.11.p.1">In addition to the editors listed on the front page, this document has benefited from contributions from a broad set of contributors, all the way back to its inception.</p>
 <p/>

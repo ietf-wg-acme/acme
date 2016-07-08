@@ -85,12 +85,12 @@ Table of Contents
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   6
    4.  Protocol Overview . . . . . . . . . . . . . . . . . . . . . .   6
    5.  Message Transport . . . . . . . . . . . . . . . . . . . . . .   8
-     5.1.  HTTPS Requests  . . . . . . . . . . . . . . . . . . . . .   8
+     5.1.  HTTPS Requests  . . . . . . . . . . . . . . . . . . . . .   9
      5.2.  Request Authentication  . . . . . . . . . . . . . . . . .   9
-     5.3.  Request URI Type Integrity  . . . . . . . . . . . . . . .   9
-     5.4.  Rate limits . . . . . . . . . . . . . . . . . . . . . . .  10
+     5.3.  Request URI Type Integrity  . . . . . . . . . . . . . . .  10
+     5.4.  Rate limits . . . . . . . . . . . . . . . . . . . . . . .  11
      5.5.  Replay protection . . . . . . . . . . . . . . . . . . . .  11
-       5.5.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  11
+       5.5.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  12
        5.5.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  12
      5.6.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  12
    6.  Certificate Management  . . . . . . . . . . . . . . . . . . .  14
@@ -137,15 +137,17 @@ Internet-Draft                    ACME                         July 2016
      9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  47
      9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  48
      9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  51
-     9.4.  CA Policy Considerations  . . . . . . . . . . . . . . . .  51
+     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  51
+     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  52
    10. Operational Considerations  . . . . . . . . . . . . . . . . .  52
-     10.1.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  52
-     10.2.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  53
-   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  53
+     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  53
+     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  53
+     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  53
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  54
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  54
      12.1.  Normative References . . . . . . . . . . . . . . . . . .  54
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  56
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  56
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  57
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  57
 
 1.  Introduction
 
@@ -160,8 +162,6 @@ Internet-Draft                    ACME                         July 2016
 
    o  Generate a PKCS#10 [RFC2314] Certificate Signing Request (CSR).
 
-   o  Cut-and-paste the CSR into a CA web page.
-
 
 
 
@@ -169,6 +169,8 @@ Barnes, et al.           Expires January 9, 2017                [Page 3]
 
 Internet-Draft                    ACME                         July 2016
 
+
+   o  Cut-and-paste the CSR into a CA web page.
 
    o  Prove ownership of the domain by one of the following methods:
 
@@ -216,8 +218,6 @@ Internet-Draft                    ACME                         July 2016
    Different types of certificates reflect different kinds of CA
    verification of information about the certificate subject.  "Domain
    Validation" (DV) certificates are by far the most common type.  For
-   DV validation, the CA merely verifies that the requester has
-   effective control of the web server and/or DNS server for the domain,
 
 
 
@@ -226,6 +226,8 @@ Barnes, et al.           Expires January 9, 2017                [Page 4]
 Internet-Draft                    ACME                         July 2016
 
 
+   DV validation, the CA merely verifies that the requester has
+   effective control of the web server and/or DNS server for the domain,
    but does not explicitly attempt to verify their real-world identity.
    (This is as opposed to "Organization Validation" (OV) and "Extended
    Validation" (EV) certificates, where the process is intended to also
@@ -272,8 +274,6 @@ Internet-Draft                    ACME                         July 2016
    operator has done so, the process is self-sustaining with minimal
    manual intervention.  Close integration of ACME with HTTPS servers,
    for example, can allow the immediate and automated deployment of
-   certificates as they are issued, optionally sparing the human
-   administrator from additional configuration work.
 
 
 
@@ -281,6 +281,9 @@ Barnes, et al.           Expires January 9, 2017                [Page 5]
 
 Internet-Draft                    ACME                         July 2016
 
+
+   certificates as they are issued, optionally sparing the human
+   administrator from additional configuration work.
 
 3.  Terminology
 
@@ -323,13 +326,10 @@ Internet-Draft                    ACME                         July 2016
    server can also provide terms of service at this stage, which the
    client can present to a human user.
 
-         Client                                                  Server
 
-         Contact Information
-         Signature                     ------->
 
-                                       <-------            Registration
-                                                       Terms of Service
+
+
 
 
 
@@ -337,6 +337,14 @@ Barnes, et al.           Expires January 9, 2017                [Page 6]
 
 Internet-Draft                    ACME                         July 2016
 
+
+         Client                                                  Server
+
+         Contact Information
+         Signature                     ------->
+
+                                       <-------            Registration
+                                                       Terms of Service
 
    Once the client is registered, there are three major steps it needs
    to take to get a certificate:
@@ -370,6 +378,22 @@ Internet-Draft                    ACME                         July 2016
    request that the application be "finalized", at which point the
    certificate will be issued and provided to the client.
 
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires January 9, 2017                [Page 7]
+
+Internet-Draft                    ACME                         July 2016
+
+
          Application
          Signature                     ------->
                                        <-------            Requirements
@@ -383,16 +407,6 @@ Internet-Draft                    ACME                         July 2016
          Finalize application
          Signature                     ------->
                                        <-------             Certificate
-
-
-
-
-
-
-Barnes, et al.           Expires January 9, 2017                [Page 7]
-
-Internet-Draft                    ACME                         July 2016
-
 
    To revoke a certificate, the client simply sends a revocation request
    indicating the certificate to be revoked, signed with an authorized
@@ -428,6 +442,14 @@ Internet-Draft                    ACME                         July 2016
    payloads, anti-replay protection, and a degree of integrity for the
    HTTPS request URI.
 
+
+
+
+Barnes, et al.           Expires January 9, 2017                [Page 8]
+
+Internet-Draft                    ACME                         July 2016
+
+
 5.1.  HTTPS Requests
 
    Each ACME function is accomplished by the client sending a sequence
@@ -440,15 +462,6 @@ Internet-Draft                    ACME                         July 2016
 
    In all HTTPS transactions used by ACME, the ACME client is the HTTPS
    client and the ACME server is the HTTPS server.
-
-
-
-
-
-Barnes, et al.           Expires January 9, 2017                [Page 8]
-
-Internet-Draft                    ACME                         July 2016
-
 
    ACME servers that are intended to be generally accessible need to use
    Cross-Origin Resource Sharing (CORS) in order to be accessible from
@@ -483,6 +496,16 @@ Internet-Draft                    ACME                         July 2016
    o  The JWS Protected Header MUST include the "nonce" field (defined
       below)
 
+
+
+
+
+
+Barnes, et al.           Expires January 9, 2017                [Page 9]
+
+Internet-Draft                    ACME                         July 2016
+
+
    Note that this implies that GET requests are not authenticated.
    Servers MUST NOT respond to GET requests for resources that might be
    considered sensitive.
@@ -498,14 +521,6 @@ Internet-Draft                    ACME                         July 2016
 
    These intermediaries can also change values in the request that are
    not signed in the HTTPS request, e.g., the request URI and headers.
-
-
-
-Barnes, et al.           Expires January 9, 2017                [Page 9]
-
-Internet-Draft                    ACME                         July 2016
-
-
    ACME uses JWS to provide a limited integrity mechanism, which
    protects against an intermediary changing the request URI to another
    ACME URI of a different type.  (It does not protect against changing
@@ -539,6 +554,14 @@ Internet-Draft                    ACME                         July 2016
                  | Key change         | key-change       |
                  +--------------------+------------------+
 
+
+
+
+Barnes, et al.           Expires January 9, 2017               [Page 10]
+
+Internet-Draft                    ACME                         July 2016
+
+
    Other fields in ACME request bodies are described below.
 
 5.4.  Rate limits
@@ -553,15 +576,6 @@ Internet-Draft                    ACME                         July 2016
 
    In addition to the human readable "detail" field of the error
    response, the server MAY send one or multiple tokens in the "Link"
-
-
-
-
-Barnes, et al.           Expires January 9, 2017               [Page 10]
-
-Internet-Draft                    ACME                         July 2016
-
-
    header pointing to documentation about the specific hit rate limits
    using the "rate-limit" relation.
 
@@ -595,6 +609,15 @@ Internet-Draft                    ACME                         July 2016
 
    The precise method used to generate and track nonces is up to the
    server.  For example, the server could generate a random 128-bit
+
+
+
+
+Barnes, et al.           Expires January 9, 2017               [Page 11]
+
+Internet-Draft                    ACME                         July 2016
+
+
    value for each response, keep a list of issued nonces, and strike
    nonces from this list as they are used.
 
@@ -609,14 +632,6 @@ Internet-Draft                    ACME                         July 2016
    The value of the Replay-Nonce field MUST be an octet string encoded
    according to the base64url encoding described in Section 2 of
    [RFC7515].  Clients MUST ignore invalid Replay-Nonce values.
-
-
-
-
-Barnes, et al.           Expires January 9, 2017               [Page 11]
-
-Internet-Draft                    ACME                         July 2016
-
 
      base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
 
@@ -651,21 +666,6 @@ Internet-Draft                    ACME                         July 2016
    errors, this document defines the following standard tokens for use
    in the "type" field (within the "urn:ietf:params:acme:error:"
    namespace):
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2834,7 +2834,41 @@ Internet-Draft                    ACME                         July 2016
    or the rate at which validation can be requested within a given
    subtree of the DNS.
 
-9.4.  CA Policy Considerations
+9.4.  Server-Side Request Forgery
+
+   Server-Side Request Forgery (SSRF) attacks can arise when an attacker
+   can cause a server to perform HTTP requests to an attacker-chosen
+   URL.  In the ACME HTTP challenge validation process, the ACME server
+   performs an HTTP GET request to a URL in which the attacker can
+   choose the domain.  This request is made before the server has
+   verified that the client controls the domain, so any client can cause
+   a query to any domain.
+
+   Some server implementations include information from the validation
+   server's response (in order to facilitate debugging).  Such
+   implementations enable an attacker to extract this information from
+   any web server that is accessible to the ACME server, even if it is
+   not accessible to the ACME client.
+
+
+
+
+Barnes, et al.           Expires January 9, 2017               [Page 51]
+
+Internet-Draft                    ACME                         July 2016
+
+
+   The risk of SSRF through this channel is limited by the fact that the
+   attacker can only control the domain of the URL, not the path.
+   Nonetheless, in order to further limit the SSRF risk, ACME server
+   operators should ensure that validation queries can only be sent to
+   servers on the public Internet, and not, say, web services within the
+   server operator's internal network.  Since the attacker could make
+   requests to these public servers himself, he can't gain anything
+   extra through an SSRF attack on ACME aside from a layer of
+   anonymization.
+
+9.5.  CA Policy Considerations
 
    The controls on issuance enabled by ACME are focused on validating
    that a certificate applicant controls the identifier he claims.
@@ -2849,14 +2883,6 @@ Internet-Draft                    ACME                         July 2016
 
       *  If the leftmost label is a '*', then have the appropriate
          checks been applied?
-
-
-
-
-Barnes, et al.           Expires January 9, 2017               [Page 51]
-
-Internet-Draft                    ACME                         July 2016
-
 
       *  Is the name on the Public Suffix List?
 
@@ -2877,12 +2903,27 @@ Internet-Draft                    ACME                         July 2016
    operators of ACME-based CAs will need to keep in mind when
    configuring their services.  For example:
 
-   o  It is advisable to perform DNS queries via TCP to mitigate DNS
-      forgery attacks over UDP
 
-   [[ TODO: Other operational considerations ]]
 
-10.1.  Default Virtual Hosts
+
+
+
+
+Barnes, et al.           Expires January 9, 2017               [Page 52]
+
+Internet-Draft                    ACME                         July 2016
+
+
+10.1.  DNS over TCP
+
+   As noted above, DNS forgery attacks against the ACME server can
+   result in the server making incorrect decisions about domain control
+   and thus mis-issuing certificates.  Servers SHOULD verify DNSSEC when
+   it is available for a domain.  When DNSSEC is not available, servers
+   SHOULD perform DNS queries over TCP, which provides better resistance
+   to some forgery attacks than DNS over UDP.
+
+10.2.  Default Virtual Hosts
 
    In many cases, TLS-based services are deployed on hosted platforms
    that use the Server Name Indication (SNI) TLS extension to
@@ -2906,20 +2947,12 @@ Internet-Draft                    ACME                         July 2016
    A CA that accepts TLS-based proof of domain control should attempt to
    check whether a domain is hosted on a domain with a default virtual
    host before allowing an authorization request for this host to use a
-
-
-
-Barnes, et al.           Expires January 9, 2017               [Page 52]
-
-Internet-Draft                    ACME                         July 2016
-
-
    TLS-based challenge.  A default virtual host can be detected by
    initiating TLS connections to the host with random SNI values within
    the namespace used for the TLS-based challenge (the "acme.invalid"
    namespace for "tls-sni-02").
 
-10.2.  Use of DNSSEC Resolvers
+10.3.  Use of DNSSEC Resolvers
 
    An ACME-based CA will often need to make DNS queries, e.g., to
    validate control of DNS names.  Because the security of such
@@ -2929,6 +2962,13 @@ Internet-Draft                    ACME                         July 2016
    queries via DNSSEC-validating stub or recursive resolvers.  This
    provides additional protection to domains which choose to make use of
    DNSSEC.
+
+
+
+Barnes, et al.           Expires January 9, 2017               [Page 53]
+
+Internet-Draft                    ACME                         July 2016
+
 
    An ACME-based CA must use only a resolver if it trusts the resolver
    and every component of the network route by which it is accessed.  It
@@ -2959,17 +2999,6 @@ Internet-Draft                    ACME                         July 2016
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
 
-
-
-
-
-
-
-Barnes, et al.           Expires January 9, 2017               [Page 53]
-
-Internet-Draft                    ACME                         July 2016
-
-
 12.  References
 
 12.1.  Normative References
@@ -2987,6 +3016,15 @@ Internet-Draft                    ACME                         July 2016
    [RFC2314]  Kaliski, B., "PKCS #10: Certification Request Syntax
               Version 1.5", RFC 2314, DOI 10.17487/RFC2314, March 1998,
               <http://www.rfc-editor.org/info/rfc2314>.
+
+
+
+
+
+Barnes, et al.           Expires January 9, 2017               [Page 54]
+
+Internet-Draft                    ACME                         July 2016
+
 
    [RFC2818]  Rescorla, E., "HTTP Over TLS", RFC 2818,
               DOI 10.17487/RFC2818, May 2000,
@@ -3019,13 +3057,6 @@ Internet-Draft                    ACME                         July 2016
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <http://www.rfc-editor.org/info/rfc4648>.
 
-
-
-Barnes, et al.           Expires January 9, 2017               [Page 54]
-
-Internet-Draft                    ACME                         July 2016
-
-
    [RFC5226]  Narten, T. and H. Alvestrand, "Guidelines for Writing an
               IANA Considerations Section in RFCs", BCP 26, RFC 5226,
               DOI 10.17487/RFC5226, May 2008,
@@ -3041,6 +3072,15 @@ Internet-Draft                    ACME                         July 2016
               Infrastructure Certificate and Certificate Revocation List
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <http://www.rfc-editor.org/info/rfc5280>.
+
+
+
+
+
+Barnes, et al.           Expires January 9, 2017               [Page 55]
+
+Internet-Draft                    ACME                         July 2016
+
 
    [RFC5785]  Nottingham, M. and E. Hammer-Lahav, "Defining Well-Known
               Uniform Resource Identifiers (URIs)", RFC 5785,
@@ -3074,14 +3114,6 @@ Internet-Draft                    ACME                         July 2016
               Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
               2014, <http://www.rfc-editor.org/info/rfc7159>.
 
-
-
-
-Barnes, et al.           Expires January 9, 2017               [Page 55]
-
-Internet-Draft                    ACME                         July 2016
-
-
    [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
               2015, <http://www.rfc-editor.org/info/rfc7469>.
@@ -3097,6 +3129,14 @@ Internet-Draft                    ACME                         July 2016
    [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
               DOI 10.17487/RFC7518, May 2015,
               <http://www.rfc-editor.org/info/rfc7518>.
+
+
+
+
+Barnes, et al.           Expires January 9, 2017               [Page 56]
+
+Internet-Draft                    ACME                         July 2016
+
 
    [RFC7638]  Jones, M. and N. Sakimura, "JSON Web Key (JWK)
               Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
@@ -3127,17 +3167,6 @@ Internet-Draft                    ACME                         July 2016
 
 Authors' Addresses
 
-
-
-
-
-
-
-Barnes, et al.           Expires January 9, 2017               [Page 56]
-
-Internet-Draft                    ACME                         July 2016
-
-
    Richard Barnes
    Mozilla
 
@@ -3154,35 +3183,6 @@ Internet-Draft                    ACME                         July 2016
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
