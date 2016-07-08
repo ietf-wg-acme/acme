@@ -577,6 +577,7 @@ li, p {
   <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221;</li><li>&#8220;jwk&#8221;</li><li>&#8220;nonce&#8221; (defined below)</li><li>&#8220;url&#8221; (defined below)</li></ul></li>
 </ul>
 <p id="rfc.section.5.2.p.4">Note that this implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
+<p id="rfc.section.5.2.p.5">In the examples below, JWS objects are shown in the JSON or flattened JSON serialization, with the protected header and payload expressed as base64url(content) instead of the actual base64-encoded value, so that the content is readable.  Some fields are omitted for brevity, marked with &#8220;&#8230;&#8221;.</p>
 <h1 id="rfc.section.5.3"><a href="#rfc.section.5.3">5.3.</a> <a href="#request-uri-type-integrity" id="request-uri-type-integrity">Request URI Type Integrity</a></h1>
 <p id="rfc.section.5.3.p.1">It is common in deployment the entity terminating TLS for HTTPS to be different from the entity operating the logical HTTPS server, with a &#8220;request routing&#8221; layer in the middle.  For example, an ACME CA might have a content delivery network terminate TLS connections from clients so that it can inspect client requests for denial-of-service protection.</p>
 <p id="rfc.section.5.3.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to provide a limited integrity mechanism, which protects against an intermediary changing the request URI to another ACME URI of a different type.  (It does not protect against changing between URIs of the same type, e.g., from one authorization URI to another).</p>
@@ -991,17 +992,25 @@ Content-Type: application/json
 <h1 id="rfc.section.6.5"><a href="#rfc.section.6.5">6.5.</a> <a href="#registration" id="registration">Registration</a></h1>
 <p id="rfc.section.6.5.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-registration URI.  The body of the request is a stub registration object containing only the &#8220;contact&#8221; field.</p>
 <pre>
-POST /acme/new-registration HTTP/1.1
+POST /acme/new-reg HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "contact": [
-    "mailto:cert-admin@example.com",
-    "tel:+12025551212"
-  ],
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "6S8IqOGY7eL2lsGoTZYifg",
+    "url": "https://example.com/acme/new-reg"
+  })
+  "payload": base64url({
+    "contact": [
+      "mailto:cert-admin@example.com",
+      "tel:+12025551212"
+    ]
+  }),
+  "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
 }
-/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.5.p.2">The server MUST ignore any values provided in the &#8220;key&#8221;, &#8220;authorizations&#8221;, and &#8220;certificates&#8221; fields in registration bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they may be provided by the client.</p>
 <p id="rfc.section.6.5.p.3">The server creates a registration object with the included contact information.  The &#8220;key&#8221; element of the registration is set to the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header).  The server returns this registration object in a 201 (Created) response, with the registration URI in a Location header field.</p>
@@ -1029,15 +1038,23 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 <pre>
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "contact": [
-    "mailto:certificates@example.com",
-    "tel:+12125551212"
-  ],
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
+    "url": "https://example.com/acme/reg/asdf"
+  })
+  "payload": base64url({
+    "contact": [
+      "mailto:certificates@example.com",
+      "tel:+12125551212"
+    ]
+  }),
+  "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
 }
-/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.5.p.8">Servers SHOULD NOT respond to GET requests for registration resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is trivial ({}).</p>
 <h1 id="rfc.section.6.5.1"><a href="#rfc.section.6.5.1">6.5.1.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a></h1>
@@ -1055,13 +1072,31 @@ Host: example.com
 <pre>
 POST /acme/key-change HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body (with two signatures) */
 {
-  "oldKey": /* Old key in JWK form */
-  "newKey": /* New key in JWK form */
+  "payload": base64url({
+    "oldKey": /* Old key in JWK form */
+    "newKey": /* New key in JWK form */
+  }),
+  "signatures": [{
+    "protected": base64url({
+      "alg": "ES256",
+      "jwk": /* old key */,
+      "nonce": "pq00v-D1KB0sReG4jFfqVg",
+      "url": "https://example.com/acme/key-change"
+    }),
+    "signature": "XFvVbo9diBlIBvhE...UI62sNT6MZsCJpQo"
+  }, {
+    "protected": base64url({
+      "alg": "ES256",
+      "jwk": /* new key */,
+      "nonce": "vYjyueEYhMjpVQHe_unw4g",
+      "url": "https://example.com/acme/key-change"
+    }),
+    "signature": "q20gG1f1r9cD6tBM...a48h0CkP11tl5Doo"
+  }]
 }
-/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.5.1.p.5">On receiving key-change request, the server MUST perform the following steps in addition to the typical JWS validation:</p>
 <p/>
@@ -1080,12 +1115,20 @@ Host: example.com
 <pre>
 POST /acme/reg/asdf HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "status": "deactivated"
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "ntuJWWSic4WVNSqeUmshgg",
+    "url": "https://example.com/acme/reg/asdf"
+  })
+  "payload": base64url({
+    "status": "deactivated"
+  }),
+  "signature": "earzVLd3m5M4xJzR...bVTqn7R08AKOVf3Y"
 }
-/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.5.2.p.2">The server MUST verify that the request is signed by the account key. If the server accepts the deactivation request, it should reply with a 200 (OK) status code and the current contents of the registration object.</p>
 <p id="rfc.section.6.5.2.p.3">Once an account is deactivated, the server MUST NOT accept further requests authorized by that account&#8217;s key. It is up to server policy how long to retain data related to that account, whether to revoke certificates issued by that account, and whether to send email to that account&#8217;s contacts. ACME does not provide a way to reactivate a deactivated account.</p>
@@ -1104,14 +1147,22 @@ Host: example.com
 <pre>
 POST /acme/new-app HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
-  "notBefore": "2016-01-01T00:00:00Z",
-  "notAfter": "2016-01-08T00:00:00Z"
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "5XJ1L3lEkMG7tR6pA00clA",
+    "url": "https://example.com/acme/new-app"
+  })
+  "payload": base64url({
+    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+    "notBefore": "2016-01-01T00:00:00Z",
+    "notAfter": "2016-01-08T00:00:00Z"
+  }),
+  "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
 }
-/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.6.p.3">The CSR encodes the client&#8217;s requests with regard to the content of the certificate to be issued.  The CSR MUST indicate the requested identifiers, either in the commonName portion of the requested subject name, or in an extensionRequest attribute <a href="#RFC2985">[RFC2985]</a> requesting a subjectAltName extension.</p>
 <p id="rfc.section.6.6.p.4">The server MUST return an error if it cannot fulfil the request as specified, and MUST NOT issue a certificate with contents other than those requested.  If the server requires the request to be modified in a certain way, it should indicate the required changes using an appropriate error code and description.</p>
@@ -1219,13 +1270,21 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 <pre>
 POST /acme/authz/asdf/0 HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "type": "http-01",
-  "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
+    "url": "https://example.com/acme/authz/asdf/0"
+  })
+  "payload": base64url({
+    "type": "http-01",
+    "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
+  }),
+  "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
 }
-/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.7.1.p.4">The server updates the authorization document by updating its representation of the challenge with the response fields provided by the client.  The server MUST ignore any fields in the response object that are not specified as response fields for this type of challenge.  The server provides a 200 (OK) response with the updated challenge object as its body.</p>
 <p id="rfc.section.6.7.1.p.5">If the client&#8217;s response is invalid for some reason, or does not provide the server with appropriate information to validate the challenge, then the server MUST return an HTTP error.  On receiving such an error, the client SHOULD undo any actions that have been taken to fulfill the challenge, e.g., removing files that have been provisioned to a web server.</p>
@@ -1259,16 +1318,24 @@ HTTP/1.1 200 OK
 }
 </pre>
 <h1 id="rfc.section.6.7.2"><a href="#rfc.section.6.7.2">6.7.2.</a> <a href="#deactivating-an-authorization" id="deactivating-an-authorization">Deactivating an Authorization</a></h1>
-<p id="rfc.section.6.7.2.p.1">If a client wishes to relinquish its authorization to issue certificates for an identifier, then it may request that the server deactivate each authorization associated with that identifier.</p>
+<p id="rfc.section.6.7.2.p.1">If a client wishes to relinquish its authorization to issue certificates for an identifier, then it may request that the server deactivate each authorization associated with that identifier by sending a POST request with the static object {&#8220;status&#8221;: &#8220;deactivated&#8221;}.</p>
 <pre>
 POST /acme/authz/asdf HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "status": "deactivated"
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "xWCM9lGbIyCgue8di6ueWQ",
+    "url": "https://example.com/acme/authz/asdf"
+  })
+  "payload": base64url({
+    "status": "deactivated"
+  }),
+  "signature": "srX9Ji7Le9bjszhu...WTFdtujObzMtZcx4"
 }
-/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.7.2.p.2">The server MUST verify that the request is signed by the account key corresponding to the account that owns the authorization. If the server accepts the deactivation, it should reply with a 200 (OK) status code and the current contents of the registration object.</p>
 <p id="rfc.section.6.7.2.p.3">The server MUST NOT treat deactivated authorization objects as sufficient for issuing certificates.</p>
@@ -1285,13 +1352,21 @@ Host: example.com
 <pre>
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 
-/* BEGIN JWS-signed request body */
 {
-  "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
-  "reason": 1
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/revoke-cert"
+  })
+  "payload": base64url({
+    "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+    "reason": 1
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed request body */
 </pre>
 <p id="rfc.section.6.8.p.3">Revocation requests are different from other ACME request in that they can be signed either with an account key pair or the key pair in the certificate.  Before revoking a certificate, the server MUST verify that the key used to sign the request is authorized to revoke the certificate.  The server SHOULD consider at least the following keys authorized for a given certificate:</p>
 <p/>
