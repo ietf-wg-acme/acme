@@ -34,6 +34,7 @@ normative:
   RFC2986:
   RFC3339:
   RFC3553:
+  RFC3986:
   RFC4291:
   RFC4648:
   RFC5226:
@@ -333,9 +334,12 @@ authentication of requests by way of key continuity.
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST be encoded using UTF-8
-* The JWS Header or Protected Header MUST include "alg" and "jwk" fields
 * The JWS MUST NOT have the value "none" in its "alg" field
-* The JWS Protected Header MUST include the "nonce" field (defined below)
+* The JWS Protected Header MUST include the following fields:
+  * "alg"
+  * "jwk"
+  * "nonce" (defined below)
+  * "url" (defined below)
 
 Note that this implies that GET requests are not authenticated.  Servers MUST
 NOT respond to GET requests for resources that might be considered sensitive.
@@ -355,24 +359,23 @@ changing the request URI to another ACME URI of a different type.  (It does not
 protect against changing between URIs of the same type, e.g., from one
 authorization URI to another).
 
-An ACME request carries a JSON dictionary that provides the details of the
-client's request to the server.  Each request object MUST have a "resource"
-field that indicates what type of resource the request is addressed to, as
-defined in the below table:
+As noted above, all ACME request object carry a "url" parameter in their
+protected header.  This header parameter encodes the URL to which the client is
+directing the request.  On receiving such an object in an HTTP request, the server
+MUST compare the "url" parameter to the request URI.  If the two do not match,
+then the server MUST reject the request as unauthorized.
 
-| Resource type        | "resource" value |
-|:---------------------|:-----------------|
-| New registration     | new-reg          |
-| New application      | new-app          |
-| Revoke certificate   | revoke-cert      |
-| Registration         | reg              |
-| Application          | app              |
-| Authorization        | authz            |
-| Challenge            | challenge        |
-| Certificate          | cert             |
-| Key change           | key-change       |
+Except for the directory resource, all ACME resources are addressed with URLs
+provided to the client by the server.  In such cases, the client MUST set the
+"url" field to the exact string provided by the server (rather than performing
+any re-encoding on the URL).
 
-Other fields in ACME request bodies are described below.
+### "url" (URL) JWS header parameter
+
+The "url" header parameter specifies the URL to which this JWS object is
+directed {{RFC3986}}.  The "url" parameter MUST be carried in the protected
+header of the JWS.  The value of the "nonce" header MUST be a JSON string
+representing the URL.
 
 ## Rate limits
 
@@ -610,7 +613,6 @@ relation "next" indicating a URL to retrieve further entries.
 
 ~~~~~~~~~~
 {
-  "resource": "new-reg",
   "contact": [
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
@@ -832,9 +834,15 @@ label) MUST NOT be included in authorization requests.
 
 In order to help clients configure themselves with the right URIs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
-needed to configure clients. It is a JSON dictionary, whose keys are the
-"resource" values listed in {{resources}}, and whose values are the
-URIs used to accomplish the corresponding function.
+needed to configure clients. It is a JSON dictionary, whose keys are drawn from
+the following table and whose values are the corresponding URLs.
+
+| Key         | URL in value         |
+|:------------|:---------------------|
+| new-reg     | New registration     |
+| new-app     | New application      |
+| revoke-cert | Revoke certificate   |
+| key-change  | Key change           |
 
 There is no constraint on the actual URI of the directory except that it
 should be different from the other ACME server resources' URIs, and that it
@@ -889,8 +897,7 @@ Content-Type: application/json
 
 A client creates a new account with the server by sending a POST request to the
 server's new-registration URI.  The body of the request is a stub registration
-object containing only the "contact" field (along with the required "resource"
-field).
+object containing only the "contact" field.
 
 ~~~~~~~~~~
 POST /acme/new-registration HTTP/1.1
@@ -898,7 +905,6 @@ Host: example.com
 
 /* BEGIN JWS-signed request body */
 {
-  "resource": "new-reg",
   "contact": [
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
@@ -966,7 +972,6 @@ Host: example.com
 
 /* BEGIN JWS-signed request body */
 {
-  "resource": "reg",
   "contact": [
     "mailto:certificates@example.com",
     "tel:+12125551212"
@@ -979,7 +984,7 @@ Servers SHOULD NOT respond to GET requests for registration resources as these
 requests are not authenticated.  If a client wishes to query the server for
 information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
-That is, it should send a JWS whose payload is trivial ({"resource":"reg"}).
+That is, it should send a JWS whose payload is trivial ({}).
 
 ### Account Key Roll-over
 
@@ -1001,7 +1006,6 @@ Host: example.com
 
 /* BEGIN JWS-signed request body (with two signatures) */
 {
-  "resource": "key-change",
   "key": /* New key in JWK form */
 }
 /* END JWS-signed request body */
@@ -1038,7 +1042,6 @@ Host: example.com
 
 /* BEGIN JWS-signed request body */
 {
-  "resource": "reg",
   "status": "deactivated"
 }
 /* END JWS-signed request body */
@@ -1083,7 +1086,6 @@ Host: example.com
 
 /* BEGIN JWS-signed request body */
 {
-  "resource": "new-app",
   "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z"
@@ -1301,7 +1303,6 @@ Host: example.com
 
 /* BEGIN JWS-signed request body */
 {
-  "resource": "challenge",
   "type": "http-01",
   "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
 }
@@ -1381,7 +1382,6 @@ Host: example.com
 
 /* BEGIN JWS-signed request body */
 {
-  "resource": "authz",
   "status": "deactivated"
 }
 /* END JWS-signed request body */
@@ -1419,7 +1419,6 @@ Host: example.com
 
 /* BEGIN JWS-signed request body */
 {
-  "resource": "revoke-cert",
   "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
   "reason": 1
 }
@@ -1880,6 +1879,21 @@ value:
 +:------------------+:---------+:---------+:-----------------+
 | Replay-Nonce      | http     | standard | {{replay-nonce}} |
 
+## "url" JWS Header Parameter
+
+The "JSON Web Signature and Encryption Header Parameters" registry should be
+updated with the following additional value:
+
+*  Header Parameter Name: "url"
+*  Header Parameter Description: URL
+*  Header Parameter Usage Location(s): JWE, JWS
+*  Change Controller: IESG
+*  Specification Document(s): {{url-url-jws-header-parameter}} of
+   RFC XXXX
+
+[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
 ## "nonce" JWS Header Parameter
 
 The "JSON Web Signature and Encryption Header Parameters" registry should be
@@ -1919,11 +1933,12 @@ ACME parameters. ]]
 
 ## New Registries
 
-This document requests that IANA create three new registries:
+This document requests that IANA create the following new registries:
 
 1. ACME Error Codes
-2. ACME Identifier Types
-3. ACME Challenge Types
+2. ACME Resource Types
+3. ACME Identifier Types
+4. ACME Challenge Types
 
 All of these registries should be administered under a Specification Required
 policy {{RFC5226}}.
@@ -1942,6 +1957,29 @@ Template:
 
 Initial contents: The codes and descriptions in the table in {{errors}} above,
 with the Reference field set to point to this specification.
+
+### Resource Types
+
+This registry lists the types of resources that ACME servers may list in their
+directory objects.
+
+Template:
+
+* Key: The value to be used as a dictionary key in the directory object
+* Resource type: The type of resource labeled by the key
+* Reference: Where the identifier type is defined
+
+Initial contents:
+
+| Key         | Resource type        | Reference |
+|:------------|:---------------------|:----------|
+| new-reg     | New registration     | RFC XXXX  |
+| new-app     | New application      | RFC XXXX  |
+| revoke-cert | Revoke certificate   | RFC XXXX  |
+| key-change  | Key change           | RFC XXXX  |
+
+[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
 
 ### Identifier Types
 
