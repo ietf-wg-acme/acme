@@ -25,42 +25,6 @@ author:
     org: University of Michigan
     email: jdkasten@umich.edu
 
-
-normative:
-  RFC2119:
-  RFC2314:
-  RFC2818:
-  RFC2985:
-  RFC2986:
-  RFC3339:
-  RFC3553:
-  RFC3986:
-  RFC4291:
-  RFC4648:
-  RFC5226:
-  RFC5246:
-  RFC5280:
-  RFC5785:
-  RFC5988:
-  RFC6066:
-  RFC6570:
-  RFC6844:
-  RFC6962:
-  RFC7159:
-  RFC7469:
-  RFC7515:
-  RFC7517:
-  RFC7518:
-  RFC7638:
-  I-D.ietf-appsawg-http-problem:
-
-informative:
-  RFC3552:
-  W3C.CR-cors-20130129:
-  W3C.WD-capability-urls-20140218:
-  I-D.vixie-dnsext-dns0x20:
-
-
 --- abstract
 
 Certificates in the Web's X.509 PKI (PKIX) are used for a number of purposes,
@@ -86,7 +50,7 @@ discussed on the ACME mailing list (acme@ietf.org).
 
 # Introduction
 
-Certificates in the Web PKI {{RFC5280}} are most commonly used to authenticate
+Certificates in the Web PKI {{!RFC5280}} are most commonly used to authenticate
 domain names.  Thus, certificate authorities in the Web PKI are trusted to
 verify that an applicant for a certificate legitimately represents the domain
 name(s) in the certificate.
@@ -95,7 +59,7 @@ Existing Web PKI certificate authorities tend to run on a set of ad hoc
 protocols for certificate issuance and identity verification.  A typical user
 experience is something like:
 
-* Generate a PKCS#10 {{RFC2314}} Certificate Signing Request (CSR).
+* Generate a PKCS#10 {{!RFC2986}} Certificate Signing Request (CSR).
 * Cut-and-paste the CSR into a CA web page.
 * Prove ownership of the domain by one of the following methods:
    * Put a CA-provided challenge at a specific place on the web server.
@@ -121,12 +85,12 @@ This document describes an extensible framework for automating the issuance and
 domain validation procedure, thereby allowing servers and infrastructural
 software to obtain certificates without user interaction.  Use of this protocol
 should radically simplify the deployment of HTTPS and the practicality of PKIX
-authentication for other protocols based on TLS {{RFC5246}}.
+authentication for other protocols based on TLS {{!RFC5246}}.
 
 # Deployment Model and Operator Experience
 
 The major guiding use case for ACME is obtaining certificates for Web sites
-(HTTPS {{RFC2818}}).  In that case, the server is intended to speak for one or
+(HTTPS {{!RFC2818}}).  In that case, the server is intended to speak for one or
 more domains, and the process of certificate issuance is intended to verify that
 the server actually speaks for the domain(s).
 
@@ -178,7 +142,7 @@ human administrator from additional configuration work.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
 NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in RFC 2119 {{RFC2119}}.
+document are to be interpreted as described in RFC 2119 {{!RFC2119}}.
 
 The two main roles in ACME are “client” and “server”.  The ACME client uses the
 protocol to request certificate management actions, such as issuance or
@@ -291,21 +255,18 @@ validation challenges the server might require.
 
 # Message Transport
 
-ACME uses a combination of HTTPS and JWS to create a messaging layer with a few
-important security properties.
-
 Communications between an ACME client and an ACME server are done over HTTPS,
 using JWS to provide some additional security properties for messages sent from
 the client to the server.  HTTPS provides server authentication and
 confidentiality.  With some ACME-specific extensions, JWS provides
-authentication of the client's request payloads, anti-replay protection, and a
-degree of integrity for the HTTPS request URI.
+authentication of the client's request payloads, anti-replay protection, and
+integrity for the HTTPS request URI.
 
 ## HTTPS Requests
 
 Each ACME function is accomplished by the client sending a sequence of HTTPS
-requests to the server, carrying JSON messages {{RFC2818}}{{RFC7159}}.  Use of
-HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning {{RFC7469}},
+requests to the server, carrying JSON messages {{!RFC2818}}{{!RFC7159}}.  Use of
+HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning {{?RFC7469}},
 and servers SHOULD emit pinning headers.  Each subsection of
 {{certificate-management}} below describes the message formats used by the
 function, and the order in which messages are sent.
@@ -315,12 +276,12 @@ the ACME server is the HTTPS server.
 
 ACME servers that are intended to be generally accessible need to use
 Cross-Origin Resource Sharing (CORS) in order to be accessible from
-browser-based clients {{W3C.CR-cors-20130129}}.  Such servers SHOULD set the
+browser-based clients {{?W3C.CR-cors-20130129}}.  Such servers SHOULD set the
 Access-Control-Allow-Origin header field to the value "*".
 
 Binary fields in the JSON objects used by ACME are encoded using base64url
-encoding described in {{RFC4648}} Section 5, according to the profile specified
-in JSON Web Signature {{RFC7515}} Section 2. This encoding uses a URL safe
+encoding described in {{!RFC4648}} Section 5, according to the profile specified
+in JSON Web Signature {{!RFC7515}} Section 2. This encoding uses a URL safe
 character set. Trailing '=' characters MUST be stripped.
 
 ## Request Authentication
@@ -349,7 +310,7 @@ serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.  Some fields are omitted for brevity, marked with "...".
 
-## Request URI Type Integrity
+## Request URI Integrity
 
 It is common in deployment the entity terminating TLS for HTTPS to be different
 from the entity operating the logical HTTPS server, with a "request routing"
@@ -378,15 +339,9 @@ any re-encoding on the URL).
 ### "url" (URL) JWS header parameter
 
 The "url" header parameter specifies the URL to which this JWS object is
-directed {{RFC3986}}.  The "url" parameter MUST be carried in the protected
+directed {{!RFC3986}}.  The "url" parameter MUST be carried in the protected
 header of the JWS.  The value of the "nonce" header MUST be a JSON string
 representing the URL.
-
-## Rate limits
-
-Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code "rateLimited".  Additionally, the server SHOULD send a "Retry-After" header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.
-
-In addition to the human readable "detail" field of the error response, the server MAY send one or multiple tokens in the "Link" header pointing to documentation about the specific hit rate limits using the "rate-limit" relation.
 
 ## Replay protection
 
@@ -424,7 +379,7 @@ server should generate the value provided in Replay-Nonce in such a way that
 they are unique to each message, with high probability.
 
 The value of the Replay-Nonce field MUST be an octet string encoded according to
-the base64url encoding described in Section 2 of {{RFC7515}}.  Clients MUST
+the base64url encoding described in Section 2 of {{!RFC7515}}.  Clients MUST
 ignore invalid Replay-Nonce values.
 
 ~~~~~
@@ -442,9 +397,15 @@ of a JWS to recognize when replay has occurred. The "nonce" header parameter
 MUST be carried in the protected header of the JWS.
 
 The value of the "nonce" header parameter MUST be an octet string, encoded
-according to the base64url encoding described in Section 2 of {{RFC7515}}.  If
+according to the base64url encoding described in Section 2 of {{!RFC7515}}.  If
 the value of a "nonce" header parameter is not valid according to this encoding,
 then the verifier MUST reject the JWS as malformed.
+
+## Rate limits
+
+Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code "rateLimited".  Additionally, the server SHOULD send a "Retry-After" header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.
+
+In addition to the human readable "detail" field of the error response, the server MAY send one or multiple tokens in the "Link" header pointing to documentation about the specific hit rate limits using the "rate-limit" relation.
 
 ## Errors
 
@@ -454,7 +415,7 @@ For example:  If the client submits a request using a method not allowed in this
 document, then the server MAY return status code 405 (Method Not Allowed).
 
 When the server responds with an error status, it SHOULD provide additional
-information using problem document {{I-D.ietf-appsawg-http-problem}}.
+information using problem document {{!RFC7807}}.
 To facilitate automatic response
 to errors, this document defines the following standard tokens for use in the
 "type" field (within the "urn:ietf:params:acme:error:" namespace):
@@ -520,7 +481,7 @@ provide equivalent functionality.
 ACME uses different URIs for different management functions. Each function is
 listed in a directory along with its corresponding URI, so clients only need to
 be configured with the directory URI.  These URIs are connected by a few
-different link relations {{RFC5988}}.
+different link relations {{!RFC5988}}.
 
 The "up" link relation is used with challenge resources to indicate the
 authorization resource to which a challenge belongs.  It is also used from
@@ -532,29 +493,29 @@ The "directory" link relation is present on all resources other than the
 directory and indicates the directory URL.
 
 The following diagram illustrates the relations between resources on an ACME
-server.  The solid lines indicate link relations, and the dotted lines
-correspond to relationships expressed in other ways, e.g., the Location header
-in a 201 (Created) response.
+server.  For the most part, these relations are expressed by URLs provided as
+strings in the resources' JSON representations.  Lines with labels in quotes
+indicate HTTP link relations
 
 ~~~~~~~~~~
                                directory
-                                   .
-                                   .
-       ....................................................
-       .                  .                               .
-       .                  .                               .
+                                   |
+                                   |
+       ----------------------------------------------------
+       |                  |                               |
+       |                  |                               |
        V                  V                               V
     new-reg            new-app                       revoke-cert
-       .                  .                               ^
-       .                  .                               | "revoke"
+       |                  |                               ^
+       |                  |                               | "revoke"
        V                  V                               |
-      reg - - - - - - -> app - - - - - - -> cert ---------+
-                         . ^                  |
-                         . | "up"             | "up"
+      reg -------------> app -------------> cert ---------+
+                         | ^                  |
+                         | | "up"             | "up"
                          V |                  V
                         authz             cert-chain
-                         . ^
-                         . | "up"
+                         | ^
+                         | | "up"
                          V |
                        challenge
 ~~~~~~~~~~
@@ -577,6 +538,69 @@ certificate, and fetch an updated certificate some time after issuance.  The
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
 
+### Directory
+
+In order to help clients configure themselves with the right URIs for each ACME
+operation, ACME servers provide a directory object. This should be the only URL
+needed to configure clients. It is a JSON dictionary, whose keys are drawn from
+the following table and whose values are the corresponding URLs.
+
+| Key         | URL in value         |
+|:------------|:---------------------|
+| new-reg     | New registration     |
+| new-app     | New application      |
+| revoke-cert | Revoke certificate   |
+| key-change  | Key change           |
+
+There is no constraint on the actual URI of the directory except that it
+should be different from the other ACME server resources' URIs, and that it
+should not clash with other services. For instance:
+
+ * a host which function as both an ACME and Web server may want to keep
+   the root path "/" for an HTML "front page", and and place the ACME
+   directory under path "/acme".
+
+ * a host which only functions as an ACME server could place the directory
+   under path "/".
+
+The dictionary MAY additionally contain a key "meta". If present, it MUST be a
+JSON dictionary; each item in the dictionary is an item of metadata relating to
+the service provided by the ACME server.
+
+The following metadata items are defined, all of which are OPTIONAL:
+
+"terms-of-service" (optional, string):
+: A URI identifying the current terms of service.
+
+"website" (optional, string)):
+: An HTTP or HTTPS URL locating a website providing more
+information about the ACME server.
+
+"caa-identities" (optional, array of string):
+: Each string MUST be a lowercase hostname which the ACME server recognises as
+referring to itself for the purposes of CAA record validation as defined in
+{{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
+use when configuring CAA record.
+
+Clients access the directory by sending a GET request to the directory URI.
+
+~~~~~~~~~~
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "new-reg": "https://example.com/acme/new-reg",
+  "new-app": "https://example.com/acme/new-app",
+  "revoke-cert": "https://example.com/acme/revoke-cert",
+  "key-change": "https://example.com/acme/key-change",
+  "meta": {
+    "terms-of-service": "https://example.com/acme/terms",
+    "website": "https://www.example.com/",
+    "caa-identities": ["example.com"]
+  }
+}
+~~~~~~~~~~
+
 ### Registration Objects
 
 An ACME registration resource represents a set of metadata associated to an
@@ -584,7 +608,7 @@ account key pair.  Registration resources have the following structure:
 
 key (required, dictionary):
 : The public key of the account key pair, encoded as a JSON Web Key object
-{{RFC7517}}.
+{{!RFC7517}}.
 
 status (required, string):
 : "good" or "deactivated"
@@ -642,22 +666,22 @@ status (required, string):
 
 expires (optional, string):
 : The timestamp after which the server will consider this application invalid,
-encoded in the format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED
+encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
 for objects with "pending" or "valid" in the status field.
 
 csr (required, string):
-: A CSR encoding the parameters for the certificate being requested {{RFC2986}}.
+: A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
 The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This
 field uses the same modified Base64 encoding rules used elsewhere in this
 document, so it is different from PEM.)
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
-format defined in {{RFC3339}}
+format defined in {{!RFC3339}}
 
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
-format defined in {{RFC3339}}
+format defined in {{!RFC3339}}
 
 requirements (required, array):
 : The requirements that the client needs to fulfill before the requested
@@ -729,7 +753,7 @@ status (required, string):
 
 All additional fields are specified by the requirement type.
 
-## Authorization Requirement
+#### Authorization Requirement
 
 A requirement with type "authorization" requests that the ACME client complete
 an authorization transaction.  The server specifies the authorization by
@@ -743,7 +767,7 @@ To fulfill this requirement, the ACME client should fetch the authorization obje
 from the indicated URL, then follow the process for obtaining authorization as
 specified in {{identifier-authorization}}.
 
-## Out-of-Band Requirement
+#### Out-of-Band Requirement
 
 A requirement with type "out-of-band" requests that the ACME client have a
 human user visit a web page in order to receive further instructions for how to
@@ -783,7 +807,7 @@ the default value is "pending".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
-encoded in the format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED
+encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
 for objects with "valid" in the "status field.
 
 scope (optional, string):
@@ -834,69 +858,6 @@ label) MUST NOT be included in authorization requests.
 }
 ~~~~~~~~~~
 
-
-## Directory
-
-In order to help clients configure themselves with the right URIs for each ACME
-operation, ACME servers provide a directory object. This should be the only URL
-needed to configure clients. It is a JSON dictionary, whose keys are drawn from
-the following table and whose values are the corresponding URLs.
-
-| Key         | URL in value         |
-|:------------|:---------------------|
-| new-reg     | New registration     |
-| new-app     | New application      |
-| revoke-cert | Revoke certificate   |
-| key-change  | Key change           |
-
-There is no constraint on the actual URI of the directory except that it
-should be different from the other ACME server resources' URIs, and that it
-should not clash with other services. For instance:
-
- * a host which function as both an ACME and Web server may want to keep
-   the root path "/" for an HTML "front page", and and place the ACME
-   directory under path "/acme".
-
- * a host which only functions as an ACME server could place the directory
-   under path "/".
-
-The dictionary MAY additionally contain a key "meta". If present, it MUST be a
-JSON dictionary; each item in the dictionary is an item of metadata relating to
-the service provided by the ACME server.
-
-The following metadata items are defined, all of which are OPTIONAL:
-
-"terms-of-service" (optional, string):
-: A URI identifying the current terms of service.
-
-"website" (optional, string)):
-: An HTTP or HTTPS URL locating a website providing more
-information about the ACME server.
-
-"caa-identities" (optional, array of string):
-: Each string MUST be a lowercase hostname which the ACME server recognises as
-referring to itself for the purposes of CAA record validation as defined in
-{{RFC6844}}.  This allows clients to determine the correct issuer domain name to
-use when configuring CAA record.
-
-Clients access the directory by sending a GET request to the directory URI.
-
-~~~~~~~~~~
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{
-  "new-reg": "https://example.com/acme/new-reg",
-  "new-app": "https://example.com/acme/new-app",
-  "revoke-cert": "https://example.com/acme/revoke-cert",
-  "key-change": "https://example.com/acme/key-change",
-  "meta": {
-    "terms-of-service": "https://example.com/acme/terms",
-    "website": "https://www.example.com/",
-    "caa-identities": ["example.com"]
-  }
-}
-~~~~~~~~~~
 
 ## Registration
 
@@ -1123,18 +1084,18 @@ object whose JSON payload is a subset of the application object defined in
 be issued:
 
 csr (required, string):
-: A CSR encoding the parameters for the certificate being requested {{RFC2986}}.
+: A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
 The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This
 field uses the same modified Base64 encoding rules used elsewhere in this
 document, so it is different from PEM.)
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
-format defined in {{RFC3339}}
+format defined in {{!RFC3339}}
 
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
-format defined in {{RFC3339}}
+format defined in {{!RFC3339}}
 
 ~~~~~~~~~~
 POST /acme/new-app HTTP/1.1
@@ -1160,7 +1121,7 @@ Content-Type: application/jose+json
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the requested identifiers,
 either in the commonName portion of the requested subject name, or in an
-extensionRequest attribute {{RFC2985}} requesting a subjectAltName extension.
+extensionRequest attribute {{!RFC2985}} requesting a subjectAltName extension.
 
 The server MUST return an error if it cannot fulfil the request as specified,
 and MUST NOT issue a certificate with contents other than those requested.  If
@@ -1256,7 +1217,7 @@ from these resources to enable the client to build a full certificate chain.
 The server MUST also provide a link relation header field with relation "author"
 to indicate the application under which this certificate was issued.
 
-If the CA participates in Certificate Transparency (CT) {{RFC6962}}, then they
+If the CA participates in Certificate Transparency (CT) {{?RFC6962}}, then they
 may want to provide the client with a Signed Certificate Timestamp (SCT) that
 can be used to prove that a certificate was submitted to a CT log.  An SCT can
 be included as an extension in the certificate or as an extension to OCSP
@@ -1598,7 +1559,7 @@ format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 error (optional, dictionary of string):
 : The error that occurred while the server was validating the challenge, if any.
 This field is structured as a problem document
-{{I-D.ietf-appsawg-http-problem}}.
+{{!RFC7807}}.
 
 All additional fields are specified by the challenge type.  If the server sets a
 challenge's "status" to "invalid", it SHOULD also include the "error" field to
@@ -1640,7 +1601,7 @@ concatenating the token for the challenge with a key fingerprint, separated by a
 key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 ~~~~~~~~~~
 
-The "JWK\_Thumbprint" step indicates the computation specified in {{RFC7638}},
+The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
 using the SHA-256 digest.  As specified in the individual challenges below, the
 token for a challenge is a JSON string comprised entirely of characters in the
 URL-safe Base64 alphabet.  The "||" operator indicates concatenation of strings.
@@ -1650,10 +1611,10 @@ required for the DNS and TLS SNI challenges, the key authorization string MUST
 be represented in UTF-8 form (or, equivalently, ASCII).
 
 An example of how to compute a JWK thumbprint can be found in Section 3.1 of
-{{RFC7638}}.  Note that some cryptographic libraries prepend a zero octet to the
+{{!RFC7638}}.  Note that some cryptographic libraries prepend a zero octet to the
 representation of the RSA public key parameters N and E, in order to avoid
-ambiguity with regard to the sign of the number.  As noted in JWA {{RFC7518}}, a
-JWK object MUST NOT include this zero octet.  That is, any initial zero octets
+ambiguity with regard to the sign of the number.  As noted in JWA {{!RFC7518}},
+a JWK object MUST NOT include this zero octet.  That is, any initial zero octets
 MUST be stripped before the values are base64url-encoded.
 
 ## HTTP
@@ -1724,7 +1685,7 @@ response to the POST request in which the client sent the challenge.
 Given a challenge/response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
 
-1. Form a URI by populating the URI template {{RFC6570}}
+1. Form a URI by populating the URI template {{!RFC6570}}
    "http://{domain}/.well-known/acme-challenge/{token}", where:
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
@@ -1745,7 +1706,7 @@ The TLS with Server Name Indication (TLS SNI) validation method
 proves control over a domain name by requiring the client to configure a TLS
 server referenced by an A/AAAA record under the domain name to respond to
 specific connection attempts utilizing the Server Name Indication extension
-{{RFC6066}}. The server verifies the client's challenge by accessing the
+{{!RFC6066}}. The server verifies the client's challenge by accessing the
 reconfigured server and verifying a particular challenge certificate is
 presented.
 
@@ -1949,7 +1910,7 @@ objects? ]]
 ## Well-Known URI for the HTTP Challenge
 
 The "Well-Known URIs" registry should be updated with the following additional
-value (using the template from {{RFC5785}}):
+value (using the template from {{?RFC5785}}):
 
 URI suffix: acme-challenge
 
@@ -2002,7 +1963,7 @@ document ]]
 
 The "IETF URN Sub-namespace for Registered Protocol Parameter Identifiers"
 registry should be updated with the following additional value, following the
-template in {{RFC3553}}:
+template in {{?RFC3553}}:
 
 Registry name:
 : acme
@@ -2030,7 +1991,7 @@ This document requests that IANA create the following new registries:
 4. ACME Challenge Types
 
 All of these registries should be administered under a Specification Required
-policy {{RFC5226}}.
+policy {{?RFC5226}}.
 
 ### Error Codes
 
@@ -2135,7 +2096,7 @@ miscellaneous considerations.
 ## Threat model
 
 As a service on the Internet, ACME broadly exists within the Internet threat
-model {{RFC3552}}.  In analyzing ACME, it is useful to think of an ACME server
+model {{?RFC3552}}.  In analyzing ACME, it is useful to think of an ACME server
 interacting with other Internet hosts along three "channels":
 
 * An ACME channel, over which the ACME HTTPS requests are exchanged
@@ -2251,7 +2212,7 @@ can apply:
   security for zones that are DNSSEC-enabled)
 * Querying the DNS from multiple vantage points to address local attackers
 * Applying mitigations against DNS off-path attackers, e.g., adding entropy to
-  requests {{I-D.vixie-dnsext-dns0x20}} or only using TCP
+  requests {{?I-D.vixie-dnsext-dns0x20}} or only using TCP
 
 Given these considerations, the ACME validation process makes it impossible for
 any attacker on the ACME channel, or a passive attacker on the validation
