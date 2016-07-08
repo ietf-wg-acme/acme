@@ -804,8 +804,7 @@ client completes all challenges.
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns").  The value of the identifier MUST be the ASCII
 representation of the domain name.  Wildcard domain names (with "*" as the first
-label) MUST NOT be included in authorization requests.  See
-{{certificate-issuance}} below for more information about wildcard domains.
+label) MUST NOT be included in authorization requests.
 
 ~~~~~~~~~~
 {
