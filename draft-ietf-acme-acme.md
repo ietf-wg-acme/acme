@@ -332,7 +332,6 @@ authentication of requests by way of key continuity.
 
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
-* The JWS MUST use the Flattened JSON Serialization
 * The JWS MUST be encoded using UTF-8
 * The JWS Header or Protected Header MUST include "alg" and "jwk" fields
 * The JWS MUST NOT have the value "none" in its "alg" field
