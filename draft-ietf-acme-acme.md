@@ -2167,6 +2167,27 @@ server might limit the rate at which any individual account key can issue
 certificates, or the rate at which validation can be requested within a given
 subtree of the DNS.
 
+## Server-Side Request Forgery
+
+Server-Side Request Forgery (SSRF) attacks can arise when an attacker can cause
+a server to perform HTTP requests to an attacker-chosen URL.  In the ACME HTTP
+challenge validation process, the ACME server performs an HTTP GET request to a
+URL in which the attacker can choose the domain.  This request is made before
+the server has verified that the client controls the domain, so any client can
+cause a query to any domain.
+
+Some server implementations include information from the validation server's
+response (in order to facilitate debugging).  Such implementations enable an
+attacker to extract this information from any web server that is accessible to
+the ACME server, even if it is not accessible to the ACME client.
+
+The risk of SSRF through this channel is limited by the fact that the attacker
+can only control the domain of the URL, not the path.  Nonetheless, in order to
+further limit the SSRF risk, ACME server operators should ensure that validation
+queries can only be sent to servers on the public Internet, and not, say, web
+services within the server operator's internal network.  Since the attacker
+could make requests to these public servers himself, he can't gain anything
+extra through an SSRF attack on ACME aside from a layer of anonymization.
 
 ## CA Policy Considerations
 
@@ -2195,10 +2216,13 @@ There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
 
-* It is advisable to perform DNS queries via TCP to mitigate DNS forgery
-  attacks over UDP
+## DNS over TCP
 
-[[ TODO: Other operational considerations ]]
+As noted above, DNS forgery attacks against the ACME server can result in the
+server making incorrect decisions about domain control and thus mis-issuing
+certificates.  Servers SHOULD verify DNSSEC when it is available for a domain.
+When DNSSEC is not available, servers SHOULD perform DNS queries over TCP, which
+provides better resistance to some forgery attacks than DNS over UDP.
 
 ## Default Virtual Hosts
 
