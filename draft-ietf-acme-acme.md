@@ -2271,8 +2271,8 @@ the ACME server, even if it is not accessible to the ACME client.
 
 It might seem that the risk of SSRF through this channel is limited by the fact
 that the attacker can only control the domain of the URL, not the path.
-However, if the attacker first sets the domain to one he controls, then he can
-send the server an HTTP redirect (e.g., a 302 response) which will cause the
+However, if the attacker first sets the domain to one they control, then they
+can send the server an HTTP redirect (e.g., a 302 response) which will cause the
 server to query an arbitrary URI.
 
 In order to further limit the SSRF risk, ACME server operators should ensure
