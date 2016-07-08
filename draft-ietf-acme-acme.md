@@ -977,12 +977,12 @@ the impact of an unnoticed key compromise.
 To change the key associate with an account, the client sends a POST request
 containing a key-change object with the following fields:
 
-oldKey (required, JWS):
-: The JWS representation of the original key (i.e., the client's current account
+oldKey (required, JWK):
+: The JWK representation of the original key (i.e., the client's current account
 key)
 
-newKey (requrired, JWS):
-: The JWS representation of the new key
+newKey (requrired, JWK):
+: The JWK representation of the new key
 
 The JWS of this POST must have two signatures: one signature from the existing
 key on the account, and one signature from the new key that the client proposes
