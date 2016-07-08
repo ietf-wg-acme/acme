@@ -992,8 +992,17 @@ A client may wish to change the public key that is associated with a
 registration in order to recover from a key compromise or proactively mitigate
 the impact of an unnoticed key compromise.
 
-To change the key associate with an account, the client POSTs a key-change
+To change the key associate with an account, the client sends a POST request
+containing a key-change
 object with a "key" field containing a JWK representation of the new public key.
+
+oldKey (required, JWS):
+: The JWS representation of the original key (i.e., the client's current account
+key)
+
+newKey (requrired, JWS):
+: The JWS representation of the new key
+
 The JWS of this POST must have two signatures: one signature from the existing
 key on the account, and one signature from the new key that the client proposes
 to use. This demonstrates that the client actually has control of the
@@ -1006,7 +1015,8 @@ Host: example.com
 
 /* BEGIN JWS-signed request body (with two signatures) */
 {
-  "key": /* New key in JWK form */
+  "oldKey": /* Old key in JWK form */
+  "newKey": /* New key in JWK form */
 }
 /* END JWS-signed request body */
 ~~~~~~~~~~
