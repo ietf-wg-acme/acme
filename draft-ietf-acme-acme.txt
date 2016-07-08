@@ -148,7 +148,7 @@ Internet-Draft                    ACME                         July 2016
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  58
      12.1.  Normative References . . . . . . . . . . . . . . . . . .  58
      12.2.  Informative References . . . . . . . . . . . . . . . . .  60
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  60
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  61
 
 1.  Introduction
 
@@ -3055,15 +3055,18 @@ Internet-Draft                    ACME                         July 2016
    any web server that is accessible to the ACME server, even if it is
    not accessible to the ACME client.
 
-   The risk of SSRF through this channel is limited by the fact that the
-   attacker can only control the domain of the URL, not the path.
-   Nonetheless, in order to further limit the SSRF risk, ACME server
-   operators should ensure that validation queries can only be sent to
-   servers on the public Internet, and not, say, web services within the
-   server operator's internal network.  Since the attacker could make
-   requests to these public servers himself, he can't gain anything
-   extra through an SSRF attack on ACME aside from a layer of
-   anonymization.
+   It might seem that the risk of SSRF through this channel is limited
+   by the fact that the attacker can only control the domain of the URL,
+   not the path.  However, if the attacker first sets the domain to one
+   they control, then they can send the server an HTTP redirect (e.g., a
+   302 response) which will cause the server to query an arbitrary URI.
+
+   In order to further limit the SSRF risk, ACME server operators should
+   ensure that validation queries can only be sent to servers on the
+   public Internet, and not, say, web services within the server
+   operator's internal network.  Since the attacker could make requests
+   to these public servers himself, he can't gain anything extra through
+   an SSRF attack on ACME aside from a layer of anonymization.
 
 9.5.  CA Policy Considerations
 
@@ -3072,15 +3075,14 @@ Internet-Draft                    ACME                         July 2016
    Before issuing a certificate, however, there are many other checks
    that a CA might need to perform, for example:
 
-   o  Has the client agreed to a subscriber agreement?
-
-
 
 
 Barnes, et al.           Expires January 9, 2017               [Page 55]
 
 Internet-Draft                    ACME                         July 2016
 
+
+   o  Has the client agreed to a subscriber agreement?
 
    o  Is the claimed identifier syntactically valid?
 
@@ -3128,8 +3130,6 @@ Internet-Draft                    ACME                         July 2016
 
    When a connection comes in with an unknown SNI value, one might
    expect the hosting platform to terminate the TLS connection.
-   However, some hosting platforms will choose a virtual host to be the
-
 
 
 
@@ -3138,6 +3138,7 @@ Barnes, et al.           Expires January 9, 2017               [Page 56]
 Internet-Draft                    ACME                         July 2016
 
 
+   However, some hosting platforms will choose a virtual host to be the
    "default", and route connections with unknown SNI values to that
    host.
 
@@ -3185,7 +3186,6 @@ Internet-Draft                    ACME                         July 2016
 
    o  Seth Schoen, EFF
 
-   o  Alex Halderman, University of Michigan
 
 
 
@@ -3193,6 +3193,8 @@ Barnes, et al.           Expires January 9, 2017               [Page 57]
 
 Internet-Draft                    ACME                         July 2016
 
+
+   o  Alex Halderman, University of Michigan
 
    o  Martin Thomson, Mozilla
 
@@ -3238,10 +3240,8 @@ Internet-Draft                    ACME                         July 2016
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <http://www.rfc-editor.org/info/rfc4648>.
 
-   [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
-              (TLS) Protocol Version 1.2", RFC 5246,
-              DOI 10.17487/RFC5246, August 2008,
-              <http://www.rfc-editor.org/info/rfc5246>.
+
+
 
 
 
@@ -3249,6 +3249,11 @@ Barnes, et al.           Expires January 9, 2017               [Page 58]
 
 Internet-Draft                    ACME                         July 2016
 
+
+   [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
+              (TLS) Protocol Version 1.2", RFC 5246,
+              DOI 10.17487/RFC5246, August 2008,
+              <http://www.rfc-editor.org/info/rfc5246>.
 
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key
@@ -3291,13 +3296,8 @@ Internet-Draft                    ACME                         July 2016
               DOI 10.17487/RFC7518, May 2015,
               <http://www.rfc-editor.org/info/rfc7518>.
 
-   [RFC7638]  Jones, M. and N. Sakimura, "JSON Web Key (JWK)
-              Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
-              2015, <http://www.rfc-editor.org/info/rfc7638>.
 
-   [RFC7807]  Nottingham, M. and E. Wilde, "Problem Details for HTTP
-              APIs", RFC 7807, DOI 10.17487/RFC7807, March 2016,
-              <http://www.rfc-editor.org/info/rfc7807>.
+
 
 
 
@@ -3305,6 +3305,14 @@ Barnes, et al.           Expires January 9, 2017               [Page 59]
 
 Internet-Draft                    ACME                         July 2016
 
+
+   [RFC7638]  Jones, M. and N. Sakimura, "JSON Web Key (JWK)
+              Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
+              2015, <http://www.rfc-editor.org/info/rfc7638>.
+
+   [RFC7807]  Nottingham, M. and E. Wilde, "Problem Details for HTTP
+              APIs", RFC 7807, DOI 10.17487/RFC7807, March 2016,
+              <http://www.rfc-editor.org/info/rfc7807>.
 
 12.2.  Informative References
 
@@ -3346,20 +3354,20 @@ Internet-Draft                    ACME                         July 2016
               Web Consortium CR CR-cors-20130129, January 2013,
               <http://www.w3.org/TR/2013/CR-cors-20130129>.
 
-Authors' Addresses
-
-   Richard Barnes
-   Mozilla
-
-   Email: rlb@ipv.sx
-
-
 
 
 
 Barnes, et al.           Expires January 9, 2017               [Page 60]
 
 Internet-Draft                    ACME                         July 2016
+
+
+Authors' Addresses
+
+   Richard Barnes
+   Mozilla
+
+   Email: rlb@ipv.sx
 
 
    Jacob Hoffman-Andrews
@@ -3372,14 +3380,6 @@ Internet-Draft                    ACME                         July 2016
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
-
-
-
 
 
 
