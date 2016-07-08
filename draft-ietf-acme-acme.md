@@ -993,8 +993,7 @@ registration in order to recover from a key compromise or proactively mitigate
 the impact of an unnoticed key compromise.
 
 To change the key associate with an account, the client sends a POST request
-containing a key-change
-object with a "key" field containing a JWK representation of the new public key.
+containing a key-change object with the following fields:
 
 oldKey (required, JWS):
 : The JWS representation of the original key (i.e., the client's current account
