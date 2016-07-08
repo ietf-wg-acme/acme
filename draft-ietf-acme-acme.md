@@ -403,9 +403,17 @@ then the verifier MUST reject the JWS as malformed.
 
 ## Rate limits
 
-Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code "rateLimited".  Additionally, the server SHOULD send a "Retry-After" header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.
+Creation of resources can be rate limited to ensure fair usage and prevent
+abuse.  Once the rate limit is exceeded, the server MUST respond with an error
+with the code "rateLimited".  Additionally, the server SHOULD send a
+"Retry-After" header indicating when the current request may succeed again.  If
+multiple rate limits are in place, that is the time where all rate limits allow
+access again for the current request with exactly the same parameters.
 
-In addition to the human readable "detail" field of the error response, the server MAY send one or multiple tokens in the "Link" header pointing to documentation about the specific hit rate limits using the "rate-limit" relation.
+In addition to the human readable "detail" field of the error response, the
+server MAY send one or multiple tokens in the "Link" header pointing to
+documentation about the specific hit rate limits using the "rate-limit"
+relation.
 
 ## Errors
 
@@ -977,12 +985,12 @@ the impact of an unnoticed key compromise.
 To change the key associate with an account, the client sends a POST request
 containing a key-change object with the following fields:
 
-oldKey (required, JWS):
-: The JWS representation of the original key (i.e., the client's current account
+oldKey (required, JWK):
+: The JWK representation of the original key (i.e., the client's current account
 key)
 
-newKey (requrired, JWS):
-: The JWS representation of the new key
+newKey (requrired, JWK):
+: The JWK representation of the new key
 
 The JWS of this POST must have two signatures: one signature from the existing
 key on the account, and one signature from the new key that the client proposes
@@ -2330,10 +2338,10 @@ hosting platform to terminate the TLS connection.  However, some hosting
 platforms will choose a virtual host to be the "default", and route connections
 with unknown SNI values to that host.
 
-In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., "tls-sni-02")
-for any domain with an A record that points to the hosting platform.  This could
-  result in mis-issuance in cases where there are multiple hosts with different
-  owners resident on the hosting platform.
+In such cases, the owner of the default virtual host can complete a TLS-based
+challenge (e.g., "tls-sni-02") for any domain with an A record that points to
+the hosting platform.  This could result in mis-issuance in cases where there
+are multiple hosts with different owners resident on the hosting platform.
 
 A CA that accepts TLS-based proof of domain control should attempt to check
 whether a domain is hosted on a domain with a default virtual host before
