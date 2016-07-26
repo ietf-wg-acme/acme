@@ -982,21 +982,31 @@ A client may wish to change the public key that is associated with a
 registration in order to recover from a key compromise or proactively mitigate
 the impact of an unnoticed key compromise.
 
-To change the key associated with an account, the client sends a POST request
-containing a key-change object with the following fields:
+To change the key associate with an account, the client first constructs a
+key-change object describing the change that it would like the server to make:
 
 oldKey (required, JWK):
-: The JWK representation of the original key (i.e., the client's current account
+: The JWK thumbprint of the original key (i.e., the client's current account
 key)
 
 newKey (requrired, JWK):
-: The JWK representation of the new key
+: The JWK thumbprint of the new key
 
-The JWS of this POST must have two signatures: one signature from the existing
-key on the account, and one signature from the new key that the client proposes
-to use. This demonstrates that the client actually has control of the
-private key corresponding to the new public key. The protected header must
-contain a JWK field containing the current account key.
+The client then encapsulates the key-change object in a JWS, signed with the
+client's current account key (i.e., the key matching the "oldKey" value).  This
+JWS is NOT REQUIRED to have the "nonce" and "url" fields, despite the general
+requirement that these fields be present.
+
+This inner JWS then become the payload of the JWS that the client sends to the
+server.  The outer JWS is signed with the key pair that the the client wishes to
+have the server use as its account key (i.e., the key pair matching the "newKey"
+value).  The client sends this outer JWS in a POST request to the server's
+"key-change" resource.
+
+This transaction has signatures from both the old and new keys so that the
+server can verify that the holders of the two keys both agree to the change.
+The signatures are nested to preserve the property that all signatures on POST
+messages are signed by exactly one key.
 
 ~~~~~~~~~~
 POST /acme/key-change HTTP/1.1
@@ -1004,43 +1014,41 @@ Host: example.com
 Content-Type: application/jose+json
 
 {
-  "payload": base64url({
-    "oldKey": /* Old key in JWK form */
-    "newKey": /* New key in JWK form */
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": /* new key */,
+    "nonce": "K60BWPrMQG9SDxBDS_xtSw",
+    "url": "https://example.com/acme/key-change"
   }),
-  "signatures": [{
-    "protected": base64url({
-      "alg": "ES256",
-      "jwk": /* old key */,
-      "nonce": "pq00v-D1KB0sReG4jFfqVg",
-      "url": "https://example.com/acme/key-change"
-    }),
-    "signature": "XFvVbo9diBlIBvhE...UI62sNT6MZsCJpQo"
-  }, {
+  "payload": base64url({
     "protected": base64url({
       "alg": "ES256",
       "jwk": /* new key */,
-      "nonce": "vYjyueEYhMjpVQHe_unw4g",
-      "url": "https://example.com/acme/key-change"
     }),
-    "signature": "q20gG1f1r9cD6tBM...a48h0CkP11tl5Doo"
-  }]
+    "payload": base64url({
+      "oldKey": "bHcFJ3p0fMo5I6Nu9uvx5Yat04ePLpe0UsA40nNyweg",
+      "newKey": "Nyh_IpZjLIiAu_xm4Xp0Ac5Ckd1Gq1p-UtQjhMADCZI"
+    })
+    "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
+  }),
+  "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 ~~~~~~~~~~
 
 On receiving key-change request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
-1. Check that the JWS protected header contains a "jwk" field containing a
-   key that matches a currently active account.
-2. Check that there are exactly two signatures on the JWS.
-3. Check that one of the signatures validates using the account key from (1).
-4. Check that the "key" field contains a well-formed JWK that meets key strength
-   requirements.
-5. Check that the "key" field is not equivalent to the current account key or
-   any other currently active account key.
-5. Check that one of the two signatures on the JWS validates using the JWK from
-   the "key" field.
+1. Check that the payload of the JWS is a well-formed JWS object (the "inner
+   JWS")
+2. Check that the JWS protected header of the inner JWS has a "jwk" field
+   containing a key that matches a currently active account
+3. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the payload of the inner JWS is a well-formed key-change object
+   (as described above)
+5. Check that the "oldKey" field of the key-change object contains the
+   thumbprint of the key used to sign the inner JWS
+6. Check that the "newKey" field of the key-change object contains the
+   thumbprint of the key used to sign the outer JWS
 
 If all of these checks pass, then the server updates the corresponding
 registration by replacing the old account key with the new public key and
