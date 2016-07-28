@@ -299,6 +299,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS Protected Header MUST include the following fields:
   * "alg"
   * "jwk"
+  * "version" (defined below)
   * "nonce" (defined below)
   * "url" (defined below)
 
@@ -309,6 +310,107 @@ In the examples below, JWS objects are shown in the JSON or flattened JSON
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.  Some fields are omitted for brevity, marked with "...".
+
+## Protocol Versions
+
+In order to allow future revisions to this specification to make breaking
+changes to the various ACME transactions, each HTTP message sent in ACME
+contains string indicating which version of the specification the sender intends
+for it to be used with.
+
+For all transactions specified in this document, the version number is
+"draft-04".  Future versions MUST update the below ABNF.
+
+~~~~~
+  version-string = "pre-04"   ; Specifications before this one
+                 / "draft-04" ; This specification
+~~~~~
+
+The client transmits its version in a JWS "version" header parameter.  The
+server provides its supported versions for a resource in an ACME-Version HTTP
+header field.  The list of versions sent by the server MUST include the version
+sent by the client.  If a server sends more than one version in a response, then
+all of the indicated versions MUST have the same semantic for the resource.
+Servers SHOULD support the same set of versions for all resources, but clients
+SHOULD NOT assume this the be the case.
+
+For GET requests, the client MUST verify that the version sent by the server is
+one it supports.  For requests where the client sends a request body, the
+version sent by the server in the response MUST be identical to the version sent
+by the client in the request.
+
+~~~~~
+POST /acme/new-reg HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "version": "draft-04",
+    "nonce": "6S8IqOGY7eL2lsGoTZYifg",
+    "url": "https://example.com/acme/new-reg"
+  })
+  "payload": base64url({
+    "contact": [
+      "mailto:cert-admin@example.com",
+      "tel:+12025551212"
+    ]
+  }),
+  "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
+}
+
+HTTP/1.1 201 Created
+Content-Type: application/json
+Location: https://example.com/acme/reg/asdf
+Link: <https://example.com/acme/terms>;rel="terms-of-service"
+Link: <https://example.com/acme/some-directory>;rel="directory"
+ACME-Version: draft-02, draft-03, draft-04
+
+{
+  "key": { /* JWK from JWS header */ },
+  "status": "good",
+
+  "contact": [
+    "mailto:cert-admin@example.com",
+    "tel:+12025551212"
+  ]
+}
+~~~~~
+
+If a server is unable to supply a response with the client's requested version,
+then it MUST reply with status code XXX (XXX) and indicate the versions it could
+support in an ACME header field.  A client may probe for supported versions of a
+given resource by sending a HEAD request to that resource.
+
+~~~~~
+HTTP/1.1 XXX XXX
+ACME-Version: draft-05, draft-06
+~~~~~
+
+### ACME-Version
+
+The ACME-Version header field specifies which version of the ACME protocol an
+HTTP message belongs to.  The value of the ACME-Version field MUST be a
+comma-separated list of ACME version strings.
+
+~~~~~
+  ACME-Version = #version-string
+~~~~~
+
+The ACME-Version header field MUST NOT be included in HTTP request messages.
+ACME implementations should instead use the "version" JWS header parameter to
+send a request version.
+
+### "version" (Version) JWS header parameter
+
+The "version" header parameter specifies a version for the message carried in
+this JWS.  The specific values and processing of this field should be specified
+by JWS applications using the field.  The "version" header parameter SHOULD be
+carried in the protected header of the JWS, in order to avoid attacks related to
+changing versions (e.g., downgrade attacks).  The value of the "version" header
+parameter MUST be a string.
 
 ## Request URI Integrity
 
