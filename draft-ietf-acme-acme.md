@@ -908,13 +908,10 @@ registration object in a 201 (Created) response, with the registration URI in a
 Location header field.
 
 If the server already has a registration object with the provided account key,
-then it MUST return a 302 (Found) response with an empty body and provide the
-URI of that registration in a Location header field.  This allows a client that
-has an account key but not the corresponding registration URI to recover the
+then it MUST return a 303 (See Other) response and provide the URI of that
+registration in a Location header field.  This allows a client that has an
+account key but not the corresponding registration URI to recover the
 registration URI.
-
-[[ XXX: What is the behavior of 302 with regard to POSTs?  Does the client
-re-send the POST? ]]
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
