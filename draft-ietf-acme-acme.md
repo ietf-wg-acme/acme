@@ -982,7 +982,7 @@ A client may wish to change the public key that is associated with a
 registration in order to recover from a key compromise or proactively mitigate
 the impact of an unnoticed key compromise.
 
-To change the key associate with an account, the client sends a POST request
+To change the key associated with an account, the client sends a POST request
 containing a key-change object with the following fields:
 
 oldKey (required, JWK):
@@ -1031,7 +1031,7 @@ Content-Type: application/jose+json
 On receiving key-change request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
-1. Check that the JWS protected header container a "jwk" field containing a
+1. Check that the JWS protected header contains a "jwk" field containing a
    key that matches a currently active account.
 2. Check that there are exactly two signatures on the JWS.
 3. Check that one of the signatures validates using the account key from (1).
