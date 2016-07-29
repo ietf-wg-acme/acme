@@ -982,7 +982,7 @@ A client may wish to change the public key that is associated with a
 registration in order to recover from a key compromise or proactively mitigate
 the impact of an unnoticed key compromise.
 
-To change the key associate with an account, the client first constructs a
+To change the key associated with an account, the client first constructs a
 key-change object describing the change that it would like the server to make:
 
 oldKey (required, JWK):
@@ -992,16 +992,22 @@ key)
 newKey (requrired, JWK):
 : The JWK thumbprint of the new key
 
+Both of these thumbprints MUST be computed as specified in {{!RFC7638}}, using
+the SHA-256 digest.  The values in the "oldKey" and "newKey" fields MUST be the
+base64url encodings of the thumbprints.
+
 The client then encapsulates the key-change object in a JWS, signed with the
-client's current account key (i.e., the key matching the "oldKey" value).  This
-JWS is NOT REQUIRED to have the "nonce" and "url" fields, despite the general
-requirement that these fields be present.
+client's current account key (i.e., the key matching the "oldKey" value).
 
 This inner JWS then become the payload of the JWS that the client sends to the
 server.  The outer JWS is signed with the key pair that the the client wishes to
 have the server use as its account key (i.e., the key pair matching the "newKey"
 value).  The client sends this outer JWS in a POST request to the server's
 "key-change" resource.
+
+Both the inner and outer JWS MUST meet the normal requirements for an ACME JWS
+(see {{request-authentication}}).  Each JWS MUST have a distinct nonce, but the
+"url" parameter MUST be the same for both JWS objects.
 
 This transaction has signatures from both the old and new keys so that the
 server can verify that the holders of the two keys both agree to the change.
@@ -1023,7 +1029,7 @@ Content-Type: application/jose+json
   "payload": base64url({
     "protected": base64url({
       "alg": "ES256",
-      "jwk": /* new key */,
+      "jwk": /* old key */,
     }),
     "payload": base64url({
       "oldKey": "bHcFJ3p0fMo5I6Nu9uvx5Yat04ePLpe0UsA40nNyweg",
@@ -1045,9 +1051,12 @@ addition to the typical JWS validation:
 3. Check that the inner JWS verifies using the key in its "jwk" field
 4. Check that the payload of the inner JWS is a well-formed key-change object
    (as described above)
-5. Check that the "oldKey" field of the key-change object contains the
+5. Check that the "nonce" parameter of the inner JWS contains a valid
+   anti-replay nonce
+5. Check that the "url" parameters of the inner and outer JWSs are the same
+6. Check that the "oldKey" field of the key-change object contains the
    thumbprint of the key used to sign the inner JWS
-6. Check that the "newKey" field of the key-change object contains the
+7. Check that the "newKey" field of the key-change object contains the
    thumbprint of the key used to sign the outer JWS
 
 If all of these checks pass, then the server updates the corresponding
