@@ -332,9 +332,12 @@ MUST compare the "url" parameter to the request URI.  If the two do not match,
 then the server MUST reject the request as unauthorized.
 
 Except for the directory resource, all ACME resources are addressed with URLs
-provided to the client by the server.  In such cases, the client MUST set the
+provided to the client by the server.  For these resources, the client MUST set the
 "url" field to the exact string provided by the server (rather than performing
-any re-encoding on the URL).
+any re-encoding on the URL).  The server SHOULD perform the corresponding string
+equality check, configuring each resource with the URL string provided to
+clients and having the resource check that requests have the same string in
+their "url" fields.
 
 ### "url" (URL) JWS header parameter
 
