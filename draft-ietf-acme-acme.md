@@ -509,23 +509,23 @@ indicate HTTP link relations
                                directory
                                    |
                                    |
-       ----------------------------------------------------
-       |                  |                               |
-       |                  |                               |
-       V                  V                               V
-    new-reg            new-app                       revoke-cert
-       |                  |                               ^
-       |                  |                               | "revoke"
-       V                  V                               |
-      reg -------------> app -------------> cert ---------+
-                         | ^                  |
-                         | | "up"             | "up"
-                         V |                  V
-                        authz             cert-chain
-                         | ^
-                         | | "up"
-                         V |
-                       challenge
+       --------------------------------------------------+
+       |          |          |                           |
+       |          |          |                           |
+       V          V          V                           V
+    new-reg   new-authz   new-app                   revoke-cert
+       |          |          |                           ^
+       |          |          |                           | "revoke"
+       V          |          V                           |
+      reg         |         app ---------> cert ---------+
+                  |         | ^              |
+                  |         | | "up"         | "up"
+                  |         V |              V
+                  +------> authz         cert-chain
+                            | ^
+                            | | "up"
+                            V |
+                          challenge
 ~~~~~~~~~~
 
 The following table illustrates a typical sequence of requests required to
@@ -557,6 +557,7 @@ the following table and whose values are the corresponding URLs.
 |:------------|:---------------------|
 | new-reg     | New registration     |
 | new-app     | New application      |
+| new-authz   | New authorization    |
 | revoke-cert | Revoke certificate   |
 | key-change  | Key change           |
 
@@ -599,6 +600,7 @@ Content-Type: application/json
 {
   "new-reg": "https://example.com/acme/new-reg",
   "new-app": "https://example.com/acme/new-app",
+  "new-authz": "https://example.com/acme/new-authz",
   "revoke-cert": "https://example.com/acme/revoke-cert",
   "key-change": "https://example.com/acme/key-change",
   "meta": {
@@ -1205,6 +1207,100 @@ status of the application will indicate what action the client should take:
 * "valid": The server has issued the certificate and provisioned its URL to the
   "certificate" field of the application.  Download the certificate.
 
+### Pre-Authorization
+
+The application process described above presumes that authorization objects are
+created reactively, in response to an application for issuance.  Some servers
+may also wish to enable clients to obtain authorization for an identifier
+proactively, outside of the context of a specific issuance.  For example, a
+client hosting virtual servers for a collection of names might wish to obtain
+authorization before any servers are created, and only create a certificate when
+a server starts up.
+
+In some cases, a CA running an ACME server might have a completely external,
+non-ACME process for authorizing a client to issue for an identifier.  In these
+case, the CA should provision its ACME server with authorization objects
+corresponding to thsee authorizations and reflect them as alread-valid
+requirements in any issuance applications requested by the client.
+
+If a CA wishes to allow pre-authorization within ACME, it can offer a "new
+authorization" resource in its directory by adding the key "new-authz" with a
+URL for the new authorization resource.
+
+To request authorization for an identifier, the client sends a POST request to
+the new-authorization resource specifying the identifier for which authorization
+is being requested and how the server should behave with respect to existing
+authorizations for this identifier.
+
+identifier (required, dictionary of string):
+: The identifier that the account is authorized to represent
+
+  type (required, string):
+  : The type of identifier.
+
+  value (required, string):
+  : The identifier itself.
+
+existing (optional, string):
+: How an existing authorization should be handled. Possible values are "accept"
+  and "require".
+
+~~~~~~~~~~
+POST /acme/new-authz HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": {...},
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/new-authz"
+  })
+  "payload": base64url({
+    "identifier": {
+      "type": "dns",
+      "value": "example.net"
+    },
+    "existing": "accept"
+  }),
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
+~~~~~~~~~~
+
+Before processing the authorization request, the server SHOULD determine whether
+it is willing to issue certificates for the identifier.  For example, the server
+should check that the identifier is of a supported type.  Servers might also
+check names against a blacklist of known high-value identifiers.  If the server
+is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
+error, with a problem document describing the reason for the rejection.
+
+If the authorization request specifies "existing" with a value of "accept" or
+"require", before proceeding, the server SHOULD determine whether there are any
+existing, valid authorization resources for the account and given identifier. If
+one or more such authorizations exists, a response SHOULD returned with status
+code 303 (See Other) and a Location header pointing to the existing resource
+URL; processing of the request then stops. If there are multiple such
+authorizations, the authorization with the latest expiry date SHOULD be
+returned. If no existing authorizations were found and the value for "existing"
+was "require", then the server MUST return status code 404 (Not Found); if it
+was "accept" or was any other value or was absent, processing continues as
+follows.
+
+If the server is willing to proceed, it builds a pending authorization object
+from the inputs submitted by the client.
+
+* "identifier" the identifier submitted by the client
+* "status": MUST be "pending" unless the server has out-of-band information
+  about the client's authorization status
+* "challenges" and "combinations": As selected by the server's policy for this
+  identifier
+
+The server allocates a new URI for this authorization, and returns a 201
+(Created) response, with the authorization URI in a Location header field, and
+the JSON authorization object in the body.  The client then follows the process
+described in {{identifier-authorization}} to complete the authorization process.
+
 
 ### Downloading the Certificate
 
@@ -1272,13 +1368,16 @@ specific application by setting the "scope" field of the authorization to the
 URI for that application.
 
 Authorization resources are created by the server in response to certificate
-applications submitted by an account key holder; their URLs are provided to the
-client in "authorization" requirement objects.  The authorization object is
-implicitly tied to the account key used to sign the new-application request.
+applications or authorization requests submitted by an account key holder; their
+URLs are provided to the client in the responses to these requests.  The
+authorization object is implicitly tied to the account key used to sign the
+request.
 
 When a client receives an application from the server with an "authorization"
 requirement, it downloads the authorization resource by sending a GET request to
-the indicated URL.
+the indicated URL.  If the client initiates authorization using a request to the
+new authorization resource, it will have already recevied the pending
+authorization object in the response to that request.
 
 ~~~~~~~~~~
 GET /acme/authz/1234 HTTP/1.1
