@@ -173,8 +173,7 @@ The first phase of ACME is for the client to register with the ACME server.  The
 client generates an asymmetric key pair and associates this key pair with a set
 of contact information by signing the contact information.  The server
 acknowledges the registration by replying with a registration object echoing the
-client's input.  The server can also provide terms of service at this stage,
-which the client can present to a human user.
+client's input.
 
 ~~~~~~~~~~
       Client                                                  Server
@@ -183,7 +182,6 @@ which the client can present to a human user.
       Signature                     ------->
 
                                     <-------            Registration
-                                                    Terms of Service
 ~~~~~~~~~~
 
 
@@ -886,6 +884,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-reg"
   })
   "payload": base64url({
+    "terms-of-service": "agreed",
     "contact": [
       "mailto:cert-admin@example.com",
       "tel:+12025551212"
@@ -913,19 +912,16 @@ registration in a Location header field.  This allows a client that has an
 account key but not the corresponding registration URI to recover the
 registration URI.
 
-If the server wishes to present the client with terms under which the ACME
-service is to be used, it MUST indicate the URI where such terms can be accessed
-in a Link header with link relation "terms-of-service".  As noted above, the
-client may indicate its agreement with these terms by updating its registration
-to include the "agreement" field, with the terms URI as its value.  When these
-terms change in a way that requires an agreement update, the server MUST
-use a different URI in the Link header.
+If the server provides a terms-of-service URL in the directory, the client MUST
+indicate its operator's agreement to the terms at that URL by including the
+"terms-of-service": "agreed" field in the new-registration body. Servers SHOULD
+reject registration requests that do not meet their requirements for terms of
+service.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Content-Type: application/json
 Location: https://example.com/acme/reg/asdf
-Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
