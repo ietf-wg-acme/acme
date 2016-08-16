@@ -1448,7 +1448,7 @@ Content-Type: application/jose+json
 The server MUST verify that the request is signed by the account key
 corresponding to the account that owns the authorization. If the server accepts
 the deactivation, it should reply with a 200 (OK) status code and the current
-contents of the registration object.
+contents of the authorization object.
 
 The server MUST NOT treat deactivated authorization objects as sufficient for
 issuing certificates.
