@@ -336,7 +336,7 @@ li, p {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2016-8-10" />
+  <meta name="dct.issued" scheme="ISO8601" content="2016-8-16" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -360,7 +360,7 @@ li, p {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: February 11, 2017</td>
+  <td class="left">Expires: February 17, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -373,7 +373,7 @@ li, p {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">August 10, 2016</td>
+  <td class="right">August 16, 2016</td>
 </tr>
 
     	
@@ -395,7 +395,7 @@ li, p {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on February 11, 2017.</p>
+<p>This Internet-Draft will expire on February 17, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -558,9 +558,11 @@ li, p {
 <p id="rfc.section.5.p.1">Communications between an ACME client and an ACME server are done over HTTPS, using JWS to provide some additional security properties for messages sent from the client to the server.  HTTPS provides server authentication and confidentiality.  With some ACME-specific extensions, JWS provides authentication of the client&#8217;s request payloads, anti-replay protection, and integrity for the HTTPS request URI.</p>
 <h1 id="rfc.section.5.1"><a href="#rfc.section.5.1">5.1.</a> <a href="#https-requests" id="https-requests">HTTPS Requests</a></h1>
 <p id="rfc.section.5.1.p.1">Each ACME function is accomplished by the client sending a sequence of HTTPS requests to the server, carrying JSON messages <a href="#RFC2818">[RFC2818]</a><a href="#RFC7159">[RFC7159]</a>.  Use of HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning <a href="#RFC7469">[RFC7469]</a>, and servers SHOULD emit pinning headers.  Each subsection of <a href="#certificate-management">Section 6</a> below describes the message formats used by the function, and the order in which messages are sent.</p>
-<p id="rfc.section.5.1.p.2">In all HTTPS transactions used by ACME, the ACME client is the HTTPS client and the ACME server is the HTTPS server.</p>
-<p id="rfc.section.5.1.p.3">ACME servers that are intended to be generally accessible need to use Cross-Origin Resource Sharing (CORS) in order to be accessible from browser-based clients <a href="#W3C.CR-cors-20130129">[W3C.CR-cors-20130129]</a>.  Such servers SHOULD set the Access-Control-Allow-Origin header field to the value &#8220;*&#8221;.</p>
-<p id="rfc.section.5.1.p.4">Binary fields in the JSON objects used by ACME are encoded using base64url encoding described in <a href="#RFC4648">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
+<p id="rfc.section.5.1.p.2">In most HTTPS transactions used by ACME, the ACME client is the HTTPS client and the ACME server is the HTTPS server. The ACME server acts as an HTTP and HTTPS client when validating challenges via HTTP.</p>
+<p id="rfc.section.5.1.p.3">ACME clients SHOULD send a User-Agent header in accordance with <a href="#RFC7231">[RFC7231]</a>, including the name and version of the ACME software in addition to the name and version of the underlying HTTP client software.</p>
+<p id="rfc.section.5.1.p.4">ACME clients SHOULD send an Accept-Language header in accordance with <a href="#RFC7231">[RFC7231]</a> to enable localization of error messages.</p>
+<p id="rfc.section.5.1.p.5">ACME servers that are intended to be generally accessible need to use Cross-Origin Resource Sharing (CORS) in order to be accessible from browser-based clients <a href="#W3C.CR-cors-20130129">[W3C.CR-cors-20130129]</a>.  Such servers SHOULD set the Access-Control-Allow-Origin header field to the value &#8220;*&#8221;.</p>
+<p id="rfc.section.5.1.p.6">Binary fields in the JSON objects used by ACME are encoded using base64url encoding described in <a href="#RFC4648">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
 <h1 id="rfc.section.5.2"><a href="#rfc.section.5.2">5.2.</a> <a href="#request-authentication" id="request-authentication">Request Authentication</a></h1>
 <p id="rfc.section.5.2.p.1">All ACME requests with a non-empty body MUST encapsulate the body in a JWS object, signed using the account key pair.  The server MUST verify the JWS before processing the request.  (For readability, however, the examples below omit this encapsulation.)  Encapsulating request bodies in JWS provides a simple authentication of requests by way of key continuity.</p>
 <p id="rfc.section.5.2.p.2">JWS objects sent in ACME requests MUST meet the following additional criteria:</p>
@@ -1991,6 +1993,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
         <b id="RFC7159">[RFC7159]</b>
       </td>
       <td class="top"><a>Bray, T.</a>, "<a href="http://tools.ietf.org/html/rfc7159">The JavaScript Object Notation (JSON) Data Interchange Format</a>", RFC 7159, DOI 10.17487/RFC7159, March 2014.</td>
+    </tr>
+    <tr>
+      <td class="reference">
+        <b id="RFC7231">[RFC7231]</b>
+      </td>
+      <td class="top"><a>Fielding, R.</a> and <a>J. Reschke</a>, "<a href="http://tools.ietf.org/html/rfc7231">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>", RFC 7231, DOI 10.17487/RFC7231, June 2014.</td>
     </tr>
     <tr>
       <td class="reference">
