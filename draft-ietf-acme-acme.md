@@ -271,8 +271,16 @@ and servers SHOULD emit pinning headers.  Each subsection of
 {{certificate-management}} below describes the message formats used by the
 function, and the order in which messages are sent.
 
-In all HTTPS transactions used by ACME, the ACME client is the HTTPS client and
-the ACME server is the HTTPS server.
+In most HTTPS transactions used by ACME, the ACME client is the HTTPS client
+and the ACME server is the HTTPS server. The ACME server acts as an HTTP and
+HTTPS client when validating challenges via HTTP.
+
+ACME clients SHOULD send a User-Agent header in accordance with
+{{!RFC7231}}, including the name and version of the ACME software in
+addition to the name and version of the underlying HTTP client software.
+
+ACME clients SHOULD send an Accept-Language header in accordance with
+{{!RFC7231}} to enable localization of error messages.
 
 ACME servers that are intended to be generally accessible need to use
 Cross-Origin Resource Sharing (CORS) in order to be accessible from
@@ -1432,7 +1440,7 @@ Content-Type: application/jose+json
 The server MUST verify that the request is signed by the account key
 corresponding to the account that owns the authorization. If the server accepts
 the deactivation, it should reply with a 200 (OK) status code and the current
-contents of the registration object.
+contents of the authorization object.
 
 The server MUST NOT treat deactivated authorization objects as sufficient for
 issuing certificates.
