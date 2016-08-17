@@ -826,19 +826,13 @@ applications until the authorization expires. [[ Open issue: More flexible
 scoping? ]]
 
 challenges (required, array):
-: The challenges that the client needs to fulfill
+: The challenges that the client may to fulfill
 in order to prove possession of the identifier (for pending authorizations).
 For final authorizations, the challenges that were used.  Each array entry is a
 dictionary with parameters required to validate the challenge, as specified in
-{{identifier-validation-challenges}}.
-
-combinations (optional, array of arrays of integers):
-: A collection of sets of
-challenges, each of which would be sufficient to prove possession of the
-identifier. Clients complete a set of challenges that covers at least one
-set in this array. Challenges are identified by their indices in the challenges
-array.  If no "combinations" element is included in an authorization object, the
-client completes all challenges.
+{{identifier-validation-challenges}}. A client should attempt to fulfill at most
+one of these challenges, and a server should consider any one of the challenges
+sufficient to make the authorization valid.
 
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns").  The value of the identifier MUST be the ASCII
@@ -1308,8 +1302,6 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ],
-
-  "combinations": [[0], [1]]
 }
 ~~~~~~~~~~
 
@@ -1368,9 +1360,9 @@ authorization when it has completed all the validations it is going to complete,
 and assigns the authorization a status of "valid" or "invalid", corresponding to
 whether it considers the account authorized for the identifier.  If the final
 state is "valid", the server MUST add an "expires" field to the authorization.
-When finalizing an authorization, the server MAY remove the "combinations" field
-(if present) or remove any challenges still pending.  The server SHOULD NOT
-remove challenges with status "invalid".
+When finalizing an authorization, the server MAY remove challenges other than
+the one that was completed. The server SHOULD NOT remove challenges with status
+"invalid".
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
@@ -1590,12 +1582,6 @@ introduced.  For example, if an HTTP challenge were introduced in version -03
 and a breaking change made in version -05, then there would be a challenge
 labeled "http-03" and one labeled "http-05" -- but not one labeled "http-04",
 since challenge in version -04 was compatible with one in version -04. ]]
-
-[[ Editor's Note: Operators SHOULD NOT issue "combinations" arrays in
-authorization objects that require the client to perform multiple challenges
-over the same type, e.g., ["http-03", "http-05"].  Challenges within a type are
-testing the same capability of the domain owner, and it may not be possible to
-satisfy both at once. ]]
 
 ## Key Authorizations
 
