@@ -920,11 +920,11 @@ registration in a Location header field.  This allows a client that has an
 account key but not the corresponding registration URI to recover the
 registration URI.
 
-If the server provides a terms-of-service URL in the directory, the client MUST
-indicate its agreement to the terms at that URL by including the
-"terms-of-service": "agreed" field in the new-registration body. Servers SHOULD
-reject registration requests that do not meet their requirements for terms of
-service.
+If the server wishes to present the client with terms under which the ACME
+service is to be used, it MUST indicate the URI where such terms can be accessed
+in a Link header with link relation "terms-of-service".  As noted above, the
+client may indicate its agreement when creating registraion by including the
+"terms-of-service": "agreed" field.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
