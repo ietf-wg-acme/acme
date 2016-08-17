@@ -826,7 +826,7 @@ applications until the authorization expires. [[ Open issue: More flexible
 scoping? ]]
 
 challenges (required, array):
-: The challenges that the client may to fulfill
+: The challenges that the client can fulfill
 in order to prove possession of the identifier (for pending authorizations).
 For final authorizations, the challenges that were used.  Each array entry is a
 dictionary with parameters required to validate the challenge, as specified in
