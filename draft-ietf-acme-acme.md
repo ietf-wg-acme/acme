@@ -921,7 +921,7 @@ account key but not the corresponding registration URI to recover the
 registration URI.
 
 If the server provides a terms-of-service URL in the directory, the client MUST
-indicate its operator's agreement to the terms at that URL by including the
+indicate its agreement to the terms at that URL by including the
 "terms-of-service": "agreed" field in the new-registration body. Servers SHOULD
 reject registration requests that do not meet their requirements for terms of
 service.
