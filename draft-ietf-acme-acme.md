@@ -636,7 +636,7 @@ client about server-initiated revocation.
 
 external_secret (optional, string):
 : A secret value that the server can use to authenticate this registration as
-belonging the same entity as an already-existing system.
+belonging to the same entity as an already-existing system.
 
 agreement (optional, string):
 : A URI referring to a subscriber agreement or terms of service provided by the
