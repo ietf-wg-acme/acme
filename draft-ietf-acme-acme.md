@@ -634,6 +634,11 @@ contact (optional, array of string):
 related to this authorization. For example, the server may wish to notify the
 client about server-initiated revocation.
 
+external_secret (optional, string):
+: An array of URIs that the server can use to contact the client for issues
+related to this authorization. For example, the server may wish to notify the
+client about server-initiated revocation.
+
 agreement (optional, string):
 : A URI referring to a subscriber agreement or terms of service provided by the
 server (see below).  Including this field indicates the client's agreement with
@@ -826,6 +831,11 @@ expires (optional, string):
 encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
 for objects with "valid" in the "status field.
 
+expires (optional, string):
+: The timestamp after which the server will consider this authorization invalid,
+encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
+for objects with "valid" in the "status field.
+
 scope (optional, string):
 : If this field is present, then it MUST contain a URI for an application
 resource, such that this authorization is only valid for that resource.  If this
@@ -894,6 +904,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-reg"
   })
   "payload": base64url({
+    "external_secret": "XYZ123",
     "contact": [
       "mailto:cert-admin@example.com",
       "tel:+12025551212"
@@ -920,6 +931,15 @@ then it MUST return a 409 (Conflict) response and provide the URI of that
 registration in a Location header field.  This allows a client that has an
 account key but not the corresponding registration URI to recover the
 registration URI.
+
+The server MAY require a value to be present for the "external_secret"
+field.  This can be used to authenticate a new ACME account as belonging
+to the same entity as an already existing account in a non-ACME
+system. Both clients and servers should consider this an authenticator
+and should treat it carefully. For instance, clients should avoid logging
+it in unprotected files. Note that servers that rely on this field are exposed
+to passive attackers on the ACME channel (see Threat Model, below), and should
+not use third parties to terminate HTTPS connections for them.
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
