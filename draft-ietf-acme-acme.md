@@ -677,6 +677,10 @@ contact (optional, array of string):
 related to this authorization. For example, the server may wish to notify the
 client about server-initiated revocation.
 
+external-account-token (optional, string):
+: A secret value provided to the client out of band that associates this account
+with another account in a different system.
+
 terms-of-service-agreed (optional, boolean):
 : Including this field in a new-registration request, with a value of true,
 indicates the client's agreement with the terms of service. This field is not
@@ -698,6 +702,7 @@ updateable by the client.
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
   ],
+  "external-account-token": "rAPsLE6hxgut8O6fu2Bj3A",
   "terms-of-service-agreed": true,
   "applications": "https://example.com/acme/reg/1/apps"
 }
@@ -952,7 +957,8 @@ resource, in order to prevent caching of this resource.
 
 A client creates a new account with the server by sending a POST request to the
 server's new-registration URI.  The body of the request is a stub registration
-object containing only the "contact" field.
+object containing only fields that can be set by the client (e.g., "contact",
+"external-account-token", "terms-of-service-agreed").
 
 ~~~~~~~~~~
 POST /acme/new-reg HTTP/1.1
@@ -968,6 +974,7 @@ Content-Type: application/jose+json
   })
   "payload": base64url({
     "terms-of-service-agreed": true,
+    "external-account-token": "rAPsLE6hxgut8O6fu2Bj3A",
     "contact": [
       "mailto:cert-admin@example.com",
       "tel:+12025551212"
@@ -999,6 +1006,20 @@ If the server already has a registration object with the provided account key,
 then it MUST return a 200 (OK) response and provide the URI of that registration
 in a Content-Location header field.  This allows a client that has an account
 key but not the corresponding registration URI to recover the registration URI.
+
+The server MAY require a value to be present for the "external-account-token"
+field.  This can be used to an ACME account with an existing account in a
+non-ACME system, such as a CA customer database.  The precise meaning of this
+binding is up to the CA.  The CA might use this mechanism to give an ACME
+account privileges associated with a customer account, or simply use it to note
+which customer should be notified of actions by this ACME client (without
+granting any additional privilege).
+
+Both clients and servers should treat "external-account-token" values as
+sensitive.  For example, servers using this feature should avoid using
+intermediaries that terminate HTTPS, since the intermediary could observe these
+tokens and abuse them to increase the privileges of unauthorized accounts.  See
+{{external-accounts}} for more discussion of these risks.
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
@@ -2596,6 +2617,33 @@ RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
 within their trusted network and use these resolvers both for both CAA record
 lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
 TXT, etc.).
+
+## External Accounts
+
+ACME accounts can be associated with accounts in other systems using the
+"external-account-token" field in account objects.  This field can hold any
+value defined by the CA.  The security implications of the field depend on how
+the CA structures its tokens.
+
+If the CA simply provides the client with a random value to use in this field,
+then there is a risk that the value will be stolen and misused.  For example, if
+the CA uses a CDN to terminate HTTPS for ACME, then the CDN could steal a token
+and use it to bind real customer's account to the CDN's ACME account (instead of
+the real customer's ACME account).  CAs that construct tokens in this way SHOULD
+avoid the use of intermediaries that terminate HTTPS.
+
+CAs can mitigate this risk by reducing the privilege associated with the token.
+Instead of granting the holder of the token the full privileges associated with
+the account, for example, the CA could simply use the association for
+record-keeping, so that the external account holder would be notified of actions
+by the ACME client, and the ACME client would still have to acquire privileges
+on its own (proving control of identifiers, etc.).
+
+CAs SHOULD construct tokens in a way that binds them to a particular ACME
+account key pair.  For example, a CA might use JWTs containing a thumbprint of
+the account public key {{?RFC7519}}.  These tokens can safely be used even in
+the presence of HTTPS-terminating intermediaries, since they can only be used by
+the holder of the corresponding account private key.
 
 # Acknowledgements
 
