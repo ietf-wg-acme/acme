@@ -627,7 +627,7 @@ key (required, dictionary):
 {{!RFC7517}}.
 
 status (required, string):
-: "good" or "deactivated"
+: "valid" or "deactivated"
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
@@ -938,7 +938,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
   "key": { /* JWK from JWS header */ },
-  "status": "good",
+  "status": "valid",
 
   "contact": [
     "mailto:cert-admin@example.com",
