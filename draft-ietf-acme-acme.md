@@ -635,9 +635,8 @@ related to this authorization. For example, the server may wish to notify the
 client about server-initiated revocation.
 
 external_secret (optional, string):
-: An array of URIs that the server can use to contact the client for issues
-related to this authorization. For example, the server may wish to notify the
-client about server-initiated revocation.
+: A secret value that the server can use to authenticate this registration as
+belonging the same entity as an already-existing system.
 
 agreement (optional, string):
 : A URI referring to a subscriber agreement or terms of service provided by the
@@ -825,11 +824,6 @@ status (required, string):
 : The status of this authorization.  Possible values are: "unknown", "pending",
 "processing", "valid", "invalid" and "revoked".  If this field is missing, then
 the default value is "pending".
-
-expires (optional, string):
-: The timestamp after which the server will consider this authorization invalid,
-encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
-for objects with "valid" in the "status field.
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
