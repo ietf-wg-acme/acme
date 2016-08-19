@@ -985,6 +985,11 @@ the impact of an unnoticed key compromise.
 To change the key associated with an account, the client first constructs a
 key-change object describing the change that it would like the server to make:
 
+account (required, string):
+: The URL for account being modified.  The content of this field MUST be the
+exact string provided in the Location header field in response to the
+new-registration request that created the account.
+
 oldKey (required, JWK):
 : The JWK thumbprint of the original key (i.e., the client's current account
 key)
@@ -1005,9 +1010,13 @@ have the server use as its account key (i.e., the key pair matching the "newKey"
 value).  The client sends this outer JWS in a POST request to the server's
 "key-change" resource.
 
-Both the inner and outer JWS MUST meet the normal requirements for an ACME JWS
-(see {{request-authentication}}).  Each JWS MUST have a distinct nonce, but the
-"url" parameter MUST be the same for both JWS objects.
+The outer JWS MUST meet the normal requirements for an ACME JWS (see
+{{request-authentication}}).  The inner JWS MUST meet the normal requirements,
+with the following exceptions:
+
+* The inner JWS MUST have the same "url" parameter as the outer JWS.
+* The inner JWS is NOT REQUIRED to have a "nonce" parameter.  The server MUST
+  ignore any value provided for the "nonce" header parameter.
 
 This transaction has signatures from both the old and new keys so that the
 server can verify that the holders of the two keys both agree to the change.
@@ -1032,6 +1041,7 @@ Content-Type: application/jose+json
       "jwk": /* old key */,
     }),
     "payload": base64url({
+      "account": "https://example.com/acme/reg/asdf",
       "oldKey": "bHcFJ3p0fMo5I6Nu9uvx5Yat04ePLpe0UsA40nNyweg",
       "newKey": "Nyh_IpZjLIiAu_xm4Xp0Ac5Ckd1Gq1p-UtQjhMADCZI"
     })
@@ -1051,12 +1061,12 @@ addition to the typical JWS validation:
 3. Check that the inner JWS verifies using the key in its "jwk" field
 4. Check that the payload of the inner JWS is a well-formed key-change object
    (as described above)
-5. Check that the "nonce" parameter of the inner JWS contains a valid
-   anti-replay nonce
 5. Check that the "url" parameters of the inner and outer JWSs are the same
-6. Check that the "oldKey" field of the key-change object contains the
+6. Check that the "account" field of the key-change object contains the URL for
+   the registration matching the old key
+7. Check that the "oldKey" field of the key-change object contains the
    thumbprint of the key used to sign the inner JWS
-7. Check that the "newKey" field of the key-change object contains the
+8. Check that the "newKey" field of the key-change object contains the
    thumbprint of the key used to sign the outer JWS
 
 If all of these checks pass, then the server updates the corresponding
