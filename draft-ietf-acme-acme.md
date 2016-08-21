@@ -990,19 +990,11 @@ account (required, string):
 exact string provided in the Location header field in response to the
 new-registration request that created the account.
 
-oldKey (required, JWK):
-: The JWK thumbprint of the original key (i.e., the client's current account
-key)
-
 newKey (requrired, JWK):
-: The JWK thumbprint of the new key
-
-Both of these thumbprints MUST be computed as specified in {{!RFC7638}}, using
-the SHA-256 digest.  The values in the "oldKey" and "newKey" fields MUST be the
-base64url encodings of the thumbprints.
+: The JWK representation of the new key.
 
 The client then encapsulates the key-change object in a JWS, signed with the
-client's current account key (i.e., the key matching the "oldKey" value).
+client's current account key.
 
 This inner JWS then become the payload of the JWS that the client sends to the
 server.  The outer JWS is signed with the key pair that the the client wishes to
@@ -1019,9 +1011,10 @@ with the following exceptions:
   ignore any value provided for the "nonce" header parameter.
 
 This transaction has signatures from both the old and new keys so that the
-server can verify that the holders of the two keys both agree to the change.
-The signatures are nested to preserve the property that all signatures on POST
-messages are signed by exactly one key.
+server can verify that the holder of the current account key agrees to the
+change, and possesses the new key.  The signatures are nested to preserve
+the property that all signatures on POST messages are signed by exactly one
+key.
 
 ~~~~~~~~~~
 POST /acme/key-change HTTP/1.1
