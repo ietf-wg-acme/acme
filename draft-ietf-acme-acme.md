@@ -271,8 +271,16 @@ and servers SHOULD emit pinning headers.  Each subsection of
 {{certificate-management}} below describes the message formats used by the
 function, and the order in which messages are sent.
 
-In all HTTPS transactions used by ACME, the ACME client is the HTTPS client and
-the ACME server is the HTTPS server.
+In most HTTPS transactions used by ACME, the ACME client is the HTTPS client
+and the ACME server is the HTTPS server. The ACME server acts as an HTTP and
+HTTPS client when validating challenges via HTTP.
+
+ACME clients SHOULD send a User-Agent header in accordance with
+{{!RFC7231}}, including the name and version of the ACME software in
+addition to the name and version of the underlying HTTP client software.
+
+ACME clients SHOULD send an Accept-Language header in accordance with
+{{!RFC7231}} to enable localization of error messages.
 
 ACME servers that are intended to be generally accessible need to use
 Cross-Origin Resource Sharing (CORS) in order to be accessible from
@@ -312,7 +320,7 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 
 ## Request URI Integrity
 
-It is common in deployment the entity terminating TLS for HTTPS to be different
+It is common in deployment for the entity terminating TLS for HTTPS to be different
 from the entity operating the logical HTTPS server, with a "request routing"
 layer in the middle.  For example, an ACME CA might have a content delivery
 network terminate TLS connections from clients so that it can inspect client
@@ -325,7 +333,7 @@ changing the request URI to another ACME URI of a different type.  (It does not
 protect against changing between URIs of the same type, e.g., from one
 authorization URI to another).
 
-As noted above, all ACME request object carry a "url" parameter in their
+As noted above, all ACME request objects carry a "url" parameter in their
 protected header.  This header parameter encodes the URL to which the client is
 directing the request.  On receiving such an object in an HTTP request, the server
 MUST compare the "url" parameter to the request URI.  If the two do not match,
@@ -340,7 +348,7 @@ any re-encoding on the URL).
 
 The "url" header parameter specifies the URL to which this JWS object is
 directed {{!RFC3986}}.  The "url" parameter MUST be carried in the protected
-header of the JWS.  The value of the "nonce" header MUST be a JSON string
+header of the JWS.  The value of the "url" header MUST be a JSON string
 representing the URL.
 
 ## Replay protection
@@ -470,7 +478,7 @@ enables:
 ACME is structured as a REST application with a few types of resources:
 
 * Registration resources, representing information about an account
-* Application resources, represnting an account's requests to issue certificates
+* Application resources, representing an account's requests to issue certificates
 * Authorization resources, representing an account's authorization to act for an
   identifier
 * Challenge resources, representing a challenge to prove control of an
@@ -482,9 +490,9 @@ ACME is structured as a REST application with a few types of resources:
 * A "revoke-certificate" resource
 * A "key-change" resource
 
-For the "new-X" resources above, the server MUST have exactly one resource for
-each function.  This resource may be addressed by multiple URIs, but all must
-provide equivalent functionality.
+For the singular resources above ("directory", "new-registration",
+"new-application", "revoke-certificate", and "key-change") the resource may be
+addressed by multiple URIs, but all must provide equivalent functionality.
 
 ACME uses different URIs for different management functions. Each function is
 listed in a directory along with its corresponding URI, so clients only need to
@@ -619,7 +627,7 @@ key (required, dictionary):
 {{!RFC7517}}.
 
 status (required, string):
-: "good" or "deactivated"
+: "valid" or "deactivated"
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
@@ -638,14 +646,6 @@ whose "applications" field is an array of strings, where each string is the URI
 of an authorization belonging to this registration.  The server SHOULD include
 pending applications, and SHOULD NOT include applications that are invalid. The
 server MAY return an incomplete list, along with a Link header with link
-relation "next" indicating a URL to retrieve further entries.
-
-certificates (required, string):
-: A URI from which a list of certificates issued for this account can be fetched
-via a GET request.  The result of the GET request MUST be a JSON object whose
-"certificates" field is an array of strings, where each string is the URI of a
-certificate.  The server SHOULD NOT include expired or revoked certificates.
-The server MAY return an incomplete list, along with a Link header with link
 relation "next" indicating a URL to retrieve further entries.
 
 ~~~~~~~~~~
@@ -749,7 +749,7 @@ applications to be fufilled based on a single authorization transaction, then it
 must reflect that authorization in all of the applications.
 
 Each entry in the "requirements" array expresses a requirement from the CA for
-the client to takek a particular action.  All requirements objects have the
+the client to take a particular action.  All requirements objects have the
 following basic fields:
 
 type (required, string):
@@ -791,8 +791,8 @@ indicated web page.
 
 ### Authorization Objects
 
-An ACME authorization object represents server's authorization for an account to
-represent an identifier.  In addition to the identifier, an authorization
+An ACME authorization object represents a server's authorization for an account
+to represent an identifier.  In addition to the identifier, an authorization
 includes several metadata fields, such as the status of the authorization (e.g.,
 "pending", "valid", or "revoked") and which challenges were used to validate
 possession of the identifier.
@@ -816,7 +816,7 @@ the default value is "pending".
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
 encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
-for objects with "valid" in the "status field.
+for objects with "valid" in the "status" field.
 
 scope (optional, string):
 : If this field is present, then it MUST contain a URI for an application
@@ -826,19 +826,13 @@ applications until the authorization expires. [[ Open issue: More flexible
 scoping? ]]
 
 challenges (required, array):
-: The challenges that the client needs to fulfill
+: The challenges that the client can fulfill
 in order to prove possession of the identifier (for pending authorizations).
 For final authorizations, the challenges that were used.  Each array entry is a
 dictionary with parameters required to validate the challenge, as specified in
-{{identifier-validation-challenges}}.
-
-combinations (optional, array of arrays of integers):
-: A collection of sets of
-challenges, each of which would be sufficient to prove possession of the
-identifier. Clients complete a set of challenges that covers at least one
-set in this array. Challenges are identified by their indices in the challenges
-array.  If no "combinations" element is included in an authorization object, the
-client completes all challenges.
+{{identifier-validation-challenges}}. A client should attempt to fulfill at most
+one of these challenges, and a server should consider any one of the challenges
+sufficient to make the authorization valid.
 
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns").  The value of the identifier MUST be the ASCII
@@ -930,7 +924,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
   "key": { /* JWK from JWS header */ },
-  "status": "good",
+  "status": "valid",
 
   "contact": [
     "mailto:cert-admin@example.com",
@@ -1308,8 +1302,6 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ],
-
-  "combinations": [[0], [1]]
 }
 ~~~~~~~~~~
 
@@ -1368,9 +1360,9 @@ authorization when it has completed all the validations it is going to complete,
 and assigns the authorization a status of "valid" or "invalid", corresponding to
 whether it considers the account authorized for the identifier.  If the final
 state is "valid", the server MUST add an "expires" field to the authorization.
-When finalizing an authorization, the server MAY remove the "combinations" field
-(if present) or remove any challenges still pending.  The server SHOULD NOT
-remove challenges with status "invalid".
+When finalizing an authorization, the server MAY remove challenges other than
+the one that was completed. The server SHOULD NOT remove challenges with status
+"invalid".
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
@@ -1440,7 +1432,7 @@ Content-Type: application/jose+json
 The server MUST verify that the request is signed by the account key
 corresponding to the account that owns the authorization. If the server accepts
 the deactivation, it should reply with a 200 (OK) status code and the current
-contents of the registration object.
+contents of the authorization object.
 
 The server MUST NOT treat deactivated authorization objects as sufficient for
 issuing certificates.
@@ -1590,12 +1582,6 @@ introduced.  For example, if an HTTP challenge were introduced in version -03
 and a breaking change made in version -05, then there would be a challenge
 labeled "http-03" and one labeled "http-05" -- but not one labeled "http-04",
 since challenge in version -04 was compatible with one in version -04. ]]
-
-[[ Editor's Note: Operators SHOULD NOT issue "combinations" arrays in
-authorization objects that require the client to perform multiple challenges
-over the same type, e.g., ["http-03", "http-05"].  Challenges within a type are
-testing the same capability of the domain owner, and it may not be possible to
-satisfy both at once. ]]
 
 ## Key Authorizations
 
@@ -2061,7 +2047,7 @@ document ]]
 ### Challenge Types
 
 This registry lists the ways that ACME servers can offer to validate control of
-an identifier.  The "Identifier Type" field in template MUST be contained in the
+an identifier.  The "Identifier Type" field in template must be contained in the
 Label column of the ACME Identifier Types registry.
 
 Template:
