@@ -948,6 +948,7 @@ use a different URI in the Link header.
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Content-Type: application/json
+Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/reg/asdf
 Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
@@ -1167,6 +1168,7 @@ before the certificate will be issued.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
+Replay-Nonce: MYAuvOpaoIiywTezizk5vw
 Location: https://example.com/acme/app/asdf
 
 {
@@ -1521,11 +1523,13 @@ the revocation fails, the server returns an error.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
 
 --- or ---
 
 HTTP/1.1 403 Forbidden
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
 
