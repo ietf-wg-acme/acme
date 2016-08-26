@@ -455,6 +455,7 @@ to errors, this document defines the following standard tokens for use in the
 | invalidContact        | The contact URI for a registration was invalid     |
 | rejectedIdentifier    | The server will not issue for the identifier       |
 | unsupportedIdentifier | Identifier is not supported, but may be in future  |
+| agreementRequired     | The client must agree to terms before proceeding   |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -971,6 +972,31 @@ requests are not authenticated.  If a client wishes to query the server for
 information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
 That is, it should send a JWS whose payload is trivial ({}).
+
+### Agreement to Terms of Service
+
+As described above, a client can indicate its agreement with a specific set of
+terms (referenced by URL) by indicating that URL in the "agreement" field of its
+registration object.
+
+If a client has not agreed to the server's terms of service and the server is
+unwilling to process a request without agreement, then it MUST return an error
+response with status code 403 (Forbidden) and type
+"urn:ietf:params:acme:error:agreementRequired".  This response MUST include a
+Link header with link relation "terms-of-service" and the latest
+terms-of-service URL.
+
+If a client receives an "agreementRequired" error and is willing to agree to the
+terms of service referenced in the Link header, then it SHOULD update its
+registration with the new agreement URL and retry the original request.
+
+The "agreementRequired" error allows CAs to clearly express when agreement to
+terms is required, both for new registrations that have not agreed to any terms,
+and for existing registrations that may have agreed to an older version of the
+terms.  If a CA makes a change to its terms of service or terms-of-service URL
+that does not require action by the client (e.g., simply moving the document to
+a different server), then it SHOULD simply update the agreement URL in existing
+registration objects.
 
 ### Account Key Roll-over
 
