@@ -310,6 +310,17 @@ serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.  Some fields are omitted for brevity, marked with "...".
 
+## Equivalence of JWKs
+
+At several points in the protocol, it is necessary for the server to compare one
+key to another in JWK form.  In performing these comparisons, the server SHOULD
+consider two JWKs to be equal if they have the same "kty" value and contain
+identical values in the fields used in the computation of a JWK thumbprint for
+that key type:
+
+* "RSA": "n", "e"
+* "EC": "crv", "x", "y"
+
 ## Request URI Integrity
 
 It is common in deployment the entity terminating TLS for HTTPS to be different
@@ -991,11 +1002,11 @@ exact string provided in the Location header field in response to the
 new-registration request that created the account.
 
 oldKey (required, JWK):
-: The JWK thumbprint of the original key (i.e., the client's current account
+: The JWK representation of the original key (i.e., the client's current account
 key)
 
 newKey (requrired, JWK):
-: The JWK thumbprint of the new key
+: The JWK representation of the new key
 
 Both of these thumbprints MUST be computed as specified in {{!RFC7638}}, using
 the SHA-256 digest.  The values in the "oldKey" and "newKey" fields MUST be the
@@ -1042,8 +1053,8 @@ Content-Type: application/jose+json
     }),
     "payload": base64url({
       "account": "https://example.com/acme/reg/asdf",
-      "oldKey": "bHcFJ3p0fMo5I6Nu9uvx5Yat04ePLpe0UsA40nNyweg",
-      "newKey": "Nyh_IpZjLIiAu_xm4Xp0Ac5Ckd1Gq1p-UtQjhMADCZI"
+      "oldKey": /* old key */,
+      "newKey": /* new key */
     })
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
   }),
