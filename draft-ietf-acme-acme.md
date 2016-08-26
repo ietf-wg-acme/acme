@@ -320,7 +320,7 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 
 ## Request URI Integrity
 
-It is common in deployment the entity terminating TLS for HTTPS to be different
+It is common in deployment for the entity terminating TLS for HTTPS to be different
 from the entity operating the logical HTTPS server, with a "request routing"
 layer in the middle.  For example, an ACME CA might have a content delivery
 network terminate TLS connections from clients so that it can inspect client
@@ -333,7 +333,7 @@ changing the request URI to another ACME URI of a different type.  (It does not
 protect against changing between URIs of the same type, e.g., from one
 authorization URI to another).
 
-As noted above, all ACME request object carry a "url" parameter in their
+As noted above, all ACME request objects carry a "url" parameter in their
 protected header.  This header parameter encodes the URL to which the client is
 directing the request.  On receiving such an object in an HTTP request, the server
 MUST compare the "url" parameter to the request URI.  If the two do not match,
@@ -348,7 +348,7 @@ any re-encoding on the URL).
 
 The "url" header parameter specifies the URL to which this JWS object is
 directed {{!RFC3986}}.  The "url" parameter MUST be carried in the protected
-header of the JWS.  The value of the "nonce" header MUST be a JSON string
+header of the JWS.  The value of the "url" header MUST be a JSON string
 representing the URL.
 
 ## Replay protection
@@ -478,7 +478,7 @@ enables:
 ACME is structured as a REST application with a few types of resources:
 
 * Registration resources, representing information about an account
-* Application resources, represnting an account's requests to issue certificates
+* Application resources, representing an account's requests to issue certificates
 * Authorization resources, representing an account's authorization to act for an
   identifier
 * Challenge resources, representing a challenge to prove control of an
@@ -824,7 +824,7 @@ the default value is "pending".
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
 encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
-for objects with "valid" in the "status field.
+for objects with "valid" in the "status" field.
 
 scope (optional, string):
 : If this field is present, then it MUST contain a URI for an application
