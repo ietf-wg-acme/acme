@@ -902,10 +902,9 @@ registration object in a 201 (Created) response, with the registration URI in a
 Location header field.
 
 If the server already has a registration object with the provided account key,
-then it MUST return a 409 (Conflict) response and provide the URI of that
-registration in a Location header field.  This allows a client that has an
-account key but not the corresponding registration URI to recover the
-registration URI.
+then it MUST return a 200 (OK) response and provide the URI of that registration
+in a Content-Location header field.  This allows a client that has an account
+key but not the corresponding registration URI to recover the registration URI.
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
