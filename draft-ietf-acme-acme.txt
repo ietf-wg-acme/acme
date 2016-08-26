@@ -1123,7 +1123,7 @@ Internet-Draft                    ACME                       August 2016
 
 
    Each entry in the "requirements" array expresses a requirement from
-   the CA for the client to takek a particular action.  All requirements
+   the CA for the client to take a particular action.  All requirements
    objects have the following basic fields:
 
    type (required, string):  The type of requirement (see below for
@@ -1162,14 +1162,14 @@ Internet-Draft                    ACME                       August 2016
 
 6.1.4.  Authorization Objects
 
-   An ACME authorization object represents server's authorization for an
-   account to represent an identifier.  In addition to the identifier,
-   an authorization includes several metadata fields, such as the status
-   of the authorization (e.g., "pending", "valid", or "revoked") and
-   which challenges were used to validate possession of the identifier.
+   An ACME authorization object represents a server's authorization for
+   an account to represent an identifier.  In addition to the
+   identifier, an authorization includes several metadata fields, such
+   as the status of the authorization (e.g., "pending", "valid", or
+   "revoked") and which challenges were used to validate possession of
+   the identifier.
 
    The structure of an ACME authorization resource is as follows:
-
 
 
 

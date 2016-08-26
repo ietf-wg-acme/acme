@@ -918,7 +918,7 @@ Content-Type: application/json
 <p id="rfc.section.6.1.3.p.4">[[ Open issue: Should this syntax allow multiple certificates?  That would support reissuance / renewal in a straightforward way, especially if the CSR / notBefore / notAfter could be updated. ]]</p>
 <p id="rfc.section.6.1.3.p.5">The elements of the &#8220;requirements&#8221; array are immutable once set, except for their &#8220;status&#8221; fields.  If any other part of the object changes after the object is created, the client MUST consider the application invalid.</p>
 <p id="rfc.section.6.1.3.p.6">The &#8220;requirements&#8221; array in the challenge SHOULD reflect everything that the CA required the client to do before issuance, even if some requirements were fulfilled in earlier applications.  For example, if a CA allows multiple applications to be fufilled based on a single authorization transaction, then it must reflect that authorization in all of the applications.</p>
-<p id="rfc.section.6.1.3.p.7">Each entry in the &#8220;requirements&#8221; array expresses a requirement from the CA for the client to takek a particular action.  All requirements objects have the following basic fields:</p>
+<p id="rfc.section.6.1.3.p.7">Each entry in the &#8220;requirements&#8221; array expresses a requirement from the CA for the client to take a particular action.  All requirements objects have the following basic fields:</p>
 <p/>
 
 <dl>
@@ -947,7 +947,7 @@ Content-Type: application/json
 </dl>
 <p id="rfc.section.6.1.3.2.p.3">To fulfill this requirement, the ACME client should direct the user to the indicated web page.</p>
 <h1 id="rfc.section.6.1.4"><a href="#rfc.section.6.1.4">6.1.4.</a> <a href="#authorization-objects" id="authorization-objects">Authorization Objects</a></h1>
-<p id="rfc.section.6.1.4.p.1">An ACME authorization object represents server&#8217;s authorization for an account to represent an identifier.  In addition to the identifier, an authorization includes several metadata fields, such as the status of the authorization (e.g., &#8220;pending&#8221;, &#8220;valid&#8221;, or &#8220;revoked&#8221;) and which challenges were used to validate possession of the identifier.</p>
+<p id="rfc.section.6.1.4.p.1">An ACME authorization object represents a server&#8217;s authorization for an account to represent an identifier.  In addition to the identifier, an authorization includes several metadata fields, such as the status of the authorization (e.g., &#8220;pending&#8221;, &#8220;valid&#8221;, or &#8220;revoked&#8221;) and which challenges were used to validate possession of the identifier.</p>
 <p id="rfc.section.6.1.4.p.2">The structure of an ACME authorization resource is as follows:</p>
 <p/>
 
