@@ -855,8 +855,6 @@ Content-Type: application/json
   <dd style="margin-left: 8">A URI referring to a subscriber agreement or terms of service provided by the server (see below).  Including this field indicates the client&#8217;s agreement with the referenced terms.</dd>
   <dt>applications (required, string):</dt>
   <dd style="margin-left: 8">A URI from which a list of authorizations submitted by this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;applications&#8221; field is an array of strings, where each string is the URI of an authorization belonging to this registration.  The server SHOULD include pending applications, and SHOULD NOT include applications that are invalid. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</dd>
-  <dt>certificates (required, string):</dt>
-  <dd style="margin-left: 8">A URI from which a list of certificates issued for this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;certificates&#8221; field is an array of strings, where each string is the URI of a certificate.  The server SHOULD NOT include expired or revoked certificates.  The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</dd>
 </dl>
 <pre>
 {
