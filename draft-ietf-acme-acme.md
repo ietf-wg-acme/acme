@@ -361,11 +361,10 @@ requests have a mandatory anti-replay mechanism.  This mechanism is based on the
 server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
-An ACME server MUST include a Replay-Nonce header field in each successful
-response it provides to a client, with contents as specified below.  In
-particular, the ACME server MUST provide a Replay-Nonce header field in response
-to a HEAD request for any valid resource.  (This allows clients to easily obtain
-a fresh nonce.)  It MAY also provide nonces in error responses.
+An ACME server provides nonces ot clients using the Replay-Nonce header field,
+as specified below.  The server MUST include a Replay-Nonce header field in
+every successful response to a POST request, and SHOULD provide it in error
+responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
 "nonce" header parameter, with contents as defined below.  As part of JWS
@@ -376,7 +375,9 @@ invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
-ACME error code "urn:ietf:params:acme:error:badNonce".
+ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
+the "badNonce" error code MUST include a fresh nonce.  On receiving such a
+response, a client SHOULD retry the request using the new nonce.
 
 The precise method used to generate and track nonces is up to the server.  For
 example, the server could generate a random 128-bit value for each response,
@@ -890,7 +891,12 @@ Host: example.com
 
 HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
+Cache-Control: no-store
 ~~~~~~~~~~
+
+The new-nonce resource MUST NOT be cached by the client or intermediate HTTP
+caches.  The server SHOULD include a Cache-Control header field with the
+"no-store" directive in responses for the new-nonce resource.
 
 ## Registration
 
