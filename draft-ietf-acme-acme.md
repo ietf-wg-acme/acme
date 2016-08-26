@@ -757,7 +757,7 @@ applications to be fufilled based on a single authorization transaction, then it
 must reflect that authorization in all of the applications.
 
 Each entry in the "requirements" array expresses a requirement from the CA for
-the client to takek a particular action.  All requirements objects have the
+the client to take a particular action.  All requirements objects have the
 following basic fields:
 
 type (required, string):
@@ -799,8 +799,8 @@ indicated web page.
 
 ### Authorization Objects
 
-An ACME authorization object represents server's authorization for an account to
-represent an identifier.  In addition to the identifier, an authorization
+An ACME authorization object represents a server's authorization for an account
+to represent an identifier.  In addition to the identifier, an authorization
 includes several metadata fields, such as the status of the authorization (e.g.,
 "pending", "valid", or "revoked") and which challenges were used to validate
 possession of the identifier.
