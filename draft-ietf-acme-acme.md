@@ -630,7 +630,8 @@ key (required, dictionary):
 {{!RFC7517}}.
 
 status (required, string):
-: "valid" or "deactivated"
+: The status of this registration. Possible values are: "valid", "deactivated",
+and "revoked".
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
