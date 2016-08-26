@@ -490,9 +490,9 @@ ACME is structured as a REST application with a few types of resources:
 * A "revoke-certificate" resource
 * A "key-change" resource
 
-For the "new-X" resources above, the server MUST have exactly one resource for
-each function.  This resource may be addressed by multiple URIs, but all must
-provide equivalent functionality.
+For the singular resources above ("directory", "new-registration",
+"new-application", "revoke-certificate", and "key-change") the resource may be
+addressed by multiple URIs, but all must provide equivalent functionality.
 
 ACME uses different URIs for different management functions. Each function is
 listed in a directory along with its corresponding URI, so clients only need to
