@@ -97,7 +97,7 @@ Table of Contents
    6.  Certificate Management  . . . . . . . . . . . . . . . . . . .  14
      6.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  14
        6.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  16
-       6.1.2.  Registration Objects  . . . . . . . . . . . . . . . .  17
+       6.1.2.  Registration Objects  . . . . . . . . . . . . . . . .  18
        6.1.3.  Application Objects . . . . . . . . . . . . . . . . .  19
        6.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  21
      6.2.  Registration  . . . . . . . . . . . . . . . . . . . . . .  23
@@ -788,9 +788,10 @@ Internet-Draft                    ACME                       August 2016
 
    o  A "key-change" resource
 
-   For the "new-X" resources above, the server MUST have exactly one
-   resource for each function.  This resource may be addressed by
-   multiple URIs, but all must provide equivalent functionality.
+   For the singular resources above ("directory", "new-registration",
+   "new-application", "revoke-certificate", and "key-change") the
+   resource may be addressed by multiple URIs, but all must provide
+   equivalent functionality.
 
    ACME uses different URIs for different management functions.  Each
    function is listed in a directory along with its corresponding URI,
@@ -832,8 +833,7 @@ Internet-Draft                    ACME                       August 2016
                             V |
                           challenge
 
-   The following table illustrates a typical sequence of requests
-   required to establish a new account with the server, prove control of
+
 
 
 
@@ -842,6 +842,8 @@ Barnes, et al.          Expires February 27, 2017              [Page 15]
 Internet-Draft                    ACME                       August 2016
 
 
+   The following table illustrates a typical sequence of requests
+   required to establish a new account with the server, prove control of
    an identifier, issue a certificate, and fetch an updated certificate
    some time after issuance.  The "->" is a mnemonic for a Location
    header pointing to a created resource.
@@ -887,9 +889,7 @@ Internet-Draft                    ACME                       August 2016
                    | key-change  | Key change         |
                    +-------------+--------------------+
 
-   There is no constraint on the actual URI of the directory except that
-   it should be different from the other ACME server resources' URIs,
-   and that it should not clash with other services.  For instance:
+
 
 
 
@@ -897,6 +897,10 @@ Barnes, et al.          Expires February 27, 2017              [Page 16]
 
 Internet-Draft                    ACME                       August 2016
 
+
+   There is no constraint on the actual URI of the directory except that
+   it should be different from the other ACME server resources' URIs,
+   and that it should not clash with other services.  For instance:
 
    o  a host which function as both an ACME and Web server may want to
       keep the root path "/" for an HTML "front page", and and place the
@@ -941,11 +945,7 @@ Internet-Draft                    ACME                       August 2016
      }
    }
 
-6.1.2.  Registration Objects
 
-   An ACME registration resource represents a set of metadata associated
-   to an account key pair.  Registration resources have the following
-   structure:
 
 
 
@@ -953,6 +953,12 @@ Barnes, et al.          Expires February 27, 2017              [Page 17]
 
 Internet-Draft                    ACME                       August 2016
 
+
+6.1.2.  Registration Objects
+
+   An ACME registration resource represents a set of metadata associated
+   to an account key pair.  Registration resources have the following
+   structure:
 
    key (required, dictionary):  The public key of the account key pair,
       encoded as a JSON Web Key object [RFC7517].
@@ -988,15 +994,9 @@ Internet-Draft                    ACME                       August 2016
       incomplete list, along with a Link header with link relation
       "next" indicating a URL to retrieve further entries.
 
-   {
-     "contact": [
-       "mailto:cert-admin@example.com",
-       "tel:+12025551212"
-     ],
-     "agreement": "https://example.com/acme/terms",
-     "authorizations": "https://example.com/acme/reg/1/authz",
-     "certificates": "https://example.com/acme/reg/1/cert"
-   }
+
+
+
 
 
 
@@ -1009,6 +1009,16 @@ Barnes, et al.          Expires February 27, 2017              [Page 18]
 
 Internet-Draft                    ACME                       August 2016
 
+
+   {
+     "contact": [
+       "mailto:cert-admin@example.com",
+       "tel:+12025551212"
+     ],
+     "agreement": "https://example.com/acme/terms",
+     "authorizations": "https://example.com/acme/reg/1/authz",
+     "certificates": "https://example.com/acme/reg/1/cert"
+   }
 
 6.1.3.  Application Objects
 
@@ -1047,16 +1057,6 @@ Internet-Draft                    ACME                       August 2016
 
    certificate (optional, string):  A URL for the certificate that has
       been issued in response to this application.
-
-
-
-
-
-
-
-
-
-
 
 
 

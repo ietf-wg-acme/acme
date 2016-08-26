@@ -701,7 +701,7 @@ li, p {
   <li>A &#8220;revoke-certificate&#8221; resource</li>
   <li>A &#8220;key-change&#8221; resource</li>
 </ul>
-<p id="rfc.section.6.1.p.3">For the &#8220;new-X&#8221; resources above, the server MUST have exactly one resource for each function.  This resource may be addressed by multiple URIs, but all must provide equivalent functionality.</p>
+<p id="rfc.section.6.1.p.3">For the singular resources above (&#8220;directory&#8221;, &#8220;new-registration&#8221;, &#8220;new-application&#8221;, &#8220;revoke-certificate&#8221;, and &#8220;key-change&#8221;) the resource may be addressed by multiple URIs, but all must provide equivalent functionality.</p>
 <p id="rfc.section.6.1.p.4">ACME uses different URIs for different management functions. Each function is listed in a directory along with its corresponding URI, so clients only need to be configured with the directory URI.  These URIs are connected by a few different link relations <a href="#RFC5988">[RFC5988]</a>.</p>
 <p id="rfc.section.6.1.p.5">The &#8220;up&#8221; link relation is used with challenge resources to indicate the authorization resource to which a challenge belongs.  It is also used from certificate resources to indicate a resource from which the client may fetch a chain of CA certificates that could be used to validate the certificate in the original resource.</p>
 <p id="rfc.section.6.1.p.6">The &#8220;directory&#8221; link relation is present on all resources other than the directory and indicates the directory URL.</p>
