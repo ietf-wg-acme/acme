@@ -312,11 +312,11 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 
 ## Equivalence of JWKs
 
-At several points in the protocol, it is necessary for the server to compare one
-key to another in JWK form.  In performing these comparisons, the server SHOULD
-consider two JWKs to be equal if they have the same "kty" value and contain
-identical values in the fields used in the computation of a JWK thumbprint for
-that key type:
+At several points in the protocol, it is necessary for the server to determine
+whether two JWK objects represent the same key.  In performing these checks, the
+server SHOULD consider two JWKs to match if and only if they have the same "kty"
+value and contain identical values in the fields used in the computation of a
+JWK thumbprint for that key type:
 
 * "RSA": "n", "e"
 * "EC": "crv", "x", "y"
