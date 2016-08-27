@@ -1867,13 +1867,15 @@ providing a URL for that web page.
 type (required, string):
 : The string "oob-01"
 
-url (required, string):
-: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
+href (required, string):
+: The URL to be visited.  The scheme of this URL MUST be "http" or "https".
+Note that this field is distinct from the "uri" field of the challenge, which
+identifies the challenge itself.
 
 ~~~~~~~~~~
 {
   "type": "oob-01",
-  "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+  "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 ~~~~~~~~~~
 
