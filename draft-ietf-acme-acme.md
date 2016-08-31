@@ -361,22 +361,24 @@ requests have a mandatory anti-replay mechanism.  This mechanism is based on the
 server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
-An ACME server MUST include a Replay-Nonce header field in each successful
-response it provides to a client, with contents as specified below.  In
-particular, the ACME server MUST provide a Replay-Nonce header field in response
-to a HEAD request for any valid resource.  (This allows clients to easily obtain
-a fresh nonce.)  It MAY also provide nonces in error responses.
+An ACME server MUST include a Replay-Nonce header field in each response with
+ACME error code "urn:ietf:params:acme:error:badNonce". It SHOULD include a
+Replay-Nonce header in each successful response to an authenticated POST
+request, and MAY do so in any other responses.
 
-Every JWS sent by an ACME client MUST include, in its protected header, the
+Every JWS sent by an ACME client MUST include, in its JWS protected header(s), the
 "nonce" header parameter, with contents as defined below.  As part of JWS
-verification, the ACME server MUST verify that the value of the "nonce" header
-is a value that the server previously provided in a Replay-Nonce header field.
-Once a nonce value has appeared in an ACME request, the server MUST consider it
-invalid, in the same way as a value it had never issued.
+verification, the ACME server MUST verify that the value of the "nonce" field in
+the JWS protected header is a value that the server previously provided in a
+Replay-Nonce HTTP header field. Once the server has accepted an ACME request
+containing a given nonce value, the server MUST consider that nonce value invalid
+for future requests, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
-ACME error code "urn:ietf:params:acme:error:badNonce".
+ACME error code "urn:ietf:params:acme:error:badNonce". Clients can use this
+behavior to get a nonce when they do not have one, by submitting an otherwise
+well-formed authenticated POST with no nonce header.
 
 The precise method used to generate and track nonces is up to the server.  For
 example, the server could generate a random 128-bit value for each response,
@@ -394,12 +396,11 @@ the base64url encoding described in Section 2 of {{!RFC7515}}.  Clients MUST
 ignore invalid Replay-Nonce values.
 
 ~~~~~
-  base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
-
-  Replay-Nonce = *base64url
+  Replay-Nonce = base64url("arbitrary data")
 ~~~~~
 
-The Replay-Nonce header field SHOULD NOT be included in HTTP request messages.
+The Replay-Nonce header field SHOULD NOT be included as a header in HTTP
+request messages.
 
 ### "nonce" (Nonce) JWS header parameter
 
