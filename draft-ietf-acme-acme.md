@@ -672,8 +672,8 @@ server's requirements, and any certificates that have resulted from this
 application.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "unknown", "pending",
-"processing", "valid", and "invalid".
+: The status of this authorization.  Possible values are: "pending", "valid",
+and "invalid".
 
 expires (optional, string):
 : The timestamp after which the server will consider this application invalid,
@@ -812,9 +812,9 @@ identifier (required, dictionary of string):
   : The identifier itself.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "unknown", "pending",
-"processing", "valid", "invalid" and "revoked".  If this field is missing, then
-the default value is "pending".
+: The status of this authorization.  Possible values are: "pending", "processing",
+"valid", "invalid" and "revoked".  If this field is missing, then the default
+value is "pending".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
