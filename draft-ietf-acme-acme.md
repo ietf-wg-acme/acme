@@ -361,11 +361,10 @@ requests have a mandatory anti-replay mechanism.  This mechanism is based on the
 server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
-An ACME server MUST include a Replay-Nonce header field in each successful
-response it provides to a client, with contents as specified below.  In
-particular, the ACME server MUST provide a Replay-Nonce header field in response
-to a HEAD request for any valid resource.  (This allows clients to easily obtain
-a fresh nonce.)  It MAY also provide nonces in error responses.
+An ACME server provides nonces to clients using the Replay-Nonce header field,
+as specified below.  The server MUST include a Replay-Nonce header field in
+every successful response to a POST request, and SHOULD provide it in error
+responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
 "nonce" header parameter, with contents as defined below.  As part of JWS
@@ -376,7 +375,10 @@ invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
-ACME error code "urn:ietf:params:acme:error:badNonce".
+ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
+the "badNonce" error code MUST include a Replay-Nonce header with a fresh nonce.
+On receiving such a response, a client SHOULD retry the request using the new
+nonce.
 
 The precise method used to generate and track nonces is up to the server.  For
 example, the server could generate a random 128-bit value for each response,
@@ -488,12 +490,15 @@ ACME is structured as a REST application with a few types of resources:
   identifier
 * Certificate resources, representing issued certificates
 * A "directory" resource
+* A "new-nonce" resource
 * A "new-registration" resource
 * A "new-application" resource
 * A "revoke-certificate" resource
 * A "key-change" resource
 
-For the singular resources above ("directory", "new-registration",
+The server MUST provide "directory" and "new-nonce" resources.
+
+For the singular resources above ("directory", "new-nonce", "new-registration",
 "new-application", "revoke-certificate", and "key-change") the resource may be
 addressed by multiple URIs, but all must provide equivalent functionality.
 
@@ -519,6 +524,7 @@ indicate HTTP link relations
 ~~~~~~~~~~
                                directory
                                    |
+                                   |--> new-nonce
                                    |
        ----------------------------------------------------
        |                  |                               |
@@ -546,6 +552,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 
 | Action             | Request        | Response   |
 |:-------------------|:---------------|:-----------|
+| Get a nonce        | HEAD new-nonce | 200        |
 | Register           | POST new-reg   | 201 -> reg |
 | Apply for a cert   | POST new-app   | 201 -> app |
 | Fetch challenges   | GET  authz     | 200        |
@@ -566,6 +573,7 @@ the following table and whose values are the corresponding URLs.
 
 | Key         | URL in value         |
 |:------------|:---------------------|
+| new-nonce   | New nonce            |
 | new-reg     | New registration     |
 | new-app     | New application      |
 | revoke-cert | Revoke certificate   |
@@ -608,6 +616,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
+  "new-nonce": "https://example.com/acme/new-nonce",
   "new-reg": "https://example.com/acme/new-reg",
   "new-app": "https://example.com/acme/new-app",
   "revoke-cert": "https://example.com/acme/revoke-cert",
@@ -863,6 +872,33 @@ label) MUST NOT be included in authorization requests.
 }
 ~~~~~~~~~~
 
+## Getting a Nonce
+
+Before sending a POST request to the server, an ACME client needs to have a
+fresh anti-replay nonce to put in the "nonce" header of the JWS.  In most cases,
+the client will have gotten a nonce from a previous request.  However, the
+client might sometimes need to get a new nonce, e.g., on its first request to
+the server or if an existing nonce is no longer valid.
+
+To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
+on the server.  The server's response MUST include a Replay-Nonce header field
+containing a fresh nonce, and SHOULD have status code 200 (OK).  The server
+SHOULD also respond to GET requests for this resource, returning an empty body
+(while still providing a Replay-Nonce header).
+
+~~~~~~~~~~
+HEAD /acme/new-nonce HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
+Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
+Cache-Control: no-store
+~~~~~~~~~~
+
+Caching of responses from the new-nonce resource can cause clients to be unable
+to communicate with the ACME server.  The server MUST include a Cache-Control
+header field with the "no-store" directive in responses for the new-nonce
+resource, in order to prevent caching of this resource.
 
 ## Registration
 
@@ -920,6 +956,7 @@ use a different URI in the Link header.
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Content-Type: application/json
+Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/reg/asdf
 Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
@@ -1139,6 +1176,7 @@ before the certificate will be issued.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
+Replay-Nonce: MYAuvOpaoIiywTezizk5vw
 Location: https://example.com/acme/app/asdf
 
 {
@@ -1493,11 +1531,13 @@ the revocation fails, the server returns an error.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
 
 --- or ---
 
 HTTP/1.1 403 Forbidden
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
 
