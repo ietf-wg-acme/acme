@@ -361,7 +361,7 @@ requests have a mandatory anti-replay mechanism.  This mechanism is based on the
 server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
-An ACME server provides nonces ot clients using the Replay-Nonce header field,
+An ACME server provides nonces to clients using the Replay-Nonce header field,
 as specified below.  The server MUST include a Replay-Nonce header field in
 every successful response to a POST request, and SHOULD provide it in error
 responses as well.
@@ -376,7 +376,7 @@ invalid, in the same way as a value it had never issued.
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
 ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
-the "badNonce" error code MUST include Replay-Nonce header with a fresh nonce.
+the "badNonce" error code MUST include a Replay-Nonce header with a fresh nonce.
 On receiving such a response, a client SHOULD retry the request using the new
 nonce.
 
@@ -498,7 +498,7 @@ ACME is structured as a REST application with a few types of resources:
 
 The server MUST provide "directory" and "new-nonce" resources.
 
-For the singular resources above ("directory", "new-registration",
+For the singular resources above ("directory", "new-nonce", "new-registration",
 "new-application", "revoke-certificate", and "key-change") the resource may be
 addressed by multiple URIs, but all must provide equivalent functionality.
 
@@ -881,10 +881,10 @@ client might sometimes need to get a new nonce, e.g., on its first request to
 the server or if an existing nonce is no longer valid.
 
 To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
-on the server.  The server server's resposne MUST include a Replay-Nonce header
-field containing a fresh nonce, and SHOULD have status code 200 (OK).  The
-server SHOULD also respond to GET requests for this resource, returning an empty
-body.
+on the server.  The server's response MUST include a Replay-Nonce header field
+containing a fresh nonce, and SHOULD have status code 200 (OK).  The server
+SHOULD also respond to GET requests for this resource, returning an empty body
+(while still providing a Replay-Nonce header).
 
 ~~~~~~~~~~
 HEAD /acme/new-nonce HTTP/1.1
@@ -895,9 +895,10 @@ Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 ~~~~~~~~~~
 
-The new-nonce resource MUST NOT be cached by the client or intermediate HTTP
-caches.  The server SHOULD include a Cache-Control header field with the
-"no-store" directive in responses for the new-nonce resource.
+Caching of responses from the new-nonce resource can cause clients to be unable
+to communicate with the ACME server.  The server MUST include a Cache-Control
+header field with the "no-store" directive in responses for the new-nonce
+resource, in order to prevent caching of this resource.
 
 ## Registration
 
