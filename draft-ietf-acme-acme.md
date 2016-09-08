@@ -1295,12 +1295,12 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
   "challenges": [
     {
       "type": "http-01",
-      "uri": "https://example.com/authz/asdf/0",
+      "url": "https://example.com/authz/asdf/0",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     },
     {
       "type": "dns-01",
-      "uri": "https://example.com/authz/asdf/1",
+      "url": "https://example.com/authz/asdf/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ],
@@ -1546,8 +1546,8 @@ Challenge objects all contain the following basic fields:
 type (required, string):
 : The type of challenge encoded in the object.
 
-uri (required, string):
-: The URI to which a response can be posted.
+url (required, string):
+: The URL to which a response can be posted.
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "valid",
@@ -1869,7 +1869,7 @@ type (required, string):
 
 href (required, string):
 : The URL to be visited.  The scheme of this URL MUST be "http" or "https".
-Note that this field is distinct from the "uri" field of the challenge, which
+Note that this field is distinct from the "url" field of the challenge, which
 identifies the challenge itself.
 
 ~~~~~~~~~~
