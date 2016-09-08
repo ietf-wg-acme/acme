@@ -322,12 +322,19 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 
 At several points in the protocol, it is necessary for the server to determine
 whether two JWK objects represent the same key.  In performing these checks, the
-server SHOULD consider two JWKs to match if and only if they have the same "kty"
-value and contain identical values in the fields used in the computation of a
-JWK thumbprint for that key type:
+server MUST consider two JWKs to match if and only if they have the identical
+values in all fields included in the computation of a JWK thumbprint for that
+key. That is, the keys must have the same "kty" value and contain identical
+values in the fields used in the computation of a JWK thumbprint for that key
+type:
 
 * "RSA": "n", "e"
 * "EC": "crv", "x", "y"
+
+Note that this comparison is equivalent to computing the JWK thumbprints of the
+two keys and comparing thumbprints.  The only difference is that there is no
+requirement for a hash computation (and thus it is independent of the choice of
+hash function) and no risk of hash collision.
 
 ## Request URI Integrity
 
@@ -1001,7 +1008,7 @@ oldKey (required, JWK):
 : The JWK representation of the original key (i.e., the client's current account
 key)
 
-newKey (requrired, JWK):
+newKey (required, JWK):
 : The JWK representation of the new key
 
 Both of these thumbprints MUST be computed as specified in {{!RFC7638}}, using
