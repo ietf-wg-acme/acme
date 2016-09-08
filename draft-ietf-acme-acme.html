@@ -1295,12 +1295,12 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
   "challenges": [
     {
       "type": "http-01",
-      "uri": "https://example.com/authz/asdf/0",
+      "url": "https://example.com/authz/asdf/0",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     },
     {
       "type": "dns-01",
-      "uri": "https://example.com/authz/asdf/1",
+      "url": "https://example.com/authz/asdf/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ],
@@ -1462,8 +1462,8 @@ Content-Language: en
 <dl>
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The type of challenge encoded in the object.</dd>
-  <dt>uri (required, string):</dt>
-  <dd style="margin-left: 8">The URI to which a response can be posted.</dd>
+  <dt>url (required, string):</dt>
+  <dd style="margin-left: 8">The URL to which a response can be posted.</dd>
   <dt>status (required, string):</dt>
   <dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
   <dt>validated (optional, string):</dt>
@@ -1630,13 +1630,13 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <dl>
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;oob-01&#8221;</dd>
-  <dt>url (required, string):</dt>
-  <dd style="margin-left: 8">The URL to be visited.  The scheme of this URL MUST be &#8220;http&#8221; or &#8220;https&#8221;</dd>
+  <dt>href (required, string):</dt>
+  <dd style="margin-left: 8">The URL to be visited.  The scheme of this URL MUST be &#8220;http&#8221; or &#8220;https&#8221;.  Note that this field is distinct from the &#8220;url&#8221; field of the challenge, which identifies the challenge itself.</dd>
 </dl>
 <pre>
 {
   "type": "oob-01",
-  "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+  "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 </pre>
 <p id="rfc.section.7.5.p.4">A client responds to this challenge by presenting the indicated URL for a human user to navigate to.  If the user choses to complete this challege (by vising the website and completing its instructions), the client indicates this by sending a simple acknowledgement response to the server.</p>

@@ -1937,12 +1937,12 @@ Internet-Draft                    ACME                    September 2016
      "challenges": [
        {
          "type": "http-01",
-         "uri": "https://example.com/authz/asdf/0",
+         "url": "https://example.com/authz/asdf/0",
          "token": "IlirfxKKXAsHtmzK29Pj8A"
        },
        {
          "type": "dns-01",
-         "uri": "https://example.com/authz/asdf/1",
+         "url": "https://example.com/authz/asdf/1",
          "token": "DGyRejmCefe7v4NfDGDKfA"
        }
      ],
@@ -2254,7 +2254,7 @@ Internet-Draft                    ACME                    September 2016
    type (required, string):  The type of challenge encoded in the
       object.
 
-   uri (required, string):  The URI to which a response can be posted.
+   url (required, string):  The URL to which a response can be posted.
 
    status (required, string):  The status of this authorization.
       Possible values are: "pending", "valid", and "invalid".
@@ -2640,12 +2640,14 @@ Internet-Draft                    ACME                    September 2016
 
    type (required, string):  The string "oob-01"
 
-   url (required, string):  The URL to be visited.  The scheme of this
-      URL MUST be "http" or "https"
+   href (required, string):  The URL to be visited.  The scheme of this
+      URL MUST be "http" or "https".  Note that this field is distinct
+      from the "url" field of the challenge, which identifies the
+      challenge itself.
 
    {
      "type": "oob-01",
-     "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+     "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
    }
 
    A client responds to this challenge by presenting the indicated URL
@@ -2680,8 +2682,6 @@ Internet-Draft                    ACME                    September 2016
 
    URI suffix: acme-challenge
 
-   Change controller: IETF
-
 
 
 
@@ -2689,6 +2689,8 @@ Barnes, et al.           Expires March 12, 2017                [Page 48]
 
 Internet-Draft                    ACME                    September 2016
 
+
+   Change controller: IETF
 
    Specification document(s): This document, Section Section 7.2
 
@@ -2736,8 +2738,6 @@ Internet-Draft                    ACME                    September 2016
 
    o  Specification Document(s): Section 5.5.2 of RFC XXXX
 
-   [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
-   to this document ]]
 
 
 
@@ -2745,6 +2745,9 @@ Barnes, et al.           Expires March 12, 2017                [Page 49]
 
 Internet-Draft                    ACME                    September 2016
 
+
+   [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
+   to this document ]]
 
 8.5.  URN Sub-namespace for ACME (urn:ietf:params:acme)
 
@@ -2791,9 +2794,6 @@ Internet-Draft                    ACME                    September 2016
 
    o  Description: A human-readable description of the error
 
-   o  Reference: Where the error is defined
-
-
 
 
 
@@ -2801,6 +2801,8 @@ Barnes, et al.           Expires March 12, 2017                [Page 50]
 
 Internet-Draft                    ACME                    September 2016
 
+
+   o  Reference: Where the error is defined
 
    Initial contents: The codes and descriptions in the table in
    Section 5.7 above, with the Reference field set to point to this
@@ -2849,14 +2851,14 @@ Internet-Draft                    ACME                    September 2016
 
    o  Reference: Where the identifier type is defined
 
-   Initial contents:
-
 
 
 Barnes, et al.           Expires March 12, 2017                [Page 51]
 
 Internet-Draft                    ACME                    September 2016
 
+
+   Initial contents:
 
                            +-------+-----------+
                            | Label | Reference |
@@ -2904,8 +2906,6 @@ Internet-Draft                    ACME                    September 2016
    ACME is a protocol for managing certificates that attest to
    identifier/key bindings.  Thus the foremost security goal of ACME is
    to ensure the integrity of this process, i.e., to ensure that the
-   bindings attested by certificates are correct, and that only
-   authorized entities can manage certificates.  ACME identifies clients
 
 
 
@@ -2914,6 +2914,8 @@ Barnes, et al.           Expires March 12, 2017                [Page 52]
 Internet-Draft                    ACME                    September 2016
 
 
+   bindings attested by certificates are correct, and that only
+   authorized entities can manage certificates.  ACME identifies clients
    by their account keys, so this overall goal breaks down into two more
    precise goals:
 
@@ -2960,8 +2962,6 @@ Internet-Draft                    ACME                    September 2016
 
    In practice, the risks to these channels are not entirely separate,
    but they are different in most cases.  Each of the three channels,
-   for example, uses a different communications pattern: the ACME
-   channel will comprise inbound HTTPS connections to the ACME server,
 
 
 
@@ -2970,6 +2970,8 @@ Barnes, et al.           Expires March 12, 2017                [Page 53]
 Internet-Draft                    ACME                    September 2016
 
 
+   for example, uses a different communications pattern: the ACME
+   channel will comprise inbound HTTPS connections to the ACME server,
    the validation channel outbound HTTP or DNS requests, and the contact
    channel will use channels such as email and PSTN.
 
@@ -3016,8 +3018,6 @@ Internet-Draft                    ACME                    September 2016
       legitimate domain holder
 
    o  Legitimate domain holder provisions the validation response
-
-
 
 
 
