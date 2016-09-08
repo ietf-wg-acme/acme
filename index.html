@@ -275,13 +275,14 @@ li, p {
 <link href="#rfc.section.5" rel="Chapter" title="5 Message Transport"/>
 <link href="#rfc.section.5.1" rel="Chapter" title="5.1 HTTPS Requests"/>
 <link href="#rfc.section.5.2" rel="Chapter" title="5.2 Request Authentication"/>
-<link href="#rfc.section.5.3" rel="Chapter" title="5.3 Request URI Integrity"/>
-<link href="#rfc.section.5.3.1" rel="Chapter" title="5.3.1 &#x201C;url&#x201D; (URL) JWS header parameter"/>
-<link href="#rfc.section.5.4" rel="Chapter" title="5.4 Replay protection"/>
-<link href="#rfc.section.5.4.1" rel="Chapter" title="5.4.1 Replay-Nonce"/>
-<link href="#rfc.section.5.4.2" rel="Chapter" title="5.4.2 &#x201C;nonce&#x201D; (Nonce) JWS header parameter"/>
-<link href="#rfc.section.5.5" rel="Chapter" title="5.5 Rate limits"/>
-<link href="#rfc.section.5.6" rel="Chapter" title="5.6 Errors"/>
+<link href="#rfc.section.5.3" rel="Chapter" title="5.3 Equivalence of JWKs"/>
+<link href="#rfc.section.5.4" rel="Chapter" title="5.4 Request URI Integrity"/>
+<link href="#rfc.section.5.4.1" rel="Chapter" title="5.4.1 &#x201C;url&#x201D; (URL) JWS header parameter"/>
+<link href="#rfc.section.5.5" rel="Chapter" title="5.5 Replay protection"/>
+<link href="#rfc.section.5.5.1" rel="Chapter" title="5.5.1 Replay-Nonce"/>
+<link href="#rfc.section.5.5.2" rel="Chapter" title="5.5.2 &#x201C;nonce&#x201D; (Nonce) JWS header parameter"/>
+<link href="#rfc.section.5.6" rel="Chapter" title="5.6 Rate limits"/>
+<link href="#rfc.section.5.7" rel="Chapter" title="5.7 Errors"/>
 <link href="#rfc.section.6" rel="Chapter" title="6 Certificate Management"/>
 <link href="#rfc.section.6.1" rel="Chapter" title="6.1 Resources"/>
 <link href="#rfc.section.6.1.1" rel="Chapter" title="6.1.1 Directory"/>
@@ -415,13 +416,14 @@ li, p {
 <li>5.   <a href="#rfc.section.5">Message Transport</a></li>
 <ul><li>5.1.   <a href="#rfc.section.5.1">HTTPS Requests</a></li>
 <li>5.2.   <a href="#rfc.section.5.2">Request Authentication</a></li>
-<li>5.3.   <a href="#rfc.section.5.3">Request URI Integrity</a></li>
-<ul><li>5.3.1.   <a href="#rfc.section.5.3.1">&#8220;url&#8221; (URL) JWS header parameter</a></li>
-</ul><li>5.4.   <a href="#rfc.section.5.4">Replay protection</a></li>
-<ul><li>5.4.1.   <a href="#rfc.section.5.4.1">Replay-Nonce</a></li>
-<li>5.4.2.   <a href="#rfc.section.5.4.2">&#8220;nonce&#8221; (Nonce) JWS header parameter</a></li>
-</ul><li>5.5.   <a href="#rfc.section.5.5">Rate limits</a></li>
-<li>5.6.   <a href="#rfc.section.5.6">Errors</a></li>
+<li>5.3.   <a href="#rfc.section.5.3">Equivalence of JWKs</a></li>
+<li>5.4.   <a href="#rfc.section.5.4">Request URI Integrity</a></li>
+<ul><li>5.4.1.   <a href="#rfc.section.5.4.1">&#8220;url&#8221; (URL) JWS header parameter</a></li>
+</ul><li>5.5.   <a href="#rfc.section.5.5">Replay protection</a></li>
+<ul><li>5.5.1.   <a href="#rfc.section.5.5.1">Replay-Nonce</a></li>
+<li>5.5.2.   <a href="#rfc.section.5.5.2">&#8220;nonce&#8221; (Nonce) JWS header parameter</a></li>
+</ul><li>5.6.   <a href="#rfc.section.5.6">Rate limits</a></li>
+<li>5.7.   <a href="#rfc.section.5.7">Errors</a></li>
 </ul><li>6.   <a href="#rfc.section.6">Certificate Management</a></li>
 <ul><li>6.1.   <a href="#rfc.section.6.1">Resources</a></li>
 <ul><li>6.1.1.   <a href="#rfc.section.6.1.1">Directory</a></li>
@@ -577,37 +579,46 @@ li, p {
 </ul>
 <p id="rfc.section.5.2.p.4">Note that this implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
 <p id="rfc.section.5.2.p.5">In the examples below, JWS objects are shown in the JSON or flattened JSON serialization, with the protected header and payload expressed as base64url(content) instead of the actual base64-encoded value, so that the content is readable.  Some fields are omitted for brevity, marked with &#8220;&#8230;&#8221;.</p>
-<h1 id="rfc.section.5.3"><a href="#rfc.section.5.3">5.3.</a> <a href="#request-uri-integrity" id="request-uri-integrity">Request URI Integrity</a></h1>
-<p id="rfc.section.5.3.p.1">It is common in deployment for the entity terminating TLS for HTTPS to be different from the entity operating the logical HTTPS server, with a &#8220;request routing&#8221; layer in the middle.  For example, an ACME CA might have a content delivery network terminate TLS connections from clients so that it can inspect client requests for denial-of-service protection.</p>
-<p id="rfc.section.5.3.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to provide a limited integrity mechanism, which protects against an intermediary changing the request URI to another ACME URI of a different type.  (It does not protect against changing between URIs of the same type, e.g., from one authorization URI to another).</p>
-<p id="rfc.section.5.3.p.3">As noted above, all ACME request objects carry a &#8220;url&#8221; parameter in their protected header.  This header parameter encodes the URL to which the client is directing the request.  On receiving such an object in an HTTP request, the server MUST compare the &#8220;url&#8221; parameter to the request URI.  If the two do not match, then the server MUST reject the request as unauthorized.</p>
-<p id="rfc.section.5.3.p.4">Except for the directory resource, all ACME resources are addressed with URLs provided to the client by the server.  For these resources, the client MUST set the &#8220;url&#8221; field to the exact string provided by the server (rather than performing any re-encoding on the URL).  The server SHOULD perform the corresponding string equality check, configuring each resource with the URL string provided to clients and having the resource check that requests have the same string in their &#8220;url&#8221; fields.</p>
-<h1 id="rfc.section.5.3.1"><a href="#rfc.section.5.3.1">5.3.1.</a> <a href="#url-url-jws-header-parameter" id="url-url-jws-header-parameter">&#8220;url&#8221; (URL) JWS header parameter</a></h1>
-<p id="rfc.section.5.3.1.p.1">The &#8220;url&#8221; header parameter specifies the URL to which this JWS object is directed <a href="#RFC3986">[RFC3986]</a>.  The &#8220;url&#8221; parameter MUST be carried in the protected header of the JWS.  The value of the &#8220;url&#8221; header MUST be a JSON string representing the URL.</p>
-<h1 id="rfc.section.5.4"><a href="#rfc.section.5.4">5.4.</a> <a href="#replay-protection" id="replay-protection">Replay protection</a></h1>
-<p id="rfc.section.5.4.p.1">In order to protect ACME resources from any possible replay attacks, ACME requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
-<p id="rfc.section.5.4.p.2">An ACME server provides nonces to clients using the Replay-Nonce header field, as specified below.  The server MUST include a Replay-Nonce header field in every successful response to a POST request, and SHOULD provide it in error responses as well.</p>
-<p id="rfc.section.5.4.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
-<p id="rfc.section.5.4.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the ACME error code &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error code MUST include a Replay-Nonce header with a fresh nonce.  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
-<p id="rfc.section.5.4.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
-<h1 id="rfc.section.5.4.1"><a href="#rfc.section.5.4.1">5.4.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a></h1>
-<p id="rfc.section.5.4.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server should generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability.</p>
-<p id="rfc.section.5.4.1.p.2">The value of the Replay-Nonce field MUST be an octet string encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  Clients MUST ignore invalid Replay-Nonce values.</p>
+<h1 id="rfc.section.5.3"><a href="#rfc.section.5.3">5.3.</a> <a href="#equivalence-of-jwks" id="equivalence-of-jwks">Equivalence of JWKs</a></h1>
+<p id="rfc.section.5.3.p.1">At several points in the protocol, it is necessary for the server to determine whether two JWK objects represent the same key.  In performing these checks, the server MUST consider two JWKs to match if and only if they have the identical values in all fields included in the computation of a JWK thumbprint for that key. That is, the keys must have the same &#8220;kty&#8221; value and contain identical values in the fields used in the computation of a JWK thumbprint for that key type:</p>
+<p/>
+
+<ul>
+  <li>&#8220;RSA&#8221;: &#8220;n&#8221;, &#8220;e&#8221;</li>
+  <li>&#8220;EC&#8221;: &#8220;crv&#8221;, &#8220;x&#8221;, &#8220;y&#8221;</li>
+</ul>
+<p id="rfc.section.5.3.p.3">Note that this comparison is equivalent to computing the JWK thumbprints of the two keys and comparing thumbprints.  The only difference is that there is no requirement for a hash computation (and thus it is independent of the choice of hash function) and no risk of hash collision.</p>
+<h1 id="rfc.section.5.4"><a href="#rfc.section.5.4">5.4.</a> <a href="#request-uri-integrity" id="request-uri-integrity">Request URI Integrity</a></h1>
+<p id="rfc.section.5.4.p.1">It is common in deployment for the entity terminating TLS for HTTPS to be different from the entity operating the logical HTTPS server, with a &#8220;request routing&#8221; layer in the middle.  For example, an ACME CA might have a content delivery network terminate TLS connections from clients so that it can inspect client requests for denial-of-service protection.</p>
+<p id="rfc.section.5.4.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to provide a limited integrity mechanism, which protects against an intermediary changing the request URI to another ACME URI of a different type.  (It does not protect against changing between URIs of the same type, e.g., from one authorization URI to another).</p>
+<p id="rfc.section.5.4.p.3">As noted above, all ACME request objects carry a &#8220;url&#8221; parameter in their protected header.  This header parameter encodes the URL to which the client is directing the request.  On receiving such an object in an HTTP request, the server MUST compare the &#8220;url&#8221; parameter to the request URI.  If the two do not match, then the server MUST reject the request as unauthorized.</p>
+<p id="rfc.section.5.4.p.4">Except for the directory resource, all ACME resources are addressed with URLs provided to the client by the server.  For these resources, the client MUST set the &#8220;url&#8221; field to the exact string provided by the server (rather than performing any re-encoding on the URL).  The server SHOULD perform the corresponding string equality check, configuring each resource with the URL string provided to clients and having the resource check that requests have the same string in their &#8220;url&#8221; fields.</p>
+<h1 id="rfc.section.5.4.1"><a href="#rfc.section.5.4.1">5.4.1.</a> <a href="#url-url-jws-header-parameter" id="url-url-jws-header-parameter">&#8220;url&#8221; (URL) JWS header parameter</a></h1>
+<p id="rfc.section.5.4.1.p.1">The &#8220;url&#8221; header parameter specifies the URL to which this JWS object is directed <a href="#RFC3986">[RFC3986]</a>.  The &#8220;url&#8221; parameter MUST be carried in the protected header of the JWS.  The value of the &#8220;url&#8221; header MUST be a JSON string representing the URL.</p>
+<h1 id="rfc.section.5.5"><a href="#rfc.section.5.5">5.5.</a> <a href="#replay-protection" id="replay-protection">Replay protection</a></h1>
+<p id="rfc.section.5.5.p.1">In order to protect ACME resources from any possible replay attacks, ACME requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
+<p id="rfc.section.5.5.p.2">An ACME server provides nonces to clients using the Replay-Nonce header field, as specified below.  The server MUST include a Replay-Nonce header field in every successful response to a POST request, and SHOULD provide it in error responses as well.</p>
+<p id="rfc.section.5.5.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
+<p id="rfc.section.5.5.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the ACME error code &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error code MUST include a Replay-Nonce header with a fresh nonce.  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
+<p id="rfc.section.5.5.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
+<h1 id="rfc.section.5.5.1"><a href="#rfc.section.5.5.1">5.5.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a></h1>
+<p id="rfc.section.5.5.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server should generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability.</p>
+<p id="rfc.section.5.5.1.p.2">The value of the Replay-Nonce field MUST be an octet string encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  Clients MUST ignore invalid Replay-Nonce values.</p>
 <pre>
   base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
 
   Replay-Nonce = *base64url
 </pre>
-<p id="rfc.section.5.4.1.p.3">The Replay-Nonce header field SHOULD NOT be included in HTTP request messages.</p>
-<h1 id="rfc.section.5.4.2"><a href="#rfc.section.5.4.2">5.4.2.</a> <a href="#nonce-nonce-jws-header-parameter" id="nonce-nonce-jws-header-parameter">&#8220;nonce&#8221; (Nonce) JWS header parameter</a></h1>
-<p id="rfc.section.5.4.2.p.1">The &#8220;nonce&#8221; header parameter provides a unique value that enables the verifier of a JWS to recognize when replay has occurred. The &#8220;nonce&#8221; header parameter MUST be carried in the protected header of the JWS.</p>
-<p id="rfc.section.5.4.2.p.2">The value of the &#8220;nonce&#8221; header parameter MUST be an octet string, encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  If the value of a &#8220;nonce&#8221; header parameter is not valid according to this encoding, then the verifier MUST reject the JWS as malformed.</p>
-<h1 id="rfc.section.5.5"><a href="#rfc.section.5.5">5.5.</a> <a href="#rate-limits" id="rate-limits">Rate limits</a></h1>
-<p id="rfc.section.5.5.p.1">Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code &#8220;rateLimited&#8221;.  Additionally, the server SHOULD send a &#8220;Retry-After&#8221; header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.</p>
-<p id="rfc.section.5.5.p.2">In addition to the human readable &#8220;detail&#8221; field of the error response, the server MAY send one or multiple tokens in the &#8220;Link&#8221; header pointing to documentation about the specific hit rate limits using the &#8220;rate-limit&#8221; relation.</p>
-<h1 id="rfc.section.5.6"><a href="#rfc.section.5.6">5.6.</a> <a href="#errors" id="errors">Errors</a></h1>
-<p id="rfc.section.5.6.p.1">Errors can be reported in ACME both at the HTTP layer and within ACME payloads.  ACME servers can return responses with an HTTP error response code (4XX or 5XX).  For example:  If the client submits a request using a method not allowed in this document, then the server MAY return status code 405 (Method Not Allowed).</p>
-<p id="rfc.section.5.6.p.2">When the server responds with an error status, it SHOULD provide additional information using problem document <a href="#RFC7807">[RFC7807]</a>.  To facilitate automatic response to errors, this document defines the following standard tokens for use in the &#8220;type&#8221; field (within the &#8220;urn:ietf:params:acme:error:&#8221; namespace):</p>
+<p id="rfc.section.5.5.1.p.3">The Replay-Nonce header field SHOULD NOT be included in HTTP request messages.</p>
+<h1 id="rfc.section.5.5.2"><a href="#rfc.section.5.5.2">5.5.2.</a> <a href="#nonce-nonce-jws-header-parameter" id="nonce-nonce-jws-header-parameter">&#8220;nonce&#8221; (Nonce) JWS header parameter</a></h1>
+<p id="rfc.section.5.5.2.p.1">The &#8220;nonce&#8221; header parameter provides a unique value that enables the verifier of a JWS to recognize when replay has occurred. The &#8220;nonce&#8221; header parameter MUST be carried in the protected header of the JWS.</p>
+<p id="rfc.section.5.5.2.p.2">The value of the &#8220;nonce&#8221; header parameter MUST be an octet string, encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  If the value of a &#8220;nonce&#8221; header parameter is not valid according to this encoding, then the verifier MUST reject the JWS as malformed.</p>
+<h1 id="rfc.section.5.6"><a href="#rfc.section.5.6">5.6.</a> <a href="#rate-limits" id="rate-limits">Rate limits</a></h1>
+<p id="rfc.section.5.6.p.1">Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code &#8220;rateLimited&#8221;.  Additionally, the server SHOULD send a &#8220;Retry-After&#8221; header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.</p>
+<p id="rfc.section.5.6.p.2">In addition to the human readable &#8220;detail&#8221; field of the error response, the server MAY send one or multiple tokens in the &#8220;Link&#8221; header pointing to documentation about the specific hit rate limits using the &#8220;rate-limit&#8221; relation.</p>
+<h1 id="rfc.section.5.7"><a href="#rfc.section.5.7">5.7.</a> <a href="#errors" id="errors">Errors</a></h1>
+<p id="rfc.section.5.7.p.1">Errors can be reported in ACME both at the HTTP layer and within ACME payloads.  ACME servers can return responses with an HTTP error response code (4XX or 5XX).  For example:  If the client submits a request using a method not allowed in this document, then the server MAY return status code 405 (Method Not Allowed).</p>
+<p id="rfc.section.5.7.p.2">When the server responds with an error status, it SHOULD provide additional information using problem document <a href="#RFC7807">[RFC7807]</a>.  To facilitate automatic response to errors, this document defines the following standard tokens for use in the &#8220;type&#8221; field (within the &#8220;urn:ietf:params:acme:error:&#8221; namespace):</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
@@ -674,8 +685,8 @@ li, p {
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.5.6.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of such errors.</p>
-<p id="rfc.section.5.6.p.4">Authorization and challenge objects can also contain error information to indicate why the server was unable to validate authorization.</p>
+<p id="rfc.section.5.7.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of such errors.</p>
+<p id="rfc.section.5.7.p.4">Authorization and challenge objects can also contain error information to indicate why the server was unable to validate authorization.</p>
 <h1 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#certificate-management" id="certificate-management">Certificate Management</a></h1>
 <p id="rfc.section.6.p.1">In this section, we describe the certificate management functions that ACME enables:</p>
 <p/>
@@ -1080,57 +1091,69 @@ Content-Type: application/jose+json
 <p id="rfc.section.6.3.p.8">Servers SHOULD NOT respond to GET requests for registration resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is trivial ({}).</p>
 <h1 id="rfc.section.6.3.1"><a href="#rfc.section.6.3.1">6.3.1.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a></h1>
 <p id="rfc.section.6.3.1.p.1">A client may wish to change the public key that is associated with a registration in order to recover from a key compromise or proactively mitigate the impact of an unnoticed key compromise.</p>
-<p id="rfc.section.6.3.1.p.2">To change the key associated with an account, the client sends a POST request containing a key-change object with the following fields:</p>
+<p id="rfc.section.6.3.1.p.2">To change the key associated with an account, the client first constructs a key-change object describing the change that it would like the server to make:</p>
 <p/>
 
 <dl>
+  <dt>account (required, string):</dt>
+  <dd style="margin-left: 8">The URL for account being modified.  The content of this field MUST be the exact string provided in the Location header field in response to the new-registration request that created the account.</dd>
   <dt>oldKey (required, JWK):</dt>
   <dd style="margin-left: 8">The JWK representation of the original key (i.e., the client&#8217;s current account key)</dd>
-  <dt>newKey (requrired, JWK):</dt>
+  <dt>newKey (required, JWK):</dt>
   <dd style="margin-left: 8">The JWK representation of the new key</dd>
 </dl>
-<p id="rfc.section.6.3.1.p.4">The JWS of this POST must have two signatures: one signature from the existing key on the account, and one signature from the new key that the client proposes to use. This demonstrates that the client actually has control of the private key corresponding to the new public key. The protected header must contain a JWK field containing the current account key.</p>
+<p id="rfc.section.6.3.1.p.4">Both of these thumbprints MUST be computed as specified in <a href="#RFC7638">[RFC7638]</a>, using the SHA-256 digest.  The values in the &#8220;oldKey&#8221; and &#8220;newKey&#8221; fields MUST be the base64url encodings of the thumbprints.</p>
+<p id="rfc.section.6.3.1.p.5">The client then encapsulates the key-change object in a JWS, signed with the client&#8217;s current account key (i.e., the key matching the &#8220;oldKey&#8221; value).</p>
+<p id="rfc.section.6.3.1.p.6">This inner JWS then become the payload of the JWS that the client sends to the server.  The outer JWS is signed with the key pair that the the client wishes to have the server use as its account key (i.e., the key pair matching the &#8220;newKey&#8221; value).  The client sends this outer JWS in a POST request to the server&#8217;s &#8220;key-change&#8221; resource.</p>
+<p id="rfc.section.6.3.1.p.7">The outer JWS MUST meet the normal requirements for an ACME JWS (see <a href="#request-authentication">Section 5.2</a>).  The inner JWS MUST meet the normal requirements, with the following exceptions:</p>
+<p/>
+
+<ul>
+  <li>The inner JWS MUST have the same &#8220;url&#8221; parameter as the outer JWS.</li>
+  <li>The inner JWS is NOT REQUIRED to have a &#8220;nonce&#8221; parameter.  The server MUST ignore any value provided for the &#8220;nonce&#8221; header parameter.</li>
+</ul>
+<p id="rfc.section.6.3.1.p.9">This transaction has signatures from both the old and new keys so that the server can verify that the holders of the two keys both agree to the change.  The signatures are nested to preserve the property that all signatures on POST messages are signed by exactly one key.</p>
 <pre>
 POST /acme/key-change HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
-  "payload": base64url({
-    "oldKey": /* Old key in JWK form */
-    "newKey": /* New key in JWK form */
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": /* new key */,
+    "nonce": "K60BWPrMQG9SDxBDS_xtSw",
+    "url": "https://example.com/acme/key-change"
   }),
-  "signatures": [{
+  "payload": base64url({
     "protected": base64url({
       "alg": "ES256",
       "jwk": /* old key */,
-      "nonce": "pq00v-D1KB0sReG4jFfqVg",
-      "url": "https://example.com/acme/key-change"
     }),
-    "signature": "XFvVbo9diBlIBvhE...UI62sNT6MZsCJpQo"
-  }, {
-    "protected": base64url({
-      "alg": "ES256",
-      "jwk": /* new key */,
-      "nonce": "vYjyueEYhMjpVQHe_unw4g",
-      "url": "https://example.com/acme/key-change"
-    }),
-    "signature": "q20gG1f1r9cD6tBM...a48h0CkP11tl5Doo"
-  }]
+    "payload": base64url({
+      "account": "https://example.com/acme/reg/asdf",
+      "oldKey": /* old key */,
+      "newKey": /* new key */
+    })
+    "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
+  }),
+  "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 </pre>
-<p id="rfc.section.6.3.1.p.5">On receiving key-change request, the server MUST perform the following steps in addition to the typical JWS validation:</p>
+<p id="rfc.section.6.3.1.p.10">On receiving key-change request, the server MUST perform the following steps in addition to the typical JWS validation:</p>
 <p/>
 
 <ol>
-  <li>Check that the JWS protected header contains a &#8220;jwk&#8221; field containing a key that matches a currently active account.</li>
-  <li>Check that there are exactly two signatures on the JWS.</li>
-  <li>Check that one of the signatures validates using the account key from (1).</li>
-  <li>Check that the &#8220;key&#8221; field contains a well-formed JWK that meets key strength requirements.</li>
-  <li>Check that the &#8220;key&#8221; field is not equivalent to the current account key or any other currently active account key.</li>
-  <li>Check that one of the two signatures on the JWS validates using the JWK from the &#8220;key&#8221; field.</li>
+  <li>Check that the payload of the JWS is a well-formed JWS object (the &#8220;inner JWS&#8221;)</li>
+  <li>Check that the JWS protected header of the inner JWS has a &#8220;jwk&#8221; field containing a key that matches a currently active account</li>
+  <li>Check that the inner JWS verifies using the key in its &#8220;jwk&#8221; field</li>
+  <li>Check that the payload of the inner JWS is a well-formed key-change object (as described above)</li>
+  <li>Check that the &#8220;url&#8221; parameters of the inner and outer JWSs are the same</li>
+  <li>Check that the &#8220;account&#8221; field of the key-change object contains the URL for the registration matching the old key</li>
+  <li>Check that the &#8220;oldKey&#8221; field of the key-change object contains the thumbprint of the key used to sign the inner JWS</li>
+  <li>Check that the &#8220;newKey&#8221; field of the key-change object contains the thumbprint of the key used to sign the outer JWS</li>
 </ol>
-<p id="rfc.section.6.3.1.p.7">If all of these checks pass, then the server updates the corresponding registration by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>
+<p id="rfc.section.6.3.1.p.12">If all of these checks pass, then the server updates the corresponding registration by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>
 <h1 id="rfc.section.6.3.2"><a href="#rfc.section.6.3.2">6.3.2.</a> <a href="#account-deactivation" id="account-deactivation">Account deactivation</a></h1>
 <p id="rfc.section.6.3.2.p.1">A client may deactivate an account by posting a signed update to the server with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised.</p>
 <pre>
@@ -1641,7 +1664,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <p id="rfc.section.8.1.p.5">Related information: N/A</p>
 <h1 id="rfc.section.8.2"><a href="#rfc.section.8.2">8.2.</a> <a href="#replay-nonce-http-header" id="replay-nonce-http-header">Replay-Nonce HTTP Header</a></h1>
 <p id="rfc.section.8.2.p.1">The &#8220;Message Headers&#8221; registry should be updated with the following additional value:</p>
-<p id="rfc.section.8.2.p.2">| Header Field Name | Protocol | Status   | Reference        | +:&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;+ | Replay-Nonce      | http     | standard | <a href="#replay-nonce">Section 5.4.1</a> |</p>
+<p id="rfc.section.8.2.p.2">| Header Field Name | Protocol | Status   | Reference        | +:&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;+:&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;+ | Replay-Nonce      | http     | standard | <a href="#replay-nonce">Section 5.5.1</a> |</p>
 <h1 id="rfc.section.8.3"><a href="#rfc.section.8.3">8.3.</a> <a href="#url-jws-header-parameter" id="url-jws-header-parameter">&#8220;url&#8221; JWS Header Parameter</a></h1>
 <p id="rfc.section.8.3.p.1">The &#8220;JSON Web Signature and Encryption Header Parameters&#8221; registry should be updated with the following additional value:</p>
 <p/>
@@ -1651,7 +1674,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Header Parameter Description: URL</li>
   <li>Header Parameter Usage Location(s): JWE, JWS</li>
   <li>Change Controller: IESG</li>
-  <li>Specification Document(s): <a href="#url-url-jws-header-parameter">Section 5.3.1</a> of RFC XXXX</li>
+  <li>Specification Document(s): <a href="#url-url-jws-header-parameter">Section 5.4.1</a> of RFC XXXX</li>
 </ul>
 <p id="rfc.section.8.3.p.3">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.8.4"><a href="#rfc.section.8.4">8.4.</a> <a href="#nonce-jws-header-parameter" id="nonce-jws-header-parameter">&#8220;nonce&#8221; JWS Header Parameter</a></h1>
@@ -1663,7 +1686,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Header Parameter Description: Nonce</li>
   <li>Header Parameter Usage Location(s): JWE, JWS</li>
   <li>Change Controller: IESG</li>
-  <li>Specification Document(s): <a href="#nonce-nonce-jws-header-parameter">Section 5.4.2</a> of RFC XXXX</li>
+  <li>Specification Document(s): <a href="#nonce-nonce-jws-header-parameter">Section 5.5.2</a> of RFC XXXX</li>
 </ul>
 <p id="rfc.section.8.4.p.3">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5.</a> <a href="#urn-sub-namespace-for-acme-urnietfparamsacme" id="urn-sub-namespace-for-acme-urnietfparamsacme">URN Sub-namespace for ACME (urn:ietf:params:acme)</a></h1>
@@ -1702,7 +1725,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Description: A human-readable description of the error</li>
   <li>Reference: Where the error is defined</li>
 </ul>
-<p id="rfc.section.8.6.1.p.4">Initial contents: The codes and descriptions in the table in <a href="#errors">Section 5.6</a> above, with the Reference field set to point to this specification.</p>
+<p id="rfc.section.8.6.1.p.4">Initial contents: The codes and descriptions in the table in <a href="#errors">Section 5.7</a> above, with the Reference field set to point to this specification.</p>
 <h1 id="rfc.section.8.6.2"><a href="#rfc.section.8.6.2">8.6.2.</a> <a href="#resource-types" id="resource-types">Resource Types</a></h1>
 <p id="rfc.section.8.6.2.p.1">This registry lists the types of resources that ACME servers may list in their directory objects.</p>
 <p id="rfc.section.8.6.2.p.2">Template:</p>
