@@ -840,10 +840,10 @@ sufficient to make the authorization valid.
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). The value of the identifier MUST be the ASCII
 representation of the domain name. If a domain name contains Unicode characters
-it should be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
-any identifier values that begin with the ASCII Compatible Encoding prefix as
-defined in {{!RFC5890}} are properly encoded. Wildcard domain names (with "*" as
-the first label) MUST NOT be included in authorization requests.
+it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
+any identifier values that begin with the ASCII Compatible Encoding prefix "xn--"
+as defined in {{!RFC5890}} are properly encoded. Wildcard domain names (with "*"
+as the first label) MUST NOT be included in authorization requests.
 
 ~~~~~~~~~~
 {
