@@ -318,6 +318,24 @@ serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.  Some fields are omitted for brevity, marked with "...".
 
+## Equivalence of JWKs
+
+At several points in the protocol, it is necessary for the server to determine
+whether two JWK objects represent the same key.  In performing these checks, the
+server MUST consider two JWKs to match if and only if they have the identical
+values in all fields included in the computation of a JWK thumbprint for that
+key. That is, the keys must have the same "kty" value and contain identical
+values in the fields used in the computation of a JWK thumbprint for that key
+type:
+
+* "RSA": "n", "e"
+* "EC": "crv", "x", "y"
+
+Note that this comparison is equivalent to computing the JWK thumbprints of the
+two keys and comparing thumbprints.  The only difference is that there is no
+requirement for a hash computation (and thus it is independent of the choice of
+hash function) and no risk of hash collision.
+
 ## Request URI Integrity
 
 It is common in deployment for the entity terminating TLS for HTTPS to be different
@@ -361,11 +379,10 @@ requests have a mandatory anti-replay mechanism.  This mechanism is based on the
 server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
-An ACME server MUST include a Replay-Nonce header field in each successful
-response it provides to a client, with contents as specified below.  In
-particular, the ACME server MUST provide a Replay-Nonce header field in response
-to a HEAD request for any valid resource.  (This allows clients to easily obtain
-a fresh nonce.)  It MAY also provide nonces in error responses.
+An ACME server provides nonces to clients using the Replay-Nonce header field,
+as specified below.  The server MUST include a Replay-Nonce header field in
+every successful response to a POST request, and SHOULD provide it in error
+responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
 "nonce" header parameter, with contents as defined below.  As part of JWS
@@ -376,7 +393,10 @@ invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
-ACME error code "urn:ietf:params:acme:error:badNonce".
+ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
+the "badNonce" error code MUST include a Replay-Nonce header with a fresh nonce.
+On receiving such a response, a client SHOULD retry the request using the new
+nonce.
 
 The precise method used to generate and track nonces is up to the server.  For
 example, the server could generate a random 128-bit value for each response,
@@ -488,12 +508,15 @@ ACME is structured as a REST application with a few types of resources:
   identifier
 * Certificate resources, representing issued certificates
 * A "directory" resource
+* A "new-nonce" resource
 * A "new-registration" resource
 * A "new-application" resource
 * A "revoke-certificate" resource
 * A "key-change" resource
 
-For the singular resources above ("directory", "new-registration",
+The server MUST provide "directory" and "new-nonce" resources.
+
+For the singular resources above ("directory", "new-nonce", "new-registration",
 "new-application", "revoke-certificate", and "key-change") the resource may be
 addressed by multiple URIs, but all must provide equivalent functionality.
 
@@ -519,6 +542,7 @@ indicate HTTP link relations
 ~~~~~~~~~~
                                directory
                                    |
+                                   |--> new-nonce
                                    |
        ----------------------------------------------------
        |                  |                               |
@@ -546,6 +570,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 
 | Action             | Request        | Response   |
 |:-------------------|:---------------|:-----------|
+| Get a nonce        | HEAD new-nonce | 200        |
 | Register           | POST new-reg   | 201 -> reg |
 | Apply for a cert   | POST new-app   | 201 -> app |
 | Fetch challenges   | GET  authz     | 200        |
@@ -566,6 +591,7 @@ the following table and whose values are the corresponding URLs.
 
 | Key         | URL in value         |
 |:------------|:---------------------|
+| new-nonce   | New nonce            |
 | new-reg     | New registration     |
 | new-app     | New application      |
 | revoke-cert | Revoke certificate   |
@@ -608,6 +634,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
+  "new-nonce": "https://example.com/acme/new-nonce",
   "new-reg": "https://example.com/acme/new-reg",
   "new-app": "https://example.com/acme/new-app",
   "revoke-cert": "https://example.com/acme/revoke-cert",
@@ -866,6 +893,33 @@ as the first label) MUST NOT be included in authorization requests.
 }
 ~~~~~~~~~~
 
+## Getting a Nonce
+
+Before sending a POST request to the server, an ACME client needs to have a
+fresh anti-replay nonce to put in the "nonce" header of the JWS.  In most cases,
+the client will have gotten a nonce from a previous request.  However, the
+client might sometimes need to get a new nonce, e.g., on its first request to
+the server or if an existing nonce is no longer valid.
+
+To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
+on the server.  The server's response MUST include a Replay-Nonce header field
+containing a fresh nonce, and SHOULD have status code 200 (OK).  The server
+SHOULD also respond to GET requests for this resource, returning an empty body
+(while still providing a Replay-Nonce header).
+
+~~~~~~~~~~
+HEAD /acme/new-nonce HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
+Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
+Cache-Control: no-store
+~~~~~~~~~~
+
+Caching of responses from the new-nonce resource can cause clients to be unable
+to communicate with the ACME server.  The server MUST include a Cache-Control
+header field with the "no-store" directive in responses for the new-nonce
+resource, in order to prevent caching of this resource.
 
 ## Registration
 
@@ -923,6 +977,7 @@ use a different URI in the Link header.
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Content-Type: application/json
+Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/reg/asdf
 Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
@@ -981,21 +1036,46 @@ A client may wish to change the public key that is associated with a
 registration in order to recover from a key compromise or proactively mitigate
 the impact of an unnoticed key compromise.
 
-To change the key associated with an account, the client sends a POST request
-containing a key-change object with the following fields:
+To change the key associated with an account, the client first constructs a
+key-change object describing the change that it would like the server to make:
+
+account (required, string):
+: The URL for account being modified.  The content of this field MUST be the
+exact string provided in the Location header field in response to the
+new-registration request that created the account.
 
 oldKey (required, JWK):
 : The JWK representation of the original key (i.e., the client's current account
 key)
 
-newKey (requrired, JWK):
+newKey (required, JWK):
 : The JWK representation of the new key
 
-The JWS of this POST must have two signatures: one signature from the existing
-key on the account, and one signature from the new key that the client proposes
-to use. This demonstrates that the client actually has control of the
-private key corresponding to the new public key. The protected header must
-contain a JWK field containing the current account key.
+Both of these thumbprints MUST be computed as specified in {{!RFC7638}}, using
+the SHA-256 digest.  The values in the "oldKey" and "newKey" fields MUST be the
+base64url encodings of the thumbprints.
+
+The client then encapsulates the key-change object in a JWS, signed with the
+client's current account key (i.e., the key matching the "oldKey" value).
+
+This inner JWS then become the payload of the JWS that the client sends to the
+server.  The outer JWS is signed with the key pair that the the client wishes to
+have the server use as its account key (i.e., the key pair matching the "newKey"
+value).  The client sends this outer JWS in a POST request to the server's
+"key-change" resource.
+
+The outer JWS MUST meet the normal requirements for an ACME JWS (see
+{{request-authentication}}).  The inner JWS MUST meet the normal requirements,
+with the following exceptions:
+
+* The inner JWS MUST have the same "url" parameter as the outer JWS.
+* The inner JWS is NOT REQUIRED to have a "nonce" parameter.  The server MUST
+  ignore any value provided for the "nonce" header parameter.
+
+This transaction has signatures from both the old and new keys so that the
+server can verify that the holders of the two keys both agree to the change.
+The signatures are nested to preserve the property that all signatures on POST
+messages are signed by exactly one key.
 
 ~~~~~~~~~~
 POST /acme/key-change HTTP/1.1
@@ -1003,43 +1083,45 @@ Host: example.com
 Content-Type: application/jose+json
 
 {
-  "payload": base64url({
-    "oldKey": /* Old key in JWK form */
-    "newKey": /* New key in JWK form */
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": /* new key */,
+    "nonce": "K60BWPrMQG9SDxBDS_xtSw",
+    "url": "https://example.com/acme/key-change"
   }),
-  "signatures": [{
+  "payload": base64url({
     "protected": base64url({
       "alg": "ES256",
       "jwk": /* old key */,
-      "nonce": "pq00v-D1KB0sReG4jFfqVg",
-      "url": "https://example.com/acme/key-change"
     }),
-    "signature": "XFvVbo9diBlIBvhE...UI62sNT6MZsCJpQo"
-  }, {
-    "protected": base64url({
-      "alg": "ES256",
-      "jwk": /* new key */,
-      "nonce": "vYjyueEYhMjpVQHe_unw4g",
-      "url": "https://example.com/acme/key-change"
-    }),
-    "signature": "q20gG1f1r9cD6tBM...a48h0CkP11tl5Doo"
-  }]
+    "payload": base64url({
+      "account": "https://example.com/acme/reg/asdf",
+      "oldKey": /* old key */,
+      "newKey": /* new key */
+    })
+    "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
+  }),
+  "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 ~~~~~~~~~~
 
 On receiving key-change request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
-1. Check that the JWS protected header contains a "jwk" field containing a
-   key that matches a currently active account.
-2. Check that there are exactly two signatures on the JWS.
-3. Check that one of the signatures validates using the account key from (1).
-4. Check that the "key" field contains a well-formed JWK that meets key strength
-   requirements.
-5. Check that the "key" field is not equivalent to the current account key or
-   any other currently active account key.
-5. Check that one of the two signatures on the JWS validates using the JWK from
-   the "key" field.
+1. Check that the payload of the JWS is a well-formed JWS object (the "inner
+   JWS")
+2. Check that the JWS protected header of the inner JWS has a "jwk" field
+   containing a key that matches a currently active account
+3. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the payload of the inner JWS is a well-formed key-change object
+   (as described above)
+5. Check that the "url" parameters of the inner and outer JWSs are the same
+6. Check that the "account" field of the key-change object contains the URL for
+   the registration matching the old key
+7. Check that the "oldKey" field of the key-change object contains the
+   thumbprint of the key used to sign the inner JWS
+8. Check that the "newKey" field of the key-change object contains the
+   thumbprint of the key used to sign the outer JWS
 
 If all of these checks pass, then the server updates the corresponding
 registration by replacing the old account key with the new public key and
@@ -1142,6 +1224,7 @@ before the certificate will be issued.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
+Replay-Nonce: MYAuvOpaoIiywTezizk5vw
 Location: https://example.com/acme/app/asdf
 
 {
@@ -1298,12 +1381,12 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
   "challenges": [
     {
       "type": "http-01",
-      "uri": "https://example.com/authz/asdf/0",
+      "url": "https://example.com/authz/asdf/0",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     },
     {
       "type": "dns-01",
-      "uri": "https://example.com/authz/asdf/1",
+      "url": "https://example.com/authz/asdf/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ],
@@ -1496,11 +1579,13 @@ the revocation fails, the server returns an error.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
 
 --- or ---
 
 HTTP/1.1 403 Forbidden
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
 
@@ -1549,8 +1634,8 @@ Challenge objects all contain the following basic fields:
 type (required, string):
 : The type of challenge encoded in the object.
 
-uri (required, string):
-: The URI to which a response can be posted.
+url (required, string):
+: The URL to which a response can be posted.
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "valid",
@@ -1870,13 +1955,15 @@ providing a URL for that web page.
 type (required, string):
 : The string "oob-01"
 
-url (required, string):
-: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
+href (required, string):
+: The URL to be visited.  The scheme of this URL MUST be "http" or "https".
+Note that this field is distinct from the "url" field of the challenge, which
+identifies the challenge itself.
 
 ~~~~~~~~~~
 {
   "type": "oob-01",
-  "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+  "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 ~~~~~~~~~~
 
