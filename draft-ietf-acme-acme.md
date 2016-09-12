@@ -923,7 +923,7 @@ registration URI.
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
 in a Link header with link relation "terms-of-service".  As noted above, the
-client may indicate its agreement when creating registraion by including the
+client may indicate its agreement when creating registration by including the
 "terms-of-service": "agreed" field.
 
 ~~~~~~~~~~
