@@ -1048,10 +1048,6 @@ key)
 newKey (required, JWK):
 : The JWK representation of the new key
 
-Both of these thumbprints MUST be computed as specified in {{!RFC7638}}, using
-the SHA-256 digest.  The values in the "oldKey" and "newKey" fields MUST be the
-base64url encodings of the thumbprints.
-
 The client then encapsulates the key-change object in a JWS, signed with the
 client's current account key (i.e., the key matching the "oldKey" value).
 
