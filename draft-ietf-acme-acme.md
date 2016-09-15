@@ -306,35 +306,24 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have the value "none" in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
-  * "jwk"
+  * "kid" (except for new-reg and revoke-cert requests).
   * "nonce" (defined below)
   * "url" (defined below)
 
-Note that this implies that GET requests are not authenticated.  Servers MUST
+The "kid" field should contain a registration URL received by POSTing to the
+new-reg resource. The "kid" field is not required when POSTing to the new-reg
+resource, because no such URL is available to the client yet. The "kid" field
+may be omitted for revoke-cert requests if they are signed by the
+certificate key rather than an account key.
+
+Note that authentication via signed POST implies that GET requests are not
+authenticated.  Servers MUST
 NOT respond to GET requests for resources that might be considered sensitive.
 
 In the examples below, JWS objects are shown in the JSON or flattened JSON
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.  Some fields are omitted for brevity, marked with "...".
-
-## Equivalence of JWKs
-
-At several points in the protocol, it is necessary for the server to determine
-whether two JWK objects represent the same key.  In performing these checks, the
-server MUST consider two JWKs to match if and only if they have the identical
-values in all fields included in the computation of a JWK thumbprint for that
-key. That is, the keys must have the same "kty" value and contain identical
-values in the fields used in the computation of a JWK thumbprint for that key
-type:
-
-* "RSA": "n", "e"
-* "EC": "crv", "x", "y"
-
-Note that this comparison is equivalent to computing the JWK thumbprints of the
-two keys and comparing thumbprints.  The only difference is that there is no
-requirement for a hash computation (and thus it is independent of the choice of
-hash function) and no risk of hash collision.
 
 ## Request URI Integrity
 
@@ -932,11 +921,11 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
     "nonce": "6S8IqOGY7eL2lsGoTZYifg",
     "url": "https://example.com/acme/new-reg"
   })
   "payload": base64url({
+    "key": { /* JWK */ },
     "contact": [
       "mailto:cert-admin@example.com",
       "tel:+12025551212"
@@ -952,9 +941,9 @@ other fields that it does not recognize.  If new fields are specified in the
 future, the specification of those fields MUST describe whether they may be
 provided by the client.
 
-The server creates a registration object with the included contact information.
-The "key" element of the registration is set to the public key used to verify
-the JWS (i.e., the "jwk" element of the JWS header).  The server returns this
+The server creates a registration object with the included contact information
+and key.
+The server returns this
 registration object in a 201 (Created) response, with the registration URI in a
 Location header field.
 
@@ -980,7 +969,7 @@ Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
-  "key": { /* JWK from JWS header */ },
+  "key": { /* JWK */ },
   "status": "valid",
 
   "contact": [
@@ -1007,7 +996,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
     "url": "https://example.com/acme/reg/asdf"
   })
@@ -1129,7 +1118,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
     "url": "https://example.com/acme/reg/asdf"
   })
@@ -1181,7 +1170,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-app"
   })
@@ -1405,7 +1394,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
   })
@@ -1493,7 +1482,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
   })
@@ -1538,7 +1527,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   })
@@ -1556,9 +1545,10 @@ Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
 at least the following keys authorized for a given certificate:
 
-* the public key in the certificate.
+* The public key in the certificate. When using the public key in the
+  certificate, the client MUST omit the "kid" header field.
 
-* an account key that is authorized to act for all of the identifier(s) in the
+* An account key that is authorized to act for all of the identifier(s) in the
   certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
