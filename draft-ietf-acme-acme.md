@@ -721,11 +721,11 @@ notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
 format defined in {{!RFC3339}}
 
-requirements (required, array):
+requirements (required, array of strings):
 : The requirements that the client needs to fulfill before the requested
 certificate can be granted (for pending applications).  For final applications,
-the requirements that were met.  Each entry is a dictionary with parameters
-describing the requirement (see below).
+the requirements that were met.  Each entry is the URL of an authorization
+object.
 
 certificate (optional, string):
 : A URL for the certificate that has been issued in response to this
@@ -741,16 +741,8 @@ application.
   "notAfter": "2016-01-08T00:00:00Z",
 
   "requirements": [
-    {
-      "type": "authorization",
-      "status": "valid",
-      "url": "https://example.com/acme/authz/1234"
-    },
-    {
-      "type": "out-of-band",
-      "status": "pending",
-      "url": "https://example.com/acme/payment/1234"
-    }
+    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/payment/1234"
   ]
 
   "certificate": "https://example.com/acme/cert/1234"
@@ -768,9 +760,8 @@ syntax like "confirm": true ]]
 support reissuance / renewal in a straightforward way, especially if the CSR /
 notBefore / notAfter could be updated. ]]
 
-The elements of the "requirements" array are immutable once set, except for
-their "status" fields.  If any other part of the object changes after the object
-is created, the client MUST consider the application invalid.
+The "requirements" array is immutable once set.  If any other part of the object
+changes after the object is created, the client MUST consider the application invalid.
 
 The "requirements" array in the challenge SHOULD reflect everything that the CA
 required the client to do before issuance, even if some requirements were
@@ -778,65 +769,30 @@ fulfilled in earlier applications.  For example, if a CA allows multiple
 applications to be fufilled based on a single authorization transaction, then it
 must reflect that authorization in all of the applications.
 
-Each entry in the "requirements" array expresses a requirement from the CA for
-the client to take a particular action.  All requirements objects have the
-following basic fields:
-
-type (required, string):
-: The type of requirement (see below for defined types)
-
-status (required, string):
-: The status of this requirement.  Possible values are: "pending", "valid", and
-"invalid".
-
-All additional fields are specified by the requirement type.
-
-#### Authorization Requirement
-
-A requirement with type "authorization" requests that the ACME client complete
-an authorization transaction.  The server specifies the authorization by
-pre-provisioning a pending authorization resource and providing the URI for this
-resource in the requirement.
-
-url (required, string):
-: The URL for the authorization resource
-
-To fulfill this requirement, the ACME client should fetch the authorization object
-from the indicated URL, then follow the process for obtaining authorization as
-specified in {{identifier-authorization}}.
-
-#### Out-of-Band Requirement
-
-A requirement with type "out-of-band" requests that the ACME client have a
-human user visit a web page in order to receive further instructions for how to
-fulfill the requirement.  The requirement object provides a URI for the web
-page to be visited.
-
-url (required, string):
-: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
-
-To fulfill this requirement, the ACME client should direct the user to the
-indicated web page.
-
-
 ### Authorization Objects
 
 An ACME authorization object represents a server's authorization for an account
-to represent an identifier.  In addition to the identifier, an authorization
+to perform an action. Most commonly, they represent the ability to issue a
+certificate containing a certain identifier, but they can also represent other
+properties, like whether an account has paid enough to issue additional
+certificates.
+
+In addition to the identifier, an authorization
 includes several metadata fields, such as the status of the authorization (e.g.,
 "pending", "valid", or "revoked") and which challenges were used to validate
-possession of the identifier.
+the authorization.
 
 The structure of an ACME authorization resource is as follows:
 
-identifier (required, dictionary of string):
-: The identifier that the account is authorized to represent
+type (required, string):
+: The type of this authorization. The only defined value is "DNSName." Servers
+may create authorizations of any type. For instance, servers may wish to define
+a payment-related authorization type.
 
-  type (required, string):
-  : The type of identifier.
-
-  value (required, string):
-  : The identifier itself.
+dnsName (optional, string):
+: For authorizations of type "DNSName," this value MUST contain a
+fully-qualified DNS name in ASCII form, which indicates the DNS name to be
+authorized.
 
 status (required, string):
 : The status of this authorization.  Possible values are: "unknown", "pending",
@@ -864,20 +820,13 @@ dictionary with parameters required to validate the challenge, as specified in
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
 
-The only type of identifier defined by this specification is a fully-qualified
-domain name (type: "dns").  The value of the identifier MUST be the ASCII
-representation of the domain name.  Wildcard domain names (with "*" as the first
-label) MUST NOT be included in authorization requests.
-
 ~~~~~~~~~~
 {
+  "type": "DNSName",
   "status": "valid",
   "expires": "2015-03-01T14:09:00Z",
 
-  "identifier": {
-    "type": "dns",
-    "value": "example.org"
-  },
+  "dnsName": "example.org",
 
   "challenges": [
     {
@@ -1259,8 +1208,7 @@ requirements at the time of this request (e.g., by obtaining authorization for
 all of the identifiers in the certificate in previous transactions), then the
 server MAY proactively issue the requested certificate and provide a URL for it
 in the "certificate" field of the application.  The server MUST, however, still
-list the satisfied requirements in the "requirements" array, with the state
-"valid".
+list the satisfied requirements in the "requirements" array.
 
 Once the client believes it has fulfilled the server's requirements, it should
 send a GET request to the application resource to obtain its current state.  The
@@ -1333,10 +1281,10 @@ server MAY enable the caching of the resource by adding Expires and
 Cache-Control headers specifying a point in time in the distant future. These
 headers have no relation to the certificate's period of validity.
 
-## Identifier Authorization
+## DNS Name Authorization
 
-The identifier authorization process establishes the authorization of an account
-to manage certificates for a given identifier.  This process must assure the
+The DNS Name authorization process establishes the authorization of an account
+to manage certificates for a given DNS hostname.  This process must assure the
 server of two things: First, that the client controls the private key of the
 account key pair, and second, that the client holds the identifier in question.
 This process may be repeated to associate multiple identifiers to a key pair
@@ -1348,12 +1296,12 @@ URI for that application.
 
 Authorization resources are created by the server in response to certificate
 applications submitted by an account key holder; their URLs are provided to the
-client in "authorization" requirement objects.  The authorization object is
+client in requirement objects.  The authorization object is
 implicitly tied to the account key used to sign the new-application request.
 
-When a client receives an application from the server with an "authorization"
-requirement, it downloads the authorization resource by sending a GET request to
-the indicated URL.
+When a client receives an application from the server,
+it downloads all authorization resources by sending a GET request to
+the indicated URLs.
 
 ~~~~~~~~~~
 GET /acme/authz/1234 HTTP/1.1
@@ -1366,10 +1314,8 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 {
   "status": "pending",
 
-  "identifier": {
-    "type": "dns",
-    "value": "example.org"
-  },
+  "type": "DNSName",
+  "dnsName": "example.org",
 
   "challenges": [
     {
@@ -1386,9 +1332,9 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 }
 ~~~~~~~~~~
 
-### Responding to Challenges
+### Responding to DNSName Challenges
 
-To prove control of the identifier and receive authorization, the client needs to
+To prove control of a DNS Name and receive authorization, the client needs to
 respond with information to complete the challenges.  To do this, the client
 updates the authorization object received from the server by filling in any
 required information in the elements of the "challenges" dictionary.  (This is
@@ -1398,7 +1344,7 @@ challenge.)
 The client sends these updates back to the server in the form of a JSON object
 with the response fields required by the challenge type, carried in a POST
 request to the challenge URI (not authorization URI).  This allows the client to
-send information only for challenges it is responding to.
+send information only for the challenge it is responding to.
 
 For example, if the client were to respond to the "http-01" challenge in the
 above authorization, it would send the following request:
@@ -1467,10 +1413,8 @@ HTTP/1.1 200 OK
   "status": "valid",
   "expires": "2015-03-01T14:09:00Z",
 
-  "identifier": {
-    "type": "dns",
-    "value": "example.org"
-  },
+  "type": "DNSName",
+  "dnsName": "example.org",
 
   "challenges": [
     {
@@ -1650,8 +1594,8 @@ help the client diagnose why they failed the challenge.
 
 Different challenges allow the server to obtain proof of different aspects of
 control over an identifier.  In some challenges, like HTTP and TLS SNI, the
-client directly proves its ability to do certain things related to the
-identifier.  The choice of which challenges to offer to a client under which
+client directly proves its ability to do certain things related to a DNS name.
+The choice of which challenges to offer to a client under which
 circumstances is a matter of server policy.
 
 The identifier validation challenges described in this section all relate to
