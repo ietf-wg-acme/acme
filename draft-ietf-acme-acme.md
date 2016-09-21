@@ -670,13 +670,9 @@ server (see below).  Including this field indicates the client's agreement with
 the referenced terms.
 
 applications (required, string):
-: A URI from which a list of authorizations submitted by this account can be
-fetched via a GET request.  The result of the GET request MUST be a JSON object
-whose "applications" field is an array of strings, where each string is the URI
-of an authorization belonging to this registration.  The server SHOULD include
-pending applications, and SHOULD NOT include applications that are invalid. The
-server MAY return an incomplete list, along with a Link header with link
-relation "next" indicating a URL to retrieve further entries.
+: An array of URIs from which application objects submitted by this account can
+be fetched via a GET request. The server SHOULD include pending applications,
+and SHOULD NOT include applications that are invalid.
 
 ~~~~~~~~~~
 {
@@ -685,8 +681,10 @@ relation "next" indicating a URL to retrieve further entries.
     "tel:+12025551212"
   ],
   "agreement": "https://example.com/acme/terms",
-  "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert"
+  "applications": [
+    "https://example.com/acme/reg/1/apps/1",
+    "https://example.com/acme/reg/1/apps/2"
+  ]
 }
 ~~~~~~~~~~
 
