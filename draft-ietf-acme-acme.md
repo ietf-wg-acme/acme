@@ -944,11 +944,11 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", "authorizations", and
-"certificates" fields in registration bodies sent by the client, as well as any
-other fields that it does not recognize.  If new fields are specified in the
-future, the specification of those fields MUST describe whether they may be
-provided by the client.
+The server MUST ignore any values provided in the "key", and "applications"
+fields in registration bodies sent by the client, as well as any other fields
+that it does not recognize.  If new fields are specified in the future, the
+specification of those fields MUST describe whether they may be provided by the
+client.
 
 The server creates a registration object with the included contact information.
 The "key" element of the registration is set to the public key used to verify
@@ -990,9 +990,10 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the registration URI.  The server MUST
-ignore any updates to the "key", "authorizations, or "certificates" fields, and
-MUST verify that the request is signed with the private key corresponding to the
-"key" field of the request before updating the registration.
+ignore any updates to the "key", or "applications" fields or any other fields it
+does not recognize. The server MUST verify that the request is signed with the
+private key corresponding to the "key" field of the request before updating the
+registration.
 
 For example, to update the contact information in the above registration, the
 client could send the following request:
