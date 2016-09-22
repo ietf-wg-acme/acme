@@ -5,10 +5,10 @@
 Network Working Group                                          R. Barnes
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                      J. Hoffman-Andrews
-Expires: March 16, 2017                                              EFF
+Expires: March 26, 2017                                              EFF
                                                                J. Kasten
                                                   University of Michigan
-                                                      September 12, 2016
+                                                      September 22, 2016
 
 
           Automatic Certificate Management Environment (ACME)
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 1]
+Barnes, et al.           Expires March 26, 2017                 [Page 1]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -61,7 +61,7 @@ Internet-Draft                    ACME                    September 2016
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 16, 2017.
+   This Internet-Draft will expire on March 26, 2017.
 
 Copyright Notice
 
@@ -104,12 +104,12 @@ Table of Contents
      6.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  24
      6.3.  Registration  . . . . . . . . . . . . . . . . . . . . . .  25
        6.3.1.  Account Key Roll-over . . . . . . . . . . . . . . . .  27
-       6.3.2.  Account deactivation  . . . . . . . . . . . . . . . .  30
-     6.4.  Applying for Certificate Issuance . . . . . . . . . . . .  31
+       6.3.2.  Account deactivation  . . . . . . . . . . . . . . . .  29
+     6.4.  Applying for Certificate Issuance . . . . . . . . . . . .  30
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 2]
+Barnes, et al.           Expires March 26, 2017                 [Page 2]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -117,7 +117,7 @@ Internet-Draft                    ACME                    September 2016
        6.4.1.  Downloading the Certificate . . . . . . . . . . . . .  33
      6.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  34
        6.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  35
-       6.5.2.  Deactivating an Authorization . . . . . . . . . . . .  38
+       6.5.2.  Deactivating an Authorization . . . . . . . . . . . .  37
      6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  38
    7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  40
      7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  42
@@ -165,7 +165,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 3]
+Barnes, et al.           Expires March 26, 2017                 [Page 3]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -221,7 +221,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 4]
+Barnes, et al.           Expires March 26, 2017                 [Page 4]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -277,7 +277,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 5]
+Barnes, et al.           Expires March 26, 2017                 [Page 5]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -333,7 +333,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 6]
+Barnes, et al.           Expires March 26, 2017                 [Page 6]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -389,7 +389,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 7]
+Barnes, et al.           Expires March 26, 2017                 [Page 7]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -445,7 +445,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 8]
+Barnes, et al.           Expires March 26, 2017                 [Page 8]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -501,7 +501,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                 [Page 9]
+Barnes, et al.           Expires March 26, 2017                 [Page 9]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -557,7 +557,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 10]
+Barnes, et al.           Expires March 26, 2017                [Page 10]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -613,7 +613,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 11]
+Barnes, et al.           Expires March 26, 2017                [Page 11]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -669,7 +669,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 12]
+Barnes, et al.           Expires March 26, 2017                [Page 12]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -725,7 +725,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 13]
+Barnes, et al.           Expires March 26, 2017                [Page 13]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -781,7 +781,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 14]
+Barnes, et al.           Expires March 26, 2017                [Page 14]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -837,7 +837,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 15]
+Barnes, et al.           Expires March 26, 2017                [Page 15]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -893,7 +893,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 16]
+Barnes, et al.           Expires March 26, 2017                [Page 16]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -949,7 +949,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 17]
+Barnes, et al.           Expires March 26, 2017                [Page 17]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1005,7 +1005,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 18]
+Barnes, et al.           Expires March 26, 2017                [Page 18]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1061,7 +1061,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 19]
+Barnes, et al.           Expires March 26, 2017                [Page 19]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1117,7 +1117,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 20]
+Barnes, et al.           Expires March 26, 2017                [Page 20]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1173,7 +1173,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 21]
+Barnes, et al.           Expires March 26, 2017                [Page 21]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 22]
+Barnes, et al.           Expires March 26, 2017                [Page 22]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1285,7 +1285,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 23]
+Barnes, et al.           Expires March 26, 2017                [Page 23]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1341,7 +1341,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 24]
+Barnes, et al.           Expires March 26, 2017                [Page 24]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1397,7 +1397,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 25]
+Barnes, et al.           Expires March 26, 2017                [Page 25]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1453,7 +1453,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 26]
+Barnes, et al.           Expires March 26, 2017                [Page 26]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -1509,21 +1509,14 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 27]
+Barnes, et al.           Expires March 26, 2017                [Page 27]
 
 Internet-Draft                    ACME                    September 2016
 
 
    The client then encapsulates the key-change object in a JWS, signed
-   with the client's current account key (i.e., the key matching the
-   "oldKey" value).
-
-   This inner JWS then become the payload of the JWS that the client
-   sends to the server.  The outer JWS is signed with the key pair that
-   the the client wishes to have the server use as its account key
-   (i.e., the key pair matching the "newKey" value).  The client sends
-   this outer JWS in a POST request to the server's "key-change"
-   resource.
+   with the requested new account key (i.e., the key matching the
+   "newKey" value).
 
    The outer JWS MUST meet the normal requirements for an ACME JWS (see
    Section 5.2).  The inner JWS MUST meet the normal requirements, with
@@ -1541,35 +1534,6 @@ Internet-Draft                    ACME                    September 2016
    property that all signatures on POST messages are signed by exactly
    one key.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 28]
-
-Internet-Draft                    ACME                    September 2016
-
-
    POST /acme/key-change HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
@@ -1577,18 +1541,17 @@ Internet-Draft                    ACME                    September 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "jwk": /* new key */,
+       "jwk": /* old key */,
        "nonce": "K60BWPrMQG9SDxBDS_xtSw",
        "url": "https://example.com/acme/key-change"
      }),
      "payload": base64url({
        "protected": base64url({
          "alg": "ES256",
-         "jwk": /* old key */,
+         "jwk": /* new key */,
        }),
        "payload": base64url({
          "account": "https://example.com/acme/reg/asdf",
-         "oldKey": /* old key */,
          "newKey": /* new key */
        })
        "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1599,38 +1562,40 @@ Internet-Draft                    ACME                    September 2016
    On receiving key-change request, the server MUST perform the
    following steps in addition to the typical JWS validation:
 
-   1.  Check that the payload of the JWS is a well-formed JWS object
-       (the "inner JWS")
-
-   2.  Check that the JWS protected header of the inner JWS has a "jwk"
-       field containing a key that matches a currently active account
-
-   3.  Check that the inner JWS verifies using the key in its "jwk"
-       field
-
-   4.  Check that the payload of the inner JWS is a well-formed key-
-       change object (as described above)
-
-   5.  Check that the "url" parameters of the inner and outer JWSs are
-       the same
-
-   6.  Check that the "account" field of the key-change object contains
-       the URL for the registration matching the old key
 
 
 
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 29]
+Barnes, et al.           Expires March 26, 2017                [Page 28]
 
 Internet-Draft                    ACME                    September 2016
 
 
-   7.  Check that the "oldKey" field of the key-change object contains
-       the thumbprint of the key used to sign the inner JWS
+   1.  Validate the POST request belongs to a currently active account,
+       as described in Message Transport.
 
-   8.  Check that the "newKey" field of the key-change object contains
-       the thumbprint of the key used to sign the outer JWS
+   2.  Check that the payload of the JWS is a well-formed JWS object
+       (the "inner JWS")
+
+   3.  Check that the JWS protected header of the inner JWS has a "jwk"
+       field.
+
+   4.  Check that the inner JWS verifies using the key in its "jwk"
+       field
+
+   5.  Check that the payload of the inner JWS is a well-formed key-
+       change object (as described above)
+
+   6.  Check that the "url" parameters of the inner and outer JWSs are
+       the same
+
+   7.  Check that the "account" field of the key-change object contains
+       the URL for the registration matching the old key
+
+   8.  Check that the "oldKey" field of the key-change object contains
+       the current account key.
+
+   9.  Check that the "newKey" field of the key-change object contains
+       the key used to sign the inner JWS.
 
    If all of these checks pass, then the server updates the
    corresponding registration by replacing the old account key with the
@@ -1643,6 +1608,23 @@ Internet-Draft                    ACME                    September 2016
    A client may deactivate an account by posting a signed update to the
    server with a status field of "deactivated."  Clients may wish to do
    this when the account key is compromised.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 29]
+
+Internet-Draft                    ACME                    September 2016
+
 
    POST /acme/reg/asdf HTTP/1.1
    Host: example.com
@@ -1673,15 +1655,6 @@ Internet-Draft                    ACME                    September 2016
    that account's contacts.  ACME does not provide a way to reactivate a
    deactivated account.
 
-
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 30]
-
-Internet-Draft                    ACME                    September 2016
-
-
 6.4.  Applying for Certificate Issuance
 
    The holder of an account key pair may use ACME to submit an
@@ -1699,6 +1672,15 @@ Internet-Draft                    ACME                    September 2016
 
    notBefore (optional, string):  The requested value of the notBefore
       field in the certificate, in the date format defined in [RFC3339]
+
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 30]
+
+Internet-Draft                    ACME                    September 2016
+
 
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339]
@@ -1730,14 +1712,6 @@ Internet-Draft                    ACME                    September 2016
 
    The server MUST return an error if it cannot fulfil the request as
    specified, and MUST NOT issue a certificate with contents other than
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 31]
-
-Internet-Draft                    ACME                    September 2016
-
-
    those requested.  If the server requires the request to be modified
    in a certain way, it should indicate the required changes using an
    appropriate error code and description.
@@ -1747,6 +1721,22 @@ Internet-Draft                    ACME                    September 2016
    an application object reflecting the client's request and any
    requirements the client must fulfill before the certificate will be
    issued.
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 31]
+
+Internet-Draft                    ACME                    September 2016
+
 
    HTTP/1.1 201 Created
    Replay-Nonce: MYAuvOpaoIiywTezizk5vw
@@ -1786,14 +1776,6 @@ Internet-Draft                    ACME                    September 2016
 
    The server SHOULD issue the requested certificate and update the
    application resource with a URL for the certificate as soon as the
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 32]
-
-Internet-Draft                    ACME                    September 2016
-
-
    client has fulfilled the server's requirements.  If the client has
    already satisfied the server's requirements at the time of this
    request (e.g., by obtaining authorization for all of the identifiers
@@ -1802,6 +1784,15 @@ Internet-Draft                    ACME                    September 2016
    in the "certificate" field of the application.  The server MUST,
    however, still list the satisfied requirements in the "requirements"
    array, with the state "valid".
+
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 32]
+
+Internet-Draft                    ACME                    September 2016
+
 
    Once the client believes it has fulfilled the server's requirements,
    it should send a GET request to the application resource to obtain
@@ -1841,15 +1832,6 @@ Internet-Draft                    ACME                    September 2016
    MAY also include the "up" links from these resources to enable the
    client to build a full certificate chain.
 
-
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 33]
-
-Internet-Draft                    ACME                    September 2016
-
-
    The server MUST also provide a link relation header field with
    relation "author" to indicate the application under which this
    certificate was issued.
@@ -1860,6 +1842,14 @@ Internet-Draft                    ACME                    September 2016
    submitted to a CT log.  An SCT can be included as an extension in the
    certificate or as an extension to OCSP responses for the certificate.
    The server can also provide the client with direct access to an SCT
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 33]
+
+Internet-Draft                    ACME                    September 2016
+
+
    for a certificate using a Link relation header field with relation
    "ct-sct".
 
@@ -1898,14 +1888,6 @@ Internet-Draft                    ACME                    September 2016
    request certificates with multiple identifiers), or to associate
    multiple accounts with an identifier (e.g., to allow multiple
    entities to manage certificates).  The server may declare that an
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 34]
-
-Internet-Draft                    ACME                    September 2016
-
-
    authorization is only valid for a specific application by setting the
    "scope" field of the authorization to the URI for that application.
 
@@ -1914,6 +1896,15 @@ Internet-Draft                    ACME                    September 2016
    URLs are provided to the client in "authorization" requirement
    objects.  The authorization object is implicitly tied to the account
    key used to sign the new-application request.
+
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 34]
+
+Internet-Draft                    ACME                    September 2016
+
 
    When a client receives an application from the server with an
    "authorization" requirement, it downloads the authorization resource
@@ -1954,14 +1945,6 @@ Internet-Draft                    ACME                    September 2016
    client needs to respond with information to complete the challenges.
    To do this, the client updates the authorization object received from
    the server by filling in any required information in the elements of
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 35]
-
-Internet-Draft                    ACME                    September 2016
-
-
    the "challenges" dictionary.  (This is also the stage where the
    client should perform any actions required by the challenge.)
 
@@ -1970,6 +1953,14 @@ Internet-Draft                    ACME                    September 2016
    carried in a POST request to the challenge URI (not authorization
    URI).  This allows the client to send information only for challenges
    it is responding to.
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 35]
+
+Internet-Draft                    ACME                    September 2016
+
 
    For example, if the client were to respond to the "http-01" challenge
    in the above authorization, it would send the following request:
@@ -2010,14 +2001,6 @@ Internet-Draft                    ACME                    September 2016
    information to validate one or more challenges.  The server is said
    to "finalize" the authorization when it has completed all the
    validations it is going to complete, and assigns the authorization a
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 36]
-
-Internet-Draft                    ACME                    September 2016
-
-
    status of "valid" or "invalid", corresponding to whether it considers
    the account authorized for the identifier.  If the final state is
    "valid", the server MUST add an "expires" field to the authorization.
@@ -2027,6 +2010,14 @@ Internet-Draft                    ACME                    September 2016
 
    Usually, the validation process will take some time, so the client
    will need to poll the authorization resource to see when it is
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 36]
+
+Internet-Draft                    ACME                    September 2016
+
+
    finalized.  For challenges where the client can tell when the server
    has validated the challenge (e.g., by seeing an HTTP or DNS request
    from the server), the client SHOULD NOT begin polling until it has
@@ -2064,16 +2055,6 @@ Internet-Draft                    ACME                    September 2016
      ]
    }
 
-
-
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 37]
-
-Internet-Draft                    ACME                    September 2016
-
-
 6.5.2.  Deactivating an Authorization
 
    If a client wishes to relinquish its authorization to issue
@@ -2081,6 +2062,17 @@ Internet-Draft                    ACME                    September 2016
    deactivate each authorization associated with that identifier by
    sending a POST request with the static object {"status":
    "deactivated"}.
+
+
+
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 37]
+
+Internet-Draft                    ACME                    September 2016
+
 
    POST /acme/authz/asdf HTTP/1.1
    Host: example.com
@@ -2122,17 +2114,21 @@ Internet-Draft                    ACME                    September 2016
    reason (optional, int):  One of the revocation reasonCodes defined in
       RFC 5280 [RFC5280] Section 5.3.1 to be used when generating OCSP
       responses and CRLs.  If this field is not set the server SHOULD
-
-
-
-Barnes, et al.           Expires March 16, 2017                [Page 38]
-
-Internet-Draft                    ACME                    September 2016
-
-
       use the unspecified (0) reasonCode value when generating OCSP
       responses and CRLs.  The server MAY disallow a subset of
       reasonCodes from being used by the user.
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 38]
+
+Internet-Draft                    ACME                    September 2016
+
 
    POST /acme/revoke-cert HTTP/1.1
    Host: example.com
@@ -2181,7 +2177,11 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 39]
+
+
+
+
+Barnes, et al.           Expires March 26, 2017                [Page 39]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2237,7 +2237,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 40]
+Barnes, et al.           Expires March 26, 2017                [Page 40]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2293,7 +2293,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 41]
+Barnes, et al.           Expires March 26, 2017                [Page 41]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2349,7 +2349,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 42]
+Barnes, et al.           Expires March 26, 2017                [Page 42]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2405,7 +2405,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 43]
+Barnes, et al.           Expires March 26, 2017                [Page 43]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2461,7 +2461,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 44]
+Barnes, et al.           Expires March 26, 2017                [Page 44]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2517,7 +2517,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 45]
+Barnes, et al.           Expires March 26, 2017                [Page 45]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2573,7 +2573,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 46]
+Barnes, et al.           Expires March 26, 2017                [Page 46]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2629,7 +2629,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 47]
+Barnes, et al.           Expires March 26, 2017                [Page 47]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2685,7 +2685,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 48]
+Barnes, et al.           Expires March 26, 2017                [Page 48]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2741,7 +2741,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 49]
+Barnes, et al.           Expires March 26, 2017                [Page 49]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2797,7 +2797,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 50]
+Barnes, et al.           Expires March 26, 2017                [Page 50]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2853,7 +2853,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 51]
+Barnes, et al.           Expires March 26, 2017                [Page 51]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2909,7 +2909,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 52]
+Barnes, et al.           Expires March 26, 2017                [Page 52]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -2965,7 +2965,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 53]
+Barnes, et al.           Expires March 26, 2017                [Page 53]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3021,7 +3021,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 54]
+Barnes, et al.           Expires March 26, 2017                [Page 54]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3077,7 +3077,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 55]
+Barnes, et al.           Expires March 26, 2017                [Page 55]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3133,7 +3133,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 56]
+Barnes, et al.           Expires March 26, 2017                [Page 56]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3189,7 +3189,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 57]
+Barnes, et al.           Expires March 26, 2017                [Page 57]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3245,7 +3245,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 58]
+Barnes, et al.           Expires March 26, 2017                [Page 58]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3301,7 +3301,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 59]
+Barnes, et al.           Expires March 26, 2017                [Page 59]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3357,7 +3357,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 60]
+Barnes, et al.           Expires March 26, 2017                [Page 60]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3413,7 +3413,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 61]
+Barnes, et al.           Expires March 26, 2017                [Page 61]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3469,7 +3469,7 @@ Internet-Draft                    ACME                    September 2016
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 62]
+Barnes, et al.           Expires March 26, 2017                [Page 62]
 
 Internet-Draft                    ACME                    September 2016
 
@@ -3525,4 +3525,4 @@ Authors' Addresses
 
 
 
-Barnes, et al.           Expires March 16, 2017                [Page 63]
+Barnes, et al.           Expires March 26, 2017                [Page 63]
