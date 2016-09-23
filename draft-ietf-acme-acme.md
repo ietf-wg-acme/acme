@@ -1432,15 +1432,13 @@ MUST return an HTTP error.  On receiving such an error, the client SHOULD undo
 any actions that have been taken to fulfill the challenge, e.g., removing files
 that have been provisioned to a web server.
 
-Presumably, the client's responses provide the server with enough information to
-validate one or more challenges.  The server is said to "finalize" the
-authorization when it has completed all the validations it is going to complete,
-and assigns the authorization a status of "valid" or "invalid", corresponding to
-whether it considers the account authorized for the identifier.  If the final
-state is "valid", the server MUST add an "expires" field to the authorization.
-When finalizing an authorization, the server MAY remove challenges other than
-the one that was completed. The server SHOULD NOT remove challenges with status
-"invalid".
+The server is said to "finalize" the authorization when it has completed
+one of the validations, by assigning the authorization a status of "valid"
+or "invalid", corresponding to whether it considers the account authorized
+for the identifier.  If the final state is "valid", the server MUST add an
+"expires" field to the authorization.  When finalizing an authorization,
+the server MAY remove challenges other than the one that was completed. The
+server SHOULD NOT remove challenges with status "invalid".
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
