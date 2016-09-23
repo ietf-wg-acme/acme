@@ -1840,22 +1840,21 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 </ol>
 <p id="rfc.section.9.p.3">In this section, we discuss the threat model that underlies ACME and the ways that ACME achieves these security goals within that threat model.  We also discuss the denial-of-service risks that ACME servers face, and a few other miscellaneous considerations.</p>
 <h1 id="rfc.section.9.1"><a href="#rfc.section.9.1">9.1.</a> <a href="#threat-model" id="threat-model">Threat model</a></h1>
-<p id="rfc.section.9.1.p.1">As a service on the Internet, ACME broadly exists within the Internet threat model <a href="#RFC3552">[RFC3552]</a>.  In analyzing ACME, it is useful to think of an ACME server interacting with other Internet hosts along three &#8220;channels&#8221;:</p>
+<p id="rfc.section.9.1.p.1">As a service on the Internet, ACME broadly exists within the Internet threat model <a href="#RFC3552">[RFC3552]</a>.  In analyzing ACME, it is useful to think of an ACME server interacting with other Internet hosts along two &#8220;channels&#8221;:</p>
 <p/>
 
 <ul>
   <li>An ACME channel, over which the ACME HTTPS requests are exchanged</li>
   <li>A validation channel, over which the ACME server performs additional requests to validate a client&#8217;s control of an identifier</li>
-  <li>A contact channel, over which the ACME server sends messages to the registered contacts for ACME clients</li>
 </ul>
 <pre>
 +------------+
 |    ACME    |     ACME Channel
 |   Client   |--------------------+
 +------------+                    |
-       ^                          V
-       |   Contact Channel  +------------+
-       +--------------------|    ACME    |
+                                  V
+                            +------------+
+                            |    ACME    |
                             |   Server   |
                             +------------+
 +------------+                    |
@@ -1863,9 +1862,9 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 |   Server   |  Validation Channel
 +------------+
 </pre>
-<p id="rfc.section.9.1.p.3">In practice, the risks to these channels are not entirely separate, but they are different in most cases.  Each of the three channels, for example, uses a different communications pattern: the ACME channel will comprise inbound HTTPS connections to the ACME server, the validation channel outbound HTTP or DNS requests, and the contact channel will use channels such as email and PSTN.</p>
+<p id="rfc.section.9.1.p.3">In practice, the risks to these channels are not entirely separate, but they are different in most cases.  Each channel, for example, uses a different communications pattern: the ACME channel will comprise inbound HTTPS connections to the ACME server and the validation channel outbound HTTP or DNS requests.</p>
 <p id="rfc.section.9.1.p.4">Broadly speaking, ACME aims to be secure against active and passive attackers on any individual channel.  Some vulnerabilities arise (noted below), when an attacker can exploit both the ACME channel and one of the others.</p>
-<p id="rfc.section.9.1.p.5">On the ACME channel, in addition to network-layer attackers, we also need to account for application-layer man in the middle attacks, and for abusive use of the protocol itself.  Protection against application-layer MitM addresses potential attackers such as Content Distribution Networks (CDNs) and middleboxes with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an attacker with access to the validation or contact channels can&#8217;t obtain illegitimate authorization by acting as an ACME client (legitimately, in terms of the protocol).</p>
+<p id="rfc.section.9.1.p.5">On the ACME channel, in addition to network-layer attackers, we also need to account for application-layer man in the middle attacks, and for abusive use of the protocol itself.  Protection against application-layer MitM addresses potential attackers such as Content Distribution Networks (CDNs) and middleboxes with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an attacker with access to the validation channel can&#8217;t obtain illegitimate authorization by acting as an ACME client (legitimately, in terms of the protocol).</p>
 <h1 id="rfc.section.9.2"><a href="#rfc.section.9.2">9.2.</a> <a href="#integrity-of-authorizations" id="integrity-of-authorizations">Integrity of Authorizations</a></h1>
 <p id="rfc.section.9.2.p.1">ACME allows anyone to request challenges for an identifier by registering an account key and sending a new-application request under that account key.  The integrity of the authorization process thus depends on the identifier validation challenges to ensure that the challenge can only be completed by someone who both (1) holds the private key of the account key pair, and (2) controls the identifier in question.</p>
 <p id="rfc.section.9.2.p.2">Validation responses need to be bound to an account key pair in order to avoid situations where an ACME MitM can switch out a legitimate domain holder&#8217;s account key for one of his choosing, e.g.:</p>

@@ -2934,7 +2934,7 @@ Internet-Draft                    ACME                    September 2016
 
    As a service on the Internet, ACME broadly exists within the Internet
    threat model [RFC3552].  In analyzing ACME, it is useful to think of
-   an ACME server interacting with other Internet hosts along three
+   an ACME server interacting with other Internet hosts along two
    "channels":
 
    o  An ACME channel, over which the ACME HTTPS requests are exchanged
@@ -2943,16 +2943,13 @@ Internet-Draft                    ACME                    September 2016
       additional requests to validate a client's control of an
       identifier
 
-   o  A contact channel, over which the ACME server sends messages to
-      the registered contacts for ACME clients
-
    +------------+
    |    ACME    |     ACME Channel
    |   Client   |--------------------+
    +------------+                    |
-          ^                          V
-          |   Contact Channel  +------------+
-          +--------------------|    ACME    |
+                                     V
+                               +------------+
+                               |    ACME    |
                                |   Server   |
                                +------------+
    +------------+                    |
@@ -2961,7 +2958,10 @@ Internet-Draft                    ACME                    September 2016
    +------------+
 
    In practice, the risks to these channels are not entirely separate,
-   but they are different in most cases.  Each of the three channels,
+   but they are different in most cases.  Each channel, for example,
+   uses a different communications pattern: the ACME channel will
+   comprise inbound HTTPS connections to the ACME server and the
+   validation channel outbound HTTP or DNS requests.
 
 
 
@@ -2969,11 +2969,6 @@ Barnes, et al.           Expires March 27, 2017                [Page 53]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   for example, uses a different communications pattern: the ACME
-   channel will comprise inbound HTTPS connections to the ACME server,
-   the validation channel outbound HTTP or DNS requests, and the contact
-   channel will use channels such as email and PSTN.
 
    Broadly speaking, ACME aims to be secure against active and passive
    attackers on any individual channel.  Some vulnerabilities arise
@@ -2986,9 +2981,9 @@ Internet-Draft                    ACME                    September 2016
    application-layer MitM addresses potential attackers such as Content
    Distribution Networks (CDNs) and middleboxes with a TLS MitM
    function.  Preventing abusive use of ACME means ensuring that an
-   attacker with access to the validation or contact channels can't
-   obtain illegitimate authorization by acting as an ACME client
-   (legitimately, in terms of the protocol).
+   attacker with access to the validation channel can't obtain
+   illegitimate authorization by acting as an ACME client (legitimately,
+   in terms of the protocol).
 
 9.2.  Integrity of Authorizations
 
@@ -3019,15 +3014,17 @@ Internet-Draft                    ACME                    September 2016
 
    o  Legitimate domain holder provisions the validation response
 
+   o  ACME server performs validation query and sees the response
+      provisioned by the legitimate domain holder
+
+
+
 
 
 Barnes, et al.           Expires March 27, 2017                [Page 54]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   o  ACME server performs validation query and sees the response
-      provisioned by the legitimate domain holder
 
    o  Because the challenges were issued in response to a message signed
       account key B, the ACME server grants authorization to account key
@@ -3074,6 +3071,9 @@ Internet-Draft                    ACME                    September 2016
    that to get a certificate through HTTP validation, since the
    validation path will not be known to the primary server.
 
+   The DNS is a common point of vulnerability for all of these
+   challenges.  An entity that can provision false DNS records for a
+   domain can attack the DNS challenge directly, and can provision false
 
 
 
@@ -3082,9 +3082,6 @@ Barnes, et al.           Expires March 27, 2017                [Page 55]
 Internet-Draft                    ACME                    September 2016
 
 
-   The DNS is a common point of vulnerability for all of these
-   challenges.  An entity that can provision false DNS records for a
-   domain can attack the DNS challenge directly, and can provision false
    A/AAAA records to direct the ACME server to send its TLS SNI or HTTP
    validation query to a server of the attacker's choosing.  There are a
    few different mitigations that ACME servers can apply:
@@ -3130,6 +3127,9 @@ Internet-Draft                    ACME                    September 2016
    attacker-controlled servers, and certificate issuance can require
    interactions with cryptographic hardware.
 
+   In addition, an attacker can also cause the ACME server to send
+   validation requests to a domain of its choosing by submitting
+   authorization requests for the victim domain.
 
 
 
@@ -3137,10 +3137,6 @@ Barnes, et al.           Expires March 27, 2017                [Page 56]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   In addition, an attacker can also cause the ACME server to send
-   validation requests to a domain of its choosing by submitting
-   authorization requests for the victim domain.
 
    All of these attacks can be mitigated by the application of
    appropriate rate limits.  Issues closer to the front end, like POST
@@ -3187,16 +3183,16 @@ Internet-Draft                    ACME                    September 2016
    Before issuing a certificate, however, there are many other checks
    that a CA might need to perform, for example:
 
+   o  Has the client agreed to a subscriber agreement?
+
+   o  Is the claimed identifier syntactically valid?
+
 
 
 Barnes, et al.           Expires March 27, 2017                [Page 57]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   o  Has the client agreed to a subscriber agreement?
-
-   o  Is the claimed identifier syntactically valid?
 
    o  For domain names:
 
@@ -3242,6 +3238,10 @@ Internet-Draft                    ACME                    September 2016
 
    When a connection comes in with an unknown SNI value, one might
    expect the hosting platform to terminate the TLS connection.
+   However, some hosting platforms will choose a virtual host to be the
+   "default", and route connections with unknown SNI values to that
+   host.
+
 
 
 
@@ -3249,10 +3249,6 @@ Barnes, et al.           Expires March 27, 2017                [Page 58]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   However, some hosting platforms will choose a virtual host to be the
-   "default", and route connections with unknown SNI values to that
-   host.
 
    In such cases, the owner of the default virtual host can complete a
    TLS-based challenge (e.g., "tls-sni-02") for any domain with an A
@@ -3298,6 +3294,10 @@ Internet-Draft                    ACME                    September 2016
 
    o  Seth Schoen, EFF
 
+   o  Alex Halderman, University of Michigan
+
+   o  Martin Thomson, Mozilla
+
 
 
 
@@ -3305,10 +3305,6 @@ Barnes, et al.           Expires March 27, 2017                [Page 59]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   o  Alex Halderman, University of Michigan
-
-   o  Martin Thomson, Mozilla
 
    o  Jakub Warmuz, University of Oxford
 
@@ -3353,6 +3349,10 @@ Internet-Draft                    ACME                    September 2016
               RFC 3986, DOI 10.17487/RFC3986, January 2005,
               <http://www.rfc-editor.org/info/rfc3986>.
 
+   [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
+              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
+              <http://www.rfc-editor.org/info/rfc4648>.
+
 
 
 
@@ -3361,10 +3361,6 @@ Barnes, et al.           Expires March 27, 2017                [Page 60]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
-              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
-              <http://www.rfc-editor.org/info/rfc4648>.
 
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
@@ -3410,6 +3406,10 @@ Internet-Draft                    ACME                    September 2016
               DOI 10.17487/RFC7231, June 2014,
               <http://www.rfc-editor.org/info/rfc7231>.
 
+   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
+              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
+              2015, <http://www.rfc-editor.org/info/rfc7515>.
+
 
 
 
@@ -3417,10 +3417,6 @@ Barnes, et al.           Expires March 27, 2017                [Page 61]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
-              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
-              2015, <http://www.rfc-editor.org/info/rfc7515>.
 
    [RFC7517]  Jones, M., "JSON Web Key (JWK)", RFC 7517,
               DOI 10.17487/RFC7517, May 2015,
@@ -3465,6 +3461,10 @@ Internet-Draft                    ACME                    September 2016
               DOI 10.17487/RFC5785, April 2010,
               <http://www.rfc-editor.org/info/rfc5785>.
 
+   [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
+              Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
+              <http://www.rfc-editor.org/info/rfc6962>.
+
 
 
 
@@ -3473,10 +3473,6 @@ Barnes, et al.           Expires March 27, 2017                [Page 62]
 
 Internet-Draft                    ACME                    September 2016
 
-
-   [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
-              Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
-              <http://www.rfc-editor.org/info/rfc6962>.
 
    [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
@@ -3505,6 +3501,10 @@ Authors' Addresses
    University of Michigan
 
    Email: jdkasten@umich.edu
+
+
+
+
 
 
 
