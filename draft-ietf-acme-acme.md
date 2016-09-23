@@ -865,9 +865,12 @@ one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
 
 The only type of identifier defined by this specification is a fully-qualified
-domain name (type: "dns").  The value of the identifier MUST be the ASCII
-representation of the domain name.  Wildcard domain names (with "*" as the first
-label) MUST NOT be included in authorization requests.
+domain name (type: "dns"). The value of the identifier MUST be the ASCII
+representation of the domain name. If a domain name contains Unicode characters
+it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
+any identifier values that begin with the ASCII Compatible Encoding prefix "xn--"
+as defined in {{!RFC5890}} are properly encoded. Wildcard domain names (with "*"
+as the first label) MUST NOT be included in authorization requests.
 
 ~~~~~~~~~~
 {
@@ -2168,22 +2171,20 @@ miscellaneous considerations.
 
 As a service on the Internet, ACME broadly exists within the Internet threat
 model {{?RFC3552}}.  In analyzing ACME, it is useful to think of an ACME server
-interacting with other Internet hosts along three "channels":
+interacting with other Internet hosts along two "channels":
 
 * An ACME channel, over which the ACME HTTPS requests are exchanged
 * A validation channel, over which the ACME server performs additional requests
   to validate a client's control of an identifier
-* A contact channel, over which the ACME server sends messages to the registered
-  contacts for ACME clients
 
 ~~~~~~~~~~
 +------------+
 |    ACME    |     ACME Channel
 |   Client   |--------------------+
 +------------+                    |
-       ^                          V
-       |   Contact Channel  +------------+
-       +--------------------|    ACME    |
+                                  V
+                            +------------+
+                            |    ACME    |
                             |   Server   |
                             +------------+
 +------------+                    |
@@ -2193,10 +2194,10 @@ interacting with other Internet hosts along three "channels":
 ~~~~~~~~~~
 
 In practice, the risks to these channels are not entirely separate, but they are
-different in most cases.  Each of the three channels, for example, uses a
+different in most cases.  Each channel, for example, uses a
 different communications pattern: the ACME channel will comprise inbound HTTPS
-connections to the ACME server, the validation channel outbound HTTP or DNS
-requests, and the contact channel will use channels such as email and PSTN.
+connections to the ACME server and the validation channel outbound HTTP or DNS
+requests.
 
 Broadly speaking, ACME aims to be secure against active and passive attackers on
 any individual channel.  Some vulnerabilities arise (noted below), when an
@@ -2207,7 +2208,7 @@ account for application-layer man in the middle attacks, and for abusive use of
 the protocol itself.  Protection against application-layer MitM addresses
 potential attackers such as Content Distribution Networks (CDNs) and middleboxes
 with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an
-attacker with access to the validation or contact channels can't obtain
+attacker with access to the validation channel can't obtain
 illegitimate authorization by acting as an ACME client (legitimately, in terms
 of the protocol).
 
