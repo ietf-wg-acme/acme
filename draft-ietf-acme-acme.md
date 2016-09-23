@@ -1049,13 +1049,7 @@ newKey (required, JWK):
 : The JWK representation of the new key
 
 The client then encapsulates the key-change object in a JWS, signed with the
-client's current account key (i.e., the key matching the "oldKey" value).
-
-This inner JWS then become the payload of the JWS that the client sends to the
-server.  The outer JWS is signed with the key pair that the the client wishes to
-have the server use as its account key (i.e., the key pair matching the "newKey"
-value).  The client sends this outer JWS in a POST request to the server's
-"key-change" resource.
+requested new account key (i.e., the key matching the "newKey" value).
 
 The outer JWS MUST meet the normal requirements for an ACME JWS (see
 {{request-authentication}}).  The inner JWS MUST meet the normal requirements,
@@ -1078,18 +1072,17 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": /* new key */,
+    "jwk": /* old key */,
     "nonce": "K60BWPrMQG9SDxBDS_xtSw",
     "url": "https://example.com/acme/key-change"
   }),
   "payload": base64url({
     "protected": base64url({
       "alg": "ES256",
-      "jwk": /* old key */,
+      "jwk": /* new key */,
     }),
     "payload": base64url({
       "account": "https://example.com/acme/reg/asdf",
-      "oldKey": /* old key */,
       "newKey": /* new key */
     })
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1101,10 +1094,11 @@ Content-Type: application/jose+json
 On receiving key-change request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
+1. Validate the POST request belongs to a currently active account, as described
+   in Message Transport.
 1. Check that the payload of the JWS is a well-formed JWS object (the "inner
    JWS")
-2. Check that the JWS protected header of the inner JWS has a "jwk" field
-   containing a key that matches a currently active account
+2. Check that the JWS protected header of the inner JWS has a "jwk" field.
 3. Check that the inner JWS verifies using the key in its "jwk" field
 4. Check that the payload of the inner JWS is a well-formed key-change object
    (as described above)
@@ -1112,9 +1106,9 @@ addition to the typical JWS validation:
 6. Check that the "account" field of the key-change object contains the URL for
    the registration matching the old key
 7. Check that the "oldKey" field of the key-change object contains the
-   thumbprint of the key used to sign the inner JWS
+   current account key.
 8. Check that the "newKey" field of the key-change object contains the
-   thumbprint of the key used to sign the outer JWS
+   key used to sign the inner JWS.
 
 If all of these checks pass, then the server updates the corresponding
 registration by replacing the old account key with the new public key and
