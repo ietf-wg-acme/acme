@@ -998,13 +998,7 @@ newKey (required, JWK):
 : The JWK representation of the new key
 
 The client then encapsulates the key-change object in a JWS, signed with the
-client's current account key (i.e., the key matching the "oldKey" value).
-
-This inner JWS then become the payload of the JWS that the client sends to the
-server.  The outer JWS is signed with the key pair that the the client wishes to
-have the server use as its account key (i.e., the key pair matching the "newKey"
-value).  The client sends this outer JWS in a POST request to the server's
-"key-change" resource.
+requested new account key (i.e., the key matching the "newKey" value).
 
 The outer JWS MUST meet the normal requirements for an ACME JWS (see
 {{request-authentication}}).  The inner JWS MUST meet the normal requirements,
@@ -1027,18 +1021,17 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": /* new key */,
+    "jwk": /* old key */,
     "nonce": "K60BWPrMQG9SDxBDS_xtSw",
     "url": "https://example.com/acme/key-change"
   }),
   "payload": base64url({
     "protected": base64url({
       "alg": "ES256",
-      "jwk": /* old key */,
+      "jwk": /* new key */,
     }),
     "payload": base64url({
       "account": "https://example.com/acme/reg/asdf",
-      "oldKey": /* old key */,
       "newKey": /* new key */
     })
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1050,10 +1043,11 @@ Content-Type: application/jose+json
 On receiving key-change request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
+1. Validate the POST request belongs to a currently active account, as described
+   in Message Transport.
 1. Check that the payload of the JWS is a well-formed JWS object (the "inner
    JWS")
-2. Check that the JWS protected header of the inner JWS has a "jwk" field
-   containing a key that matches a currently active account
+2. Check that the JWS protected header of the inner JWS has a "jwk" field.
 3. Check that the inner JWS verifies using the key in its "jwk" field
 4. Check that the payload of the inner JWS is a well-formed key-change object
    (as described above)
@@ -1061,9 +1055,9 @@ addition to the typical JWS validation:
 6. Check that the "account" field of the key-change object contains the URL for
    the registration matching the old key
 7. Check that the "oldKey" field of the key-change object contains the
-   thumbprint of the key used to sign the inner JWS
+   current account key.
 8. Check that the "newKey" field of the key-change object contains the
-   thumbprint of the key used to sign the outer JWS
+   key used to sign the inner JWS.
 
 If all of these checks pass, then the server updates the corresponding
 registration by replacing the old account key with the new public key and
@@ -1158,6 +1152,9 @@ The server MUST return an error if it cannot fulfil the request as specified,
 and MUST NOT issue a certificate with contents other than those requested.  If
 the server requires the request to be modified in a certain way, it should
 indicate the required changes using an appropriate error code and description.
+
+Servers MUST verify any identifier values that begin with the ASCII Compatible
+Encoding prefix "xn--" as defined in {{!RFC5890}} are properly encoded.
 
 If the server is willing to issue the requested certificate, it responds with a
 201 (Created) response.  The body of this response is an application object
@@ -1381,15 +1378,13 @@ MUST return an HTTP error.  On receiving such an error, the client SHOULD undo
 any actions that have been taken to fulfill the challenge, e.g., removing files
 that have been provisioned to a web server.
 
-Presumably, the client's responses provide the server with enough information to
-validate one or more challenges.  The server is said to "finalize" the
-authorization when it has completed all the validations it is going to complete,
-and assigns the authorization a status of "valid" or "invalid", corresponding to
-whether it considers the account authorized for the identifier.  If the final
-state is "valid", the server MUST add an "expires" field to the authorization.
-When finalizing an authorization, the server MAY remove challenges other than
-the one that was completed. The server SHOULD NOT remove challenges with status
-"invalid".
+The server is said to "finalize" the authorization when it has completed
+one of the validations, by assigning the authorization a status of "valid"
+or "invalid", corresponding to whether it considers the account authorized
+for the identifier.  If the final state is "valid", the server MUST add an
+"expires" field to the authorization.  When finalizing an authorization,
+the server MAY remove challenges other than the one that was completed. The
+server SHOULD NOT remove challenges with status "invalid".
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
@@ -2120,22 +2115,20 @@ miscellaneous considerations.
 
 As a service on the Internet, ACME broadly exists within the Internet threat
 model {{?RFC3552}}.  In analyzing ACME, it is useful to think of an ACME server
-interacting with other Internet hosts along three "channels":
+interacting with other Internet hosts along two "channels":
 
 * An ACME channel, over which the ACME HTTPS requests are exchanged
 * A validation channel, over which the ACME server performs additional requests
   to validate a client's control of an identifier
-* A contact channel, over which the ACME server sends messages to the registered
-  contacts for ACME clients
 
 ~~~~~~~~~~
 +------------+
 |    ACME    |     ACME Channel
 |   Client   |--------------------+
 +------------+                    |
-       ^                          V
-       |   Contact Channel  +------------+
-       +--------------------|    ACME    |
+                                  V
+                            +------------+
+                            |    ACME    |
                             |   Server   |
                             +------------+
 +------------+                    |
@@ -2145,10 +2138,10 @@ interacting with other Internet hosts along three "channels":
 ~~~~~~~~~~
 
 In practice, the risks to these channels are not entirely separate, but they are
-different in most cases.  Each of the three channels, for example, uses a
+different in most cases.  Each channel, for example, uses a
 different communications pattern: the ACME channel will comprise inbound HTTPS
-connections to the ACME server, the validation channel outbound HTTP or DNS
-requests, and the contact channel will use channels such as email and PSTN.
+connections to the ACME server and the validation channel outbound HTTP or DNS
+requests.
 
 Broadly speaking, ACME aims to be secure against active and passive attackers on
 any individual channel.  Some vulnerabilities arise (noted below), when an
@@ -2159,7 +2152,7 @@ account for application-layer man in the middle attacks, and for abusive use of
 the protocol itself.  Protection against application-layer MitM addresses
 potential attackers such as Content Distribution Networks (CDNs) and middleboxes
 with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an
-attacker with access to the validation or contact channels can't obtain
+attacker with access to the validation channel can't obtain
 illegitimate authorization by acting as an ACME client (legitimately, in terms
 of the protocol).
 
