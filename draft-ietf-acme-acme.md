@@ -670,9 +670,8 @@ server (see below).  Including this field indicates the client's agreement with
 the referenced terms.
 
 applications (required, string):
-: An array of URIs from which application objects submitted by this account can
-be fetched via a GET request. The server SHOULD include pending applications,
-and SHOULD NOT include applications that are invalid.
+: A URI from which an array of URIs for application objects submitted by this
+account can be fetched via a GET request.
 
 ~~~~~~~~~~
 {
@@ -681,10 +680,7 @@ and SHOULD NOT include applications that are invalid.
     "tel:+12025551212"
   ],
   "agreement": "https://example.com/acme/terms",
-  "applications": [
-    "https://example.com/acme/reg/1/apps/1",
-    "https://example.com/acme/reg/1/apps/2"
-  ]
+  "applications": "https://example.com/acme/reg/1/apps"
 }
 ~~~~~~~~~~
 
@@ -766,6 +762,8 @@ syntax like "confirm": true ]]
 support reissuance / renewal in a straightforward way, especially if the CSR /
 notBefore / notAfter could be updated. ]]
 
+#### Application Requirements
+
 The elements of the "requirements" array are immutable once set, except for
 their "status" fields.  If any other part of the object changes after the object
 is created, the client MUST consider the application invalid.
@@ -789,7 +787,7 @@ status (required, string):
 
 All additional fields are specified by the requirement type.
 
-#### Authorization Requirement
+##### Authorization Requirement
 
 A requirement with type "authorization" requests that the ACME client complete
 an authorization transaction.  The server specifies the authorization by
@@ -803,7 +801,7 @@ To fulfill this requirement, the ACME client should fetch the authorization obje
 from the indicated URL, then follow the process for obtaining authorization as
 specified in {{identifier-authorization}}.
 
-#### Out-of-Band Requirement
+##### Out-of-Band Requirement
 
 A requirement with type "out-of-band" requests that the ACME client have a
 human user visit a web page in order to receive further instructions for how to
@@ -815,6 +813,30 @@ url (required, string):
 
 To fulfill this requirement, the ACME client should direct the user to the
 indicated web page.
+
+#### Applications List
+
+Each registration object includes an applications URI from which a list of
+applications created by the registration can be fetched via GET request. The
+result of the GET request MUST be a JSON object whose "applications" field is an
+array of URIs, each identifying an applications belonging to the registration.
+The server SHOULD include pending applications, and SHOULD NOT include
+applications that are invalid in the array of URIs. The server MAY return an
+incomplete list, along with a Link header with link relation “next” indicating
+a URL to retrieve further entries.
+
+~~~~~~~~~~
+HTTP/1.1 200 OK
+Content-Type: application/json
+Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+
+{
+  "applications": [
+    "https://example.com/acme/reg/1/apps/1",
+    "https://example.com/acme/reg/1/apps/2"
+  ]
+}
+~~~~~~~~~~
 
 
 ### Authorization Objects
