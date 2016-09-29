@@ -785,12 +785,12 @@ the authorization.
 The structure of an ACME authorization resource is as follows:
 
 type (required, string):
-: The type of this authorization. The only defined value is "DNSName." Servers
+: The type of this authorization. The only defined value is "dns-name." Servers
 may create authorizations of any type. For instance, servers may wish to define
 a payment-related authorization type.
 
-dnsName (optional, string):
-: For authorizations of type "DNSName," this value MUST contain a
+dns-name (optional, string):
+: For authorizations of type "dns-name," this value MUST contain a
 fully-qualified DNS name in ASCII form, which indicates the DNS name to be
 authorized.
 
@@ -822,7 +822,7 @@ sufficient to make the authorization valid.
 
 ~~~~~~~~~~
 {
-  "type": "DNSName",
+  "type": "dns-name",
   "status": "valid",
   "expires": "2015-03-01T14:09:00Z",
 
@@ -1311,7 +1311,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 {
   "status": "pending",
 
-  "type": "DNSName",
+  "type": "dns-name",
   "dnsName": "example.org",
 
   "challenges": [
@@ -1329,9 +1329,9 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 }
 ~~~~~~~~~~
 
-### Responding to DNSName Challenges
+### Responding to dns-name Challenges
 
-To prove control of a DNS Name and receive authorization, the client needs to
+To prove control of a DNS name and receive authorization, the client needs to
 respond with information to complete the challenges.  To do this, the client
 updates the authorization object received from the server by filling in any
 required information in the elements of the "challenges" dictionary.  (This is
@@ -1408,7 +1408,7 @@ HTTP/1.1 200 OK
   "status": "valid",
   "expires": "2015-03-01T14:09:00Z",
 
-  "type": "DNSName",
+  "type": "dns-name",
   "dnsName": "example.org",
 
   "challenges": [
