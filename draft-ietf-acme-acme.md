@@ -692,7 +692,7 @@ relation "next" indicating a URL to retrieve further entries.
 
 ### Application Objects
 
-An ACME registration resource represents a client's request for a certificate,
+An ACME application object represents a client's request for a certificate,
 and is used to track the progress of that application through to issuance.
 Thus, the object contains information about the requested certificate, the
 server's requirements, and any certificates that have resulted from this
