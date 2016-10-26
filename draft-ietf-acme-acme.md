@@ -1291,11 +1291,11 @@ client may request other formats by including an Accept header in its request.
 For example, the client may use the media type application/pkix-cert to request
 the end-entity certificate in DER format.
 
-The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST send one or more link relation header fields
-{{RFC5988}} with relation "up", each indicating a single certificate resource
-for the issuer of this certificate.  The server MAY also include the "up" links
-from these resources to enable the client to build a full certificate chain.
+The server MAY provide one or more link relation header fields {{RFC5988}} with
+relation "alternate". Each such field should express an alternative certificate
+chain starting with the same end-entity certificate. This can be used to express
+paths to various trust anchors. Clients can fetch these alternates and use their
+own heuristics to decide which is optimal.
 
 The server MUST also provide a link relation header field with relation "author"
 to indicate the application under which this certificate was issued.
