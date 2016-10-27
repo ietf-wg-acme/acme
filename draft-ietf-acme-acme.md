@@ -256,7 +256,8 @@ validation challenges the server might require.
 # Message Transport
 
 Communications between an ACME client and an ACME server are done over HTTPS,
-using JWS to provide some additional security properties for messages sent from
+using JSON Web Signature (JWS) {{!RFC7515}} to provide some additional security
+properties for messages sent from
 the client to the server.  HTTPS provides server authentication and
 confidentiality.  With some ACME-specific extensions, JWS provides
 authentication of the client's request payloads, anti-replay protection, and
@@ -321,7 +322,8 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 ## Equivalence of JWKs
 
 At several points in the protocol, it is necessary for the server to determine
-whether two JWK objects represent the same key.  In performing these checks, the
+whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
+In performing these checks, the
 server MUST consider two JWKs to match if and only if they have the identical
 values in all fields included in the computation of a JWK thumbprint for that
 key. That is, the keys must have the same "kty" value and contain identical
