@@ -1046,10 +1046,6 @@ account (required, string):
 exact string provided in the Location header field in response to the
 new-registration request that created the account.
 
-oldKey (required, JWK):
-: The JWK representation of the original key (i.e., the client's current account
-key)
-
 newKey (required, JWK):
 : The JWK representation of the new key
 
@@ -1110,8 +1106,6 @@ addition to the typical JWS validation:
 5. Check that the "url" parameters of the inner and outer JWSs are the same
 6. Check that the "account" field of the key-change object contains the URL for
    the registration matching the old key
-7. Check that the "oldKey" field of the key-change object contains the
-   current account key.
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
