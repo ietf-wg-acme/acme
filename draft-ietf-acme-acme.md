@@ -187,11 +187,12 @@ which the client can present to a human user.
 ~~~~~~~~~~
 
 
-Once the client is registered, there are two major steps it needs to take to
+Once the client is registered, there are three major steps it needs to take to
 get a certificate:
 
 1. Apply for a certificate to be issued
 2. Fulfill the server's requirements for issuance
+3. Await issuance and download the issued certificate
 
 The client's application for a certificate describes the desired certificate
 using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields
@@ -209,8 +210,8 @@ The server then validates the challenges to check that the client has
 accomplished the challenge.
 
 Once the validation process is complete and the server is satisfied that the
-client has met its requirements, the server MUST proactively issue the
-requested certificate and make it available to the client.
+client has met its requirements, the server will issue the requested certificate
+and make it available to the client.
 
 ~~~~~~~~~~
       Application
