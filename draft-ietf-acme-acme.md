@@ -1781,7 +1781,8 @@ domain by verifying that the resource was provisioned as expected.
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
-3. Dereference the URI using an HTTP GET request.
+3. Dereference the URI using an HTTP GET request.  This request MUST be sent to
+   TCP port 80 on the server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the server matches the token for
@@ -1863,12 +1864,13 @@ of the domain by verifying that the TLS server was configured appropriately,
 using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
-2. Open a TLS connection to the domain name being validated on the requested
-   port, presenting SAN A in the SNI field.  In the ClientHello initiating the
-   TLS handshake, the server MUST include a server\_name extension (i.e., SNI)
-   containing SAN A. The server SHOULD ensure that it does not reveal SAN B in
-   any way when making the TLS connection, such that the presentation of SAN B
-   in the returned certificate proves association with the client.
+2. Open a TLS connection to TCP port 443 the domain name being validated on the
+   requested port, presenting SAN A in the SNI field.  In the ClientHello
+   initiating the TLS handshake, the server MUST include a server\_name
+   extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does
+   not reveal SAN B in any way when making the TLS connection, such that the
+   presentation of SAN B in the returned certificate proves association with the
+   client.
 3. Verify that the certificate contains a subjectAltName extension containing
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
