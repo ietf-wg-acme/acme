@@ -192,7 +192,7 @@ get a certificate:
 
 1. Apply for a certificate to be issued
 2. Fulfill the server's requirements for issuance
-3. Finalize the application and request issuance
+3. Await issuance and download the issued certificate
 
 The client's application for a certificate describes the desired certificate
 using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields
@@ -210,10 +210,8 @@ The server then validates the challenges to check that the client has
 accomplished the challenge.
 
 Once the validation process is complete and the server is satisfied that the
-client has met its requirements, the server can either proactively issue the
-requested certificate or wait for the client to request that the application be
-"finalized", at which point the certificate will be issued and provided to the
-client.
+client has met its requirements, the server will issue the requested certificate
+and make it available to the client.
 
 ~~~~~~~~~~
       Application
@@ -226,8 +224,6 @@ client.
 
                           <~~~~~~~~Validation~~~~~~~~>
 
-      Finalize application
-      Signature                     ------->
                                     <-------             Certificate
 ~~~~~~~~~~
 
@@ -759,17 +755,6 @@ application.
 }
 ~~~~~~~~~~
 
-[[ Open issue: There are two possible behaviors for the CA here.  Either (a) the
-CA automatically issues once all the requirements are fulfilled, or (b) the CA
-waits for confirmation from the client that it should issue.  If we allow both,
-we will need a signal in the application object of whether confirmation is
-required.  I would prefer that auto-issue be the default, which would imply a
-syntax like "confirm": true ]]
-
-[[ Open issue: Should this syntax allow multiple certificates?  That would
-support reissuance / renewal in a straightforward way, especially if the CSR /
-notBefore / notAfter could be updated. ]]
-
 The elements of the "requirements" array are immutable once set, except for
 their "status" fields.  If any other part of the object changes after the object
 is created, the client MUST consider the application invalid.
@@ -1245,12 +1230,12 @@ certificate.  If the client fails to complete the required actions before the
 "expires" time, then the server SHOULD change the status of the application to
 "invalid" and MAY delete the application resource.
 
-The server SHOULD issue the requested certificate and update the application
+The server MUST issue the requested certificate and update the application
 resource with a URL for the certificate as soon as the client has fulfilled the
 server's requirements.   If the client has already satisfied the server's
 requirements at the time of this request (e.g., by obtaining authorization for
 all of the identifiers in the certificate in previous transactions), then the
-server MAY proactively issue the requested certificate and provide a URL for it
+server MUST proactively issue the requested certificate and provide a URL for it
 in the "certificate" field of the application.  The server MUST, however, still
 list the satisfied requirements in the "requirements" array, with the state
 "valid".
