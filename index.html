@@ -1097,8 +1097,6 @@ Content-Type: application/jose+json
 <dl>
   <dt>account (required, string):</dt>
   <dd style="margin-left: 8">The URL for account being modified.  The content of this field MUST be the exact string provided in the Location header field in response to the new-registration request that created the account.</dd>
-  <dt>oldKey (required, JWK):</dt>
-  <dd style="margin-left: 8">The JWK representation of the original key (i.e., the client&#8217;s current account key)</dd>
   <dt>newKey (required, JWK):</dt>
   <dd style="margin-left: 8">The JWK representation of the new key</dd>
 </dl>
@@ -1148,7 +1146,6 @@ Content-Type: application/jose+json
   <li>Check that the payload of the inner JWS is a well-formed key-change object (as described above)</li>
   <li>Check that the &#8220;url&#8221; parameters of the inner and outer JWSs are the same</li>
   <li>Check that the &#8220;account&#8221; field of the key-change object contains the URL for the registration matching the old key</li>
-  <li>Check that the &#8220;oldKey&#8221; field of the key-change object contains the current account key.</li>
   <li>Check that the &#8220;newKey&#8221; field of the key-change object contains the key used to sign the inner JWS.</li>
 </ol>
 <p id="rfc.section.6.3.1.p.10">If all of these checks pass, then the server updates the corresponding registration by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>

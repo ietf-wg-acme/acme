@@ -1500,11 +1500,11 @@ Internet-Draft                    ACME                      October 2016
       Location header field in response to the new-registration request
       that created the account.
 
-   oldKey (required, JWK):  The JWK representation of the original key
-      (i.e., the client's current account key)
-
    newKey (required, JWK):  The JWK representation of the new key
 
+   The client then encapsulates the key-change object in a JWS, signed
+   with the requested new account key (i.e., the key matching the
+   "newKey" value).
 
 
 
@@ -1513,10 +1513,6 @@ Barnes, et al.           Expires April 30, 2017                [Page 27]
 
 Internet-Draft                    ACME                      October 2016
 
-
-   The client then encapsulates the key-change object in a JWS, signed
-   with the requested new account key (i.e., the key matching the
-   "newKey" value).
 
    The outer JWS MUST meet the normal requirements for an ACME JWS (see
    Section 5.2).  The inner JWS MUST meet the normal requirements, with
@@ -1562,6 +1558,10 @@ Internet-Draft                    ACME                      October 2016
    On receiving key-change request, the server MUST perform the
    following steps in addition to the typical JWS validation:
 
+   1.  Validate the POST request belongs to a currently active account,
+       as described in Message Transport.
+
+
 
 
 
@@ -1569,9 +1569,6 @@ Barnes, et al.           Expires April 30, 2017                [Page 28]
 
 Internet-Draft                    ACME                      October 2016
 
-
-   1.  Validate the POST request belongs to a currently active account,
-       as described in Message Transport.
 
    2.  Check that the payload of the JWS is a well-formed JWS object
        (the "inner JWS")
@@ -1591,10 +1588,7 @@ Internet-Draft                    ACME                      October 2016
    7.  Check that the "account" field of the key-change object contains
        the URL for the registration matching the old key
 
-   8.  Check that the "oldKey" field of the key-change object contains
-       the current account key.
-
-   9.  Check that the "newKey" field of the key-change object contains
+   8.  Check that the "newKey" field of the key-change object contains
        the key used to sign the inner JWS.
 
    If all of these checks pass, then the server updates the
@@ -1608,6 +1602,12 @@ Internet-Draft                    ACME                      October 2016
    A client may deactivate an account by posting a signed update to the
    server with a status field of "deactivated."  Clients may wish to do
    this when the account key is compromised.
+
+
+
+
+
+
 
 
 
