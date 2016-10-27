@@ -528,11 +528,11 @@ li, p {
 <ol>
   <li>Apply for a certificate to be issued</li>
   <li>Fulfill the server&#8217;s requirements for issuance</li>
-  <li>Finalize the application and request issuance</li>
+  <li>Await issuance and download the issued certificate</li>
 </ol>
 <p id="rfc.section.4.p.6">The client&#8217;s application for a certificate describes the desired certificate using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that capture semantics that are not supported in the CSR format.  If the server is willing to consider issuing such a certificate, it responds with a list of requirements that the client must satisfy before the certificate will be issued.</p>
 <p id="rfc.section.4.p.7">For example, in most cases, the server will require the client to demonstrate that it controls the identifiers in the requested certificate.  Because there are many different ways to validate possession of different types of identifiers, the server will choose from an extensible set of challenges that are appropriate for the identifier being claimed.  The client responds with a set of responses that tell the server which challenges the client has completed.  The server then validates the challenges to check that the client has accomplished the challenge.</p>
-<p id="rfc.section.4.p.8">Once the validation process is complete and the server is satisfied that the client has met its requirements, the server can either proactively issue the requested certificate or wait for the client to request that the application be &#8220;finalized&#8221;, at which point the certificate will be issued and provided to the client.</p>
+<p id="rfc.section.4.p.8">Once the validation process is complete and the server is satisfied that the client has met its requirements, the server will issue the requested certificate and make it available to the client.</p>
 <pre>
       Application
       Signature                     -------&gt;
@@ -544,8 +544,6 @@ li, p {
 
                           &lt;~~~~~~~~Validation~~~~~~~~&gt;
 
-      Finalize application
-      Signature                     -------&gt;
                                     &lt;-------             Certificate
 </pre>
 <p id="rfc.section.4.p.9">To revoke a certificate, the client simply sends a revocation request indicating the certificate to be revoked, signed with an authorized key pair. The server indicates whether the request has succeeded.</p>
@@ -938,11 +936,9 @@ Content-Type: application/json
   "certificate": "https://example.com/acme/cert/1234"
 }
 </pre>
-<p id="rfc.section.6.1.3.p.3">[[ Open issue: There are two possible behaviors for the CA here.  Either (a) the CA automatically issues once all the requirements are fulfilled, or (b) the CA waits for confirmation from the client that it should issue.  If we allow both, we will need a signal in the application object of whether confirmation is required.  I would prefer that auto-issue be the default, which would imply a syntax like &#8220;confirm&#8221;: true ]]</p>
-<p id="rfc.section.6.1.3.p.4">[[ Open issue: Should this syntax allow multiple certificates?  That would support reissuance / renewal in a straightforward way, especially if the CSR / notBefore / notAfter could be updated. ]]</p>
-<p id="rfc.section.6.1.3.p.5">The elements of the &#8220;requirements&#8221; array are immutable once set, except for their &#8220;status&#8221; fields.  If any other part of the object changes after the object is created, the client MUST consider the application invalid.</p>
-<p id="rfc.section.6.1.3.p.6">The &#8220;requirements&#8221; array in the challenge SHOULD reflect everything that the CA required the client to do before issuance, even if some requirements were fulfilled in earlier applications.  For example, if a CA allows multiple applications to be fufilled based on a single authorization transaction, then it must reflect that authorization in all of the applications.</p>
-<p id="rfc.section.6.1.3.p.7">Each entry in the &#8220;requirements&#8221; array expresses a requirement from the CA for the client to take a particular action.  All requirements objects have the following basic fields:</p>
+<p id="rfc.section.6.1.3.p.3">The elements of the &#8220;requirements&#8221; array are immutable once set, except for their &#8220;status&#8221; fields.  If any other part of the object changes after the object is created, the client MUST consider the application invalid.</p>
+<p id="rfc.section.6.1.3.p.4">The &#8220;requirements&#8221; array in the challenge SHOULD reflect everything that the CA required the client to do before issuance, even if some requirements were fulfilled in earlier applications.  For example, if a CA allows multiple applications to be fufilled based on a single authorization transaction, then it must reflect that authorization in all of the applications.</p>
+<p id="rfc.section.6.1.3.p.5">Each entry in the &#8220;requirements&#8221; array expresses a requirement from the CA for the client to take a particular action.  All requirements objects have the following basic fields:</p>
 <p/>
 
 <dl>
@@ -951,7 +947,7 @@ Content-Type: application/json
   <dt>status (required, string):</dt>
   <dd style="margin-left: 8">The status of this requirement.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
 </dl>
-<p id="rfc.section.6.1.3.p.9">All additional fields are specified by the requirement type.</p>
+<p id="rfc.section.6.1.3.p.7">All additional fields are specified by the requirement type.</p>
 <h1 id="rfc.section.6.1.3.1"><a href="#rfc.section.6.1.3.1">6.1.3.1.</a> <a href="#authorization-requirement" id="authorization-requirement">Authorization Requirement</a></h1>
 <p id="rfc.section.6.1.3.1.p.1">A requirement with type &#8220;authorization&#8221; requests that the ACME client complete an authorization transaction.  The server specifies the authorization by pre-provisioning a pending authorization resource and providing the URI for this resource in the requirement.</p>
 <p/>
@@ -1234,7 +1230,7 @@ Location: https://example.com/acme/app/asdf
 }
 </pre>
 <p id="rfc.section.6.4.p.6">The application object returned by the server represents a promise that if the client fulfills the server&#8217;s requirements before the &#8220;expires&#8221; time, then the server will issue the requested certificate.  In the application object, any object in the &#8220;requirements&#8221; array whose status is &#8220;pending&#8221; represents an action that the client must perform before the server will issue the certificate.  If the client fails to complete the required actions before the &#8220;expires&#8221; time, then the server SHOULD change the status of the application to &#8220;invalid&#8221; and MAY delete the application resource.</p>
-<p id="rfc.section.6.4.p.7">The server SHOULD issue the requested certificate and update the application resource with a URL for the certificate as soon as the client has fulfilled the server&#8217;s requirements.   If the client has already satisfied the server&#8217;s requirements at the time of this request (e.g., by obtaining authorization for all of the identifiers in the certificate in previous transactions), then the server MAY proactively issue the requested certificate and provide a URL for it in the &#8220;certificate&#8221; field of the application.  The server MUST, however, still list the satisfied requirements in the &#8220;requirements&#8221; array, with the state &#8220;valid&#8221;.</p>
+<p id="rfc.section.6.4.p.7">The server MUST issue the requested certificate and update the application resource with a URL for the certificate as soon as the client has fulfilled the server&#8217;s requirements.   If the client has already satisfied the server&#8217;s requirements at the time of this request (e.g., by obtaining authorization for all of the identifiers in the certificate in previous transactions), then the server MUST proactively issue the requested certificate and provide a URL for it in the &#8220;certificate&#8221; field of the application.  The server MUST, however, still list the satisfied requirements in the &#8220;requirements&#8221; array, with the state &#8220;valid&#8221;.</p>
 <p id="rfc.section.6.4.p.8">Once the client believes it has fulfilled the server&#8217;s requirements, it should send a GET request to the application resource to obtain its current state.  The status of the application will indicate what action the client should take:</p>
 <p/>
 
@@ -1530,7 +1526,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 <ol>
   <li>Form a URI by populating the URI template <a href="#RFC6570">[RFC6570]</a> &#8220;http://{domain}/.well-known/acme-challenge/{token}&#8221;, where: <ul><li>the domain field is set to the domain name being verified; and</li><li>the token field is set to the token in the challenge.</li></ul></li>
   <li>Verify that the resulting URI is well-formed.</li>
-  <li>Dereference the URI using an HTTP GET request.</li>
+  <li>Dereference the URI using an HTTP GET request.  This request MUST be sent to TCP port 80 on the server.</li>
   <li>Verify that the body of the response is well-formed key authorization.  The server SHOULD ignore whitespace characters at the end of the body.</li>
   <li>Verify that key authorization provided by the server matches the token for this challenge and the client&#8217;s account key.</li>
 </ol>
@@ -1576,7 +1572,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 
 <ol>
   <li>Compute SAN A and SAN B in the same way as the client.</li>
-  <li>Open a TLS connection to the domain name being validated on the requested port, presenting SAN A in the SNI field.  In the ClientHello initiating the TLS handshake, the server MUST include a server_name extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does not reveal SAN B in any way when making the TLS connection, such that the presentation of SAN B in the returned certificate proves association with the client.</li>
+  <li>Open a TLS connection to TCP port 443 the domain name being validated on the requested port, presenting SAN A in the SNI field.  In the ClientHello initiating the TLS handshake, the server MUST include a server_name extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does not reveal SAN B in any way when making the TLS connection, such that the presentation of SAN B in the returned certificate proves association with the client.</li>
   <li>Verify that the certificate contains a subjectAltName extension containing dNSName entries of SAN A and SAN B and no other entries.  The comparison MUST be insensitive to case and ordering of names.</li>
 </ol>
 <p id="rfc.section.7.3.p.13">It is RECOMMENDED that the ACME server validation TLS connections from multiple vantage points to reduce the risk of DNS hijacking attacks.</p>
