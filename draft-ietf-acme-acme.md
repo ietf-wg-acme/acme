@@ -256,7 +256,8 @@ validation challenges the server might require.
 # Message Transport
 
 Communications between an ACME client and an ACME server are done over HTTPS,
-using JWS to provide some additional security properties for messages sent from
+using JSON Web Signature (JWS) {{!RFC7515}} to provide some additional security
+properties for messages sent from
 the client to the server.  HTTPS provides server authentication and
 confidentiality.  With some ACME-specific extensions, JWS provides
 authentication of the client's request payloads, anti-replay protection, and
