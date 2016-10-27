@@ -1283,10 +1283,10 @@ status of the application will indicate what action the client should take:
 To download the issued certificate, the client simply sends a GET request to the
 certificate URL.
 
-The default format of the certificate is PEM (application/x-pem-file),
-containing the end-entity certificate first, followed by any intermediate
-certificates that are needed to build a path to a trusted root. Servers SHOULD
-NOT include self-signed trust anchors. The
+The default format of the certificate is PEM (application/x-pem-file) as
+specified by {{!RFC7468}}. This format should contain the end-entity certificate
+first, followed by any intermediate certificates that are needed to build a path
+to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
 client may request other formats by including an Accept header in its request.
 For example, the client may use the media type application/pkix-cert to request
 the end-entity certificate in DER format.
