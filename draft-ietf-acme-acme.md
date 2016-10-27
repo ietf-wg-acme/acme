@@ -1020,9 +1020,9 @@ That is, it should send a JWS whose payload is trivial ({}).
 
 ### Agreement to Terms of Service
 
-As described above, a client can indicate its agreement with a specific set of
-terms (referenced by URL) by indicating that URL in the "agreement" field of its
-registration object.
+As described above, a client can indicate its agreement with the CA's terms of
+service by setting the "terms-of-service-agreed" field in its registration
+object to "true".
 
 If a client has not agreed to the server's terms of service and the server is
 unwilling to process a request without agreement, then it MUST return an error
@@ -1033,15 +1033,15 @@ terms-of-service URL.
 
 If a client receives an "agreementRequired" error and is willing to agree to the
 terms of service referenced in the Link header, then it SHOULD update its
-registration with the new agreement URL and retry the original request.
+registration to indicate its agreement, then retry the original request.
 
 The "agreementRequired" error allows CAs to clearly express when agreement to
 terms is required, both for new registrations that have not agreed to any terms,
 and for existing registrations that may have agreed to an older version of the
-terms.  If a CA makes a change to its terms of service or terms-of-service URL
-that does not require action by the client (e.g., simply moving the document to
-a different server), then it SHOULD simply update the agreement URL in existing
-registration objects.
+terms. If a CA makes a change to its terms of service or terms-of-service URL
+that requires the client to re-agree, then it MUST either remove the
+"terms-of-service-agreed" field from the client's registration object or set it
+to "false".
 
 ### Account Key Roll-over
 
