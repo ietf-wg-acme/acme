@@ -650,7 +650,7 @@ account key pair.  Registration resources have the following structure:
 
 key (required, dictionary):
 : The public key of the account key pair, encoded as a JSON Web Key object
-{{!RFC7517}}.
+{{!RFC7517}}. This field is not updateable by the client.
 
 status (required, string):
 : "valid" or "deactivated"
@@ -660,6 +660,11 @@ contact (optional, array of string):
 related to this authorization. For example, the server may wish to notify the
 client about server-initiated revocation.
 
+terms-of-service-agreed (optional, boolean):
+: Including this field in a new-registration request, with a value of true,
+indicates the client's agreement with the terms of service. This field is not
+updateable by the client.
+
 applications (required, string):
 : A URI from which a list of authorizations submitted by this account can be
 fetched via a GET request.  The result of the GET request MUST be a JSON object
@@ -667,7 +672,8 @@ whose "applications" field is an array of strings, where each string is the URI
 of an authorization belonging to this registration.  The server SHOULD include
 pending applications, and SHOULD NOT include applications that are invalid. The
 server MAY return an incomplete list, along with a Link header with link
-relation "next" indicating a URL to retrieve further entries.
+relation "next" indicating a URL to retrieve further entries. This field is not
+updateable by the client.
 
 ~~~~~~~~~~
 {
@@ -2346,6 +2352,7 @@ certificate applicant controls the identifier he claims.  Before issuing a
 certificate, however, there are many other checks that a CA might need to
 perform, for example:
 
+* Has the client agreed to a subscriber agreement?
 * Is the claimed identifier syntactically valid?
 * For domain names:
   * If the leftmost label is a '*', then have the appropriate checks been
