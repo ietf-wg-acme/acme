@@ -1279,16 +1279,19 @@ status of the application will indicate what action the client should take:
 To download the issued certificate, the client simply sends a GET request to the
 certificate URL.
 
-The default format of the certificate is DER (application/pkix-cert).  The
+The default format of the certificate is PEM (application/x-pem-file) as
+specified by {{!RFC7468}}. This format should contain the end-entity certificate
+first, followed by any intermediate certificates that are needed to build a path
+to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
 client may request other formats by including an Accept header in its request.
-For example, the client may use the media type application/x-pem-file to request
-the certificate in PEM format.
+For example, the client may use the media type application/pkix-cert to request
+the end-entity certificate in DER format.
 
-The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST send one or more link relation header fields
-{{RFC5988}} with relation "up", each indicating a single certificate resource
-for the issuer of this certificate.  The server MAY also include the "up" links
-from these resources to enable the client to build a full certificate chain.
+The server MAY provide one or more link relation header fields {{RFC5988}} with
+relation "alternate". Each such field should express an alternative certificate
+chain starting with the same end-entity certificate. This can be used to express
+paths to various trust anchors. Clients can fetch these alternates and use their
+own heuristics to decide which is optimal.
 
 The server MUST also provide a link relation header field with relation "author"
 to indicate the application under which this certificate was issued.
@@ -1314,7 +1317,16 @@ Link: <https://example.com/acme/app/asdf>;rel="author"
 Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
-[DER-encoded certificate]
+-----BEGIN CERTIFICATE-----
+[End-entity certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Issuer certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Other certificate contents]
+-----END CERTIFICATE-----
+
 ~~~~~~~~~~
 
 A certificate resource represents a single, immutable certificate. If the client
