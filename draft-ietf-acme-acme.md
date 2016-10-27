@@ -192,7 +192,7 @@ get a certificate:
 
 1. Apply for a certificate to be issued
 2. Fulfill the server's requirements for issuance
-3. Finalize the application and request issuance
+3. Await issuance and download the issued certificate
 
 The client's application for a certificate describes the desired certificate
 using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields
@@ -210,10 +210,8 @@ The server then validates the challenges to check that the client has
 accomplished the challenge.
 
 Once the validation process is complete and the server is satisfied that the
-client has met its requirements, the server can either proactively issue the
-requested certificate or wait for the client to request that the application be
-"finalized", at which point the certificate will be issued and provided to the
-client.
+client has met its requirements, the server will issue the requested certificate
+and make it available to the client.
 
 ~~~~~~~~~~
       Application
@@ -226,8 +224,6 @@ client.
 
                           <~~~~~~~~Validation~~~~~~~~>
 
-      Finalize application
-      Signature                     ------->
                                     <-------             Certificate
 ~~~~~~~~~~
 
@@ -256,7 +252,8 @@ validation challenges the server might require.
 # Message Transport
 
 Communications between an ACME client and an ACME server are done over HTTPS,
-using JWS to provide some additional security properties for messages sent from
+using JSON Web Signature (JWS) {{!RFC7515}} to provide some additional security
+properties for messages sent from
 the client to the server.  HTTPS provides server authentication and
 confidentiality.  With some ACME-specific extensions, JWS provides
 authentication of the client's request payloads, anti-replay protection, and
@@ -306,15 +303,20 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have the value "none" in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
-  * "kid" (except for new-reg and revoke-cert requests).
+  * "jwk" (only for requests to new-reg and revoke-cert resources)
+  * "kid" (for all requests except for new-reg and revoke-cert requests).
   * "nonce" (defined below)
   * "url" (defined below)
 
-The "kid" field should contain a registration URL received by POSTing to the
-new-reg resource. The "kid" field is not required when POSTing to the new-reg
-resource, because no such URL is available to the client yet. The "kid" field
-may be omitted for revoke-cert requests if they are signed by the
-certificate key rather than an account key.
+For new-reg requests, there MUST be a "jwk" field containing the key being
+registered, and there MUST NOT be a "kid" field.
+
+For revoke-cert requests that are authenticated by a certificate key, there
+MUST be a "jwk" field containing the public key from the relevant certificate,
+and there MUST NOT be a "kid" field.
+
+For all other requests, there MUST be a "kid" field containing the account URI
+received by POSTing to the new-reg resource.
 
 Note that authentication via signed POST implies that GET requests are not
 authenticated.  Servers MUST
@@ -324,6 +326,25 @@ In the examples below, JWS objects are shown in the JSON or flattened JSON
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.  Some fields are omitted for brevity, marked with "...".
+
+## Equivalence of JWKs
+
+At some points in the protocol, it is necessary for the server to determine
+whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
+In performing these checks, the
+server MUST consider two JWKs to match if and only if they have the identical
+values in all fields included in the computation of a JWK thumbprint for that
+key. That is, the keys must have the same "kty" value and contain identical
+values in the fields used in the computation of a JWK thumbprint for that key
+type:
+
+* "RSA": "n", "e"
+* "EC": "crv", "x", "y"
+
+Note that this comparison is equivalent to computing the JWK thumbprints of the
+two keys and comparing thumbprints.  The only difference is that there is no
+requirement for a hash computation (and thus it is independent of the choice of
+hash function) and no risk of hash collision.
 
 ## Request URI Integrity
 
@@ -681,7 +702,7 @@ relation "next" indicating a URL to retrieve further entries.
 
 ### Application Objects
 
-An ACME registration resource represents a client's request for a certificate,
+An ACME application object represents a client's request for a certificate,
 and is used to track the progress of that application through to issuance.
 Thus, the object contains information about the requested certificate, the
 server's requirements, and any certificates that have resulted from this
@@ -745,17 +766,6 @@ application.
   "certificate": "https://example.com/acme/cert/1234"
 }
 ~~~~~~~~~~
-
-[[ Open issue: There are two possible behaviors for the CA here.  Either (a) the
-CA automatically issues once all the requirements are fulfilled, or (b) the CA
-waits for confirmation from the client that it should issue.  If we allow both,
-we will need a signal in the application object of whether confirmation is
-required.  I would prefer that auto-issue be the default, which would imply a
-syntax like "confirm": true ]]
-
-[[ Open issue: Should this syntax allow multiple certificates?  That would
-support reissuance / renewal in a straightforward way, especially if the CSR /
-notBefore / notAfter could be updated. ]]
 
 The elements of the "requirements" array are immutable once set, except for
 their "status" fields.  If any other part of the object changes after the object
@@ -854,9 +864,12 @@ one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
 
 The only type of identifier defined by this specification is a fully-qualified
-domain name (type: "dns").  The value of the identifier MUST be the ASCII
-representation of the domain name.  Wildcard domain names (with "*" as the first
-label) MUST NOT be included in authorization requests.
+domain name (type: "dns"). The value of the identifier MUST be the ASCII
+representation of the domain name. If a domain name contains Unicode characters
+it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
+any identifier values that begin with the ASCII Compatible Encoding prefix "xn--"
+as defined in {{!RFC5890}} are properly encoded. Wildcard domain names (with "*"
+as the first label) MUST NOT be included in authorization requests.
 
 ~~~~~~~~~~
 {
@@ -1030,10 +1043,6 @@ account (required, string):
 exact string provided in the Location header field in response to the
 new-registration request that created the account.
 
-oldKey (required, JWK):
-: The JWK representation of the original key (i.e., the client's current account
-key)
-
 newKey (required, JWK):
 : The JWK representation of the new key
 
@@ -1094,8 +1103,6 @@ addition to the typical JWS validation:
 5. Check that the "url" parameters of the inner and outer JWSs are the same
 6. Check that the "account" field of the key-change object contains the URL for
    the registration matching the old key
-7. Check that the "oldKey" field of the key-change object contains the
-   current account key.
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
@@ -1235,12 +1242,12 @@ certificate.  If the client fails to complete the required actions before the
 "expires" time, then the server SHOULD change the status of the application to
 "invalid" and MAY delete the application resource.
 
-The server SHOULD issue the requested certificate and update the application
+The server MUST issue the requested certificate and update the application
 resource with a URL for the certificate as soon as the client has fulfilled the
 server's requirements.   If the client has already satisfied the server's
 requirements at the time of this request (e.g., by obtaining authorization for
 all of the identifiers in the certificate in previous transactions), then the
-server MAY proactively issue the requested certificate and provide a URL for it
+server MUST proactively issue the requested certificate and provide a URL for it
 in the "certificate" field of the application.  The server MUST, however, still
 list the satisfied requirements in the "requirements" array, with the state
 "valid".
@@ -1269,16 +1276,19 @@ status of the application will indicate what action the client should take:
 To download the issued certificate, the client simply sends a GET request to the
 certificate URL.
 
-The default format of the certificate is DER (application/pkix-cert).  The
+The default format of the certificate is PEM (application/x-pem-file) as
+specified by {{!RFC7468}}. This format should contain the end-entity certificate
+first, followed by any intermediate certificates that are needed to build a path
+to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
 client may request other formats by including an Accept header in its request.
-For example, the client may use the media type application/x-pem-file to request
-the certificate in PEM format.
+For example, the client may use the media type application/pkix-cert to request
+the end-entity certificate in DER format.
 
-The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST send one or more link relation header fields
-{{RFC5988}} with relation "up", each indicating a single certificate resource
-for the issuer of this certificate.  The server MAY also include the "up" links
-from these resources to enable the client to build a full certificate chain.
+The server MAY provide one or more link relation header fields {{RFC5988}} with
+relation "alternate". Each such field should express an alternative certificate
+chain starting with the same end-entity certificate. This can be used to express
+paths to various trust anchors. Clients can fetch these alternates and use their
+own heuristics to decide which is optimal.
 
 The server MUST also provide a link relation header field with relation "author"
 to indicate the application under which this certificate was issued.
@@ -1304,7 +1314,16 @@ Link: <https://example.com/acme/app/asdf>;rel="author"
 Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
-[DER-encoded certificate]
+-----BEGIN CERTIFICATE-----
+[End-entity certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Issuer certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Other certificate contents]
+-----END CERTIFICATE-----
+
 ~~~~~~~~~~
 
 A certificate resource represents a single, immutable certificate. If the client
@@ -1418,15 +1437,13 @@ MUST return an HTTP error.  On receiving such an error, the client SHOULD undo
 any actions that have been taken to fulfill the challenge, e.g., removing files
 that have been provisioned to a web server.
 
-Presumably, the client's responses provide the server with enough information to
-validate one or more challenges.  The server is said to "finalize" the
-authorization when it has completed all the validations it is going to complete,
-and assigns the authorization a status of "valid" or "invalid", corresponding to
-whether it considers the account authorized for the identifier.  If the final
-state is "valid", the server MUST add an "expires" field to the authorization.
-When finalizing an authorization, the server MAY remove challenges other than
-the one that was completed. The server SHOULD NOT remove challenges with status
-"invalid".
+The server is said to "finalize" the authorization when it has completed
+one of the validations, by assigning the authorization a status of "valid"
+or "invalid", corresponding to whether it considers the account authorized
+for the identifier.  If the final state is "valid", the server MUST add an
+"expires" field to the authorization.  When finalizing an authorization,
+the server MAY remove challenges other than the one that was completed. The
+server SHOULD NOT remove challenges with status "invalid".
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
@@ -2160,22 +2177,20 @@ miscellaneous considerations.
 
 As a service on the Internet, ACME broadly exists within the Internet threat
 model {{?RFC3552}}.  In analyzing ACME, it is useful to think of an ACME server
-interacting with other Internet hosts along three "channels":
+interacting with other Internet hosts along two "channels":
 
 * An ACME channel, over which the ACME HTTPS requests are exchanged
 * A validation channel, over which the ACME server performs additional requests
   to validate a client's control of an identifier
-* A contact channel, over which the ACME server sends messages to the registered
-  contacts for ACME clients
 
 ~~~~~~~~~~
 +------------+
 |    ACME    |     ACME Channel
 |   Client   |--------------------+
 +------------+                    |
-       ^                          V
-       |   Contact Channel  +------------+
-       +--------------------|    ACME    |
+                                  V
+                            +------------+
+                            |    ACME    |
                             |   Server   |
                             +------------+
 +------------+                    |
@@ -2185,10 +2200,10 @@ interacting with other Internet hosts along three "channels":
 ~~~~~~~~~~
 
 In practice, the risks to these channels are not entirely separate, but they are
-different in most cases.  Each of the three channels, for example, uses a
+different in most cases.  Each channel, for example, uses a
 different communications pattern: the ACME channel will comprise inbound HTTPS
-connections to the ACME server, the validation channel outbound HTTP or DNS
-requests, and the contact channel will use channels such as email and PSTN.
+connections to the ACME server and the validation channel outbound HTTP or DNS
+requests.
 
 Broadly speaking, ACME aims to be secure against active and passive attackers on
 any individual channel.  Some vulnerabilities arise (noted below), when an
@@ -2199,7 +2214,7 @@ account for application-layer man in the middle attacks, and for abusive use of
 the protocol itself.  Protection against application-layer MitM addresses
 potential attackers such as Content Distribution Networks (CDNs) and middleboxes
 with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an
-attacker with access to the validation or contact channels can't obtain
+attacker with access to the validation channel can't obtain
 illegitimate authorization by acting as an ACME client (legitimately, in terms
 of the protocol).
 
