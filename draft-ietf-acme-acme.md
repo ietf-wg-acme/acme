@@ -660,11 +660,6 @@ contact (optional, array of string):
 related to this authorization. For example, the server may wish to notify the
 client about server-initiated revocation.
 
-agreement (optional, string):
-: A URI referring to a subscriber agreement or terms of service provided by the
-server (see below).  Including this field indicates the client's agreement with
-the referenced terms.
-
 applications (required, string):
 : A URI from which a list of authorizations submitted by this account can be
 fetched via a GET request.  The result of the GET request MUST be a JSON object
@@ -680,7 +675,6 @@ relation "next" indicating a URL to retrieve further entries.
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
   ],
-  "agreement": "https://example.com/acme/terms",
   "authorizations": "https://example.com/acme/reg/1/authz",
   "certificates": "https://example.com/acme/reg/1/cert"
 }
@@ -925,7 +919,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-reg"
   })
   "payload": base64url({
-    "terms-of-service": "agreed",
+    "terms-of-service-agreed": true,
     "contact": [
       "mailto:cert-admin@example.com",
       "tel:+12025551212"
@@ -954,9 +948,11 @@ key but not the corresponding registration URI to recover the registration URI.
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
-in a Link header with link relation "terms-of-service".  As noted above, the
-client may indicate its agreement when creating registration by including the
-"terms-of-service": "agreed" field.
+in the "terms-of-service" subfield of the "meta" field in the directory object,
+and the server MUST reject new-registration requests that do not contain
+"terms-of-service-agreed": true. Note that the "terms-of-service-agreed" field
+is not echoed in the resulting registration object, because it is a one-time
+field.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
@@ -2350,7 +2346,6 @@ certificate applicant controls the identifier he claims.  Before issuing a
 certificate, however, there are many other checks that a CA might need to
 perform, for example:
 
-* Has the client agreed to a subscriber agreement?
 * Is the claimed identifier syntactically valid?
 * For domain names:
   * If the leftmost label is a '*', then have the appropriate checks been
