@@ -1246,8 +1246,8 @@ Location: https://example.com/acme/app/asdf
 </ul>
 <h1 id="rfc.section.6.4.1"><a href="#rfc.section.6.4.1">6.4.1.</a> <a href="#downloading-the-certificate" id="downloading-the-certificate">Downloading the Certificate</a></h1>
 <p id="rfc.section.6.4.1.p.1">To download the issued certificate, the client simply sends a GET request to the certificate URL.</p>
-<p id="rfc.section.6.4.1.p.2">The default format of the certificate is DER (application/pkix-cert).  The client may request other formats by including an Accept header in its request.  For example, the client may use the media type application/x-pem-file to request the certificate in PEM format.</p>
-<p id="rfc.section.6.4.1.p.3">The server provides metadata about the certificate in HTTP headers.  In particular, the server MUST send one or more link relation header fields <a href="#RFC5988">[RFC5988]</a> with relation &#8220;up&#8221;, each indicating a single certificate resource for the issuer of this certificate.  The server MAY also include the &#8220;up&#8221; links from these resources to enable the client to build a full certificate chain.</p>
+<p id="rfc.section.6.4.1.p.2">The default format of the certificate is PEM (application/x-pem-file) as specified by <a href="#RFC7468">[RFC7468]</a>. This format should contain the end-entity certificate first, followed by any intermediate certificates that are needed to build a path to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The client may request other formats by including an Accept header in its request.  For example, the client may use the media type application/pkix-cert to request the end-entity certificate in DER format.</p>
+<p id="rfc.section.6.4.1.p.3">The server MAY provide one or more link relation header fields <a href="#RFC5988">[RFC5988]</a> with relation &#8220;alternate&#8221;. Each such field should express an alternative certificate chain starting with the same end-entity certificate. This can be used to express paths to various trust anchors. Clients can fetch these alternates and use their own heuristics to decide which is optimal.</p>
 <p id="rfc.section.6.4.1.p.4">The server MUST also provide a link relation header field with relation &#8220;author&#8221; to indicate the application under which this certificate was issued.</p>
 <p id="rfc.section.6.4.1.p.5">If the CA participates in Certificate Transparency (CT) <a href="#RFC6962">[RFC6962]</a>, then they may want to provide the client with a Signed Certificate Timestamp (SCT) that can be used to prove that a certificate was submitted to a CT log.  An SCT can be included as an extension in the certificate or as an extension to OCSP responses for the certificate.  The server can also provide the client with direct access to an SCT for a certificate using a Link relation header field with relation &#8220;ct-sct&#8221;.</p>
 <pre>
@@ -1263,7 +1263,16 @@ Link: &lt;https://example.com/acme/app/asdf&gt;;rel="author"
 Link: &lt;https://example.com/acme/sct/asdf&gt;;rel="ct-sct"
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
-[DER-encoded certificate]
+-----BEGIN CERTIFICATE-----
+[End-entity certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Issuer certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Other certificate contents]
+-----END CERTIFICATE-----
+
 </pre>
 <p id="rfc.section.6.4.1.p.6">A certificate resource represents a single, immutable certificate. If the client wishes to obtain a renewed certificate, the client initiates a new application process to request one.</p>
 <p id="rfc.section.6.4.1.p.7">Because certificate resources are immutable once issuance is complete, the server MAY enable the caching of the resource by adding Expires and Cache-Control headers specifying a point in time in the distant future. These headers have no relation to the certificate&#8217;s period of validity.</p>
@@ -2052,6 +2061,12 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
         <b id="RFC7231">[RFC7231]</b>
       </td>
       <td class="top"><a>Fielding, R.</a> and <a>J. Reschke</a>, "<a href="http://tools.ietf.org/html/rfc7231">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>", RFC 7231, DOI 10.17487/RFC7231, June 2014.</td>
+    </tr>
+    <tr>
+      <td class="reference">
+        <b id="RFC7468">[RFC7468]</b>
+      </td>
+      <td class="top"><a>Josefsson, S.</a> and <a>S. Leonard</a>, "<a href="http://tools.ietf.org/html/rfc7468">Textual Encodings of PKIX, PKCS, and CMS Structures</a>", RFC 7468, DOI 10.17487/RFC7468, April 2015.</td>
     </tr>
     <tr>
       <td class="reference">
