@@ -322,7 +322,8 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 ## Equivalence of JWKs
 
 At several points in the protocol, it is necessary for the server to determine
-whether two JWK objects represent the same key.  In performing these checks, the
+whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
+In performing these checks, the
 server MUST consider two JWKs to match if and only if they have the identical
 values in all fields included in the computation of a JWK thumbprint for that
 key. That is, the keys must have the same "kty" value and contain identical
