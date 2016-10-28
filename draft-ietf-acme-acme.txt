@@ -1392,8 +1392,8 @@ Internet-Draft                    ACME                      October 2016
    are specified in the future, the specification of those fields MUST
    describe whether they may be provided by the client.
 
-   The server creates a registration object with the included contact
-   information.  The "key" element of the registration is set to the
+   The server SHOULD validate that the contact URLs in the "contact"
+   field are valid and supported by the server.  If the client provides
 
 
 
@@ -1402,6 +1402,13 @@ Barnes, et al.             Expires May 1, 2017                 [Page 25]
 Internet-Draft                    ACME                      October 2016
 
 
+   the server with an invalid or unsupported contact URL, then the
+   server MUST return an error of type "invalidContact", with a
+   description describing the error and what types of contact URL the
+   server considers acceptable.
+
+   The server creates a registration object with the included contact
+   information.  The "key" element of the registration is set to the
    public key used to verify the JWS (i.e., the "jwk" element of the JWS
    header).  The server returns this registration object in a 201
    (Created) response, with the registration URI in a Location header
@@ -1443,13 +1450,6 @@ Internet-Draft                    ACME                      October 2016
    sends a POST request with updated information to the registration
    URI.  The server MUST ignore any updates to the "key", or
    "applications" fields or any other fields it does not recognize.  The
-   server MUST verify that the request is signed with the private key
-   corresponding to the "key" field of the request before updating the
-   registration.
-
-   For example, to update the contact information in the above
-   registration, the client could send the following request:
-
 
 
 
@@ -1457,6 +1457,13 @@ Barnes, et al.             Expires May 1, 2017                 [Page 26]
 
 Internet-Draft                    ACME                      October 2016
 
+
+   server MUST verify that the request is signed with the private key
+   corresponding to the "key" field of the request before updating the
+   registration.
+
+   For example, to update the contact information in the above
+   registration, the client could send the following request:
 
    POST /acme/reg/asdf HTTP/1.1
    Host: example.com
@@ -1500,19 +1507,18 @@ Internet-Draft                    ACME                      October 2016
       Location header field in response to the new-registration request
       that created the account.
 
-   newKey (required, JWK):  The JWK representation of the new key
-
-   The client then encapsulates the key-change object in a JWS, signed
-   with the requested new account key (i.e., the key matching the
-   "newKey" value).
-
-
 
 
 Barnes, et al.             Expires May 1, 2017                 [Page 27]
 
 Internet-Draft                    ACME                      October 2016
 
+
+   newKey (required, JWK):  The JWK representation of the new key
+
+   The client then encapsulates the key-change object in a JWS, signed
+   with the requested new account key (i.e., the key matching the
+   "newKey" value).
 
    The outer JWS MUST meet the normal requirements for an ACME JWS (see
    Section 5.2).  The inner JWS MUST meet the normal requirements, with
@@ -1555,12 +1561,6 @@ Internet-Draft                    ACME                      October 2016
      "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
    }
 
-   On receiving key-change request, the server MUST perform the
-   following steps in addition to the typical JWS validation:
-
-   1.  Validate the POST request belongs to a currently active account,
-       as described in Message Transport.
-
 
 
 
@@ -1569,6 +1569,12 @@ Barnes, et al.             Expires May 1, 2017                 [Page 28]
 
 Internet-Draft                    ACME                      October 2016
 
+
+   On receiving key-change request, the server MUST perform the
+   following steps in addition to the typical JWS validation:
+
+   1.  Validate the POST request belongs to a currently active account,
+       as described in Message Transport.
 
    2.  Check that the payload of the JWS is a well-formed JWS object
        (the "inner JWS")
@@ -1602,12 +1608,6 @@ Internet-Draft                    ACME                      October 2016
    A client may deactivate an account by posting a signed update to the
    server with a status field of "deactivated."  Clients may wish to do
    this when the account key is compromised.
-
-
-
-
-
-
 
 
 
