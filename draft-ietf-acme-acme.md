@@ -192,7 +192,7 @@ get a certificate:
 
 1. Apply for a certificate to be issued
 2. Fulfill the server's requirements for issuance
-3. Finalize the application and request issuance
+3. Await issuance and download the issued certificate
 
 The client's application for a certificate describes the desired certificate
 using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields
@@ -210,10 +210,8 @@ The server then validates the challenges to check that the client has
 accomplished the challenge.
 
 Once the validation process is complete and the server is satisfied that the
-client has met its requirements, the server can either proactively issue the
-requested certificate or wait for the client to request that the application be
-"finalized", at which point the certificate will be issued and provided to the
-client.
+client has met its requirements, the server will issue the requested certificate
+and make it available to the client.
 
 ~~~~~~~~~~
       Application
@@ -226,8 +224,6 @@ client.
 
                           <~~~~~~~~Validation~~~~~~~~>
 
-      Finalize application
-      Signature                     ------->
                                     <-------             Certificate
 ~~~~~~~~~~
 
@@ -256,7 +252,8 @@ validation challenges the server might require.
 # Message Transport
 
 Communications between an ACME client and an ACME server are done over HTTPS,
-using JWS to provide some additional security properties for messages sent from
+using JSON Web Signature (JWS) {{!RFC7515}} to provide some additional security
+properties for messages sent from
 the client to the server.  HTTPS provides server authentication and
 confidentiality.  With some ACME-specific extensions, JWS provides
 authentication of the client's request payloads, anti-replay protection, and
@@ -318,6 +315,25 @@ serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.  Some fields are omitted for brevity, marked with "...".
 
+## Equivalence of JWKs
+
+At several points in the protocol, it is necessary for the server to determine
+whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
+In performing these checks, the
+server MUST consider two JWKs to match if and only if they have the identical
+values in all fields included in the computation of a JWK thumbprint for that
+key. That is, the keys must have the same "kty" value and contain identical
+values in the fields used in the computation of a JWK thumbprint for that key
+type:
+
+* "RSA": "n", "e"
+* "EC": "crv", "x", "y"
+
+Note that this comparison is equivalent to computing the JWK thumbprints of the
+two keys and comparing thumbprints.  The only difference is that there is no
+requirement for a hash computation (and thus it is independent of the choice of
+hash function) and no risk of hash collision.
+
 ## Request URI Integrity
 
 It is common in deployment for the entity terminating TLS for HTTPS to be different
@@ -361,11 +377,10 @@ requests have a mandatory anti-replay mechanism.  This mechanism is based on the
 server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
-An ACME server MUST include a Replay-Nonce header field in each successful
-response it provides to a client, with contents as specified below.  In
-particular, the ACME server MUST provide a Replay-Nonce header field in response
-to a HEAD request for any valid resource.  (This allows clients to easily obtain
-a fresh nonce.)  It MAY also provide nonces in error responses.
+An ACME server provides nonces to clients using the Replay-Nonce header field,
+as specified below.  The server MUST include a Replay-Nonce header field in
+every successful response to a POST request, and SHOULD provide it in error
+responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
 "nonce" header parameter, with contents as defined below.  As part of JWS
@@ -376,7 +391,10 @@ invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
-ACME error code "urn:ietf:params:acme:error:badNonce".
+ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
+the "badNonce" error code MUST include a Replay-Nonce header with a fresh nonce.
+On receiving such a response, a client SHOULD retry the request using the new
+nonce.
 
 The precise method used to generate and track nonces is up to the server.  For
 example, the server could generate a random 128-bit value for each response,
@@ -488,12 +506,15 @@ ACME is structured as a REST application with a few types of resources:
   identifier
 * Certificate resources, representing issued certificates
 * A "directory" resource
+* A "new-nonce" resource
 * A "new-registration" resource
 * A "new-application" resource
 * A "revoke-certificate" resource
 * A "key-change" resource
 
-For the singular resources above ("directory", "new-registration",
+The server MUST provide "directory" and "new-nonce" resources.
+
+For the singular resources above ("directory", "new-nonce", "new-registration",
 "new-application", "revoke-certificate", and "key-change") the resource may be
 addressed by multiple URIs, but all must provide equivalent functionality.
 
@@ -519,6 +540,7 @@ indicate HTTP link relations
 ~~~~~~~~~~
                                directory
                                    |
+                                   |--> new-nonce
                                    |
        ----------------------------------------------------
        |                  |                               |
@@ -546,6 +568,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 
 | Action             | Request        | Response   |
 |:-------------------|:---------------|:-----------|
+| Get a nonce        | HEAD new-nonce | 200        |
 | Register           | POST new-reg   | 201 -> reg |
 | Apply for a cert   | POST new-app   | 201 -> app |
 | Fetch challenges   | GET  authz     | 200        |
@@ -566,6 +589,7 @@ the following table and whose values are the corresponding URLs.
 
 | Key         | URL in value         |
 |:------------|:---------------------|
+| new-nonce   | New nonce            |
 | new-reg     | New registration     |
 | new-app     | New application      |
 | revoke-cert | Revoke certificate   |
@@ -608,6 +632,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
+  "new-nonce": "https://example.com/acme/new-nonce",
   "new-reg": "https://example.com/acme/new-reg",
   "new-app": "https://example.com/acme/new-app",
   "revoke-cert": "https://example.com/acme/revoke-cert",
@@ -646,13 +671,8 @@ server (see below).  Including this field indicates the client's agreement with
 the referenced terms.
 
 applications (required, string):
-: A URI from which a list of authorizations submitted by this account can be
-fetched via a GET request.  The result of the GET request MUST be a JSON object
-whose "applications" field is an array of strings, where each string is the URI
-of an authorization belonging to this registration.  The server SHOULD include
-pending applications, and SHOULD NOT include applications that are invalid. The
-server MAY return an incomplete list, along with a Link header with link
-relation "next" indicating a URL to retrieve further entries.
+: A URI from which an array of URIs for application objects submitted by this
+account can be fetched via a GET request.
 
 ~~~~~~~~~~
 {
@@ -661,22 +681,47 @@ relation "next" indicating a URL to retrieve further entries.
     "tel:+12025551212"
   ],
   "agreement": "https://example.com/acme/terms",
-  "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert"
+  "applications": "https://example.com/acme/reg/1/apps"
+}
+~~~~~~~~~~
+
+#### Applications List
+
+Each registration object includes an applications URI from which a list of
+applications created by the registration can be fetched via GET request. The
+result of the GET request MUST be a JSON object whose "applications" field is an
+array of URIs, each identifying an applications belonging to the registration.
+The server SHOULD include pending applications, and SHOULD NOT include
+applications that are invalid in the array of URIs. The server MAY return an
+incomplete list, along with a Link header with link relation “next” indicating
+a URL to retrieve further entries.
+
+~~~~~~~~~~
+HTTP/1.1 200 OK
+Content-Type: application/json
+Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+
+{
+  "applications": [
+    "https://example.com/acme/reg/1/apps/1",
+    "https://example.com/acme/reg/1/apps/2",
+    /* 47 more URLs not shown for example brevity */
+    "https://example.com/acme/reg/1/apps/50"
+  ]
 }
 ~~~~~~~~~~
 
 ### Application Objects
 
-An ACME registration resource represents a client's request for a certificate,
+An ACME application object represents a client's request for a certificate,
 and is used to track the progress of that application through to issuance.
 Thus, the object contains information about the requested certificate, the
 server's requirements, and any certificates that have resulted from this
 application.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "unknown", "pending",
-"processing", "valid", and "invalid".
+: The status of this application.  Possible values are: "pending", "valid",
+and "invalid".
 
 expires (optional, string):
 : The timestamp after which the server will consider this application invalid,
@@ -733,17 +778,6 @@ application.
 }
 ~~~~~~~~~~
 
-[[ Open issue: There are two possible behaviors for the CA here.  Either (a) the
-CA automatically issues once all the requirements are fulfilled, or (b) the CA
-waits for confirmation from the client that it should issue.  If we allow both,
-we will need a signal in the application object of whether confirmation is
-required.  I would prefer that auto-issue be the default, which would imply a
-syntax like "confirm": true ]]
-
-[[ Open issue: Should this syntax allow multiple certificates?  That would
-support reissuance / renewal in a straightforward way, especially if the CSR /
-notBefore / notAfter could be updated. ]]
-
 The elements of the "requirements" array are immutable once set, except for
 their "status" fields.  If any other part of the object changes after the object
 is created, the client MUST consider the application invalid.
@@ -794,7 +828,6 @@ url (required, string):
 To fulfill this requirement, the ACME client should direct the user to the
 indicated web page.
 
-
 ### Authorization Objects
 
 An ACME authorization object represents a server's authorization for an account
@@ -815,9 +848,9 @@ identifier (required, dictionary of string):
   : The identifier itself.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "unknown", "pending",
-"processing", "valid", "invalid" and "revoked".  If this field is missing, then
-the default value is "pending".
+: The status of this authorization.  Possible values are: "pending", "processing",
+"valid", "invalid" and "revoked".  If this field is missing, then the default
+value is "pending".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -841,9 +874,12 @@ one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
 
 The only type of identifier defined by this specification is a fully-qualified
-domain name (type: "dns").  The value of the identifier MUST be the ASCII
-representation of the domain name.  Wildcard domain names (with "*" as the first
-label) MUST NOT be included in authorization requests.
+domain name (type: "dns"). The value of the identifier MUST be the ASCII
+representation of the domain name. If a domain name contains Unicode characters
+it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
+any identifier values that begin with the ASCII Compatible Encoding prefix "xn--"
+as defined in {{!RFC5890}} are properly encoded. Wildcard domain names (with "*"
+as the first label) MUST NOT be included in authorization requests.
 
 ~~~~~~~~~~
 {
@@ -866,6 +902,33 @@ label) MUST NOT be included in authorization requests.
 }
 ~~~~~~~~~~
 
+## Getting a Nonce
+
+Before sending a POST request to the server, an ACME client needs to have a
+fresh anti-replay nonce to put in the "nonce" header of the JWS.  In most cases,
+the client will have gotten a nonce from a previous request.  However, the
+client might sometimes need to get a new nonce, e.g., on its first request to
+the server or if an existing nonce is no longer valid.
+
+To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
+on the server.  The server's response MUST include a Replay-Nonce header field
+containing a fresh nonce, and SHOULD have status code 200 (OK).  The server
+SHOULD also respond to GET requests for this resource, returning an empty body
+(while still providing a Replay-Nonce header).
+
+~~~~~~~~~~
+HEAD /acme/new-nonce HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
+Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
+Cache-Control: no-store
+~~~~~~~~~~
+
+Caching of responses from the new-nonce resource can cause clients to be unable
+to communicate with the ACME server.  The server MUST include a Cache-Control
+header field with the "no-store" directive in responses for the new-nonce
+resource, in order to prevent caching of this resource.
 
 ## Registration
 
@@ -895,11 +958,17 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", "authorizations", and
-"certificates" fields in registration bodies sent by the client, as well as any
-other fields that it does not recognize.  If new fields are specified in the
-future, the specification of those fields MUST describe whether they may be
-provided by the client.
+The server MUST ignore any values provided in the "key", and "applications"
+fields in registration bodies sent by the client, as well as any other fields
+that it does not recognize.  If new fields are specified in the future, the
+specification of those fields MUST describe whether they may be provided by the
+client.
+
+The server SHOULD validate that the contact URLs in the "contact" field are
+valid and supported by the server.  If the client provides the server with an
+invalid or unsupported contact URL, then the server MUST return an error of type
+"invalidContact", with a description describing the error and what types of
+contact URL the server considers acceptable.
 
 The server creates a registration object with the included contact information.
 The "key" element of the registration is set to the public key used to verify
@@ -923,6 +992,7 @@ use a different URI in the Link header.
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Content-Type: application/json
+Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/reg/asdf
 Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
@@ -940,9 +1010,10 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the registration URI.  The server MUST
-ignore any updates to the "key", "authorizations, or "certificates" fields, and
-MUST verify that the request is signed with the private key corresponding to the
-"key" field of the request before updating the registration.
+ignore any updates to the "key", or "applications" fields or any other fields it
+does not recognize. The server MUST verify that the request is signed with the
+private key corresponding to the "key" field of the request before updating the
+registration.
 
 For example, to update the contact information in the above registration, the
 client could send the following request:
@@ -981,21 +1052,32 @@ A client may wish to change the public key that is associated with a
 registration in order to recover from a key compromise or proactively mitigate
 the impact of an unnoticed key compromise.
 
-To change the key associated with an account, the client sends a POST request
-containing a key-change object with the following fields:
+To change the key associated with an account, the client first constructs a
+key-change object describing the change that it would like the server to make:
 
-oldKey (required, JWK):
-: The JWK representation of the original key (i.e., the client's current account
-key)
+account (required, string):
+: The URL for account being modified.  The content of this field MUST be the
+exact string provided in the Location header field in response to the
+new-registration request that created the account.
 
-newKey (requrired, JWK):
+newKey (required, JWK):
 : The JWK representation of the new key
 
-The JWS of this POST must have two signatures: one signature from the existing
-key on the account, and one signature from the new key that the client proposes
-to use. This demonstrates that the client actually has control of the
-private key corresponding to the new public key. The protected header must
-contain a JWK field containing the current account key.
+The client then encapsulates the key-change object in a JWS, signed with the
+requested new account key (i.e., the key matching the "newKey" value).
+
+The outer JWS MUST meet the normal requirements for an ACME JWS (see
+{{request-authentication}}).  The inner JWS MUST meet the normal requirements,
+with the following exceptions:
+
+* The inner JWS MUST have the same "url" parameter as the outer JWS.
+* The inner JWS is NOT REQUIRED to have a "nonce" parameter.  The server MUST
+  ignore any value provided for the "nonce" header parameter.
+
+This transaction has signatures from both the old and new keys so that the
+server can verify that the holders of the two keys both agree to the change.
+The signatures are nested to preserve the property that all signatures on POST
+messages are signed by exactly one key.
 
 ~~~~~~~~~~
 POST /acme/key-change HTTP/1.1
@@ -1003,43 +1085,43 @@ Host: example.com
 Content-Type: application/jose+json
 
 {
-  "payload": base64url({
-    "oldKey": /* Old key in JWK form */
-    "newKey": /* New key in JWK form */
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": /* old key */,
+    "nonce": "K60BWPrMQG9SDxBDS_xtSw",
+    "url": "https://example.com/acme/key-change"
   }),
-  "signatures": [{
-    "protected": base64url({
-      "alg": "ES256",
-      "jwk": /* old key */,
-      "nonce": "pq00v-D1KB0sReG4jFfqVg",
-      "url": "https://example.com/acme/key-change"
-    }),
-    "signature": "XFvVbo9diBlIBvhE...UI62sNT6MZsCJpQo"
-  }, {
+  "payload": base64url({
     "protected": base64url({
       "alg": "ES256",
       "jwk": /* new key */,
-      "nonce": "vYjyueEYhMjpVQHe_unw4g",
-      "url": "https://example.com/acme/key-change"
     }),
-    "signature": "q20gG1f1r9cD6tBM...a48h0CkP11tl5Doo"
-  }]
+    "payload": base64url({
+      "account": "https://example.com/acme/reg/asdf",
+      "newKey": /* new key */
+    })
+    "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
+  }),
+  "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 ~~~~~~~~~~
 
 On receiving key-change request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
-1. Check that the JWS protected header contains a "jwk" field containing a
-   key that matches a currently active account.
-2. Check that there are exactly two signatures on the JWS.
-3. Check that one of the signatures validates using the account key from (1).
-4. Check that the "key" field contains a well-formed JWK that meets key strength
-   requirements.
-5. Check that the "key" field is not equivalent to the current account key or
-   any other currently active account key.
-5. Check that one of the two signatures on the JWS validates using the JWK from
-   the "key" field.
+1. Validate the POST request belongs to a currently active account, as described
+   in Message Transport.
+1. Check that the payload of the JWS is a well-formed JWS object (the "inner
+   JWS")
+2. Check that the JWS protected header of the inner JWS has a "jwk" field.
+3. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the payload of the inner JWS is a well-formed key-change object
+   (as described above)
+5. Check that the "url" parameters of the inner and outer JWSs are the same
+6. Check that the "account" field of the key-change object contains the URL for
+   the registration matching the old key
+8. Check that the "newKey" field of the key-change object contains the
+   key used to sign the inner JWS.
 
 If all of these checks pass, then the server updates the corresponding
 registration by replacing the old account key with the new public key and
@@ -1142,6 +1224,7 @@ before the certificate will be issued.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
+Replay-Nonce: MYAuvOpaoIiywTezizk5vw
 Location: https://example.com/acme/app/asdf
 
 {
@@ -1176,12 +1259,12 @@ certificate.  If the client fails to complete the required actions before the
 "expires" time, then the server SHOULD change the status of the application to
 "invalid" and MAY delete the application resource.
 
-The server SHOULD issue the requested certificate and update the application
+The server MUST issue the requested certificate and update the application
 resource with a URL for the certificate as soon as the client has fulfilled the
 server's requirements.   If the client has already satisfied the server's
 requirements at the time of this request (e.g., by obtaining authorization for
 all of the identifiers in the certificate in previous transactions), then the
-server MAY proactively issue the requested certificate and provide a URL for it
+server MUST proactively issue the requested certificate and provide a URL for it
 in the "certificate" field of the application.  The server MUST, however, still
 list the satisfied requirements in the "requirements" array, with the state
 "valid".
@@ -1210,16 +1293,19 @@ status of the application will indicate what action the client should take:
 To download the issued certificate, the client simply sends a GET request to the
 certificate URL.
 
-The default format of the certificate is DER (application/pkix-cert).  The
+The default format of the certificate is PEM (application/x-pem-file) as
+specified by {{!RFC7468}}. This format should contain the end-entity certificate
+first, followed by any intermediate certificates that are needed to build a path
+to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
 client may request other formats by including an Accept header in its request.
-For example, the client may use the media type application/x-pem-file to request
-the certificate in PEM format.
+For example, the client may use the media type application/pkix-cert to request
+the end-entity certificate in DER format.
 
-The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST send one or more link relation header fields
-{{RFC5988}} with relation "up", each indicating a single certificate resource
-for the issuer of this certificate.  The server MAY also include the "up" links
-from these resources to enable the client to build a full certificate chain.
+The server MAY provide one or more link relation header fields {{RFC5988}} with
+relation "alternate". Each such field should express an alternative certificate
+chain starting with the same end-entity certificate. This can be used to express
+paths to various trust anchors. Clients can fetch these alternates and use their
+own heuristics to decide which is optimal.
 
 The server MUST also provide a link relation header field with relation "author"
 to indicate the application under which this certificate was issued.
@@ -1245,7 +1331,16 @@ Link: <https://example.com/acme/app/asdf>;rel="author"
 Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
-[DER-encoded certificate]
+-----BEGIN CERTIFICATE-----
+[End-entity certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Issuer certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Other certificate contents]
+-----END CERTIFICATE-----
+
 ~~~~~~~~~~
 
 A certificate resource represents a single, immutable certificate. If the client
@@ -1298,12 +1393,12 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
   "challenges": [
     {
       "type": "http-01",
-      "uri": "https://example.com/authz/asdf/0",
+      "url": "https://example.com/authz/asdf/0",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     },
     {
       "type": "dns-01",
-      "uri": "https://example.com/authz/asdf/1",
+      "url": "https://example.com/authz/asdf/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ],
@@ -1359,15 +1454,13 @@ MUST return an HTTP error.  On receiving such an error, the client SHOULD undo
 any actions that have been taken to fulfill the challenge, e.g., removing files
 that have been provisioned to a web server.
 
-Presumably, the client's responses provide the server with enough information to
-validate one or more challenges.  The server is said to "finalize" the
-authorization when it has completed all the validations it is going to complete,
-and assigns the authorization a status of "valid" or "invalid", corresponding to
-whether it considers the account authorized for the identifier.  If the final
-state is "valid", the server MUST add an "expires" field to the authorization.
-When finalizing an authorization, the server MAY remove challenges other than
-the one that was completed. The server SHOULD NOT remove challenges with status
-"invalid".
+The server is said to "finalize" the authorization when it has completed
+one of the validations, by assigning the authorization a status of "valid"
+or "invalid", corresponding to whether it considers the account authorized
+for the identifier.  If the final state is "valid", the server MUST add an
+"expires" field to the authorization.  When finalizing an authorization,
+the server MAY remove challenges other than the one that was completed. The
+server SHOULD NOT remove challenges with status "invalid".
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
@@ -1496,11 +1589,13 @@ the revocation fails, the server returns an error.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
 
 --- or ---
 
 HTTP/1.1 403 Forbidden
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
 
@@ -1549,8 +1644,8 @@ Challenge objects all contain the following basic fields:
 type (required, string):
 : The type of challenge encoded in the object.
 
-uri (required, string):
-: The URI to which a response can be posted.
+url (required, string):
+: The URL to which a response can be posted.
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "valid",
@@ -1661,8 +1756,7 @@ authorization.
 
 The client's response to this challenge indicates its agreement to this
 challenge by sending the server the key authorization covering the challenge's
-token and the client's account key.  In addition, the client MAY advise the
-server at which IP the challenge is provisioned.
+token and the client's account key.
 
 keyAuthorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
@@ -1689,7 +1783,8 @@ domain by verifying that the resource was provisioned as expected.
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
-3. Dereference the URI using an HTTP GET request.
+3. Dereference the URI using an HTTP GET request.  This request MUST be sent to
+   TCP port 80 on the server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the server matches the token for
@@ -1771,12 +1866,13 @@ of the domain by verifying that the TLS server was configured appropriately,
 using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
-2. Open a TLS connection to the domain name being validated on the requested
-   port, presenting SAN A in the SNI field.  In the ClientHello initiating the
-   TLS handshake, the server MUST include a server\_name extension (i.e., SNI)
-   containing SAN A. The server SHOULD ensure that it does not reveal SAN B in
-   any way when making the TLS connection, such that the presentation of SAN B
-   in the returned certificate proves association with the client.
+2. Open a TLS connection to the domain name being validated, presenting SAN A in
+   the SNI field. This connection MUST be sent to TCP port 443 on the server. In
+   the ClientHello initiating the TLS handshake, the server MUST include
+   a server\_name extension (i.e., SNI) containing SAN A. The server SHOULD
+   ensure that it does not reveal SAN B in any way when making the TLS
+   connection, such that the presentation of SAN B in the returned certificate
+   proves association with the client.
 3. Verify that the certificate contains a subjectAltName extension containing
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
@@ -1870,13 +1966,15 @@ providing a URL for that web page.
 type (required, string):
 : The string "oob-01"
 
-url (required, string):
-: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
+href (required, string):
+: The URL to be visited.  The scheme of this URL MUST be "http" or "https".
+Note that this field is distinct from the "url" field of the challenge, which
+identifies the challenge itself.
 
 ~~~~~~~~~~
 {
   "type": "oob-01",
-  "url": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+  "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 ~~~~~~~~~~
 
@@ -2096,22 +2194,20 @@ miscellaneous considerations.
 
 As a service on the Internet, ACME broadly exists within the Internet threat
 model {{?RFC3552}}.  In analyzing ACME, it is useful to think of an ACME server
-interacting with other Internet hosts along three "channels":
+interacting with other Internet hosts along two "channels":
 
 * An ACME channel, over which the ACME HTTPS requests are exchanged
 * A validation channel, over which the ACME server performs additional requests
   to validate a client's control of an identifier
-* A contact channel, over which the ACME server sends messages to the registered
-  contacts for ACME clients
 
 ~~~~~~~~~~
 +------------+
 |    ACME    |     ACME Channel
 |   Client   |--------------------+
 +------------+                    |
-       ^                          V
-       |   Contact Channel  +------------+
-       +--------------------|    ACME    |
+                                  V
+                            +------------+
+                            |    ACME    |
                             |   Server   |
                             +------------+
 +------------+                    |
@@ -2121,10 +2217,10 @@ interacting with other Internet hosts along three "channels":
 ~~~~~~~~~~
 
 In practice, the risks to these channels are not entirely separate, but they are
-different in most cases.  Each of the three channels, for example, uses a
+different in most cases.  Each channel, for example, uses a
 different communications pattern: the ACME channel will comprise inbound HTTPS
-connections to the ACME server, the validation channel outbound HTTP or DNS
-requests, and the contact channel will use channels such as email and PSTN.
+connections to the ACME server and the validation channel outbound HTTP or DNS
+requests.
 
 Broadly speaking, ACME aims to be secure against active and passive attackers on
 any individual channel.  Some vulnerabilities arise (noted below), when an
@@ -2135,7 +2231,7 @@ account for application-layer man in the middle attacks, and for abusive use of
 the protocol itself.  Protection against application-layer MitM addresses
 potential attackers such as Content Distribution Networks (CDNs) and middleboxes
 with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an
-attacker with access to the validation or contact channels can't obtain
+attacker with access to the validation channel can't obtain
 illegitimate authorization by acting as an ACME client (legitimately, in terms
 of the protocol).
 
