@@ -192,7 +192,7 @@ get a certificate:
 
 1. Apply for a certificate to be issued
 2. Fulfill the server's requirements for issuance
-3. Finalize the application and request issuance
+3. Await issuance and download the issued certificate
 
 The client's application for a certificate describes the desired certificate
 using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields
@@ -210,10 +210,8 @@ The server then validates the challenges to check that the client has
 accomplished the challenge.
 
 Once the validation process is complete and the server is satisfied that the
-client has met its requirements, the server can either proactively issue the
-requested certificate or wait for the client to request that the application be
-"finalized", at which point the certificate will be issued and provided to the
-client.
+client has met its requirements, the server will issue the requested certificate
+and make it available to the client.
 
 ~~~~~~~~~~
       Application
@@ -226,8 +224,6 @@ client.
 
                           <~~~~~~~~Validation~~~~~~~~>
 
-      Finalize application
-      Signature                     ------->
                                     <-------             Certificate
 ~~~~~~~~~~
 
@@ -256,7 +252,8 @@ validation challenges the server might require.
 # Message Transport
 
 Communications between an ACME client and an ACME server are done over HTTPS,
-using JWS to provide some additional security properties for messages sent from
+using JSON Web Signature (JWS) {{!RFC7515}} to provide some additional security
+properties for messages sent from
 the client to the server.  HTTPS provides server authentication and
 confidentiality.  With some ACME-specific extensions, JWS provides
 authentication of the client's request payloads, anti-replay protection, and
@@ -321,7 +318,8 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 ## Equivalence of JWKs
 
 At several points in the protocol, it is necessary for the server to determine
-whether two JWK objects represent the same key.  In performing these checks, the
+whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
+In performing these checks, the
 server MUST consider two JWKs to match if and only if they have the identical
 values in all fields included in the computation of a JWK thumbprint for that
 key. That is, the keys must have the same "kty" value and contain identical
@@ -712,7 +710,7 @@ Link: href="/acme/reg/1/apps?cursor=2", rel="next"
 
 ### Application Objects
 
-An ACME registration resource represents a client's request for a certificate,
+An ACME application object represents a client's request for a certificate,
 and is used to track the progress of that application through to issuance.
 Thus, the object contains information about the requested certificate, the
 server's requirements, and any certificates that have resulted from this
@@ -776,19 +774,6 @@ application.
   "certificate": "https://example.com/acme/cert/1234"
 }
 ~~~~~~~~~~
-
-[[ Open issue: There are two possible behaviors for the CA here.  Either (a) the
-CA automatically issues once all the requirements are fulfilled, or (b) the CA
-waits for confirmation from the client that it should issue.  If we allow both,
-we will need a signal in the application object of whether confirmation is
-required.  I would prefer that auto-issue be the default, which would imply a
-syntax like "confirm": true ]]
-
-[[ Open issue: Should this syntax allow multiple certificates?  That would
-support reissuance / renewal in a straightforward way, especially if the CSR /
-notBefore / notAfter could be updated. ]]
-
-#### Application Requirements
 
 The elements of the "requirements" array are immutable once set, except for
 their "status" fields.  If any other part of the object changes after the object
@@ -1066,10 +1051,6 @@ account (required, string):
 exact string provided in the Location header field in response to the
 new-registration request that created the account.
 
-oldKey (required, JWK):
-: The JWK representation of the original key (i.e., the client's current account
-key)
-
 newKey (required, JWK):
 : The JWK representation of the new key
 
@@ -1130,8 +1111,6 @@ addition to the typical JWS validation:
 5. Check that the "url" parameters of the inner and outer JWSs are the same
 6. Check that the "account" field of the key-change object contains the URL for
    the registration matching the old key
-7. Check that the "oldKey" field of the key-change object contains the
-   current account key.
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
@@ -1271,12 +1250,12 @@ certificate.  If the client fails to complete the required actions before the
 "expires" time, then the server SHOULD change the status of the application to
 "invalid" and MAY delete the application resource.
 
-The server SHOULD issue the requested certificate and update the application
+The server MUST issue the requested certificate and update the application
 resource with a URL for the certificate as soon as the client has fulfilled the
 server's requirements.   If the client has already satisfied the server's
 requirements at the time of this request (e.g., by obtaining authorization for
 all of the identifiers in the certificate in previous transactions), then the
-server MAY proactively issue the requested certificate and provide a URL for it
+server MUST proactively issue the requested certificate and provide a URL for it
 in the "certificate" field of the application.  The server MUST, however, still
 list the satisfied requirements in the "requirements" array, with the state
 "valid".
@@ -1305,16 +1284,19 @@ status of the application will indicate what action the client should take:
 To download the issued certificate, the client simply sends a GET request to the
 certificate URL.
 
-The default format of the certificate is DER (application/pkix-cert).  The
+The default format of the certificate is PEM (application/x-pem-file) as
+specified by {{!RFC7468}}. This format should contain the end-entity certificate
+first, followed by any intermediate certificates that are needed to build a path
+to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
 client may request other formats by including an Accept header in its request.
-For example, the client may use the media type application/x-pem-file to request
-the certificate in PEM format.
+For example, the client may use the media type application/pkix-cert to request
+the end-entity certificate in DER format.
 
-The server provides metadata about the certificate in HTTP headers.  In
-particular, the server MUST send one or more link relation header fields
-{{RFC5988}} with relation "up", each indicating a single certificate resource
-for the issuer of this certificate.  The server MAY also include the "up" links
-from these resources to enable the client to build a full certificate chain.
+The server MAY provide one or more link relation header fields {{RFC5988}} with
+relation "alternate". Each such field should express an alternative certificate
+chain starting with the same end-entity certificate. This can be used to express
+paths to various trust anchors. Clients can fetch these alternates and use their
+own heuristics to decide which is optimal.
 
 The server MUST also provide a link relation header field with relation "author"
 to indicate the application under which this certificate was issued.
@@ -1340,7 +1322,16 @@ Link: <https://example.com/acme/app/asdf>;rel="author"
 Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
-[DER-encoded certificate]
+-----BEGIN CERTIFICATE-----
+[End-entity certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Issuer certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Other certificate contents]
+-----END CERTIFICATE-----
+
 ~~~~~~~~~~
 
 A certificate resource represents a single, immutable certificate. If the client
@@ -1784,7 +1775,8 @@ domain by verifying that the resource was provisioned as expected.
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
-3. Dereference the URI using an HTTP GET request.
+3. Dereference the URI using an HTTP GET request.  This request MUST be sent to
+   TCP port 80 on the server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the server matches the token for
@@ -1866,12 +1858,13 @@ of the domain by verifying that the TLS server was configured appropriately,
 using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
-2. Open a TLS connection to the domain name being validated on the requested
-   port, presenting SAN A in the SNI field.  In the ClientHello initiating the
-   TLS handshake, the server MUST include a server\_name extension (i.e., SNI)
-   containing SAN A. The server SHOULD ensure that it does not reveal SAN B in
-   any way when making the TLS connection, such that the presentation of SAN B
-   in the returned certificate proves association with the client.
+2. Open a TLS connection to TCP port 443 the domain name being validated on the
+   requested port, presenting SAN A in the SNI field.  In the ClientHello
+   initiating the TLS handshake, the server MUST include a server\_name
+   extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does
+   not reveal SAN B in any way when making the TLS connection, such that the
+   presentation of SAN B in the returned certificate proves association with the
+   client.
 3. Verify that the certificate contains a subjectAltName extension containing
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
