@@ -684,6 +684,30 @@ account can be fetched via a GET request.
 }
 ~~~~~~~~~~
 
+#### Applications List
+
+Each registration object includes an applications URI from which a list of
+applications created by the registration can be fetched via GET request. The
+result of the GET request MUST be a JSON object whose "applications" field is an
+array of URIs, each identifying an applications belonging to the registration.
+The server SHOULD include pending applications, and SHOULD NOT include
+applications that are invalid in the array of URIs. The server MAY return an
+incomplete list, along with a Link header with link relation “next” indicating
+a URL to retrieve further entries.
+
+~~~~~~~~~~
+HTTP/1.1 200 OK
+Content-Type: application/json
+Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+
+{
+  "applications": [
+    "https://example.com/acme/reg/1/apps/1",
+    "https://example.com/acme/reg/1/apps/2"
+  ]
+}
+~~~~~~~~~~
+
 ### Application Objects
 
 An ACME registration resource represents a client's request for a certificate,
@@ -813,31 +837,6 @@ url (required, string):
 
 To fulfill this requirement, the ACME client should direct the user to the
 indicated web page.
-
-#### Applications List
-
-Each registration object includes an applications URI from which a list of
-applications created by the registration can be fetched via GET request. The
-result of the GET request MUST be a JSON object whose "applications" field is an
-array of URIs, each identifying an applications belonging to the registration.
-The server SHOULD include pending applications, and SHOULD NOT include
-applications that are invalid in the array of URIs. The server MAY return an
-incomplete list, along with a Link header with link relation “next” indicating
-a URL to retrieve further entries.
-
-~~~~~~~~~~
-HTTP/1.1 200 OK
-Content-Type: application/json
-Link: href="/acme/reg/1/apps?cursor=2", rel="next"
-
-{
-  "applications": [
-    "https://example.com/acme/reg/1/apps/1",
-    "https://example.com/acme/reg/1/apps/2"
-  ]
-}
-~~~~~~~~~~
-
 
 ### Authorization Objects
 
