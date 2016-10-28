@@ -1837,13 +1837,13 @@ of the domain by verifying that the TLS server was configured appropriately,
 using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
-2. Open a TLS connection to TCP port 443 the domain name being validated on the
-   requested port, presenting SAN A in the SNI field.  In the ClientHello
-   initiating the TLS handshake, the server MUST include a server\_name
-   extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does
-   not reveal SAN B in any way when making the TLS connection, such that the
-   presentation of SAN B in the returned certificate proves association with the
-   client.
+2. Open a TLS connection to the domain name being validated, presenting SAN A in
+   the SNI field. This connection MUST be sent to TCP port 443 on the server. In
+   the ClientHello initiating the TLS handshake, the server MUST include
+   a server\_name extension (i.e., SNI) containing SAN A. The server SHOULD
+   ensure that it does not reveal SAN B in any way when making the TLS
+   connection, such that the presentation of SAN B in the returned certificate
+   proves association with the client.
 3. Verify that the certificate contains a subjectAltName extension containing
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
