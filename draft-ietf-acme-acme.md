@@ -662,6 +662,10 @@ contact (optional, array of string):
 related to this authorization. For example, the server may wish to notify the
 client about server-initiated revocation.
 
+external_secret (optional, string):
+: A secret value that the server can use to authenticate this registration as
+belonging to the same entity as an already-existing system.
+
 agreement (optional, string):
 : A URI referring to a subscriber agreement or terms of service provided by the
 server (see below).  Including this field indicates the client's agreement with
@@ -927,6 +931,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-reg"
   })
   "payload": base64url({
+    "external_secret": "XYZ123",
     "contact": [
       "mailto:cert-admin@example.com",
       "tel:+12025551212"
@@ -952,6 +957,15 @@ If the server already has a registration object with the provided account key,
 then it MUST return a 200 (OK) response and provide the URI of that registration
 in a Content-Location header field.  This allows a client that has an account
 key but not the corresponding registration URI to recover the registration URI.
+
+The server MAY require a value to be present for the "external_secret"
+field.  This can be used to authenticate a new ACME account as belonging
+to the same entity as an already existing account in a non-ACME
+system. Both clients and servers should consider this an authenticator
+and should treat it carefully. For instance, clients should avoid logging
+it in unprotected files. Note that servers that rely on this field are exposed
+to passive attackers on the ACME channel (see Threat Model, below), and should
+not use third parties to terminate HTTPS connections for them.
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
