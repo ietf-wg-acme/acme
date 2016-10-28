@@ -573,12 +573,15 @@ li, p {
 <ul>
   <li>The JWS MUST be encoded using UTF-8</li>
   <li>The JWS MUST NOT have the value &#8220;none&#8221; in its &#8220;alg&#8221; field</li>
-  <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221;</li><li>&#8220;jwk&#8221;</li><li>&#8220;nonce&#8221; (defined below)</li><li>&#8220;url&#8221; (defined below)</li></ul></li>
+  <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221;</li><li>&#8220;jwk&#8221; (only for requests to new-reg and revoke-cert resources)</li><li>&#8220;kid&#8221; (for all other requests).</li><li>&#8220;nonce&#8221; (defined below)</li><li>&#8220;url&#8221; (defined below)</li></ul></li>
 </ul>
-<p id="rfc.section.5.2.p.4">Note that this implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
-<p id="rfc.section.5.2.p.5">In the examples below, JWS objects are shown in the JSON or flattened JSON serialization, with the protected header and payload expressed as base64url(content) instead of the actual base64-encoded value, so that the content is readable.  Some fields are omitted for brevity, marked with &#8220;&#8230;&#8221;.</p>
+<p id="rfc.section.5.2.p.4">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
+<p id="rfc.section.5.2.p.5">For new-reg requests, and for revoke-cert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field.</p>
+<p id="rfc.section.5.2.p.6">For all other requests, there MUST be a &#8220;kid&#8221; field. This field must contain the account URI received by POSTing to the new-reg resource.</p>
+<p id="rfc.section.5.2.p.7">Note that authentication via signed POST implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
+<p id="rfc.section.5.2.p.8">In the examples below, JWS objects are shown in the JSON or flattened JSON serialization, with the protected header and payload expressed as base64url(content) instead of the actual base64-encoded value, so that the content is readable.  Some fields are omitted for brevity, marked with &#8220;&#8230;&#8221;.</p>
 <h1 id="rfc.section.5.3"><a href="#rfc.section.5.3">5.3.</a> <a href="#equivalence-of-jwks" id="equivalence-of-jwks">Equivalence of JWKs</a></h1>
-<p id="rfc.section.5.3.p.1">At several points in the protocol, it is necessary for the server to determine whether two JSON Web Key (JWK) <a href="#RFC7517">[RFC7517]</a> objects represent the same key.  In performing these checks, the server MUST consider two JWKs to match if and only if they have the identical values in all fields included in the computation of a JWK thumbprint for that key. That is, the keys must have the same &#8220;kty&#8221; value and contain identical values in the fields used in the computation of a JWK thumbprint for that key type:</p>
+<p id="rfc.section.5.3.p.1">At some points in the protocol, it is necessary for the server to determine whether two JSON Web Key (JWK) <a href="#RFC7517">[RFC7517]</a> objects represent the same key.  In performing these checks, the server MUST consider two JWKs to match if and only if they have the identical values in all fields included in the computation of a JWK thumbprint for that key. That is, the keys must have the same &#8220;kty&#8221; value and contain identical values in the fields used in the computation of a JWK thumbprint for that key type:</p>
 <p/>
 
 <ul>
@@ -1087,7 +1090,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
     "url": "https://example.com/acme/reg/asdf"
   })
@@ -1171,7 +1174,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
     "url": "https://example.com/acme/reg/asdf"
   })
@@ -1203,7 +1206,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-app"
   })
@@ -1334,7 +1337,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
   })
@@ -1386,7 +1389,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
   })
@@ -1416,7 +1419,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   })

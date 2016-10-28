@@ -88,11 +88,11 @@ Table of Contents
      5.1.  HTTPS Requests  . . . . . . . . . . . . . . . . . . . . .   8
      5.2.  Request Authentication  . . . . . . . . . . . . . . . . .   9
      5.3.  Equivalence of JWKs . . . . . . . . . . . . . . . . . . .  10
-     5.4.  Request URI Integrity . . . . . . . . . . . . . . . . . .  10
+     5.4.  Request URI Integrity . . . . . . . . . . . . . . . . . .  11
        5.4.1.  "url" (URL) JWS header parameter  . . . . . . . . . .  11
      5.5.  Replay protection . . . . . . . . . . . . . . . . . . . .  11
        5.5.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  12
-       5.5.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  12
+       5.5.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  13
      5.6.  Rate limits . . . . . . . . . . . . . . . . . . . . . . .  13
      5.7.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  13
    6.  Certificate Management  . . . . . . . . . . . . . . . . . . .  15
@@ -506,15 +506,26 @@ Barnes, et al.             Expires May 1, 2017                  [Page 9]
 Internet-Draft                    ACME                      October 2016
 
 
-      *  "jwk"
+      *  "jwk" (only for requests to new-reg and revoke-cert resources)
+
+      *  "kid" (for all other requests).
 
       *  "nonce" (defined below)
 
       *  "url" (defined below)
 
-   Note that this implies that GET requests are not authenticated.
-   Servers MUST NOT respond to GET requests for resources that might be
-   considered sensitive.
+   The "jwk" and "kid" fields are mutually exclusive.  Servers MUST
+   reject requests that contain both.
+
+   For new-reg requests, and for revoke-cert requests authenticated by
+   certificate key, there MUST be a "jwk" field.
+
+   For all other requests, there MUST be a "kid" field.  This field must
+   contain the account URI received by POSTing to the new-reg resource.
+
+   Note that authentication via signed POST implies that GET requests
+   are not authenticated.  Servers MUST NOT respond to GET requests for
+   resources that might be considered sensitive.
 
    In the examples below, JWS objects are shown in the JSON or flattened
    JSON serialization, with the protected header and payload expressed
@@ -524,7 +535,7 @@ Internet-Draft                    ACME                      October 2016
 
 5.3.  Equivalence of JWKs
 
-   At several points in the protocol, it is necessary for the server to
+   At some points in the protocol, it is necessary for the server to
    determine whether two JSON Web Key (JWK) [RFC7517] objects represent
    the same key.  In performing these checks, the server MUST consider
    two JWKs to match if and only if they have the identical values in
@@ -543,6 +554,14 @@ Internet-Draft                    ACME                      October 2016
    (and thus it is independent of the choice of hash function) and no
    risk of hash collision.
 
+
+
+
+Barnes, et al.             Expires May 1, 2017                 [Page 10]
+
+Internet-Draft                    ACME                      October 2016
+
+
 5.4.  Request URI Integrity
 
    It is common in deployment for the entity terminating TLS for HTTPS
@@ -554,14 +573,6 @@ Internet-Draft                    ACME                      October 2016
 
    These intermediaries can also change values in the request that are
    not signed in the HTTPS request, e.g., the request URI and headers.
-
-
-
-Barnes, et al.             Expires May 1, 2017                 [Page 10]
-
-Internet-Draft                    ACME                      October 2016
-
-
    ACME uses JWS to provide a limited integrity mechanism, which
    protects against an intermediary changing the request URI to another
    ACME URI of a different type.  (It does not protect against changing
@@ -599,6 +610,14 @@ Internet-Draft                    ACME                      October 2016
    issued to clients, and requiring any signed request from the client
    to carry such a nonce.
 
+
+
+
+Barnes, et al.             Expires May 1, 2017                 [Page 11]
+
+Internet-Draft                    ACME                      October 2016
+
+
    An ACME server provides nonces to clients using the Replay-Nonce
    header field, as specified below.  The server MUST include a Replay-
    Nonce header field in every successful response to a POST request,
@@ -609,15 +628,6 @@ Internet-Draft                    ACME                      October 2016
    As part of JWS verification, the ACME server MUST verify that the
    value of the "nonce" header is a value that the server previously
    provided in a Replay-Nonce header field.  Once a nonce value has
-
-
-
-
-Barnes, et al.             Expires May 1, 2017                 [Page 11]
-
-Internet-Draft                    ACME                      October 2016
-
-
    appeared in an ACME request, the server MUST consider it invalid, in
    the same way as a value it had never issued.
 
@@ -653,6 +663,17 @@ Internet-Draft                    ACME                      October 2016
    The Replay-Nonce header field SHOULD NOT be included in HTTP request
    messages.
 
+
+
+
+
+
+
+Barnes, et al.             Expires May 1, 2017                 [Page 12]
+
+Internet-Draft                    ACME                      October 2016
+
+
 5.5.2.  "nonce" (Nonce) JWS header parameter
 
    The "nonce" header parameter provides a unique value that enables the
@@ -664,15 +685,6 @@ Internet-Draft                    ACME                      October 2016
    [RFC7515].  If the value of a "nonce" header parameter is not valid
    according to this encoding, then the verifier MUST reject the JWS as
    malformed.
-
-
-
-
-
-Barnes, et al.             Expires May 1, 2017                 [Page 12]
-
-Internet-Draft                    ACME                      October 2016
-
 
 5.6.  Rate limits
 
@@ -702,18 +714,6 @@ Internet-Draft                    ACME                      October 2016
    facilitate automatic response to errors, this document defines the
    following standard tokens for use in the "type" field (within the
    "urn:ietf:params:acme:error:" namespace):
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1472,7 +1472,7 @@ Internet-Draft                    ACME                      October 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "jwk": {...},
+       "kid": "https://example.com/acme/reg/asdf",
        "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
        "url": "https://example.com/acme/reg/asdf"
      })
@@ -1633,7 +1633,7 @@ Internet-Draft                    ACME                      October 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "jwk": {...},
+       "kid": "https://example.com/acme/reg/asdf",
        "nonce": "ntuJWWSic4WVNSqeUmshgg",
        "url": "https://example.com/acme/reg/asdf"
      })
@@ -1692,7 +1692,7 @@ Internet-Draft                    ACME                      October 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "jwk": {...},
+       "kid": "https://example.com/acme/reg/asdf",
        "nonce": "5XJ1L3lEkMG7tR6pA00clA",
        "url": "https://example.com/acme/new-app"
      })
@@ -1987,7 +1987,7 @@ Internet-Draft                    ACME                      October 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "jwk": {...},
+       "kid": "https://example.com/acme/reg/asdf",
        "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
        "url": "https://example.com/acme/authz/asdf/0"
      })
@@ -2137,7 +2137,7 @@ Internet-Draft                    ACME                      October 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "jwk": {...},
+       "kid": "https://example.com/acme/reg/asdf",
        "nonce": "xWCM9lGbIyCgue8di6ueWQ",
        "url": "https://example.com/acme/authz/asdf"
      })
@@ -2193,7 +2193,7 @@ Internet-Draft                    ACME                      October 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "jwk": {...},
+       "kid": "https://example.com/acme/reg/asdf", // OR "jwk"
        "nonce": "JHb54aT_KTXBWQOzGYkt9A",
        "url": "https://example.com/acme/revoke-cert"
      })
