@@ -666,7 +666,10 @@ key (required, dictionary):
 {{!RFC7517}}.
 
 status (required, string):
-: "valid" or "deactivated"
+: The status of this registration. Possible values are: "valid", "deactivated",
+and "revoked". "deactivated" should be used to indicate user initiated
+deactivation whereas "revoked" should be used to indicate administratively
+initiated deactivation.
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
