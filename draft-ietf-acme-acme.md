@@ -308,7 +308,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
   * "nonce" (defined below)
   * "url" (defined below)
 
-For new-reg requests and revoke-cert-by-key requests, there MUST be a
+For new-reg requests, there MUST be a
 "jwk" field containing the key being registered, and there MUST NOT be a
 "kid" field.
 
@@ -519,15 +519,14 @@ ACME is structured as a REST application with a few types of resources:
 * A "new-registration" resource
 * A "new-application" resource
 * A "revoke-certificate" resource
-* A "revoke-certificate-by-key" resource
 * A "key-change" resource
 
 The server MUST provide "directory" and "new-nonce" resources.
 
-For the singular resources above ("directory", "new-nonce", "new-registration",
-"new-application", "revoke-certificate", "revoke-certificate-by-key", and
-"key-change") the resource may be
-addressed by multiple URIs, but all must provide equivalent functionality.
+For the singular resources above ("directory", "new-nonce",
+"new-registration", "new-application", "revoke-certificate", and
+"key-change") the resource may be addressed by multiple URIs, but all
+must provide equivalent functionality.
 
 ACME uses different URIs for different management functions. Each function is
 listed in a directory along with its corresponding URI, so clients only need to
@@ -647,7 +646,6 @@ Content-Type: application/json
   "new-reg": "https://example.com/acme/new-reg",
   "new-app": "https://example.com/acme/new-app",
   "revoke-cert": "https://example.com/acme/revoke-cert",
-  "revoke-cert-by-key": "https://example.com/acme/revoke-cert-by-key",
   "key-change": "https://example.com/acme/key-change",
   "meta": {
     "terms-of-service": "https://example.com/acme/terms",
@@ -1605,72 +1603,6 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:unauthorized"
   "detail": "No authorization provided for name example.net"
-  "instance": "http://example.com/doc/unauthorized"
-}
-~~~~~~~~~~
-
-## Certificate Revocation by Key
-
-Servers may allow revocation requests to be authenticated by signing the request
-with the private key corresponding to the public key in the certificate. To do
-this, the client submits a POST to the server's revoke-cert-by-key URL. This
-request is formatted the same way as a request to the revoke-cert URL, but is
-signed by a certificate key rather than an account key, and has a "jwk" field in
-the header rather than a "kid" field.
-
-certificate (required, string):
-: The certificate to be revoked, in the base64url-encoded version of the DER
-format.  (Note: This field uses the same modified Base64 encoding rules used
-elsewhere in this document, so it is different from PEM.)
-
-reason (optional, int):
-: One of the revocation reasonCodes defined in RFC 5280 {{RFC5280}} Section 5.3.1
-to be used when generating OCSP responses and CRLs. If this field is not set
-the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
-responses and CRLs. The server MAY disallow a subset of reasonCodes from being
-used by the user.
-
-~~~~~~~~~~
-POST /acme/revoke-cert-by-key HTTP/1.1
-Host: example.com
-Content-Type: application/jose+json
-
-{
-  "protected": base64url({
-    "alg": "ES256",
-    "jwk": {...},
-    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
-    "url": "https://example.com/acme/revoke-cert-by-key"
-  })
-  "payload": base64url({
-    "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
-    "reason": 1
-  }),
-  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
-}
-~~~~~~~~~~
-
-Before revoking a certificate, the server MUST verify that the request is signed
-by the private key corresponding to the public key in the certificate.
-
-If the revocation succeeds, the server responds with status code 200 (OK).  If
-the revocation fails, the server returns an error.
-
-~~~~~~~~~~
-HTTP/1.1 200 OK
-Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
-Content-Length: 0
-
---- or ---
-
-HTTP/1.1 403 Forbidden
-Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
-Content-Type: application/problem+json
-Content-Language: en
-
-{
-  "type": "urn:ietf:params:acme:error:unauthorized"
-  "detail": "Key used to sign revoke-cert-by-key did not match certificate."
   "instance": "http://example.com/doc/unauthorized"
 }
 ~~~~~~~~~~
