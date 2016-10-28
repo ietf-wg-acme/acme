@@ -1035,7 +1035,11 @@ Internet-Draft                    ACME                      October 2016
    key (required, dictionary):  The public key of the account key pair,
       encoded as a JSON Web Key object [RFC7517].
 
-   status (required, string):  "valid" or "deactivated"
+   status (required, string):  The status of this registration.
+      Possible values are: "valid", "deactivated", and "revoked".
+      "deactivated" should be used to indicate user initiated
+      deactivation whereas "revoked" should be used to indicate
+      administratively initiated deactivation.
 
    contact (optional, array of string):  An array of URIs that the
       server can use to contact the client for issues related to this
@@ -1050,10 +1054,6 @@ Internet-Draft                    ACME                      October 2016
    applications (required, string):  A URI from which an array of URIs
       for application objects submitted by this account can be fetched
       via a GET request.
-
-
-
-
 
 
 

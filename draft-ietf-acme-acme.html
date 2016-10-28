@@ -872,7 +872,7 @@ Content-Type: application/json
   <dt>key (required, dictionary):</dt>
   <dd style="margin-left: 8">The public key of the account key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>.</dd>
   <dt>status (required, string):</dt>
-  <dd style="margin-left: 8">&#8220;valid&#8221; or &#8220;deactivated&#8221;</dd>
+  <dd style="margin-left: 8">The status of this registration. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;. &#8220;deactivated&#8221; should be used to indicate user initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate administratively initiated deactivation.</dd>
   <dt>contact (optional, array of string):</dt>
   <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this authorization. For example, the server may wish to notify the client about server-initiated revocation.</dd>
   <dt>agreement (optional, string):</dt>
