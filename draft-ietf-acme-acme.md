@@ -1727,8 +1727,7 @@ authorization.
 
 The client's response to this challenge indicates its agreement to this
 challenge by sending the server the key authorization covering the challenge's
-token and the client's account key.  In addition, the client MAY advise the
-server at which IP the challenge is provisioned.
+token and the client's account key.
 
 keyAuthorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
