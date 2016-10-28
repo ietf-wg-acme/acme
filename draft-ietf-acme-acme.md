@@ -1001,8 +1001,8 @@ key but not the corresponding registration URI to recover the registration URI.
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
 in the "terms-of-service" subfield of the "meta" field in the directory object,
-and the server SHOULD reject new-registration requests that do not contain
-"terms-of-service-agreed": true.
+and the server MUST reject new-registration requests that do not have the
+"terms-of-service-agreed" set to "true".
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
@@ -1060,22 +1060,22 @@ information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
 That is, it should send a JWS whose payload is trivial ({}).
 
-### Agreement to Terms of Service
+### Changes of Terms of Service
 
 As described above, a client can indicate its agreement with the CA's terms of
 service by setting the "terms-of-service-agreed" field in its registration
 object to "true".
 
-If a client has not agreed to the server's terms of service and the server is
-unwilling to process a request without agreement, then it MUST return an error
-response with status code 403 (Forbidden) and type
-"urn:ietf:params:acme:error:agreementRequired".  This response MUST include a
-Link header with link relation "terms-of-service" and the latest
+If the server has changed its terms of service since a client initially agreed,
+and the server is unwilling to process a request without agreement to the new
+terms, then it MUST return an error response with status code 403 (Forbidden)
+and type "urn:ietf:params:acme:error:agreementRequired".  This response MUST
+include a Link header with link relation "terms-of-service" and the latest
 terms-of-service URL.
 
-The server MAY also include an "action" field in the problem document returned
-with the error, indicating a URL that the client should direct a human user to
-visit in order for instructions on how to agree to the terms.
+The problem document returned with the error MUST also include an "instance"
+field, indicating a URL that the client should direct a human user to visit in
+order for instructions on how to agree to the terms.
 
 ~~~~~
 HTTP/1.1 403 Forbidden
@@ -1086,16 +1086,9 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:agreementRequired"
   "detail": "Terms of service have changed"
-  "action": "http://example.com/agreement/?token=W8Ih3PswD-8"
+  "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
 }
 ~~~~~
-
-If an "action" field is provided, then the client indicates its agreement by
-visiting the indicated URL.  Otherwise, the client update sits registration to
-set the "terms-of-service-agreed" field to "true".  Note that this latter action
-is only supported for new accounts that have not previously agreed to terms, so
-if a server requires a second agreement on a change of terms, then it MUST
-include an "action" URL when it returns an "agreementRequired" error.
 
 
 ### Account Key Roll-over
