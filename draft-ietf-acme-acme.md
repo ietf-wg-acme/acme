@@ -798,7 +798,7 @@ status (required, string):
 
 All additional fields are specified by the requirement type.
 
-##### Authorization Requirement
+#### Authorization Requirement
 
 A requirement with type "authorization" requests that the ACME client complete
 an authorization transaction.  The server specifies the authorization by
@@ -812,7 +812,7 @@ To fulfill this requirement, the ACME client should fetch the authorization obje
 from the indicated URL, then follow the process for obtaining authorization as
 specified in {{identifier-authorization}}.
 
-##### Out-of-Band Requirement
+#### Out-of-Band Requirement
 
 A requirement with type "out-of-band" requests that the ACME client have a
 human user visit a web page in order to receive further instructions for how to
