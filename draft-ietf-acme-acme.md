@@ -1031,17 +1031,30 @@ response with status code 403 (Forbidden) and type
 Link header with link relation "terms-of-service" and the latest
 terms-of-service URL.
 
-If a client receives an "agreementRequired" error and is willing to agree to the
-terms of service referenced in the Link header, then it SHOULD update its
-registration to indicate its agreement, then retry the original request.
+The server MAY also include an "action" field in the problem document returned
+with the error, indicating a URL that the client should direct a human user to
+visit in order for instructions on how to agree to the terms.
 
-The "agreementRequired" error allows CAs to clearly express when agreement to
-terms is required, both for new registrations that have not agreed to any terms,
-and for existing registrations that may have agreed to an older version of the
-terms. If a CA makes a change to its terms of service or terms-of-service URL
-that requires the client to re-agree, then it MUST either remove the
-"terms-of-service-agreed" field from the client's registration object or set it
-to "false".
+~~~~~
+HTTP/1.1 403 Forbidden
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+Content-Type: application/problem+json
+Content-Language: en
+
+{
+  "type": "urn:ietf:params:acme:error:agreementRequired"
+  "detail": "Terms of service have changed"
+  "action": "http://example.com/agreement/?token=W8Ih3PswD-8"
+}
+~~~~~
+
+If an "action" field is provided, then the client indicates its agreement by
+visiting the indicated URL.  Otherwise, the client update sits registration to
+set the "terms-of-service-agreed" field to "true".  Note that this latter action
+is only supported for new accounts that have not previously agreed to terms, so
+if a server requires a second agreement on a change of terms, then it MUST
+include an "action" URL when it returns an "agreementRequired" error.
+
 
 ### Account Key Roll-over
 
