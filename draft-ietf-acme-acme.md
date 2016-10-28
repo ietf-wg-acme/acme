@@ -703,7 +703,9 @@ Link: href="/acme/reg/1/apps?cursor=2", rel="next"
 {
   "applications": [
     "https://example.com/acme/reg/1/apps/1",
-    "https://example.com/acme/reg/1/apps/2"
+    "https://example.com/acme/reg/1/apps/2",
+    /* 47 more URLs not shown for example brevity */
+    "https://example.com/acme/reg/1/apps/50"
   ]
 }
 ~~~~~~~~~~
