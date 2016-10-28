@@ -681,8 +681,34 @@ updateable by the client.
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
   ],
-  "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert"
+  "terms-of-service-agreed": true,
+  "applications": "https://example.com/acme/reg/1/apps"
+}
+~~~~~~~~~~
+
+#### Applications List
+
+Each registration object includes an applications URI from which a list of
+applications created by the registration can be fetched via GET request. The
+result of the GET request MUST be a JSON object whose "applications" field is an
+array of URIs, each identifying an applications belonging to the registration.
+The server SHOULD include pending applications, and SHOULD NOT include
+applications that are invalid in the array of URIs. The server MAY return an
+incomplete list, along with a Link header with link relation “next” indicating
+a URL to retrieve further entries.
+
+~~~~~~~~~~
+HTTP/1.1 200 OK
+Content-Type: application/json
+Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+
+{
+  "applications": [
+    "https://example.com/acme/reg/1/apps/1",
+    "https://example.com/acme/reg/1/apps/2",
+    /* 47 more URLs not shown for example brevity */
+    "https://example.com/acme/reg/1/apps/50"
+  ]
 }
 ~~~~~~~~~~
 
@@ -802,7 +828,6 @@ url (required, string):
 
 To fulfill this requirement, the ACME client should direct the user to the
 indicated web page.
-
 
 ### Authorization Objects
 
@@ -935,11 +960,17 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", "authorizations", and
-"certificates" fields in registration bodies sent by the client, as well as any
-other fields that it does not recognize.  If new fields are specified in the
-future, the specification of those fields MUST describe whether they may be
-provided by the client.
+The server MUST ignore any values provided in the "key", and "applications"
+fields in registration bodies sent by the client, as well as any other fields
+that it does not recognize.  If new fields are specified in the future, the
+specification of those fields MUST describe whether they may be provided by the
+client.
+
+The server SHOULD validate that the contact URLs in the "contact" field are
+valid and supported by the server.  If the client provides the server with an
+invalid or unsupported contact URL, then the server MUST return an error of type
+"invalidContact", with a description describing the error and what types of
+contact URL the server considers acceptable.
 
 The server creates a registration object with the included contact information.
 The "key" element of the registration is set to the public key used to verify
@@ -978,9 +1009,10 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the registration URI.  The server MUST
-ignore any updates to the "key", "authorizations, or "certificates" fields, and
-MUST verify that the request is signed with the private key corresponding to the
-"key" field of the request before updating the registration.
+ignore any updates to the "key", or "applications" fields or any other fields it
+does not recognize. The server MUST verify that the request is signed with the
+private key corresponding to the "key" field of the request before updating the
+registration.
 
 For example, to update the contact information in the above registration, the
 client could send the following request:
@@ -1723,8 +1755,7 @@ authorization.
 
 The client's response to this challenge indicates its agreement to this
 challenge by sending the server the key authorization covering the challenge's
-token and the client's account key.  In addition, the client MAY advise the
-server at which IP the challenge is provisioned.
+token and the client's account key.
 
 keyAuthorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
@@ -1751,7 +1782,8 @@ domain by verifying that the resource was provisioned as expected.
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
-3. Dereference the URI using an HTTP GET request.
+3. Dereference the URI using an HTTP GET request.  This request MUST be sent to
+   TCP port 80 on the server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the server matches the token for
@@ -1833,12 +1865,13 @@ of the domain by verifying that the TLS server was configured appropriately,
 using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
-2. Open a TLS connection to the domain name being validated on the requested
-   port, presenting SAN A in the SNI field.  In the ClientHello initiating the
-   TLS handshake, the server MUST include a server\_name extension (i.e., SNI)
-   containing SAN A. The server SHOULD ensure that it does not reveal SAN B in
-   any way when making the TLS connection, such that the presentation of SAN B
-   in the returned certificate proves association with the client.
+2. Open a TLS connection to the domain name being validated, presenting SAN A in
+   the SNI field. This connection MUST be sent to TCP port 443 on the server. In
+   the ClientHello initiating the TLS handshake, the server MUST include
+   a server\_name extension (i.e., SNI) containing SAN A. The server SHOULD
+   ensure that it does not reveal SAN B in any way when making the TLS
+   connection, such that the presentation of SAN B in the returned certificate
+   proves association with the client.
 3. Verify that the certificate contains a subjectAltName extension containing
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
