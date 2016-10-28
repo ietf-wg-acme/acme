@@ -961,6 +961,12 @@ that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they may be provided by the
 client.
 
+The server SHOULD validate that the contact URLs in the "contact" field are
+valid and supported by the server.  If the client provides the server with an
+invalid or unsupported contact URL, then the server MUST return an error of type
+"invalidContact", with a description describing the error and what types of
+contact URL the server considers acceptable.
+
 The server creates a registration object with the included contact information.
 The "key" element of the registration is set to the public key used to verify
 the JWS (i.e., the "jwk" element of the JWS header).  The server returns this
