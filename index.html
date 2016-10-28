@@ -878,7 +878,7 @@ Content-Type: application/json
   <dt>agreement (optional, string):</dt>
   <dd style="margin-left: 8">A URI referring to a subscriber agreement or terms of service provided by the server (see below).  Including this field indicates the client&#8217;s agreement with the referenced terms.</dd>
   <dt>applications (required, string):</dt>
-  <dd style="margin-left: 8">A URI from which a list of authorizations submitted by this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;applications&#8221; field is an array of strings, where each string is the URI of an authorization belonging to this registration.  The server SHOULD include pending applications, and SHOULD NOT include applications that are invalid. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</dd>
+  <dd style="margin-left: 8">A URI from which an array of URIs for application objects submitted by this account can be fetched via a GET request.</dd>
 </dl>
 <pre>
 {
@@ -887,8 +887,23 @@ Content-Type: application/json
     "tel:+12025551212"
   ],
   "agreement": "https://example.com/acme/terms",
-  "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert"
+  "applications": "https://example.com/acme/reg/1/apps"
+}
+</pre>
+<h1 id="rfc.section.6.1.2.1"><a href="#rfc.section.6.1.2.1">6.1.2.1.</a> <a href="#applications-list" id="applications-list">Applications List</a></h1>
+<p id="rfc.section.6.1.2.1.p.1">Each registration object includes an applications URI from which a list of applications created by the registration can be fetched via GET request. The result of the GET request MUST be a JSON object whose &#8220;applications&#8221; field is an array of URIs, each identifying an applications belonging to the registration.  The server SHOULD include pending applications, and SHOULD NOT include applications that are invalid in the array of URIs. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</p>
+<pre>
+HTTP/1.1 200 OK
+Content-Type: application/json
+Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+
+{
+  "applications": [
+    "https://example.com/acme/reg/1/apps/1",
+    "https://example.com/acme/reg/1/apps/2",
+    /* 47 more URLs not shown for example brevity */
+    "https://example.com/acme/reg/1/apps/50"
+  ]
 }
 </pre>
 <h1 id="rfc.section.6.1.3"><a href="#rfc.section.6.1.3">6.1.3.</a> <a href="#application-objects" id="application-objects">Application Objects</a></h1>
@@ -1039,7 +1054,7 @@ Content-Type: application/jose+json
   "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
 }
 </pre>
-<p id="rfc.section.6.3.p.2">The server MUST ignore any values provided in the &#8220;key&#8221;, &#8220;authorizations&#8221;, and &#8220;certificates&#8221; fields in registration bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they may be provided by the client.</p>
+<p id="rfc.section.6.3.p.2">The server MUST ignore any values provided in the &#8220;key&#8221;, and &#8220;applications&#8221; fields in registration bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they may be provided by the client.</p>
 <p id="rfc.section.6.3.p.3">The server creates a registration object with the included contact information.  The &#8220;key&#8221; element of the registration is set to the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header).  The server returns this registration object in a 201 (Created) response, with the registration URI in a Location header field.</p>
 <p id="rfc.section.6.3.p.4">If the server already has a registration object with the provided account key, then it MUST return a 200 (OK) response and provide the URI of that registration in a Content-Location header field.  This allows a client that has an account key but not the corresponding registration URI to recover the registration URI.</p>
 <p id="rfc.section.6.3.p.5">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URI where such terms can be accessed in a Link header with link relation &#8220;terms-of-service&#8221;.  As noted above, the client may indicate its agreement with these terms by updating its registration to include the &#8220;agreement&#8221; field, with the terms URI as its value.  When these terms change in a way that requires an agreement update, the server MUST use a different URI in the Link header.</p>
@@ -1061,7 +1076,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
   ]
 }
 </pre>
-<p id="rfc.section.6.3.p.6">If the client wishes to update this information in the future, it sends a POST request with updated information to the registration URI.  The server MUST ignore any updates to the &#8220;key&#8221;, &#8220;authorizations, or &#8220;certificates&#8221; fields, and MUST verify that the request is signed with the private key corresponding to the &#8220;key&#8221; field of the request before updating the registration.</p>
+<p id="rfc.section.6.3.p.6">If the client wishes to update this information in the future, it sends a POST request with updated information to the registration URI.  The server MUST ignore any updates to the &#8220;key&#8221;, or &#8220;applications&#8221; fields or any other fields it does not recognize. The server MUST verify that the request is signed with the private key corresponding to the &#8220;key&#8221; field of the request before updating the registration.</p>
 <p id="rfc.section.6.3.p.7">For example, to update the contact information in the above registration, the client could send the following request:</p>
 <pre>
 POST /acme/reg/asdf HTTP/1.1
