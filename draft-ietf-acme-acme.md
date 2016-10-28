@@ -668,13 +668,8 @@ server (see below).  Including this field indicates the client's agreement with
 the referenced terms.
 
 applications (required, string):
-: A URI from which a list of authorizations submitted by this account can be
-fetched via a GET request.  The result of the GET request MUST be a JSON object
-whose "applications" field is an array of strings, where each string is the URI
-of an authorization belonging to this registration.  The server SHOULD include
-pending applications, and SHOULD NOT include applications that are invalid. The
-server MAY return an incomplete list, along with a Link header with link
-relation "next" indicating a URL to retrieve further entries.
+: A URI from which an array of URIs for application objects submitted by this
+account can be fetched via a GET request.
 
 ~~~~~~~~~~
 {
@@ -683,8 +678,33 @@ relation "next" indicating a URL to retrieve further entries.
     "tel:+12025551212"
   ],
   "agreement": "https://example.com/acme/terms",
-  "authorizations": "https://example.com/acme/reg/1/authz",
-  "certificates": "https://example.com/acme/reg/1/cert"
+  "applications": "https://example.com/acme/reg/1/apps"
+}
+~~~~~~~~~~
+
+#### Applications List
+
+Each registration object includes an applications URI from which a list of
+applications created by the registration can be fetched via GET request. The
+result of the GET request MUST be a JSON object whose "applications" field is an
+array of URIs, each identifying an applications belonging to the registration.
+The server SHOULD include pending applications, and SHOULD NOT include
+applications that are invalid in the array of URIs. The server MAY return an
+incomplete list, along with a Link header with link relation “next” indicating
+a URL to retrieve further entries.
+
+~~~~~~~~~~
+HTTP/1.1 200 OK
+Content-Type: application/json
+Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+
+{
+  "applications": [
+    "https://example.com/acme/reg/1/apps/1",
+    "https://example.com/acme/reg/1/apps/2",
+    /* 47 more URLs not shown for example brevity */
+    "https://example.com/acme/reg/1/apps/50"
+  ]
 }
 ~~~~~~~~~~
 
@@ -804,7 +824,6 @@ url (required, string):
 
 To fulfill this requirement, the ACME client should direct the user to the
 indicated web page.
-
 
 ### Authorization Objects
 
@@ -936,11 +955,11 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", "authorizations", and
-"certificates" fields in registration bodies sent by the client, as well as any
-other fields that it does not recognize.  If new fields are specified in the
-future, the specification of those fields MUST describe whether they may be
-provided by the client.
+The server MUST ignore any values provided in the "key", and "applications"
+fields in registration bodies sent by the client, as well as any other fields
+that it does not recognize.  If new fields are specified in the future, the
+specification of those fields MUST describe whether they may be provided by the
+client.
 
 The server creates a registration object with the included contact information.
 The "key" element of the registration is set to the public key used to verify
@@ -982,9 +1001,10 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the registration URI.  The server MUST
-ignore any updates to the "key", "authorizations, or "certificates" fields, and
-MUST verify that the request is signed with the private key corresponding to the
-"key" field of the request before updating the registration.
+ignore any updates to the "key", or "applications" fields or any other fields it
+does not recognize. The server MUST verify that the request is signed with the
+private key corresponding to the "key" field of the request before updating the
+registration.
 
 For example, to update the contact information in the above registration, the
 client could send the following request:
