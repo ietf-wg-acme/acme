@@ -672,7 +672,7 @@ server's requirements, and any certificates that have resulted from this
 application.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "pending", "valid",
+: The status of this application.  Possible values are: "pending", "valid",
 and "invalid".
 
 expires (optional, string):
