@@ -304,16 +304,18 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS Protected Header MUST include the following fields:
   * "alg"
   * "jwk" (only for requests to new-reg and revoke-cert resources)
-  * "kid" (for all requests except for new-reg and revoke-cert requests).
+  * "kid" (for all other requests).
   * "nonce" (defined below)
   * "url" (defined below)
 
-For new-reg requests, there MUST be a
-"jwk" field containing the key being registered, and there MUST NOT be a
-"kid" field.
+The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
+that contain both.
 
-For all other requests, there MUST be a "kid" field containing the account URI
-received by POSTing to the new-reg resource.
+For new-reg requests, and for revoke-cert requests authenticated by certificate
+key, there MUST be a "jwk" field.
+
+For all other requests, there MUST be a "kid" field. This field must
+contain the account URI received by POSTing to the new-reg resource.
 
 Note that authentication via signed POST implies that GET requests
 are not authenticated.  Servers MUST NOT respond to GET requests for
@@ -523,10 +525,9 @@ ACME is structured as a REST application with a few types of resources:
 
 The server MUST provide "directory" and "new-nonce" resources.
 
-For the singular resources above ("directory", "new-nonce",
-"new-registration", "new-application", "revoke-certificate", and
-"key-change") the resource may be addressed by multiple URIs, but all
-must provide equivalent functionality.
+For the singular resources above ("directory", "new-nonce", "new-registration",
+"new-application", "revoke-certificate", and "key-change") the resource may be
+addressed by multiple URIs, but all must provide equivalent functionality.
 
 ACME uses different URIs for different management functions. Each function is
 listed in a directory along with its corresponding URI, so clients only need to
@@ -1005,7 +1006,7 @@ Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
-  "key": { /* JWK */ },
+  "key": { /* JWK from JWS header */ },
   "status": "valid",
 
   "contact": [
@@ -1568,7 +1569,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/reg/asdf", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   })
@@ -1580,10 +1581,16 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
+Revocation requests are different from other ACME request in that they can be
+signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
-authorized any account key that is authorized to act for all of the identifier(s) in the
-certificate.
+at least the following keys authorized for a given certificate:
+
+* the public key in the certificate.
+
+* an account key that is authorized to act for all of the identifier(s) in the
+  certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
 the revocation fails, the server returns an error.
@@ -1606,6 +1613,7 @@ Content-Language: en
   "instance": "http://example.com/doc/unauthorized"
 }
 ~~~~~~~~~~
+
 
 # Identifier Validation Challenges
 
