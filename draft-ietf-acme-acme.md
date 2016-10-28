@@ -173,8 +173,7 @@ The first phase of ACME is for the client to register with the ACME server.  The
 client generates an asymmetric key pair and associates this key pair with a set
 of contact information by signing the contact information.  The server
 acknowledges the registration by replying with a registration object echoing the
-client's input.  The server can also provide terms of service at this stage,
-which the client can present to a human user.
+client's input.
 
 ~~~~~~~~~~
       Client                                                  Server
@@ -183,7 +182,6 @@ which the client can present to a human user.
       Signature                     ------->
 
                                     <-------            Registration
-                                                    Terms of Service
 ~~~~~~~~~~
 
 
@@ -664,7 +662,7 @@ account key pair.  Registration resources have the following structure:
 
 key (required, dictionary):
 : The public key of the account key pair, encoded as a JSON Web Key object
-{{!RFC7517}}.
+{{!RFC7517}}. This field is not updateable by the client.
 
 status (required, string):
 : The status of this registration. Possible values are: "valid", "deactivated",
@@ -677,14 +675,20 @@ contact (optional, array of string):
 related to this authorization. For example, the server may wish to notify the
 client about server-initiated revocation.
 
-agreement (optional, string):
-: A URI referring to a subscriber agreement or terms of service provided by the
-server (see below).  Including this field indicates the client's agreement with
-the referenced terms.
+terms-of-service-agreed (optional, boolean):
+: Including this field in a new-registration request, with a value of true,
+indicates the client's agreement with the terms of service. This field is not
+updateable by the client.
 
 applications (required, string):
-: A URI from which an array of URIs for application objects submitted by this
-account can be fetched via a GET request.
+: A URI from which a list of authorizations submitted by this account can be
+fetched via a GET request.  The result of the GET request MUST be a JSON object
+whose "applications" field is an array of strings, where each string is the URI
+of an authorization belonging to this registration.  The server SHOULD include
+pending applications, and SHOULD NOT include applications that are invalid. The
+server MAY return an incomplete list, along with a Link header with link
+relation "next" indicating a URL to retrieve further entries. This field is not
+updateable by the client.
 
 ~~~~~~~~~~
 {
@@ -692,7 +696,7 @@ account can be fetched via a GET request.
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
   ],
-  "agreement": "https://example.com/acme/terms",
+  "terms-of-service-agreed": true,
   "applications": "https://example.com/acme/reg/1/apps"
 }
 ~~~~~~~~~~
@@ -961,6 +965,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-reg"
   })
   "payload": base64url({
+    "terms-of-service-agreed": true,
     "contact": [
       "mailto:cert-admin@example.com",
       "tel:+12025551212"
@@ -995,18 +1000,15 @@ key but not the corresponding registration URI to recover the registration URI.
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
-in a Link header with link relation "terms-of-service".  As noted above, the
-client may indicate its agreement with these terms by updating its registration
-to include the "agreement" field, with the terms URI as its value.  When these
-terms change in a way that requires an agreement update, the server MUST
-use a different URI in the Link header.
+in the "terms-of-service" subfield of the "meta" field in the directory object,
+and the server SHOULD reject new-registration requests that do not contain
+"terms-of-service-agreed": true.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/reg/asdf
-Link: <https://example.com/acme/terms>;rel="terms-of-service"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
