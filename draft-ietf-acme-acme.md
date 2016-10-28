@@ -303,12 +303,23 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have the value "none" in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
-  * "jwk"
+  * "jwk" (only for requests to new-reg and revoke-cert resources)
+  * "kid" (for all other requests).
   * "nonce" (defined below)
   * "url" (defined below)
 
-Note that this implies that GET requests are not authenticated.  Servers MUST
-NOT respond to GET requests for resources that might be considered sensitive.
+The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
+that contain both.
+
+For new-reg requests, and for revoke-cert requests authenticated by certificate
+key, there MUST be a "jwk" field.
+
+For all other requests, there MUST be a "kid" field. This field must
+contain the account URI received by POSTing to the new-reg resource.
+
+Note that authentication via signed POST implies that GET requests
+are not authenticated.  Servers MUST NOT respond to GET requests for
+resources that might be considered sensitive.
 
 In the examples below, JWS objects are shown in the JSON or flattened JSON
 serialization, with the protected header and payload expressed as
@@ -317,7 +328,7 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 
 ## Equivalence of JWKs
 
-At several points in the protocol, it is necessary for the server to determine
+At some points in the protocol, it is necessary for the server to determine
 whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
 In performing these checks, the
 server MUST consider two JWKs to match if and only if they have the identical
@@ -1026,7 +1037,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
     "url": "https://example.com/acme/reg/asdf"
   })
@@ -1142,7 +1153,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
     "url": "https://example.com/acme/reg/asdf"
   })
@@ -1194,7 +1205,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-app"
   })
@@ -1430,7 +1441,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
   })
@@ -1516,7 +1527,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
   })
@@ -1561,7 +1572,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   })
