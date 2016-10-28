@@ -303,12 +303,23 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have the value "none" in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
-  * "jwk"
+  * "jwk" (only for requests to new-reg and revoke-cert resources)
+  * "kid" (for all other requests).
   * "nonce" (defined below)
   * "url" (defined below)
 
-Note that this implies that GET requests are not authenticated.  Servers MUST
-NOT respond to GET requests for resources that might be considered sensitive.
+The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
+that contain both.
+
+For new-reg requests, and for revoke-cert requests authenticated by certificate
+key, there MUST be a "jwk" field.
+
+For all other requests, there MUST be a "kid" field. This field must
+contain the account URI received by POSTing to the new-reg resource.
+
+Note that authentication via signed POST implies that GET requests
+are not authenticated.  Servers MUST NOT respond to GET requests for
+resources that might be considered sensitive.
 
 In the examples below, JWS objects are shown in the JSON or flattened JSON
 serialization, with the protected header and payload expressed as
@@ -317,7 +328,7 @@ is readable.  Some fields are omitted for brevity, marked with "...".
 
 ## Equivalence of JWKs
 
-At several points in the protocol, it is necessary for the server to determine
+At some points in the protocol, it is necessary for the server to determine
 whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
 In performing these checks, the
 server MUST consider two JWKs to match if and only if they have the identical
@@ -656,7 +667,10 @@ key (required, dictionary):
 {{!RFC7517}}.
 
 status (required, string):
-: "valid" or "deactivated"
+: The status of this registration. Possible values are: "valid", "deactivated",
+and "revoked". "deactivated" should be used to indicate user initiated
+deactivation whereas "revoked" should be used to indicate administratively
+initiated deactivation.
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
@@ -718,8 +732,8 @@ server's requirements, and any certificates that have resulted from this
 application.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "unknown", "pending",
-"processing", "valid", and "invalid".
+: The status of this application.  Possible values are: "pending", "valid",
+and "invalid".
 
 expires (optional, string):
 : The timestamp after which the server will consider this application invalid,
@@ -846,9 +860,9 @@ identifier (required, dictionary of string):
   : The identifier itself.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "unknown", "pending",
-"processing", "valid", "invalid" and "revoked".  If this field is missing, then
-the default value is "pending".
+: The status of this authorization.  Possible values are: "pending", "processing",
+"valid", "invalid" and "revoked".  If this field is missing, then the default
+value is "pending".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -962,6 +976,12 @@ that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they may be provided by the
 client.
 
+The server SHOULD validate that the contact URLs in the "contact" field are
+valid and supported by the server.  If the client provides the server with an
+invalid or unsupported contact URL, then the server MUST return an error of type
+"invalidContact", with a description describing the error and what types of
+contact URL the server considers acceptable.
+
 The server creates a registration object with the included contact information.
 The "key" element of the registration is set to the public key used to verify
 the JWS (i.e., the "jwk" element of the JWS header).  The server returns this
@@ -1018,7 +1038,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
     "url": "https://example.com/acme/reg/asdf"
   })
@@ -1172,7 +1192,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
     "url": "https://example.com/acme/reg/asdf"
   })
@@ -1224,7 +1244,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-app"
   })
@@ -1460,7 +1480,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
   })
@@ -1546,7 +1566,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
   })
@@ -1591,7 +1611,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/reg/asdf", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   })
