@@ -986,7 +986,7 @@ key but not the corresponding registration URI to recover the registration URI.
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
 in the "terms-of-service" subfield of the "meta" field in the directory object,
-and the server MAY reject new-registration requests that do not contain
+and the server SHOULD reject new-registration requests that do not contain
 "terms-of-service-agreed": true.
 
 ~~~~~~~~~~
