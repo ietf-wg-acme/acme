@@ -512,7 +512,7 @@ li, p {
 <h1 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#protocol-overview" id="protocol-overview">Protocol Overview</a></h1>
 <p id="rfc.section.4.p.1">ACME allows a client to request certificate management actions using a set of JSON messages carried over HTTPS.   In some ways, ACME functions much like a traditional CA, in which a user creates an account, adds identifiers to that account (proving control of the domains), and requests certificate issuance for those domains while logged in to the account.</p>
 <p id="rfc.section.4.p.2">In ACME, the account is represented by an account key pair.  The &#8220;add a domain&#8221; function is accomplished by authorizing the key pair for a given domain.  Certificate issuance and revocation are authorized by a signature with the key pair.</p>
-<p id="rfc.section.4.p.3">The first phase of ACME is for the client to register with the ACME server.  The client generates an asymmetric key pair and associates this key pair with a set of contact information by signing the contact information.  The server acknowledges the registration by replying with a registration object echoing the client&#8217;s input.  The server can also provide terms of service at this stage, which the client can present to a human user.</p>
+<p id="rfc.section.4.p.3">The first phase of ACME is for the client to register with the ACME server.  The client generates an asymmetric key pair and associates this key pair with a set of contact information by signing the contact information.  The server acknowledges the registration by replying with a registration object echoing the client&#8217;s input.</p>
 <pre>
       Client                                                  Server
 
@@ -520,7 +520,6 @@ li, p {
       Signature                     -------&gt;
 
                                     &lt;-------            Registration
-                                                    Terms of Service
 </pre>
 <p id="rfc.section.4.p.4">Once the client is registered, there are three major steps it needs to take to get a certificate:</p>
 <p/>
@@ -873,15 +872,15 @@ Content-Type: application/json
 
 <dl>
   <dt>key (required, dictionary):</dt>
-  <dd style="margin-left: 8">The public key of the account key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>.</dd>
+  <dd style="margin-left: 8">The public key of the account key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>. This field is not updateable by the client.</dd>
   <dt>status (required, string):</dt>
   <dd style="margin-left: 8">The status of this registration. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;. &#8220;deactivated&#8221; should be used to indicate user initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate administratively initiated deactivation.</dd>
   <dt>contact (optional, array of string):</dt>
   <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this authorization. For example, the server may wish to notify the client about server-initiated revocation.</dd>
-  <dt>agreement (optional, string):</dt>
-  <dd style="margin-left: 8">A URI referring to a subscriber agreement or terms of service provided by the server (see below).  Including this field indicates the client&#8217;s agreement with the referenced terms.</dd>
+  <dt>terms-of-service-agreed (optional, boolean):</dt>
+  <dd style="margin-left: 8">Including this field in a new-registration request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field is not updateable by the client.</dd>
   <dt>applications (required, string):</dt>
-  <dd style="margin-left: 8">A URI from which an array of URIs for application objects submitted by this account can be fetched via a GET request.</dd>
+  <dd style="margin-left: 8">A URI from which a list of authorizations submitted by this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;applications&#8221; field is an array of strings, where each string is the URI of an authorization belonging to this registration.  The server SHOULD include pending applications, and SHOULD NOT include applications that are invalid. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries. This field is not updateable by the client.</dd>
 </dl>
 <pre>
 {
@@ -889,7 +888,7 @@ Content-Type: application/json
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
   ],
-  "agreement": "https://example.com/acme/terms",
+  "terms-of-service-agreed": true,
   "applications": "https://example.com/acme/reg/1/apps"
 }
 </pre>
@@ -1049,6 +1048,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-reg"
   })
   "payload": base64url({
+    "terms-of-service-agreed": true,
     "contact": [
       "mailto:cert-admin@example.com",
       "tel:+12025551212"
@@ -1061,13 +1061,12 @@ Content-Type: application/jose+json
 <p id="rfc.section.6.3.p.3">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server.  If the client provides the server with an invalid or unsupported contact URL, then the server MUST return an error of type &#8220;invalidContact&#8221;, with a description describing the error and what types of contact URL the server considers acceptable.</p>
 <p id="rfc.section.6.3.p.4">The server creates a registration object with the included contact information.  The &#8220;key&#8221; element of the registration is set to the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header).  The server returns this registration object in a 201 (Created) response, with the registration URI in a Location header field.</p>
 <p id="rfc.section.6.3.p.5">If the server already has a registration object with the provided account key, then it MUST return a 200 (OK) response and provide the URI of that registration in a Content-Location header field.  This allows a client that has an account key but not the corresponding registration URI to recover the registration URI.</p>
-<p id="rfc.section.6.3.p.6">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URI where such terms can be accessed in a Link header with link relation &#8220;terms-of-service&#8221;.  As noted above, the client may indicate its agreement with these terms by updating its registration to include the &#8220;agreement&#8221; field, with the terms URI as its value.  When these terms change in a way that requires an agreement update, the server MUST use a different URI in the Link header.</p>
+<p id="rfc.section.6.3.p.6">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URI where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server SHOULD reject new-registration requests that do not contain &#8220;terms-of-service-agreed&#8221;: true.</p>
 <pre>
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/reg/asdf
-Link: &lt;https://example.com/acme/terms&gt;;rel="terms-of-service"
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
 {
