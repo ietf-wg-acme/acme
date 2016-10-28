@@ -1067,11 +1067,11 @@ service by setting the "terms-of-service-agreed" field in its registration
 object to "true".
 
 If the server has changed its terms of service since a client initially agreed,
-and the server is unwilling to process a request without agreement to the new
-terms, then it MUST return an error response with status code 403 (Forbidden)
-and type "urn:ietf:params:acme:error:agreementRequired".  This response MUST
-include a Link header with link relation "terms-of-service" and the latest
-terms-of-service URL.
+and the server is unwilling to process a request without explicit agreement to
+the new terms, then it MUST return an error response with status code 403
+(Forbidden) and type "urn:ietf:params:acme:error:agreementRequired".  This
+response MUST include a Link header with link relation "terms-of-service" and
+the latest terms-of-service URL.
 
 The problem document returned with the error MUST also include an "instance"
 field, indicating a URL that the client should direct a human user to visit in
