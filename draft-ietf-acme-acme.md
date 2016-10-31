@@ -1002,7 +1002,9 @@ If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
 in the "terms-of-service" subfield of the "meta" field in the directory object,
 and the server MUST reject new-registration requests that do not have the
-"terms-of-service-agreed" set to "true".
+"terms-of-service-agreed" set to "true".  Clients SHOULD NOT automatically agree
+to terms by default.  Rather, they SHOULD require some user interaction for
+agreement to terms.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
@@ -2442,6 +2444,11 @@ perform, for example:
 
 CAs that use ACME to automate issuance will need to ensure that their servers
 perform all necessary checks before issuing.
+
+CAs using ACME to allow clients to agree to terms of service should keep in mind
+that ACME clients can automate this agreement, possibly not involving a human
+user.  If a CA wishes to have stronger evidence of user consent, it may present
+an out-of-band requirement or challenge to require human involvement.
 
 # Operational Considerations
 
