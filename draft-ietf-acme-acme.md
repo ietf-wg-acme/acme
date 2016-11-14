@@ -1347,7 +1347,7 @@ a server starts up.
 In some cases, a CA running an ACME server might have a completely external,
 non-ACME process for authorizing a client to issue for an identifier.  In these
 case, the CA should provision its ACME server with authorization objects
-corresponding to thsee authorizations and reflect them as alread-valid
+corresponding to these authorizations and reflect them as already-valid
 requirements in any issuance applications requested by the client.
 
 If a CA wishes to allow pre-authorization within ACME, it can offer a "new
