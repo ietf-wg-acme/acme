@@ -482,7 +482,7 @@ to errors, this document defines the following standard tokens for use in the
 | invalidContact        | The contact URI for a registration was invalid     |
 | rejectedIdentifier    | The server will not issue for the identifier       |
 | unsupportedIdentifier | Identifier is not supported, but may be in future  |
-| agreementRequired     | The client must agree to terms before proceeding   |
+| userActionRequired    | The user must visit a URL before proceeding        |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -1071,7 +1071,7 @@ object to "true".
 If the server has changed its terms of service since a client initially agreed,
 and the server is unwilling to process a request without explicit agreement to
 the new terms, then it MUST return an error response with status code 403
-(Forbidden) and type "urn:ietf:params:acme:error:agreementRequired".  This
+(Forbidden) and type "urn:ietf:params:acme:error:userActionRequired".  This
 response MUST include a Link header with link relation "terms-of-service" and
 the latest terms-of-service URL.
 
@@ -1086,7 +1086,7 @@ Content-Type: application/problem+json
 Content-Language: en
 
 {
-  "type": "urn:ietf:params:acme:error:agreementRequired"
+  "type": "urn:ietf:params:acme:error:userActionRequired"
   "detail": "Terms of service have changed"
   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
 }
