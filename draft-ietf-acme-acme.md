@@ -189,7 +189,7 @@ Once the client is registered, there are three major steps it needs to take to
 get a certificate:
 
 1. Apply for a certificate to be issued
-2. Fulfill the server's requirements for issuance
+2. Prove control of any identifiers requested in the certificate
 3. Await issuance and download the issued certificate
 
 The client's application for a certificate describes the desired certificate
@@ -214,8 +214,8 @@ and make it available to the client.
 ~~~~~~~~~~
       Application
       Signature                     ------->
-                                    <-------            Requirements
-                                                  (e.g., Challenges)
+                                                             Required
+                                    <-------           Authorizations
 
       Responses
       Signature                     ------->
@@ -731,11 +731,11 @@ Link: href="/acme/reg/1/apps?cursor=2", rel="next"
 
 ### Application Objects
 
-An ACME application object represents a client's request for a certificate,
-and is used to track the progress of that application through to issuance.
-Thus, the object contains information about the requested certificate, the
-server's requirements, and any certificates that have resulted from this
-application.
+An ACME application object represents a client's request for a certificate, and
+is used to track the progress of that application through to issuance.  Thus,
+the object contains information about the requested certificate, the
+authorizations that the server requires the client to complete, and any
+certificates that have resulted from this application.
 
 status (required, string):
 : The status of this application.  Possible values are: "pending", "valid",
@@ -760,11 +760,19 @@ notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
 format defined in {{!RFC3339}}
 
-requirements (required, array):
-: The requirements that the client needs to fulfill before the requested
-certificate can be granted (for pending applications).  For final applications,
-the requirements that were met.  Each entry is a dictionary with parameters
-describing the requirement (see below).
+authorizations (required, array):
+: For pending applications, the authorizations that the client needs to complete
+before the requested certificate can be granted (see
+{{identifier-authorization}}).  For final applications, the authorizations that
+were completed.  Each entry is a dictionary with parameters describing the
+authorization:
+
+  status (required, string):
+  : The status of the authorization.  This field MUST have the same value as it
+  does in the underlying authorization object.
+
+  url (required, string):
+  : A URL from which the authorization can be fetched with a GET request.
 
 certificate (optional, string):
 : A URL for the certificate that has been issued in response to this
@@ -779,16 +787,14 @@ application.
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
-  "requirements": [
+  "authorizations": [
     {
-      "type": "authorization",
       "status": "valid",
       "url": "https://example.com/acme/authz/1234"
     },
     {
-      "type": "out-of-band",
       "status": "pending",
-      "url": "https://example.com/acme/payment/1234"
+      "url": "https://example.com/acme/authz/2345"
     }
   ]
 
@@ -796,55 +802,16 @@ application.
 }
 ~~~~~~~~~~
 
-The elements of the "requirements" array are immutable once set, except for
+The elements of the "authorizations" array are immutable once set, except for
 their "status" fields.  If any other part of the object changes after the object
 is created, the client MUST consider the application invalid.
 
-The "requirements" array in the challenge SHOULD reflect everything that the CA
-required the client to do before issuance, even if some requirements were
-fulfilled in earlier applications.  For example, if a CA allows multiple
-applications to be fufilled based on a single authorization transaction, then it
-must reflect that authorization in all of the applications.
-
-Each entry in the "requirements" array expresses a requirement from the CA for
-the client to take a particular action.  All requirements objects have the
-following basic fields:
-
-type (required, string):
-: The type of requirement (see below for defined types)
-
-status (required, string):
-: The status of this requirement.  Possible values are: "pending", "valid", and
-"invalid".
-
-All additional fields are specified by the requirement type.
-
-#### Authorization Requirement
-
-A requirement with type "authorization" requests that the ACME client complete
-an authorization transaction.  The server specifies the authorization by
-pre-provisioning a pending authorization resource and providing the URI for this
-resource in the requirement.
-
-url (required, string):
-: The URL for the authorization resource
-
-To fulfill this requirement, the ACME client should fetch the authorization object
-from the indicated URL, then follow the process for obtaining authorization as
-specified in {{identifier-authorization}}.
-
-#### Out-of-Band Requirement
-
-A requirement with type "out-of-band" requests that the ACME client have a
-human user visit a web page in order to receive further instructions for how to
-fulfill the requirement.  The requirement object provides a URI for the web
-page to be visited.
-
-url (required, string):
-: The URL to be visited.  The scheme of this URL MUST be "http" or "https"
-
-To fulfill this requirement, the ACME client should direct the user to the
-indicated web page.
+The "authorizations" array in the challenge SHOULD reflect all authorizations
+that the CA takes into account in deciding to issue, even if some authorizations
+were fulfilled in earlier applications or in pre-authorization transactions.
+For example, if a CA allows multiple applications to be fufilled based on a
+single authorization transaction, then it SHOULD reflect that authorization in
+all of the applications.
 
 ### Authorization Objects
 
@@ -1266,7 +1233,7 @@ indicate the required changes using an appropriate error code and description.
 
 If the server is willing to issue the requested certificate, it responds with a
 201 (Created) response.  The body of this response is an application object
-reflecting the client's request and any requirements the client must fulfill
+reflecting the client's request and any authorizations the client must complete
 before the certificate will be issued.
 
 ~~~~~~~~~~
@@ -1282,16 +1249,14 @@ Location: https://example.com/acme/app/asdf
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
-  "requirements": [
+  "authorizations": [
     {
-      "type": "authorization",
       "status": "valid",
       "url": "https://example.com/acme/authz/1234"
     },
     {
-      "type": "out-of-band",
       "status": "pending",
-      "url": "https://example.com/acme/payment/1234"
+      "url": "https://example.com/acme/authz/2345"
     }
   ]
 }
@@ -1300,11 +1265,12 @@ Location: https://example.com/acme/app/asdf
 The application object returned by the server represents a promise that if the
 client fulfills the server's requirements before the "expires" time, then the
 server will issue the requested certificate.  In the application object, any
-object in the "requirements" array whose status is "pending" represents an
-action that the client must perform before the server will issue the
-certificate.  If the client fails to complete the required actions before the
-"expires" time, then the server SHOULD change the status of the application to
-"invalid" and MAY delete the application resource.
+object in the "authorizations" array whose status is "pending" represents an
+authorization transaction that the client must complete before the server will
+issue the certificate (see {{identifier-authorization}}).  If the client fails
+to complete the required actions before the "expires" time, then the server
+SHOULD change the status of the application to "invalid" and MAY delete the
+application resource.
 
 The server MUST issue the requested certificate and update the application
 resource with a URL for the certificate as soon as the client has fulfilled the
@@ -1313,7 +1279,7 @@ requirements at the time of this request (e.g., by obtaining authorization for
 all of the identifiers in the certificate in previous transactions), then the
 server MUST proactively issue the requested certificate and provide a URL for it
 in the "certificate" field of the application.  The server MUST, however, still
-list the satisfied requirements in the "requirements" array, with the state
+list the completed authorizations in the "authorizations" array, with the state
 "valid".
 
 Once the client believes it has fulfilled the server's requirements, it should
@@ -1324,7 +1290,7 @@ status of the application will indicate what action the client should take:
   process abandoned.
 
 * "pending": The server does not believe that the client has fulfilled the
-  requirements.  Check the "requirements" array for requirements that are still
+  requirements.  Check the "authorizations" array for entries that are still
   pending.
 
 * "processing": The server agrees that the requirements have been fulfilled, and
@@ -1347,8 +1313,8 @@ a server starts up.
 In some cases, a CA running an ACME server might have a completely external,
 non-ACME process for authorizing a client to issue for an identifier.  In these
 case, the CA should provision its ACME server with authorization objects
-corresponding to these authorizations and reflect them as already-valid
-requirements in any issuance applications requested by the client.
+corresponding to these authorizations and reflect them as already valid
+in any issuance applications requested by the client.
 
 If a CA wishes to allow pre-authorization within ACME, it can offer a "new
 authorization" resource in its directory by adding the key "new-authz" with a
@@ -1512,11 +1478,11 @@ URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
 
-When a client receives an application from the server with an "authorization"
-requirement, it downloads the authorization resource by sending a GET request to
-the indicated URL.  If the client initiates authorization using a request to the
-new authorization resource, it will have already recevied the pending
-authorization object in the response to that request.
+When a client receives an application from the server with "pending" entry in
+the authorizations array, it downloads the authorization resource by sending a
+GET request to the indicated URL.  If the client initiates authorization using a
+request to the new authorization resource, it will have already recevied the
+pending authorization object in the response to that request.
 
 ~~~~~~~~~~
 GET /acme/authz/1234 HTTP/1.1
