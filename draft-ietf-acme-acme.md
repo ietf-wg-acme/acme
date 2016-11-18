@@ -188,14 +188,14 @@ client's input.
 Once the client is registered, there are three major steps it needs to take to
 get a certificate:
 
-1. Apply for a certificate to be issued
+1. Submit an order for a certificate to be issued
 2. Prove control of any identifiers requested in the certificate
 3. Await issuance and download the issued certificate
 
-The client's application for a certificate describes the desired certificate
-using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields
-that capture semantics that are not supported in the CSR format.  If the server
-is willing to consider issuing such a certificate, it responds with a list of
+The client's order for a certificate describes the desired certificate using a
+PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that
+capture semantics that are not supported in the CSR format.  If the server is
+willing to consider issuing such a certificate, it responds with a list of
 requirements that the client must satisfy before the certificate will be issued.
 
 For example, in most cases, the server will require the client to demonstrate
@@ -212,7 +212,7 @@ client has met its requirements, the server will issue the requested certificate
 and make it available to the client.
 
 ~~~~~~~~~~
-      Application
+      Order
       Signature                     ------->
                                                              Required
                                     <-------           Authorizations
@@ -499,7 +499,7 @@ In this section, we describe the certificate management functions that ACME
 enables:
 
   * Account Key Registration
-  * Application for a Certificate
+  * Ordering a Certificate
   * Account Key Authorization
   * Certificate Issuance
   * Certificate Revocation
@@ -509,7 +509,7 @@ enables:
 ACME is structured as a REST application with a few types of resources:
 
 * Account resources, representing information about an account
-* Application resources, representing an account's requests to issue certificates
+* Order resources, representing an account's requests to issue certificates
 * Authorization resources, representing an account's authorization to act for an
   identifier
 * Challenge resources, representing a challenge to prove control of an
@@ -518,14 +518,14 @@ ACME is structured as a REST application with a few types of resources:
 * A "directory" resource
 * A "new-nonce" resource
 * A "new-account" resource
-* A "new-application" resource
+* A "new-order" resource
 * A "revoke-certificate" resource
 * A "key-change" resource
 
 The server MUST provide "directory" and "new-nonce" resources.
 
 For the singular resources above ("directory", "new-nonce", "new-account",
-"new-application", "revoke-certificate", and "key-change") the resource may be
+"new-order", "revoke-certificate", and "key-change") the resource may be
 addressed by multiple URIs, but all must provide equivalent functionality.
 
 ACME uses different URIs for different management functions. Each function is
@@ -556,11 +556,11 @@ indicate HTTP link relations
        |          |          |                           |
        |          |          |                           |
        V          V          V                           V
-    new-acct  new-authz   new-app                   revoke-cert
+    new-acct  new-authz  new-order                  revoke-cert
        |          |          |                           ^
-       |          |          |                           | "revoke"
-       V          |          V                           |
-      acct        |         app ---------> cert ---------+
+       |          |          |    "author"               | "revoke"
+       V          |          V   <--------               |
+      acct        |        order --------> cert ---------+
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
@@ -576,16 +576,15 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action             | Request        | Response    |
-|:-------------------|:---------------|:------------|
-| Get a nonce        | HEAD new-nonce | 200         |
-| Register           | POST new-acct  | 201 -> acct |
-| Apply for a cert   | POST new-app   | 201 -> app  |
-| Fetch challenges   | GET  authz     | 200         |
-| Answer challenges  | POST challenge | 200         |
-| Poll for status    | GET  authz     | 200         |
-| Request issuance   | POST app       | 200         |
-| Check for new cert | GET  cert      | 200         |
+| Action               | Request        | Response     |
+|:---------------------|:---------------|:-------------|
+| Get a nonce          | HEAD new-nonce | 200          |
+| Register             | POST new-acct  | 201 -> acct  |
+| Submit an order      | POST new-order | 201 -> order |
+| Fetch challenges     | GET  authz     | 200          |
+| Respond to challenge | POST challenge | 200          |
+| Poll for status      | GET  order     | 200          |
+| Check for new cert   | GET  cert      | 200          |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -601,7 +600,7 @@ the following table and whose values are the corresponding URLs.
 |:------------|:---------------------|
 | new-nonce   | New nonce            |
 | new-acct    | New account          |
-| new-app     | New application      |
+| new-order   | New order            |
 | new-authz   | New authorization    |
 | revoke-cert | Revoke certificate   |
 | key-change  | Key change           |
@@ -645,7 +644,7 @@ Content-Type: application/json
 {
   "new-nonce": "https://example.com/acme/new-nonce",
   "new-acct": "https://example.com/acme/new-acct",
-  "new-app": "https://example.com/acme/new-app",
+  "new-order": "https://example.com/acme/new-order",
   "new-authz": "https://example.com/acme/new-authz",
   "revoke-cert": "https://example.com/acme/revoke-cert",
   "key-change": "https://example.com/acme/key-change",
@@ -682,15 +681,9 @@ terms-of-service-agreed (optional, boolean):
 the client's agreement with the terms of service. This field is not updateable
 by the client.
 
-applications (required, string):
-: A URI from which a list of authorizations submitted by this account can be
-fetched via a GET request.  The result of the GET request MUST be a JSON object
-whose "applications" field is an array of strings, where each string is the URI
-of an authorization belonging to this account.  The server SHOULD include
-pending applications, and SHOULD NOT include applications that are invalid. The
-server MAY return an incomplete list, along with a Link header with link
-relation "next" indicating a URL to retrieve further entries. This field is not
-updateable by the client.
+order (required, string):
+: A URI from which a list of orders submitted by this account can be fetched via
+a GET request, as described in {{orders-list}}
 
 ~~~~~~~~~~
 {
@@ -699,52 +692,51 @@ updateable by the client.
     "tel:+12025551212"
   ],
   "terms-of-service-agreed": true,
-  "applications": "https://example.com/acme/acct/1/apps"
+  "orders": "https://example.com/acme/acct/1/orders"
 }
 ~~~~~~~~~~
 
-#### Applications List
+#### Orders List
 
-Each account object includes an applications URI from which a list of
-applications created by the account can be fetched via GET request. The
-result of the GET request MUST be a JSON object whose "applications" field is an
-array of URIs, each identifying an applications belonging to the account.
-The server SHOULD include pending applications, and SHOULD NOT include
-applications that are invalid in the array of URIs. The server MAY return an
-incomplete list, along with a Link header with link relation “next” indicating a
-URL to retrieve further entries.
+Each account object includes an "orders" URI from which a list of orders created
+by the account can be fetched via GET request. The result of the GET request
+MUST be a JSON object whose "orders" field is an array of URIs, each identifying
+an order belonging to the account.  The server SHOULD include pending orders,
+and SHOULD NOT include orders that are invalid in the array of URIs. The server
+MAY return an incomplete list, along with a Link header with link relation
+“next” indicating a URL to retrieve further entries.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: href="/acme/acct/1/apps?cursor=2", rel="next"
+Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 
 {
-  "applications": [
-    "https://example.com/acme/acct/1/apps/1",
-    "https://example.com/acme/acct/1/apps/2",
+  "orders": [
+    "https://example.com/acme/acct/1/order/1",
+    "https://example.com/acme/acct/1/order/2",
     /* 47 more URLs not shown for example brevity */
-    "https://example.com/acme/acct/1/apps/50"
+    "https://example.com/acme/acct/1/order/50"
   ]
 }
 ~~~~~~~~~~
 
-### Application Objects
+### Order Objects
 
-An ACME application object represents a client's request for a certificate, and
-is used to track the progress of that application through to issuance.  Thus,
-the object contains information about the requested certificate, the
-authorizations that the server requires the client to complete, and any
-certificates that have resulted from this application.
+An ACME order object represents a client's request for a certificate, and is
+used to track the progress of that order through to issuance.  Thus, the object
+contains information about the requested certificate, the authorizations that
+the server requires the client to complete, and any certificates that have
+resulted from this order.
 
 status (required, string):
-: The status of this application.  Possible values are: "pending", "valid",
-and "invalid".
+: The status of this order.  Possible values are: "pending", "valid", and
+"invalid".
 
 expires (optional, string):
-: The timestamp after which the server will consider this application invalid,
-encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
-for objects with "pending" or "valid" in the status field.
+: The timestamp after which the server will consider this order invalid, encoded
+in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED for
+objects with "pending" or "valid" in the status field.
 
 csr (required, string):
 : A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
@@ -761,10 +753,10 @@ notAfter (optional, string):
 format defined in {{!RFC3339}}
 
 authorizations (required, array):
-: For pending applications, the authorizations that the client needs to complete
+: For pending orders, the authorizations that the client needs to complete
 before the requested certificate can be granted (see
-{{identifier-authorization}}).  For final applications, the authorizations that
-were completed.  Each entry is a dictionary with parameters describing the
+{{identifier-authorization}}).  For final orders, the authorizations that were
+completed.  Each entry is a dictionary with parameters describing the
 authorization:
 
   status (required, string):
@@ -775,8 +767,7 @@ authorization:
   : A URL from which the authorization can be fetched with a GET request.
 
 certificate (optional, string):
-: A URL for the certificate that has been issued in response to this
-application.
+: A URL for the certificate that has been issued in response to this order.
 
 ~~~~~~~~~~
 {
@@ -804,14 +795,14 @@ application.
 
 The elements of the "authorizations" array are immutable once set, except for
 their "status" fields.  If any other part of the object changes after the object
-is created, the client MUST consider the application invalid.
+is created, the client MUST consider the order invalid.
 
 The "authorizations" array in the challenge SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
-were fulfilled in earlier applications or in pre-authorization transactions.
-For example, if a CA allows multiple applications to be fufilled based on a
-single authorization transaction, then it SHOULD reflect that authorization in
-all of the applications.
+were fulfilled in earlier orders or in pre-authorization transactions.  For
+example, if a CA allows multiple orders to be fufilled based on a single
+authorization transaction, then it SHOULD reflect that authorization in all of
+the order.
 
 ### Authorization Objects
 
@@ -843,11 +834,10 @@ encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRE
 for objects with "valid" in the "status" field.
 
 scope (optional, string):
-: If this field is present, then it MUST contain a URI for an application
-resource, such that this authorization is only valid for that resource.  If this
-field is absent, then the CA MUST consider this authorization valid for all
-applications until the authorization expires. [[ Open issue: More flexible
-scoping? ]]
+: If this field is present, then it MUST contain a URI for an order resource,
+such that this authorization is only valid for that resource.  If this field is
+absent, then the CA MUST consider this authorization valid for all orders until
+the authorization expires. [[ Open issue: More flexible scoping? ]]
 
 challenges (required, array):
 : The challenges that the client can fulfill
@@ -944,7 +934,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", and "applications"
+The server MUST ignore any values provided in the "key", and "orders"
 fields in account bodies sent by the client, as well as any other fields
 that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they may be provided by the
@@ -993,7 +983,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URI.  The server MUST ignore any
-updates to the "key", or "applications" fields or any other fields it does not
+updates to the "key", or "order" fields or any other fields it does not
 recognize. The server MUST verify that the request is signed with the private
 key corresponding to the "key" field of the request before updating the
 registration.
@@ -1179,12 +1169,12 @@ provide a way to reactivate a deactivated account.
 
 ## Applying for Certificate Issuance
 
-The holder of an account key pair may use ACME to submit an application for a
+The holder of an account key pair may use ACME to submit an order for a
 certificate to be issued.  The client makes this request by sending a POST
-request to the server's new-application resource.  The body of the POST is a JWS
-object whose JSON payload is a subset of the application object defined in
-{{application-objects}}, containing the fields that describe the certificate to
-be issued:
+request to the server's new-order resource.  The body of the POST is a JWS
+object whose JSON payload is a subset of the order object defined in
+{{order-objects}}, containing the fields that describe the certificate to be
+issued:
 
 csr (required, string):
 : A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
@@ -1201,7 +1191,7 @@ notAfter (optional, string):
 format defined in {{!RFC3339}}
 
 ~~~~~~~~~~
-POST /acme/new-app HTTP/1.1
+POST /acme/new-order HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1210,7 +1200,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/asdf",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
-    "url": "https://example.com/acme/new-app"
+    "url": "https://example.com/acme/new-order"
   })
   "payload": base64url({
     "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
@@ -1232,14 +1222,14 @@ the server requires the request to be modified in a certain way, it should
 indicate the required changes using an appropriate error code and description.
 
 If the server is willing to issue the requested certificate, it responds with a
-201 (Created) response.  The body of this response is an application object
-reflecting the client's request and any authorizations the client must complete
-before the certificate will be issued.
+201 (Created) response.  The body of this response is an order object reflecting
+the client's request and any authorizations the client must complete before the
+certificate will be issued.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-Location: https://example.com/acme/app/asdf
+Location: https://example.com/acme/order/asdf
 
 {
   "status": "pending",
@@ -1262,32 +1252,30 @@ Location: https://example.com/acme/app/asdf
 }
 ~~~~~~~~~~
 
-The application object returned by the server represents a promise that if the
-client fulfills the server's requirements before the "expires" time, then the
-server will issue the requested certificate.  In the application object, any
-object in the "authorizations" array whose status is "pending" represents an
-authorization transaction that the client must complete before the server will
-issue the certificate (see {{identifier-authorization}}).  If the client fails
-to complete the required actions before the "expires" time, then the server
-SHOULD change the status of the application to "invalid" and MAY delete the
-application resource.
+The order object returned by the server represents a promise that if the client
+fulfills the server's requirements before the "expires" time, then the server
+will issue the requested certificate.  In the order object, any object in the
+"authorizations" array whose status is "pending" represents an authorization
+transaction that the client must complete before the server will issue the
+certificate (see {{identifier-authorization}}).  If the client fails to complete
+the required actions before the "expires" time, then the server SHOULD change
+the status of the order to "invalid" and MAY delete the order resource.
 
-The server MUST issue the requested certificate and update the application
-resource with a URL for the certificate as soon as the client has fulfilled the
-server's requirements.   If the client has already satisfied the server's
-requirements at the time of this request (e.g., by obtaining authorization for
-all of the identifiers in the certificate in previous transactions), then the
-server MUST proactively issue the requested certificate and provide a URL for it
-in the "certificate" field of the application.  The server MUST, however, still
-list the completed authorizations in the "authorizations" array, with the state
-"valid".
+The server MUST issue the requested certificate and update the order resource
+with a URL for the certificate as soon as the client has fulfilled the server's
+requirements.   If the client has already satisfied the server's requirements at
+the time of this request (e.g., by obtaining authorization for all of the
+identifiers in the certificate in previous transactions), then the server MUST
+proactively issue the requested certificate and provide a URL for it in the
+"certificate" field of the order.  The server MUST, however, still list the
+completed authorizations in the "authorizations" array, with the state "valid".
 
 Once the client believes it has fulfilled the server's requirements, it should
-send a GET request to the application resource to obtain its current state.  The
-status of the application will indicate what action the client should take:
+send a GET request to the order resource to obtain its current state.  The
+status of the order will indicate what action the client should take:
 
-* "invalid": The certificate will not be issued.  Consider this application
-  process abandoned.
+* "invalid": The certificate will not be issued.  Consider this order process
+  abandoned.
 
 * "pending": The server does not believe that the client has fulfilled the
   requirements.  Check the "authorizations" array for entries that are still
@@ -1298,11 +1286,11 @@ status of the application will indicate what action the client should take:
   in the "Retry-After" header field of the response, if any.
 
 * "valid": The server has issued the certificate and provisioned its URL to the
-  "certificate" field of the application.  Download the certificate.
+  "certificate" field of the order.  Download the certificate.
 
 ### Pre-Authorization
 
-The application process described above presumes that authorization objects are
+The order process described above presumes that authorization objects are
 created reactively, in response to an application for issuance.  Some servers
 may also wish to enable clients to obtain authorization for an identifier
 proactively, outside of the context of a specific issuance.  For example, a
@@ -1313,8 +1301,8 @@ a server starts up.
 In some cases, a CA running an ACME server might have a completely external,
 non-ACME process for authorizing a client to issue for an identifier.  In these
 case, the CA should provision its ACME server with authorization objects
-corresponding to these authorizations and reflect them as already valid
-in any issuance applications requested by the client.
+corresponding to these authorizations and reflect them as already valid in any
+orders submitted by the client.
 
 If a CA wishes to allow pre-authorization within ACME, it can offer a "new
 authorization" resource in its directory by adding the key "new-authz" with a
@@ -1415,7 +1403,7 @@ paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
 
 The server MUST also provide a link relation header field with relation "author"
-to indicate the application under which this certificate was issued.
+to indicate the order under which this certificate was issued.
 
 If the CA participates in Certificate Transparency (CT) {{?RFC6962}}, then they
 may want to provide the client with a Signed Certificate Timestamp (SCT) that
@@ -1434,7 +1422,7 @@ HTTP/1.1 200 OK
 Content-Type: application/pkix-cert
 Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
 Link: <https://example.com/acme/revoke-cert>;rel="revoke"
-Link: <https://example.com/acme/app/asdf>;rel="author"
+Link: <https://example.com/acme/order/asdf>;rel="author"
 Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
@@ -1447,12 +1435,11 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 -----BEGIN CERTIFICATE-----
 [Other certificate contents]
 -----END CERTIFICATE-----
-
 ~~~~~~~~~~
 
 A certificate resource represents a single, immutable certificate. If the client
-wishes to obtain a renewed certificate, the client initiates a new application
-process to request one.
+wishes to obtain a renewed certificate, the client initiates a new order process
+to request one.
 
 Because certificate resources are immutable once issuance is complete, the
 server MAY enable the caching of the resource by adding Expires and
@@ -1469,18 +1456,18 @@ This process may be repeated to associate multiple identifiers to a key pair
 (e.g., to request certificates with multiple identifiers), or to associate
 multiple accounts with an identifier (e.g., to allow multiple entities to manage
 certificates).  The server may declare that an authorization is only valid for a
-specific application by setting the "scope" field of the authorization to the
-URI for that application.
+specific order by setting the "scope" field of the authorization to the
+URI for that order.
 
 Authorization resources are created by the server in response to certificate
-applications or authorization requests submitted by an account key holder; their
+orders or authorization requests submitted by an account key holder; their
 URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
 
-When a client receives an application from the server with "pending" entry in
-the authorizations array, it downloads the authorization resource by sending a
-GET request to the indicated URL.  If the client initiates authorization using a
+When a client receives an order from the server with "pending" entry in the
+authorizations array, it downloads the authorization resource by sending a GET
+request to the indicated URL.  If the client initiates authorization using a
 request to the new authorization resource, it will have already recevied the
 pending authorization object in the response to that request.
 
@@ -2231,7 +2218,7 @@ Initial contents:
 | Key         | Resource type        | Reference |
 |:------------|:---------------------|:----------|
 | new-acct    | New account          | RFC XXXX  |
-| new-app     | New application      | RFC XXXX  |
+| new-order   | New order            | RFC XXXX  |
 | revoke-cert | Revoke certificate   | RFC XXXX  |
 | key-change  | Key change           | RFC XXXX  |
 
@@ -2348,7 +2335,7 @@ of the protocol).
 ## Integrity of Authorizations
 
 ACME allows anyone to request challenges for an identifier by registering an
-account key and sending a new-application request under that account key.  The
+account key and sending a new-order request under that account key.  The
 integrity of the authorization process thus depends on the identifier validation
 challenges to ensure that the challenge can only be completed by someone who
 both (1) holds the private key of the account key pair, and (2) controls the
@@ -2360,8 +2347,7 @@ account key for one of his choosing, e.g.:
 
 * Legitimate domain holder registers account key pair A
 * MitM registers account key pair B
-* Legitimate domain holder sends a new-application request signed under
-  account key A
+* Legitimate domain holder sends a new-order request signed under account key A
 * MitM suppresses the legitimate request, but sends the same request signed
   under account key B
 * ACME server issues challenges and MitM forwards them to the legitimate domain
