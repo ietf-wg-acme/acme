@@ -172,7 +172,7 @@ pair.
 The first phase of ACME is for the client to register with the ACME server.  The
 client generates an asymmetric key pair and associates this key pair with a set
 of contact information by signing the contact information.  The server
-acknowledges the registration by replying with a registration object echoing the
+acknowledges the registration by replying with a account object echoing the
 client's input.
 
 ~~~~~~~~~~
@@ -181,7 +181,7 @@ client's input.
       Contact Information
       Signature                     ------->
 
-                                    <-------            Registration
+                                    <-------                 Account
 ~~~~~~~~~~
 
 
@@ -479,7 +479,7 @@ to errors, this document defines the following standard tokens for use in the
 | unauthorized          | The client lacks sufficient authorization          |
 | unknownHost           | The server could not resolve a domain name         |
 | rateLimited           | The request exceeds a rate limit                   |
-| invalidContact        | The contact URI for a registration was invalid     |
+| invalidContact        | The contact URI for an account was invalid         |
 | rejectedIdentifier    | The server will not issue for the identifier       |
 | unsupportedIdentifier | Identifier is not supported, but may be in future  |
 | agreementRequired     | The client must agree to terms before proceeding   |
@@ -508,7 +508,7 @@ enables:
 
 ACME is structured as a REST application with a few types of resources:
 
-* Registration resources, representing information about an account
+* Account resources, representing information about an account
 * Application resources, representing an account's requests to issue certificates
 * Authorization resources, representing an account's authorization to act for an
   identifier
@@ -517,14 +517,14 @@ ACME is structured as a REST application with a few types of resources:
 * Certificate resources, representing issued certificates
 * A "directory" resource
 * A "new-nonce" resource
-* A "new-registration" resource
+* A "new-account" resource
 * A "new-application" resource
 * A "revoke-certificate" resource
 * A "key-change" resource
 
 The server MUST provide "directory" and "new-nonce" resources.
 
-For the singular resources above ("directory", "new-nonce", "new-registration",
+For the singular resources above ("directory", "new-nonce", "new-account",
 "new-application", "revoke-certificate", and "key-change") the resource may be
 addressed by multiple URIs, but all must provide equivalent functionality.
 
@@ -556,11 +556,11 @@ indicate HTTP link relations
        |          |          |                           |
        |          |          |                           |
        V          V          V                           V
-    new-reg   new-authz   new-app                   revoke-cert
+    new-acct  new-authz   new-app                   revoke-cert
        |          |          |                           ^
        |          |          |                           | "revoke"
        V          |          V                           |
-      reg         |         app ---------> cert ---------+
+      acct        |         app ---------> cert ---------+
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
@@ -576,16 +576,16 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action             | Request        | Response   |
-|:-------------------|:---------------|:-----------|
-| Get a nonce        | HEAD new-nonce | 200        |
-| Register           | POST new-reg   | 201 -> reg |
-| Apply for a cert   | POST new-app   | 201 -> app |
-| Fetch challenges   | GET  authz     | 200        |
-| Answer challenges  | POST challenge | 200        |
-| Poll for status    | GET  authz     | 200        |
-| Request issuance   | POST app       | 200        |
-| Check for new cert | GET  cert      | 200        |
+| Action             | Request        | Response    |
+|:-------------------|:---------------|:------------|
+| Get a nonce        | HEAD new-nonce | 200         |
+| Register           | POST new-acct  | 201 -> acct |
+| Apply for a cert   | POST new-app   | 201 -> app  |
+| Fetch challenges   | GET  authz     | 200         |
+| Answer challenges  | POST challenge | 200         |
+| Poll for status    | GET  authz     | 200         |
+| Request issuance   | POST app       | 200         |
+| Check for new cert | GET  cert      | 200         |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -600,7 +600,7 @@ the following table and whose values are the corresponding URLs.
 | Key         | URL in value         |
 |:------------|:---------------------|
 | new-nonce   | New nonce            |
-| new-reg     | New registration     |
+| new-acct    | New account          |
 | new-app     | New application      |
 | new-authz   | New authorization    |
 | revoke-cert | Revoke certificate   |
@@ -644,7 +644,7 @@ Content-Type: application/json
 
 {
   "new-nonce": "https://example.com/acme/new-nonce",
-  "new-reg": "https://example.com/acme/new-reg",
+  "new-acct": "https://example.com/acme/new-acct",
   "new-app": "https://example.com/acme/new-app",
   "new-authz": "https://example.com/acme/new-authz",
   "revoke-cert": "https://example.com/acme/revoke-cert",
@@ -657,18 +657,18 @@ Content-Type: application/json
 }
 ~~~~~~~~~~
 
-### Registration Objects
+### Account Objects
 
-An ACME registration resource represents a set of metadata associated to an
-account key pair.  Registration resources have the following structure:
+An ACME account resource represents a set of metadata associated to an account
+key pair.  Account resources have the following structure:
 
 key (required, dictionary):
 : The public key of the account key pair, encoded as a JSON Web Key object
 {{!RFC7517}}. This field is not updateable by the client.
 
 status (required, string):
-: The status of this registration. Possible values are: "valid", "deactivated",
-and "revoked". "deactivated" should be used to indicate user initiated
+: The status of this account. Possible values are: "valid", "deactivated", and
+"revoked".  The value "deactivated" should be used to indicate user initiated
 deactivation whereas "revoked" should be used to indicate administratively
 initiated deactivation.
 
@@ -678,15 +678,15 @@ related to this authorization. For example, the server may wish to notify the
 client about server-initiated revocation.
 
 terms-of-service-agreed (optional, boolean):
-: Including this field in a new-registration request, with a value of true,
-indicates the client's agreement with the terms of service. This field is not
-updateable by the client.
+: Including this field in a new-account request, with a value of true, indicates
+the client's agreement with the terms of service. This field is not updateable
+by the client.
 
 applications (required, string):
 : A URI from which a list of authorizations submitted by this account can be
 fetched via a GET request.  The result of the GET request MUST be a JSON object
 whose "applications" field is an array of strings, where each string is the URI
-of an authorization belonging to this registration.  The server SHOULD include
+of an authorization belonging to this account.  The server SHOULD include
 pending applications, and SHOULD NOT include applications that are invalid. The
 server MAY return an incomplete list, along with a Link header with link
 relation "next" indicating a URL to retrieve further entries. This field is not
@@ -699,32 +699,32 @@ updateable by the client.
     "tel:+12025551212"
   ],
   "terms-of-service-agreed": true,
-  "applications": "https://example.com/acme/reg/1/apps"
+  "applications": "https://example.com/acme/acct/1/apps"
 }
 ~~~~~~~~~~
 
 #### Applications List
 
-Each registration object includes an applications URI from which a list of
-applications created by the registration can be fetched via GET request. The
+Each account object includes an applications URI from which a list of
+applications created by the account can be fetched via GET request. The
 result of the GET request MUST be a JSON object whose "applications" field is an
-array of URIs, each identifying an applications belonging to the registration.
+array of URIs, each identifying an applications belonging to the account.
 The server SHOULD include pending applications, and SHOULD NOT include
 applications that are invalid in the array of URIs. The server MAY return an
-incomplete list, along with a Link header with link relation “next” indicating
-a URL to retrieve further entries.
+incomplete list, along with a Link header with link relation “next” indicating a
+URL to retrieve further entries.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+Link: href="/acme/acct/1/apps?cursor=2", rel="next"
 
 {
   "applications": [
-    "https://example.com/acme/reg/1/apps/1",
-    "https://example.com/acme/reg/1/apps/2",
+    "https://example.com/acme/acct/1/apps/1",
+    "https://example.com/acme/acct/1/apps/2",
     /* 47 more URLs not shown for example brevity */
-    "https://example.com/acme/reg/1/apps/50"
+    "https://example.com/acme/acct/1/apps/50"
   ]
 }
 ~~~~~~~~~~
@@ -915,14 +915,14 @@ to communicate with the ACME server.  The server MUST include a Cache-Control
 header field with the "no-store" directive in responses for the new-nonce
 resource, in order to prevent caching of this resource.
 
-## Registration
+## Account Creation
 
 A client creates a new account with the server by sending a POST request to the
-server's new-registration URI.  The body of the request is a stub registration
-object containing only the "contact" field.
+server's new-account URI.  The body of the request is a stub account object
+containing only the "contact" field.
 
 ~~~~~~~~~~
-POST /acme/new-reg HTTP/1.1
+POST /acme/new-acct HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -931,7 +931,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "jwk": {...},
     "nonce": "6S8IqOGY7eL2lsGoTZYifg",
-    "url": "https://example.com/acme/new-reg"
+    "url": "https://example.com/acme/new-acct"
   })
   "payload": base64url({
     "terms-of-service-agreed": true,
@@ -945,7 +945,7 @@ Content-Type: application/jose+json
 ~~~~~~~~~~
 
 The server MUST ignore any values provided in the "key", and "applications"
-fields in registration bodies sent by the client, as well as any other fields
+fields in account bodies sent by the client, as well as any other fields
 that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they may be provided by the
 client.
@@ -956,28 +956,28 @@ invalid or unsupported contact URL, then the server MUST return an error of type
 "invalidContact", with a description describing the error and what types of
 contact URL the server considers acceptable.
 
-The server creates a registration object with the included contact information.
-The "key" element of the registration is set to the public key used to verify
-the JWS (i.e., the "jwk" element of the JWS header).  The server returns this
-registration object in a 201 (Created) response, with the registration URI in a
-Location header field.
+The server creates an account object with the included contact information.  The
+"key" element of the account is set to the public key used to verify the JWS
+(i.e., the "jwk" element of the JWS header).  The server returns this account
+object in a 201 (Created) response, with the account URI in a Location header
+field.
 
-If the server already has a registration object with the provided account key,
-then it MUST return a 200 (OK) response and provide the URI of that registration
-in a Content-Location header field.  This allows a client that has an account
-key but not the corresponding registration URI to recover the registration URI.
+If the server already has an account registered with the provided account key,
+then it MUST return a 200 (OK) response and provide the URI of that account in a
+Content-Location header field.  This allows a client that has an account key but
+not the corresponding account URI to recover the account URI.
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URI where such terms can be accessed
 in the "terms-of-service" subfield of the "meta" field in the directory object,
-and the server MUST reject new-registration requests that do not have the
+and the server MUST reject new-account requests that do not have the
 "terms-of-service-agreed" set to "true".
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Location: https://example.com/acme/reg/asdf
+Location: https://example.com/acme/acct/asdf
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
@@ -992,26 +992,26 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 ~~~~~~~~~~
 
 If the client wishes to update this information in the future, it sends a POST
-request with updated information to the registration URI.  The server MUST
-ignore any updates to the "key", or "applications" fields or any other fields it
-does not recognize. The server MUST verify that the request is signed with the
-private key corresponding to the "key" field of the request before updating the
+request with updated information to the account URI.  The server MUST ignore any
+updates to the "key", or "applications" fields or any other fields it does not
+recognize. The server MUST verify that the request is signed with the private
+key corresponding to the "key" field of the request before updating the
 registration.
 
-For example, to update the contact information in the above registration, the
-client could send the following request:
+For example, to update the contact information in the above account, the client
+could send the following request:
 
 ~~~~~~~~~~
-POST /acme/reg/asdf HTTP/1.1
+POST /acme/acct/asdf HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
-    "url": "https://example.com/acme/reg/asdf"
+    "url": "https://example.com/acme/acct/asdf"
   })
   "payload": base64url({
     "contact": [
@@ -1023,7 +1023,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Servers SHOULD NOT respond to GET requests for registration resources as these
+Servers SHOULD NOT respond to GET requests for account resources as these
 requests are not authenticated.  If a client wishes to query the server for
 information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
@@ -1032,8 +1032,8 @@ That is, it should send a JWS whose payload is trivial ({}).
 ### Changes of Terms of Service
 
 As described above, a client can indicate its agreement with the CA's terms of
-service by setting the "terms-of-service-agreed" field in its registration
-object to "true".
+service by setting the "terms-of-service-agreed" field in its account object to
+"true".
 
 If the server has changed its terms of service since a client initially agreed,
 and the server is unwilling to process a request without explicit agreement to
@@ -1062,9 +1062,9 @@ Content-Language: en
 
 ### Account Key Roll-over
 
-A client may wish to change the public key that is associated with a
-registration in order to recover from a key compromise or proactively mitigate
-the impact of an unnoticed key compromise.
+A client may wish to change the public key that is associated with a account in
+order to recover from a key compromise or proactively mitigate the impact of an
+unnoticed key compromise.
 
 To change the key associated with an account, the client first constructs a
 key-change object describing the change that it would like the server to make:
@@ -1072,7 +1072,7 @@ key-change object describing the change that it would like the server to make:
 account (required, string):
 : The URL for account being modified.  The content of this field MUST be the
 exact string provided in the Location header field in response to the
-new-registration request that created the account.
+new-account request that created the account.
 
 newKey (required, JWK):
 : The JWK representation of the new key
@@ -1111,7 +1111,7 @@ Content-Type: application/jose+json
       "jwk": /* new key */,
     }),
     "payload": base64url({
-      "account": "https://example.com/acme/reg/asdf",
+      "account": "https://example.com/acme/acct/asdf",
       "newKey": /* new key */
     })
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1133,14 +1133,14 @@ addition to the typical JWS validation:
    (as described above)
 5. Check that the "url" parameters of the inner and outer JWSs are the same
 6. Check that the "account" field of the key-change object contains the URL for
-   the registration matching the old key
+   the account matching the old key
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
-If all of these checks pass, then the server updates the corresponding
-registration by replacing the old account key with the new public key and
-returns status code 200. Otherwise, the server responds with an error status
-code and a problem document describing the error.
+If all of these checks pass, then the server updates the corresponding account
+by replacing the old account key with the new public key and returns status code
+200. Otherwise, the server responds with an error status code and a problem
+document describing the error.
 
 ### Account deactivation
 
@@ -1149,16 +1149,16 @@ a status field of "deactivated." Clients may wish to do this when the account
 key is compromised.
 
 ~~~~~~~~~~
-POST /acme/reg/asdf HTTP/1.1
+POST /acme/acct/asdf HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
-    "url": "https://example.com/acme/reg/asdf"
+    "url": "https://example.com/acme/acct/asdf"
   })
   "payload": base64url({
     "status": "deactivated"
@@ -1169,7 +1169,7 @@ Content-Type: application/jose+json
 
 The server MUST verify that the request is signed by the account key. If the
 server accepts the deactivation request, it should reply with a 200 (OK) status
-code and the current contents of the registration object.
+code and the current contents of the account object.
 
 Once an account is deactivated, the server MUST NOT accept further requests
 authorized by that account's key. It is up to server policy how long to retain
@@ -1208,7 +1208,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-app"
   })
@@ -1540,7 +1540,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
   })
@@ -1626,7 +1626,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
   })
@@ -1671,7 +1671,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf", // OR "jwk"
+    "kid": "https://example.com/acme/acct/asdf", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   })
@@ -2230,7 +2230,7 @@ Initial contents:
 
 | Key         | Resource type        | Reference |
 |:------------|:---------------------|:----------|
-| new-reg     | New registration     | RFC XXXX  |
+| new-acct    | New account          | RFC XXXX  |
 | new-app     | New application      | RFC XXXX  |
 | revoke-cert | Revoke certificate   | RFC XXXX  |
 | key-change  | Key change           | RFC XXXX  |
