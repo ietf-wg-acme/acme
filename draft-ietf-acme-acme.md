@@ -2144,10 +2144,6 @@ identifier possession are determined by the server's local policy.
 
 # IANA Considerations
 
-[[ Editor's Note: Should we create a registry for tokens that go into the
-various JSON objects used by this protocol, i.e., the field names in the JSON
-objects? ]]
-
 ## Well-Known URI for the HTTP Challenge
 
 The "Well-Known URIs" registry should be updated with the following additional
@@ -2233,6 +2229,59 @@ This document requests that IANA create the following new registries:
 
 All of these registries should be administered under a Specification Required
 policy {{?RFC5226}}.
+
+### Fields in Account Objects
+
+This registry lists field names that are defined for use in ACME account
+objects.  Fields marked as "client configurable" may be included in a
+new-account request.
+
+Template:
+
+* Field name: The string to be used as a key in the JSON dictionary
+* Field type: The type of value to be provided, e.g., string, boolean, array of
+  string
+* Client configurable: Boolean indicating whether the server should accept
+  values provided by the client
+* Reference: Where this field is defined
+
+Initial contents: The fields and descriptions defined in {{account-objects}}.
+
+| Field Name              | Field Type      | Configurable | Reference |
+|:------------------------|:----------------|:-------------|:----------|
+| key                     | dictionary      | false        | RFC XXXX  |
+| status                  | string          | false        | RFC XXXX  |
+| contact                 | array of string | true         | RFC XXXX  |
+| external-account-token  | string          | true         | RFC XXXX  |
+| terms-of-service-agreed | boolean         | false        | RFC XXXX  |
+| orders                  | array of string | false        | RFC XXXX  |
+
+### Fields in Order Objects
+
+This registry lists field names that are defined for use in ACME order
+objects.  Fields marked as "client configurable" may be included in a
+new-account request.
+
+Template:
+
+* Field name: The string to be used as a key in the JSON dictionary
+* Field type: The type of value to be provided, e.g., string, boolean, array of
+  string
+* Client configurable: Boolean indicating whether the server should accept
+  values provided by the client
+* Reference: Where this field is defined
+
+Initial contents: The fields and descriptions defined in {{order-objects}}.
+
+| Field Name     | Field Type          | Configurable | Reference |
+|:---------------|:--------------------|:-------------|:----------|
+| status         | string              | false        | RFC XXXX  |
+| expires        | string              | false        | RFC XXXX  |
+| csr            | string              | true         | RFC XXXX  |
+| notBefore      | string              | true         | RFC XXXX  |
+| notAfter       | string              | true         | RFC XXXX  |
+| authorizations | array of dictionary | false        | RFC XXXX  |
+| certificate    | string              | false        | RFC XXXX  |
 
 ### Error Codes
 
