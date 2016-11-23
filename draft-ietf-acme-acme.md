@@ -189,7 +189,7 @@ Once the client is registered, there are three major steps it needs to take to
 get a certificate:
 
 1. Apply for a certificate to be issued
-2. Prove control of any identifiers requested in the certificate
+2. Prove control of all identifiers requested in the certificate
 3. Await issuance and download the issued certificate
 
 The client's application for a certificate describes the desired certificate
@@ -762,7 +762,7 @@ format defined in {{!RFC3339}}
 
 authorizations (required, array):
 : For pending applications, the authorizations that the client needs to complete
-before the requested certificate can be granted (see
+before the requested certificate can be issued (see
 {{identifier-authorization}}).  For final applications, the authorizations that
 were completed.  Each entry is a dictionary with parameters describing the
 authorization:
