@@ -55,9 +55,18 @@ domain names.  Thus, certificate authorities in the Web PKI are trusted to
 verify that an applicant for a certificate legitimately represents the domain
 name(s) in the certificate.
 
+Different types of certificates reflect different kinds of CA verification of
+information about the certificate subject.  "Domain Validation" (DV)
+certificates are by far the most common type.  For DV validation, the CA merely
+verifies that the requester has effective control of the web server and/or DNS
+server for the domain, but does not explicitly attempt to verify their
+real-world identity.  (This is as opposed to "Organization Validation" (OV) and
+"Extended Validation" (EV) certificates, where the process is intended to also
+verify the real-world identity of the requester.)
+
 Existing Web PKI certificate authorities tend to run on a set of ad hoc
-protocols for certificate issuance and identity verification.  A typical user
-experience is something like:
+protocols for certificate issuance and identity verification.  In the case of DV
+certificates, a typical user experience is something like:
 
 * Generate a PKCS#10 {{!RFC2986}} Certificate Signing Request (CSR).
 * Cut-and-paste the CSR into a CA web page.
@@ -93,15 +102,6 @@ The major guiding use case for ACME is obtaining certificates for Web sites
 (HTTPS {{!RFC2818}}).  In that case, the user's web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
 verify that this server actually speaks for the domain(s).
-
-Different types of certificates reflect different kinds of CA verification of
-information about the certificate subject.  "Domain Validation" (DV)
-certificates are by far the most common type.  For DV validation, the CA merely
-verifies that the requester has effective control of the web server and/or DNS
-server for the domain, but does not explicitly attempt to verify their
-real-world identity.  (This is as opposed to "Organization Validation" (OV) and
-"Extended Validation" (EV) certificates, where the process is intended to also
-verify the real-world identity of the requester.)
 
 DV certificate validation commonly checks claims about properties related to
 control of a domain name -- properties that can be observed by the issuing
