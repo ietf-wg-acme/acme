@@ -99,7 +99,7 @@ authentication for other protocols based on TLS {{!RFC5246}}.
 # Deployment Model and Operator Experience
 
 The guiding use case for ACME is obtaining certificates for Web sites
-(HTTPS {{!RFC2818}}).  In that case, the user's web server is intended to speak
+(HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
 verify that this server actually speaks for the domain(s).
 
