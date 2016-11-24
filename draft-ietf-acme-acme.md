@@ -110,9 +110,10 @@ means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
 
-When deploying a current HTTPS server, an operator generally gets a prompt to
-generate a self-signed certificate.  When an operator deploys an ACME-compatible
-web server, the experience would be something like this:
+At time of writing, when deploying an HTTPS server, an operator typically gets a
+prompt to generate a self-signed certificate.  If the operator were instead
+deploying an ACME-compatible web server, the experience would be something like
+this:
 
 * The ACME client prompts the operator for the intended domain name(s) that the
   web server is to stand for.
@@ -130,12 +131,12 @@ web server, the experience would be something like this:
   stapled OCSP responses, or whatever else would be required to keep the server
   functional and its credentials up-to-date.
 
-The overall idea is that it's nearly as easy to deploy with a CA-issued
-certificate as a self-signed certificate, and that once the operator has done
-so, the process is self-sustaining with minimal manual intervention.  Close
-integration of ACME with HTTPS servers, for example, can allow the immediate and
-automated deployment of certificates as they are issued, optionally sparing the
-human administrator from additional configuration work.
+In this way, it would be nearly as easy to deploy with a CA-issued certificate
+as with a self-signed certificate. Furthermore, the maintenance of that
+CA-issued certificate would require minimal manual intervention.  Such close
+integration of ACME with HTTPS servers would allow the immediate and automated
+deployment of certificates as they are issued, sparing the human administrator
+from much of the time-consuming work described in the previous section.
 
 
 # Terminology
