@@ -244,7 +244,7 @@ types of identifiers in principle, the primary use case addressed by this
 document is the case where domain names are used as identifiers.  For example,
 all of the identifier validation challenges described in
 {{identifier-validation-challenges}} below address validation of domain names.
-The use of ACME for other protocols will require further specification, in order
+The use of ACME for other identifiers will require further specification, in order
 to describe how these identifiers are encoded in the protocol, and what types of
 validation challenges the server might require.
 
