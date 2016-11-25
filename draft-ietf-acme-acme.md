@@ -399,7 +399,7 @@ Once a nonce value has appeared in an ACME request, the server MUST consider it
 invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
-present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
+present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
 ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
 the "badNonce" error code MUST include a Replay-Nonce header with a fresh nonce.
 On receiving such a response, a client SHOULD retry the request using the new
