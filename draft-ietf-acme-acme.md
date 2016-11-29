@@ -55,9 +55,18 @@ domain names.  Thus, certificate authorities in the Web PKI are trusted to
 verify that an applicant for a certificate legitimately represents the domain
 name(s) in the certificate.
 
+Different types of certificates reflect different kinds of CA verification of
+information about the certificate subject.  "Domain Validation" (DV)
+certificates are by far the most common type.  For DV validation, the CA merely
+verifies that the requester has effective control of the web server and/or DNS
+server for the domain, but does not explicitly attempt to verify their
+real-world identity.  (This is as opposed to "Organization Validation" (OV) and
+"Extended Validation" (EV) certificates, where the process is intended to also
+verify the real-world identity of the requester.)
+
 Existing Web PKI certificate authorities tend to run on a set of ad hoc
-protocols for certificate issuance and identity verification.  A typical user
-experience is something like:
+protocols for certificate issuance and identity verification.  In the case of DV
+certificates, a typical user experience is something like:
 
 * Generate a PKCS#10 {{!RFC2986}} Certificate Signing Request (CSR).
 * Cut-and-paste the CSR into a CA web page.
@@ -89,19 +98,10 @@ authentication for other protocols based on TLS {{!RFC5246}}.
 
 # Deployment Model and Operator Experience
 
-The major guiding use case for ACME is obtaining certificates for Web sites
-(HTTPS {{!RFC2818}}).  In that case, the server is intended to speak for one or
-more domains, and the process of certificate issuance is intended to verify that
-the server actually speaks for the domain(s).
-
-Different types of certificates reflect different kinds of CA verification of
-information about the certificate subject.  "Domain Validation" (DV)
-certificates are by far the most common type.  For DV validation, the CA merely
-verifies that the requester has effective control of the web server and/or DNS
-server for the domain, but does not explicitly attempt to verify their
-real-world identity.  (This is as opposed to "Organization Validation" (OV) and
-"Extended Validation" (EV) certificates, where the process is intended to also
-verify the real-world identity of the requester.)
+The guiding use case for ACME is obtaining certificates for Web sites
+(HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
+for one or more domains, and the process of certificate issuance is intended to
+verify that this server actually speaks for the domain(s).
 
 DV certificate validation commonly checks claims about properties related to
 control of a domain name -- properties that can be observed by the issuing
@@ -110,9 +110,10 @@ means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
 
-When deploying a current HTTPS server, an operator generally gets a prompt to
-generate a self-signed certificate.  When an operator deploys an ACME-compatible
-web server, the experience would be something like this:
+At time of writing, when deploying an HTTPS server, an operator typically gets a
+prompt to generate a self-signed certificate.  If the operator were instead
+deploying an ACME-compatible web server, the experience would be something like
+this:
 
 * The ACME client prompts the operator for the intended domain name(s) that the
   web server is to stand for.
@@ -130,12 +131,12 @@ web server, the experience would be something like this:
   stapled OCSP responses, or whatever else would be required to keep the server
   functional and its credentials up-to-date.
 
-The overall idea is that it's nearly as easy to deploy with a CA-issued
-certificate as a self-signed certificate, and that once the operator has done
-so, the process is self-sustaining with minimal manual intervention.  Close
-integration of ACME with HTTPS servers, for example, can allow the immediate and
-automated deployment of certificates as they are issued, optionally sparing the
-human administrator from additional configuration work.
+In this way, it would be nearly as easy to deploy with a CA-issued certificate
+as with a self-signed certificate. Furthermore, the maintenance of that
+CA-issued certificate would require minimal manual intervention.  Such close
+integration of ACME with HTTPS servers would allow the immediate and automated
+deployment of certificates as they are issued, sparing the human administrator
+from much of the time-consuming work described in the previous section.
 
 
 # Terminology
@@ -243,7 +244,7 @@ types of identifiers in principle, the primary use case addressed by this
 document is the case where domain names are used as identifiers.  For example,
 all of the identifier validation challenges described in
 {{identifier-validation-challenges}} below address validation of domain names.
-The use of ACME for other protocols will require further specification, in order
+The use of ACME for other identifiers will require further specification, in order
 to describe how these identifiers are encoded in the protocol, and what types of
 validation challenges the server might require.
 
@@ -399,7 +400,7 @@ Once a nonce value has appeared in an ACME request, the server MUST consider it
 invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
-present), it SHOULD provide HTTP status code 400 (Bad Request), and indicate the
+present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
 ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
 the "badNonce" error code MUST include a Replay-Nonce header with a fresh nonce.
 On receiving such a response, a client SHOULD retry the request using the new
