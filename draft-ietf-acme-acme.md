@@ -462,28 +462,27 @@ For example:  If the client submits a request using a method not allowed in this
 document, then the server MAY return status code 405 (Method Not Allowed).
 
 When the server responds with an error status, it SHOULD provide additional
-information using problem document {{!RFC7807}}.
-To facilitate automatic response
-to errors, this document defines the following standard tokens for use in the
-"type" field (within the "urn:ietf:params:acme:error:" namespace):
+information using problem document {{!RFC7807}}.  To facilitate automatic
+response to errors, this document defines the following standard tokens for use
+in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Code                  | Description                                        |
-|:----------------------|:---------------------------------------------------|
-| badCSR                | The CSR is unacceptable (e.g., due to a short key) |
-| badNonce              | The client sent an unacceptable anti-replay nonce  |
-| connection            | The server could not connect to validation target  |
-| dnssec                | DNSSEC validation failed                           |
-| caa                   | CAA records forbid the CA from issuing             |
-| malformed             | The request message was malformed                  |
-| serverInternal        | The server experienced an internal error           |
-| tls                   | The server received a TLS error during validation  |
-| unauthorized          | The client lacks sufficient authorization          |
-| unknownHost           | The server could not resolve a domain name         |
-| rateLimited           | The request exceeds a rate limit                   |
-| invalidContact        | The contact URI for a registration was invalid     |
-| rejectedIdentifier    | The server will not issue for the identifier       |
-| unsupportedIdentifier | Identifier is not supported, but may be in future  |
-| agreementRequired     | The client must agree to terms before proceeding   |
+| Code                  | Description                                                        |
+|:----------------------|:-------------------------------------------------------------------|
+| badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
+| badNonce              | The client sent an unacceptable anti-replay nonce                  |
+| connection            | The server could not connect to validation target                  |
+| dnssec                | DNSSEC validation failed                                           |
+| caa                   | CAA records forbid the CA from issuing                             |
+| malformed             | The request message was malformed                                  |
+| serverInternal        | The server experienced an internal error                           |
+| tls                   | The server received a TLS error during validation                  |
+| unauthorized          | The client lacks sufficient authorization                          |
+| unknownHost           | The server could not resolve a domain name                         |
+| rateLimited           | The request exceeds a rate limit                                   |
+| invalidContact        | The contact URI for a registration was invalid                     |
+| rejectedIdentifier    | The server will not issue for the identifier                       |
+| unsupportedIdentifier | Identifier is not supported, but may be in future                  |
+| userActionRequired    | The user visit the "instance" URL and take actions specified there |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -1072,7 +1071,7 @@ object to "true".
 If the server has changed its terms of service since a client initially agreed,
 and the server is unwilling to process a request without explicit agreement to
 the new terms, then it MUST return an error response with status code 403
-(Forbidden) and type "urn:ietf:params:acme:error:agreementRequired".  This
+(Forbidden) and type "urn:ietf:params:acme:error:userActionRequired".  This
 response MUST include a Link header with link relation "terms-of-service" and
 the latest terms-of-service URL.
 
@@ -1087,7 +1086,7 @@ Content-Type: application/problem+json
 Content-Language: en
 
 {
-  "type": "urn:ietf:params:acme:error:agreementRequired"
+  "type": "urn:ietf:params:acme:error:userActionRequired"
   "detail": "Terms of service have changed"
   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
 }
