@@ -323,10 +323,12 @@ address {
 <link href="#rfc.section.8.4" rel="Chapter" title="8.4 &#x201C;nonce&#x201D; JWS Header Parameter"/>
 <link href="#rfc.section.8.5" rel="Chapter" title="8.5 URN Sub-namespace for ACME (urn:ietf:params:acme)"/>
 <link href="#rfc.section.8.6" rel="Chapter" title="8.6 New Registries"/>
-<link href="#rfc.section.8.6.1" rel="Chapter" title="8.6.1 Error Codes"/>
-<link href="#rfc.section.8.6.2" rel="Chapter" title="8.6.2 Resource Types"/>
-<link href="#rfc.section.8.6.3" rel="Chapter" title="8.6.3 Identifier Types"/>
-<link href="#rfc.section.8.6.4" rel="Chapter" title="8.6.4 Challenge Types"/>
+<link href="#rfc.section.8.6.1" rel="Chapter" title="8.6.1 Fields in Account Objects"/>
+<link href="#rfc.section.8.6.2" rel="Chapter" title="8.6.2 Fields in Order Objects"/>
+<link href="#rfc.section.8.6.3" rel="Chapter" title="8.6.3 Error Codes"/>
+<link href="#rfc.section.8.6.4" rel="Chapter" title="8.6.4 Resource Types"/>
+<link href="#rfc.section.8.6.5" rel="Chapter" title="8.6.5 Identifier Types"/>
+<link href="#rfc.section.8.6.6" rel="Chapter" title="8.6.6 Challenge Types"/>
 <link href="#rfc.section.9" rel="Chapter" title="9 Security Considerations"/>
 <link href="#rfc.section.9.1" rel="Chapter" title="9.1 Threat model"/>
 <link href="#rfc.section.9.2" rel="Chapter" title="9.2 Integrity of Authorizations"/>
@@ -466,10 +468,12 @@ address {
 <li>8.4.   <a href="#rfc.section.8.4">&#8220;nonce&#8221; JWS Header Parameter</a></li>
 <li>8.5.   <a href="#rfc.section.8.5">URN Sub-namespace for ACME (urn:ietf:params:acme)</a></li>
 <li>8.6.   <a href="#rfc.section.8.6">New Registries</a></li>
-<ul><li>8.6.1.   <a href="#rfc.section.8.6.1">Error Codes</a></li>
-<li>8.6.2.   <a href="#rfc.section.8.6.2">Resource Types</a></li>
-<li>8.6.3.   <a href="#rfc.section.8.6.3">Identifier Types</a></li>
-<li>8.6.4.   <a href="#rfc.section.8.6.4">Challenge Types</a></li>
+<ul><li>8.6.1.   <a href="#rfc.section.8.6.1">Fields in Account Objects</a></li>
+<li>8.6.2.   <a href="#rfc.section.8.6.2">Fields in Order Objects</a></li>
+<li>8.6.3.   <a href="#rfc.section.8.6.3">Error Codes</a></li>
+<li>8.6.4.   <a href="#rfc.section.8.6.4">Resource Types</a></li>
+<li>8.6.5.   <a href="#rfc.section.8.6.5">Identifier Types</a></li>
+<li>8.6.6.   <a href="#rfc.section.8.6.6">Challenge Types</a></li>
 </ul></ul><li>9.   <a href="#rfc.section.9">Security Considerations</a></li>
 <ul><li>9.1.   <a href="#rfc.section.9.1">Threat model</a></li>
 <li>9.2.   <a href="#rfc.section.9.2">Integrity of Authorizations</a></li>
@@ -1719,7 +1723,6 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 </pre>
 <p id="rfc.section.7.5.p.6">On receiving a response, the server MUST verify that the value of the &#8220;type&#8221; field is as required.  Otherwise, the steps the server takes to validate identifier possession are determined by the server&#8217;s local policy.</p>
 <h1 id="rfc.section.8"><a href="#rfc.section.8">8.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a></h1>
-<p id="rfc.section.8.p.1">[[ Editor&#8217;s Note: Should we create a registry for tokens that go into the various JSON objects used by this protocol, i.e., the field names in the JSON objects? ]]</p>
 <h1 id="rfc.section.8.1"><a href="#rfc.section.8.1">8.1.</a> <a href="#well-known-uri-for-the-http-challenge" id="well-known-uri-for-the-http-challenge">Well-Known URI for the HTTP Challenge</a></h1>
 <p id="rfc.section.8.1.p.1">The &#8220;Well-Known URIs&#8221; registry should be updated with the following additional value (using the template from <a href="#RFC5785">[RFC5785]</a>):</p>
 <p id="rfc.section.8.1.p.2">URI suffix: acme-challenge</p>
@@ -1779,9 +1782,135 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>ACME Challenge Types</li>
 </ol>
 <p id="rfc.section.8.6.p.3">All of these registries should be administered under a Specification Required policy <a href="#RFC5226">[RFC5226]</a>.</p>
-<h1 id="rfc.section.8.6.1"><a href="#rfc.section.8.6.1">8.6.1.</a> <a href="#error-codes" id="error-codes">Error Codes</a></h1>
-<p id="rfc.section.8.6.1.p.1">This registry lists values that are used within URN values that are provided in the &#8220;type&#8221; field of problem documents in ACME.</p>
+<h1 id="rfc.section.8.6.1"><a href="#rfc.section.8.6.1">8.6.1.</a> <a href="#fields-in-account-objects" id="fields-in-account-objects">Fields in Account Objects</a></h1>
+<p id="rfc.section.8.6.1.p.1">This registry lists field names that are defined for use in ACME account objects.  Fields marked as &#8220;client configurable&#8221; may be included in a new-account request.</p>
 <p id="rfc.section.8.6.1.p.2">Template:</p>
+<p/>
+
+<ul>
+  <li>Field name: The string to be used as a key in the JSON dictionary</li>
+  <li>Field type: The type of value to be provided, e.g., string, boolean, array of string</li>
+  <li>Client configurable: Boolean indicating whether the server should accept values provided by the client</li>
+  <li>Reference: Where this field is defined</li>
+</ul>
+<p id="rfc.section.8.6.1.p.4">Initial contents: The fields and descriptions defined in <a href="#account-objects">Section 6.1.2</a>.</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+  <thead>
+    <tr>
+      <th class="left">Field Name</th>
+      <th class="left">Field Type</th>
+      <th class="left">Configurable</th>
+      <th class="left">Reference</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="left">key</td>
+      <td class="left">dictionary</td>
+      <td class="left">false</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">status</td>
+      <td class="left">string</td>
+      <td class="left">false</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">contact</td>
+      <td class="left">array of string</td>
+      <td class="left">true</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">external-account-token</td>
+      <td class="left">string</td>
+      <td class="left">true</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">terms-of-service-agreed</td>
+      <td class="left">boolean</td>
+      <td class="left">false</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">orders</td>
+      <td class="left">array of string</td>
+      <td class="left">false</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+  </tbody>
+</table>
+<h1 id="rfc.section.8.6.2"><a href="#rfc.section.8.6.2">8.6.2.</a> <a href="#fields-in-order-objects" id="fields-in-order-objects">Fields in Order Objects</a></h1>
+<p id="rfc.section.8.6.2.p.1">This registry lists field names that are defined for use in ACME order objects.  Fields marked as &#8220;client configurable&#8221; may be included in a new-account request.</p>
+<p id="rfc.section.8.6.2.p.2">Template:</p>
+<p/>
+
+<ul>
+  <li>Field name: The string to be used as a key in the JSON dictionary</li>
+  <li>Field type: The type of value to be provided, e.g., string, boolean, array of string</li>
+  <li>Client configurable: Boolean indicating whether the server should accept values provided by the client</li>
+  <li>Reference: Where this field is defined</li>
+</ul>
+<p id="rfc.section.8.6.2.p.4">Initial contents: The fields and descriptions defined in <a href="#order-objects">Section 6.1.3</a>.</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+  <thead>
+    <tr>
+      <th class="left">Field Name</th>
+      <th class="left">Field Type</th>
+      <th class="left">Configurable</th>
+      <th class="left">Reference</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="left">status</td>
+      <td class="left">string</td>
+      <td class="left">false</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">expires</td>
+      <td class="left">string</td>
+      <td class="left">false</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">csr</td>
+      <td class="left">string</td>
+      <td class="left">true</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">notBefore</td>
+      <td class="left">string</td>
+      <td class="left">true</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">notAfter</td>
+      <td class="left">string</td>
+      <td class="left">true</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">authorizations</td>
+      <td class="left">array of dictionary</td>
+      <td class="left">false</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">certificate</td>
+      <td class="left">string</td>
+      <td class="left">false</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+  </tbody>
+</table>
+<h1 id="rfc.section.8.6.3"><a href="#rfc.section.8.6.3">8.6.3.</a> <a href="#error-codes" id="error-codes">Error Codes</a></h1>
+<p id="rfc.section.8.6.3.p.1">This registry lists values that are used within URN values that are provided in the &#8220;type&#8221; field of problem documents in ACME.</p>
+<p id="rfc.section.8.6.3.p.2">Template:</p>
 <p/>
 
 <ul>
@@ -1789,10 +1918,10 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Description: A human-readable description of the error</li>
   <li>Reference: Where the error is defined</li>
 </ul>
-<p id="rfc.section.8.6.1.p.4">Initial contents: The codes and descriptions in the table in <a href="#errors">Section 5.7</a> above, with the Reference field set to point to this specification.</p>
-<h1 id="rfc.section.8.6.2"><a href="#rfc.section.8.6.2">8.6.2.</a> <a href="#resource-types" id="resource-types">Resource Types</a></h1>
-<p id="rfc.section.8.6.2.p.1">This registry lists the types of resources that ACME servers may list in their directory objects.</p>
-<p id="rfc.section.8.6.2.p.2">Template:</p>
+<p id="rfc.section.8.6.3.p.4">Initial contents: The codes and descriptions in the table in <a href="#errors">Section 5.7</a> above, with the Reference field set to point to this specification.</p>
+<h1 id="rfc.section.8.6.4"><a href="#rfc.section.8.6.4">8.6.4.</a> <a href="#resource-types" id="resource-types">Resource Types</a></h1>
+<p id="rfc.section.8.6.4.p.1">This registry lists the types of resources that ACME servers may list in their directory objects.</p>
+<p id="rfc.section.8.6.4.p.2">Template:</p>
 <p/>
 
 <ul>
@@ -1800,7 +1929,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Resource type: The type of resource labeled by the key</li>
   <li>Reference: Where the identifier type is defined</li>
 </ul>
-<p id="rfc.section.8.6.2.p.4">Initial contents:</p>
+<p id="rfc.section.8.6.4.p.4">Initial contents:</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
@@ -1832,17 +1961,17 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.8.6.2.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
-<h1 id="rfc.section.8.6.3"><a href="#rfc.section.8.6.3">8.6.3.</a> <a href="#identifier-types" id="identifier-types">Identifier Types</a></h1>
-<p id="rfc.section.8.6.3.p.1">This registry lists the types of identifiers that ACME clients may request authorization to issue in certificates.</p>
-<p id="rfc.section.8.6.3.p.2">Template:</p>
+<p id="rfc.section.8.6.4.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<h1 id="rfc.section.8.6.5"><a href="#rfc.section.8.6.5">8.6.5.</a> <a href="#identifier-types" id="identifier-types">Identifier Types</a></h1>
+<p id="rfc.section.8.6.5.p.1">This registry lists the types of identifiers that ACME clients may request authorization to issue in certificates.</p>
+<p id="rfc.section.8.6.5.p.2">Template:</p>
 <p/>
 
 <ul>
   <li>Label: The value to be put in the &#8220;type&#8221; field of the identifier object</li>
   <li>Reference: Where the identifier type is defined</li>
 </ul>
-<p id="rfc.section.8.6.3.p.4">Initial contents:</p>
+<p id="rfc.section.8.6.5.p.4">Initial contents:</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
@@ -1857,10 +1986,10 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.8.6.3.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
-<h1 id="rfc.section.8.6.4"><a href="#rfc.section.8.6.4">8.6.4.</a> <a href="#challenge-types" id="challenge-types">Challenge Types</a></h1>
-<p id="rfc.section.8.6.4.p.1">This registry lists the ways that ACME servers can offer to validate control of an identifier.  The &#8220;Identifier Type&#8221; field in template must be contained in the Label column of the ACME Identifier Types registry.</p>
-<p id="rfc.section.8.6.4.p.2">Template:</p>
+<p id="rfc.section.8.6.5.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<h1 id="rfc.section.8.6.6"><a href="#rfc.section.8.6.6">8.6.6.</a> <a href="#challenge-types" id="challenge-types">Challenge Types</a></h1>
+<p id="rfc.section.8.6.6.p.1">This registry lists the ways that ACME servers can offer to validate control of an identifier.  The &#8220;Identifier Type&#8221; field in template must be contained in the Label column of the ACME Identifier Types registry.</p>
+<p id="rfc.section.8.6.6.p.2">Template:</p>
 <p/>
 
 <ul>
@@ -1868,7 +1997,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Identifier Type: The type of identifier that this mechanism applies to</li>
   <li>Reference: Where the challenge type is defined</li>
 </ul>
-<p id="rfc.section.8.6.4.p.4">Initial Contents</p>
+<p id="rfc.section.8.6.6.p.4">Initial Contents</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
@@ -1895,7 +2024,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.8.6.4.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<p id="rfc.section.8.6.6.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.9"><a href="#rfc.section.9">9.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a></h1>
 <p id="rfc.section.9.p.1">ACME is a protocol for managing certificates that attest to identifier/key bindings.  Thus the foremost security goal of ACME is to ensure the integrity of this process, i.e., to ensure that the bindings attested by certificates are correct, and that only authorized entities can manage certificates.  ACME identifies clients by their account keys, so this overall goal breaks down into two more precise goals:</p>
 <p/>

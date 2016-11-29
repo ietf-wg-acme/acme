@@ -134,25 +134,27 @@ Internet-Draft                    ACME                     November 2016
      8.4.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  52
      8.5.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  53
      8.6.  New Registries  . . . . . . . . . . . . . . . . . . . . .  53
-       8.6.1.  Error Codes . . . . . . . . . . . . . . . . . . . . .  53
-       8.6.2.  Resource Types  . . . . . . . . . . . . . . . . . . .  54
-       8.6.3.  Identifier Types  . . . . . . . . . . . . . . . . . .  54
-       8.6.4.  Challenge Types . . . . . . . . . . . . . . . . . . .  55
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  56
-     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  56
-     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  57
-     9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  59
-     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  60
-     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  60
-   10. Operational Considerations  . . . . . . . . . . . . . . . . .  61
-     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  61
-     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  61
-     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  62
-   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  62
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  63
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  63
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  65
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  66
+       8.6.1.  Fields in Account Objects . . . . . . . . . . . . . .  53
+       8.6.2.  Fields in Order Objects . . . . . . . . . . . . . . .  54
+       8.6.3.  Error Codes . . . . . . . . . . . . . . . . . . . . .  55
+       8.6.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  55
+       8.6.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  56
+       8.6.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  57
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  57
+     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  58
+     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  59
+     9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  61
+     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  62
+     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  62
+   10. Operational Considerations  . . . . . . . . . . . . . . . . .  63
+     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  63
+     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  63
+     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  64
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  64
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  65
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  65
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  67
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  68
 
 1.  Introduction
 
@@ -160,8 +162,6 @@ Internet-Draft                    ACME                     November 2016
    authenticate domain names.  Thus, certificate authorities in the Web
    PKI are trusted to verify that an applicant for a certificate
    legitimately represents the domain name(s) in the certificate.
-
-
 
 
 
@@ -2847,9 +2847,9 @@ Internet-Draft                    ACME                     November 2016
 
 8.  IANA Considerations
 
-   [[ Editor's Note: Should we create a registry for tokens that go into
-   the various JSON objects used by this protocol, i.e., the field names
-   in the JSON objects? ]]
+
+
+
 
 
 
@@ -2956,12 +2956,12 @@ Internet-Draft                    ACME                     November 2016
    All of these registries should be administered under a Specification
    Required policy [RFC5226].
 
-8.6.1.  Error Codes
+8.6.1.  Fields in Account Objects
 
-   This registry lists values that are used within URN values that are
-   provided in the "type" field of problem documents in ACME.
+   This registry lists field names that are defined for use in ACME
+   account objects.  Fields marked as "client configurable" may be
+   included in a new-account request.
 
-   Template:
 
 
 
@@ -2969,6 +2969,92 @@ Barnes, et al.            Expires June 2, 2017                 [Page 53]
 
 Internet-Draft                    ACME                     November 2016
 
+
+   Template:
+
+   o  Field name: The string to be used as a key in the JSON dictionary
+
+   o  Field type: The type of value to be provided, e.g., string,
+      boolean, array of string
+
+   o  Client configurable: Boolean indicating whether the server should
+      accept values provided by the client
+
+   o  Reference: Where this field is defined
+
+   Initial contents: The fields and descriptions defined in
+   Section 6.1.2.
+
+   +-------------------------+--------------+--------------+-----------+
+   | Field Name              | Field Type   | Configurable | Reference |
+   +-------------------------+--------------+--------------+-----------+
+   | key                     | dictionary   | false        | RFC XXXX  |
+   |                         |              |              |           |
+   | status                  | string       | false        | RFC XXXX  |
+   |                         |              |              |           |
+   | contact                 | array of     | true         | RFC XXXX  |
+   |                         | string       |              |           |
+   |                         |              |              |           |
+   | external-account-token  | string       | true         | RFC XXXX  |
+   |                         |              |              |           |
+   | terms-of-service-agreed | boolean      | false        | RFC XXXX  |
+   |                         |              |              |           |
+   | orders                  | array of     | false        | RFC XXXX  |
+   |                         | string       |              |           |
+   +-------------------------+--------------+--------------+-----------+
+
+8.6.2.  Fields in Order Objects
+
+   This registry lists field names that are defined for use in ACME
+   order objects.  Fields marked as "client configurable" may be
+   included in a new-account request.
+
+   Template:
+
+   o  Field name: The string to be used as a key in the JSON dictionary
+
+   o  Field type: The type of value to be provided, e.g., string,
+      boolean, array of string
+
+   o  Client configurable: Boolean indicating whether the server should
+      accept values provided by the client
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 54]
+
+Internet-Draft                    ACME                     November 2016
+
+
+   o  Reference: Where this field is defined
+
+   Initial contents: The fields and descriptions defined in
+   Section 6.1.3.
+
+    +----------------+---------------------+--------------+-----------+
+    | Field Name     | Field Type          | Configurable | Reference |
+    +----------------+---------------------+--------------+-----------+
+    | status         | string              | false        | RFC XXXX  |
+    |                |                     |              |           |
+    | expires        | string              | false        | RFC XXXX  |
+    |                |                     |              |           |
+    | csr            | string              | true         | RFC XXXX  |
+    |                |                     |              |           |
+    | notBefore      | string              | true         | RFC XXXX  |
+    |                |                     |              |           |
+    | notAfter       | string              | true         | RFC XXXX  |
+    |                |                     |              |           |
+    | authorizations | array of dictionary | false        | RFC XXXX  |
+    |                |                     |              |           |
+    | certificate    | string              | false        | RFC XXXX  |
+    +----------------+---------------------+--------------+-----------+
+
+8.6.3.  Error Codes
+
+   This registry lists values that are used within URN values that are
+   provided in the "type" field of problem documents in ACME.
+
+   Template:
 
    o  Code: The label to be included in the URN for this error,
       following "urn:ietf:params:acme:"
@@ -2981,12 +3067,20 @@ Internet-Draft                    ACME                     November 2016
    Section 5.7 above, with the Reference field set to point to this
    specification.
 
-8.6.2.  Resource Types
+8.6.4.  Resource Types
 
    This registry lists the types of resources that ACME servers may list
    in their directory objects.
 
    Template:
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 55]
+
+Internet-Draft                    ACME                     November 2016
+
 
    o  Key: The value to be used as a dictionary key in the directory
       object
@@ -3012,19 +3106,12 @@ Internet-Draft                    ACME                     November 2016
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
-8.6.3.  Identifier Types
+8.6.5.  Identifier Types
 
    This registry lists the types of identifiers that ACME clients may
    request authorization to issue in certificates.
 
    Template:
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 54]
-
-Internet-Draft                    ACME                     November 2016
-
 
    o  Label: The value to be put in the "type" field of the identifier
       object
@@ -3042,7 +3129,16 @@ Internet-Draft                    ACME                     November 2016
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
-8.6.4.  Challenge Types
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 56]
+
+Internet-Draft                    ACME                     November 2016
+
+
+8.6.6.  Challenge Types
 
    This registry lists the ways that ACME servers can offer to validate
    control of an identifier.  The "Identifier Type" field in template
@@ -3074,14 +3170,6 @@ Internet-Draft                    ACME                     November 2016
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 55]
-
-Internet-Draft                    ACME                     November 2016
-
-
 9.  Security Considerations
 
    ACME is a protocol for managing certificates that attest to
@@ -3097,6 +3185,14 @@ Internet-Draft                    ACME                     November 2016
 
    2.  Once authorized, an account key's authorizations cannot be
        improperly transferred to another account key
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 57]
+
+Internet-Draft                    ACME                     November 2016
+
 
    In this section, we discuss the threat model that underlies ACME and
    the ways that ACME achieves these security goals within that threat
@@ -3130,14 +3226,6 @@ Internet-Draft                    ACME                     November 2016
    |   Server   |  Validation Channel
    +------------+
 
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 56]
-
-Internet-Draft                    ACME                     November 2016
-
-
    In practice, the risks to these channels are not entirely separate,
    but they are different in most cases.  Each channel, for example,
    uses a different communications pattern: the ACME channel will
@@ -3154,6 +3242,14 @@ Internet-Draft                    ACME                     November 2016
    for abusive use of the protocol itself.  Protection against
    application-layer MitM addresses potential attackers such as Content
    Distribution Networks (CDNs) and middleboxes with a TLS MitM
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 58]
+
+Internet-Draft                    ACME                     November 2016
+
+
    function.  Preventing abusive use of ACME means ensuring that an
    attacker with access to the validation channel can't obtain
    illegitimate authorization by acting as an ACME client (legitimately,
@@ -3187,13 +3283,6 @@ Internet-Draft                    ACME                     November 2016
 
    o  Legitimate domain holder provisions the validation response
 
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 57]
-
-Internet-Draft                    ACME                     November 2016
-
-
    o  ACME server performs validation query and sees the response
       provisioned by the legitimate domain holder
 
@@ -3207,6 +3296,15 @@ Internet-Draft                    ACME                     November 2016
    authorization.  The key authorization is signed by the account
    private key, reflects the corresponding public key, and is provided
    to the server in the validation response.
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 59]
+
+Internet-Draft                    ACME                     November 2016
+
 
    The association of challenges to identifiers is typically done by
    requiring the client to perform some action that only someone who
@@ -3242,14 +3340,6 @@ Internet-Draft                    ACME                     November 2016
    that to get a certificate through HTTP validation, since the
    validation path will not be known to the primary server.
 
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 58]
-
-Internet-Draft                    ACME                     November 2016
-
-
    The DNS is a common point of vulnerability for all of these
    challenges.  An entity that can provision false DNS records for a
    domain can attack the DNS challenge directly, and can provision false
@@ -3262,6 +3352,15 @@ Internet-Draft                    ACME                     November 2016
 
    o  Querying the DNS from multiple vantage points to address local
       attackers
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 60]
+
+Internet-Draft                    ACME                     November 2016
+
 
    o  Applying mitigations against DNS off-path attackers, e.g., adding
       entropy to requests [I-D.vixie-dnsext-dns0x20] or only using TCP
@@ -3298,14 +3397,6 @@ Internet-Draft                    ACME                     November 2016
    attacker-controlled servers, and certificate issuance can require
    interactions with cryptographic hardware.
 
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 59]
-
-Internet-Draft                    ACME                     November 2016
-
-
    In addition, an attacker can also cause the ACME server to send
    validation requests to a domain of its choosing by submitting
    authorization requests for the victim domain.
@@ -3318,6 +3409,14 @@ Internet-Draft                    ACME                     November 2016
    the rate at which any individual account key can issue certificates,
    or the rate at which validation can be requested within a given
    subtree of the DNS.
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 61]
+
+Internet-Draft                    ACME                     November 2016
+
 
 9.4.  Server-Side Request Forgery
 
@@ -3355,13 +3454,6 @@ Internet-Draft                    ACME                     November 2016
    Before issuing a certificate, however, there are many other checks
    that a CA might need to perform, for example:
 
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 60]
-
-Internet-Draft                    ACME                     November 2016
-
-
    o  Has the client agreed to a subscriber agreement?
 
    o  Is the claimed identifier syntactically valid?
@@ -3374,6 +3466,13 @@ Internet-Draft                    ACME                     November 2016
       *  Is the name on the Public Suffix List?
 
       *  Is the name a high-value name?
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 62]
+
+Internet-Draft                    ACME                     November 2016
+
 
       *  Is the name a known phishing domain?
 
@@ -3410,14 +3509,6 @@ Internet-Draft                    ACME                     November 2016
 
    When a connection comes in with an unknown SNI value, one might
    expect the hosting platform to terminate the TLS connection.
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 61]
-
-Internet-Draft                    ACME                     November 2016
-
-
    However, some hosting platforms will choose a virtual host to be the
    "default", and route connections with unknown SNI values to that
    host.
@@ -3431,6 +3522,14 @@ Internet-Draft                    ACME                     November 2016
    A CA that accepts TLS-based proof of domain control should attempt to
    check whether a domain is hosted on a domain with a default virtual
    host before allowing an authorization request for this host to use a
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 63]
+
+Internet-Draft                    ACME                     November 2016
+
+
    TLS-based challenge.  A default virtual host can be detected by
    initiating TLS connections to the host with random SNI values within
    the namespace used for the TLS-based challenge (the "acme.invalid"
@@ -3466,14 +3565,6 @@ Internet-Draft                    ACME                     November 2016
 
    o  Seth Schoen, EFF
 
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 62]
-
-Internet-Draft                    ACME                     November 2016
-
-
    o  Alex Halderman, University of Michigan
 
    o  Martin Thomson, Mozilla
@@ -3483,6 +3574,17 @@ Internet-Draft                    ACME                     November 2016
    This document draws on many concepts established by Eric Rescorla's
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 64]
+
+Internet-Draft                    ACME                     November 2016
+
 
 12.  References
 
@@ -3521,15 +3623,6 @@ Internet-Draft                    ACME                     November 2016
               RFC 3986, DOI 10.17487/RFC3986, January 2005,
               <http://www.rfc-editor.org/info/rfc3986>.
 
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 63]
-
-Internet-Draft                    ACME                     November 2016
-
-
    [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <http://www.rfc-editor.org/info/rfc4648>.
@@ -3538,6 +3631,16 @@ Internet-Draft                    ACME                     November 2016
               (TLS) Protocol Version 1.2", RFC 5246,
               DOI 10.17487/RFC5246, August 2008,
               <http://www.rfc-editor.org/info/rfc5246>.
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 65]
+
+Internet-Draft                    ACME                     November 2016
+
 
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key
@@ -3578,14 +3681,6 @@ Internet-Draft                    ACME                     November 2016
               DOI 10.17487/RFC7231, June 2014,
               <http://www.rfc-editor.org/info/rfc7231>.
 
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 64]
-
-Internet-Draft                    ACME                     November 2016
-
-
    [RFC7468]  Josefsson, S. and S. Leonard, "Textual Encodings of PKIX,
               PKCS, and CMS Structures", RFC 7468, DOI 10.17487/RFC7468,
               April 2015, <http://www.rfc-editor.org/info/rfc7468>.
@@ -3593,6 +3688,15 @@ Internet-Draft                    ACME                     November 2016
    [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
               Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
               2015, <http://www.rfc-editor.org/info/rfc7515>.
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 66]
+
+Internet-Draft                    ACME                     November 2016
+
 
    [RFC7517]  Jones, M., "JSON Web Key (JWK)", RFC 7517,
               DOI 10.17487/RFC7517, May 2015,
@@ -3632,16 +3736,6 @@ Internet-Draft                    ACME                     November 2016
               DOI 10.17487/RFC5226, May 2008,
               <http://www.rfc-editor.org/info/rfc5226>.
 
-
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 65]
-
-Internet-Draft                    ACME                     November 2016
-
-
    [RFC5785]  Nottingham, M. and E. Hammer-Lahav, "Defining Well-Known
               Uniform Resource Identifiers (URIs)", RFC 5785,
               DOI 10.17487/RFC5785, April 2010,
@@ -3650,6 +3744,15 @@ Internet-Draft                    ACME                     November 2016
    [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
               Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
               <http://www.rfc-editor.org/info/rfc6962>.
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 67]
+
+Internet-Draft                    ACME                     November 2016
+
 
    [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
@@ -3693,4 +3796,13 @@ Authors' Addresses
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 66]
+
+
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 68]
