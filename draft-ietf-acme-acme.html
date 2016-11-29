@@ -295,11 +295,11 @@ address {
 <link href="#rfc.section.6" rel="Chapter" title="6 Certificate Management"/>
 <link href="#rfc.section.6.1" rel="Chapter" title="6.1 Resources"/>
 <link href="#rfc.section.6.1.1" rel="Chapter" title="6.1.1 Directory"/>
-<link href="#rfc.section.6.1.2" rel="Chapter" title="6.1.2 Registration Objects"/>
-<link href="#rfc.section.6.1.3" rel="Chapter" title="6.1.3 Application Objects"/>
+<link href="#rfc.section.6.1.2" rel="Chapter" title="6.1.2 Account Objects"/>
+<link href="#rfc.section.6.1.3" rel="Chapter" title="6.1.3 Order Objects"/>
 <link href="#rfc.section.6.1.4" rel="Chapter" title="6.1.4 Authorization Objects"/>
 <link href="#rfc.section.6.2" rel="Chapter" title="6.2 Getting a Nonce"/>
-<link href="#rfc.section.6.3" rel="Chapter" title="6.3 Registration"/>
+<link href="#rfc.section.6.3" rel="Chapter" title="6.3 Account Creation"/>
 <link href="#rfc.section.6.3.1" rel="Chapter" title="6.3.1 Changes of Terms of Service"/>
 <link href="#rfc.section.6.3.2" rel="Chapter" title="6.3.2 Account Key Roll-over"/>
 <link href="#rfc.section.6.3.3" rel="Chapter" title="6.3.3 Account deactivation"/>
@@ -438,11 +438,11 @@ address {
 </ul><li>6.   <a href="#rfc.section.6">Certificate Management</a></li>
 <ul><li>6.1.   <a href="#rfc.section.6.1">Resources</a></li>
 <ul><li>6.1.1.   <a href="#rfc.section.6.1.1">Directory</a></li>
-<li>6.1.2.   <a href="#rfc.section.6.1.2">Registration Objects</a></li>
-<li>6.1.3.   <a href="#rfc.section.6.1.3">Application Objects</a></li>
+<li>6.1.2.   <a href="#rfc.section.6.1.2">Account Objects</a></li>
+<li>6.1.3.   <a href="#rfc.section.6.1.3">Order Objects</a></li>
 <li>6.1.4.   <a href="#rfc.section.6.1.4">Authorization Objects</a></li>
 </ul><li>6.2.   <a href="#rfc.section.6.2">Getting a Nonce</a></li>
-<li>6.3.   <a href="#rfc.section.6.3">Registration</a></li>
+<li>6.3.   <a href="#rfc.section.6.3">Account Creation</a></li>
 <ul><li>6.3.1.   <a href="#rfc.section.6.3.1">Changes of Terms of Service</a></li>
 <li>6.3.2.   <a href="#rfc.section.6.3.2">Account Key Roll-over</a></li>
 <li>6.3.3.   <a href="#rfc.section.6.3.3">Account deactivation</a></li>
@@ -525,31 +525,31 @@ address {
 <h1 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#protocol-overview" id="protocol-overview">Protocol Overview</a></h1>
 <p id="rfc.section.4.p.1">ACME allows a client to request certificate management actions using a set of JSON messages carried over HTTPS.   In some ways, ACME functions much like a traditional CA, in which a user creates an account, adds identifiers to that account (proving control of the domains), and requests certificate issuance for those domains while logged in to the account.</p>
 <p id="rfc.section.4.p.2">In ACME, the account is represented by an account key pair.  The &#8220;add a domain&#8221; function is accomplished by authorizing the key pair for a given domain.  Certificate issuance and revocation are authorized by a signature with the key pair.</p>
-<p id="rfc.section.4.p.3">The first phase of ACME is for the client to register with the ACME server.  The client generates an asymmetric key pair and associates this key pair with a set of contact information by signing the contact information.  The server acknowledges the registration by replying with a registration object echoing the client&#8217;s input.</p>
+<p id="rfc.section.4.p.3">The first phase of ACME is for the client to register with the ACME server.  The client generates an asymmetric key pair and associates this key pair with a set of contact information by signing the contact information.  The server acknowledges the registration by replying with a account object echoing the client&#8217;s input.</p>
 <pre>
       Client                                                  Server
 
       Contact Information
       Signature                     -------&gt;
 
-                                    &lt;-------            Registration
+                                    &lt;-------                 Account
 </pre>
 <p id="rfc.section.4.p.4">Once the client is registered, there are three major steps it needs to take to get a certificate:</p>
 <p/>
 
 <ol>
-  <li>Apply for a certificate to be issued</li>
-  <li>Fulfill the server&#8217;s requirements for issuance</li>
+  <li>Submit an order for a certificate to be issued</li>
+  <li>Prove control of any identifiers requested in the certificate</li>
   <li>Await issuance and download the issued certificate</li>
 </ol>
-<p id="rfc.section.4.p.6">The client&#8217;s application for a certificate describes the desired certificate using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that capture semantics that are not supported in the CSR format.  If the server is willing to consider issuing such a certificate, it responds with a list of requirements that the client must satisfy before the certificate will be issued.</p>
+<p id="rfc.section.4.p.6">The client&#8217;s order for a certificate describes the desired certificate using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that capture semantics that are not supported in the CSR format.  If the server is willing to consider issuing such a certificate, it responds with a list of requirements that the client must satisfy before the certificate will be issued.</p>
 <p id="rfc.section.4.p.7">For example, in most cases, the server will require the client to demonstrate that it controls the identifiers in the requested certificate.  Because there are many different ways to validate possession of different types of identifiers, the server will choose from an extensible set of challenges that are appropriate for the identifier being claimed.  The client responds with a set of responses that tell the server which challenges the client has completed.  The server then validates the challenges to check that the client has accomplished the challenge.</p>
 <p id="rfc.section.4.p.8">Once the validation process is complete and the server is satisfied that the client has met its requirements, the server will issue the requested certificate and make it available to the client.</p>
 <pre>
-      Application
+      Order
       Signature                     -------&gt;
-                                    &lt;-------            Requirements
-                                                  (e.g., Challenges)
+                                                             Required
+                                    &lt;-------           Authorizations
 
       Responses
       Signature                     -------&gt;
@@ -710,7 +710,7 @@ address {
 
 <ul>
   <li>Account Key Registration</li>
-  <li>Application for a Certificate</li>
+  <li>Ordering a Certificate</li>
   <li>Account Key Authorization</li>
   <li>Certificate Issuance</li>
   <li>Certificate Revocation</li>
@@ -720,20 +720,20 @@ address {
 <p/>
 
 <ul>
-  <li>Registration resources, representing information about an account</li>
-  <li>Application resources, representing an account&#8217;s requests to issue certificates</li>
+  <li>Account resources, representing information about an account</li>
+  <li>Order resources, representing an account&#8217;s requests to issue certificates</li>
   <li>Authorization resources, representing an account&#8217;s authorization to act for an identifier</li>
   <li>Challenge resources, representing a challenge to prove control of an identifier</li>
   <li>Certificate resources, representing issued certificates</li>
   <li>A &#8220;directory&#8221; resource</li>
   <li>A &#8220;new-nonce&#8221; resource</li>
-  <li>A &#8220;new-registration&#8221; resource</li>
-  <li>A &#8220;new-application&#8221; resource</li>
+  <li>A &#8220;new-account&#8221; resource</li>
+  <li>A &#8220;new-order&#8221; resource</li>
   <li>A &#8220;revoke-certificate&#8221; resource</li>
   <li>A &#8220;key-change&#8221; resource</li>
 </ul>
 <p id="rfc.section.6.1.p.3">The server MUST provide &#8220;directory&#8221; and &#8220;new-nonce&#8221; resources.</p>
-<p id="rfc.section.6.1.p.4">For the singular resources above (&#8220;directory&#8221;, &#8220;new-nonce&#8221;, &#8220;new-registration&#8221;, &#8220;new-application&#8221;, &#8220;revoke-certificate&#8221;, and &#8220;key-change&#8221;) the resource may be addressed by multiple URIs, but all must provide equivalent functionality.</p>
+<p id="rfc.section.6.1.p.4">For the singular resources above (&#8220;directory&#8221;, &#8220;new-nonce&#8221;, &#8220;new-account&#8221;, &#8220;new-order&#8221;, &#8220;revoke-certificate&#8221;, and &#8220;key-change&#8221;) the resource may be addressed by multiple URIs, but all must provide equivalent functionality.</p>
 <p id="rfc.section.6.1.p.5">ACME uses different URIs for different management functions. Each function is listed in a directory along with its corresponding URI, so clients only need to be configured with the directory URI.  These URIs are connected by a few different link relations <a href="#RFC5988">[RFC5988]</a>.</p>
 <p id="rfc.section.6.1.p.6">The &#8220;up&#8221; link relation is used with challenge resources to indicate the authorization resource to which a challenge belongs.  It is also used from certificate resources to indicate a resource from which the client may fetch a chain of CA certificates that could be used to validate the certificate in the original resource.</p>
 <p id="rfc.section.6.1.p.7">The &#8220;directory&#8221; link relation is present on all resources other than the directory and indicates the directory URL.</p>
@@ -747,11 +747,11 @@ address {
        |          |          |                           |
        |          |          |                           |
        V          V          V                           V
-    new-reg   new-authz   new-app                   revoke-cert
+    new-acct  new-authz  new-order                  revoke-cert
        |          |          |                           ^
-       |          |          |                           | "revoke"
-       V          |          V                           |
-      reg         |         app ---------&gt; cert ---------+
+       |          |          |    "author"               | "revoke"
+       V          |          V   &lt;--------               |
+      acct        |        order --------&gt; cert ---------+
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
@@ -778,13 +778,13 @@ address {
     </tr>
     <tr>
       <td class="left">Register</td>
-      <td class="left">POST new-reg</td>
-      <td class="left">201 -&gt; reg</td>
+      <td class="left">POST new-acct</td>
+      <td class="left">201 -&gt; acct</td>
     </tr>
     <tr>
-      <td class="left">Apply for a cert</td>
-      <td class="left">POST new-app</td>
-      <td class="left">201 -&gt; app</td>
+      <td class="left">Submit an order</td>
+      <td class="left">POST new-order</td>
+      <td class="left">201 -&gt; order</td>
     </tr>
     <tr>
       <td class="left">Fetch challenges</td>
@@ -792,18 +792,13 @@ address {
       <td class="left">200</td>
     </tr>
     <tr>
-      <td class="left">Answer challenges</td>
+      <td class="left">Respond to challenge</td>
       <td class="left">POST challenge</td>
       <td class="left">200</td>
     </tr>
     <tr>
       <td class="left">Poll for status</td>
-      <td class="left">GET  authz</td>
-      <td class="left">200</td>
-    </tr>
-    <tr>
-      <td class="left">Request issuance</td>
-      <td class="left">POST app</td>
+      <td class="left">GET  order</td>
       <td class="left">200</td>
     </tr>
     <tr>
@@ -829,12 +824,12 @@ address {
       <td class="left">New nonce</td>
     </tr>
     <tr>
-      <td class="left">new-reg</td>
-      <td class="left">New registration</td>
+      <td class="left">new-acct</td>
+      <td class="left">New account</td>
     </tr>
     <tr>
-      <td class="left">new-app</td>
-      <td class="left">New application</td>
+      <td class="left">new-order</td>
+      <td class="left">New order</td>
     </tr>
     <tr>
       <td class="left">new-authz</td>
@@ -876,8 +871,8 @@ Content-Type: application/json
 
 {
   "new-nonce": "https://example.com/acme/new-nonce",
-  "new-reg": "https://example.com/acme/new-reg",
-  "new-app": "https://example.com/acme/new-app",
+  "new-acct": "https://example.com/acme/new-acct",
+  "new-order": "https://example.com/acme/new-order",
   "new-authz": "https://example.com/acme/new-authz",
   "revoke-cert": "https://example.com/acme/revoke-cert",
   "key-change": "https://example.com/acme/key-change",
@@ -888,21 +883,21 @@ Content-Type: application/json
   }
 }
 </pre>
-<h1 id="rfc.section.6.1.2"><a href="#rfc.section.6.1.2">6.1.2.</a> <a href="#registration-objects" id="registration-objects">Registration Objects</a></h1>
-<p id="rfc.section.6.1.2.p.1">An ACME registration resource represents a set of metadata associated to an account key pair.  Registration resources have the following structure:</p>
+<h1 id="rfc.section.6.1.2"><a href="#rfc.section.6.1.2">6.1.2.</a> <a href="#account-objects" id="account-objects">Account Objects</a></h1>
+<p id="rfc.section.6.1.2.p.1">An ACME account resource represents a set of metadata associated to an account key pair.  Account resources have the following structure:</p>
 <p/>
 
 <dl>
   <dt>key (required, dictionary):</dt>
   <dd style="margin-left: 8">The public key of the account key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>. This field is not updateable by the client.</dd>
   <dt>status (required, string):</dt>
-  <dd style="margin-left: 8">The status of this registration. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;. &#8220;deactivated&#8221; should be used to indicate user initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate administratively initiated deactivation.</dd>
+  <dd style="margin-left: 8">The status of this account. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;.  The value &#8220;deactivated&#8221; should be used to indicate user initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate administratively initiated deactivation.</dd>
   <dt>contact (optional, array of string):</dt>
   <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this authorization. For example, the server may wish to notify the client about server-initiated revocation.</dd>
   <dt>terms-of-service-agreed (optional, boolean):</dt>
-  <dd style="margin-left: 8">Including this field in a new-registration request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field is not updateable by the client.</dd>
-  <dt>applications (required, string):</dt>
-  <dd style="margin-left: 8">A URI from which a list of authorizations submitted by this account can be fetched via a GET request.  The result of the GET request MUST be a JSON object whose &#8220;applications&#8221; field is an array of strings, where each string is the URI of an authorization belonging to this registration.  The server SHOULD include pending applications, and SHOULD NOT include applications that are invalid. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries. This field is not updateable by the client.</dd>
+  <dd style="margin-left: 8">Including this field in a new-account request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field is not updateable by the client.</dd>
+  <dt>order (required, string):</dt>
+  <dd style="margin-left: 8">A URI from which a list of orders submitted by this account can be fetched via a GET request, as described in <a href="#orders-list">Section 6.1.2.1</a></dd>
 </dl>
 <pre>
 {
@@ -911,44 +906,44 @@ Content-Type: application/json
     "tel:+12025551212"
   ],
   "terms-of-service-agreed": true,
-  "applications": "https://example.com/acme/reg/1/apps"
+  "orders": "https://example.com/acme/acct/1/orders"
 }
 </pre>
-<h1 id="rfc.section.6.1.2.1"><a href="#rfc.section.6.1.2.1">6.1.2.1.</a> <a href="#applications-list" id="applications-list">Applications List</a></h1>
-<p id="rfc.section.6.1.2.1.p.1">Each registration object includes an applications URI from which a list of applications created by the registration can be fetched via GET request. The result of the GET request MUST be a JSON object whose &#8220;applications&#8221; field is an array of URIs, each identifying an applications belonging to the registration.  The server SHOULD include pending applications, and SHOULD NOT include applications that are invalid in the array of URIs. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</p>
+<h1 id="rfc.section.6.1.2.1"><a href="#rfc.section.6.1.2.1">6.1.2.1.</a> <a href="#orders-list" id="orders-list">Orders List</a></h1>
+<p id="rfc.section.6.1.2.1.p.1">Each account object includes an &#8220;orders&#8221; URI from which a list of orders created by the account can be fetched via GET request. The result of the GET request MUST be a JSON object whose &#8220;orders&#8221; field is an array of URIs, each identifying an order belonging to the account.  The server SHOULD include pending orders, and SHOULD NOT include orders that are invalid in the array of URIs. The server MAY return an incomplete list, along with a Link header with link relation &#8220;next&#8221; indicating a URL to retrieve further entries.</p>
 <pre>
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 
 {
-  "applications": [
-    "https://example.com/acme/reg/1/apps/1",
-    "https://example.com/acme/reg/1/apps/2",
+  "orders": [
+    "https://example.com/acme/acct/1/order/1",
+    "https://example.com/acme/acct/1/order/2",
     /* 47 more URLs not shown for example brevity */
-    "https://example.com/acme/reg/1/apps/50"
+    "https://example.com/acme/acct/1/order/50"
   ]
 }
 </pre>
-<h1 id="rfc.section.6.1.3"><a href="#rfc.section.6.1.3">6.1.3.</a> <a href="#application-objects" id="application-objects">Application Objects</a></h1>
-<p id="rfc.section.6.1.3.p.1">An ACME application object represents a client&#8217;s request for a certificate, and is used to track the progress of that application through to issuance.  Thus, the object contains information about the requested certificate, the server&#8217;s requirements, and any certificates that have resulted from this application.</p>
+<h1 id="rfc.section.6.1.3"><a href="#rfc.section.6.1.3">6.1.3.</a> <a href="#order-objects" id="order-objects">Order Objects</a></h1>
+<p id="rfc.section.6.1.3.p.1">An ACME order object represents a client&#8217;s request for a certificate, and is used to track the progress of that order through to issuance.  Thus, the object contains information about the requested certificate, the authorizations that the server requires the client to complete, and any certificates that have resulted from this order.</p>
 <p/>
 
 <dl>
   <dt>status (required, string):</dt>
-  <dd style="margin-left: 8">The status of this application.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
+  <dd style="margin-left: 8">The status of this order.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
   <dt>expires (optional, string):</dt>
-  <dd style="margin-left: 8">The timestamp after which the server will consider this application invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;pending&#8221; or &#8220;valid&#8221; in the status field.</dd>
+  <dd style="margin-left: 8">The timestamp after which the server will consider this order invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;pending&#8221; or &#8220;valid&#8221; in the status field.</dd>
   <dt>csr (required, string):</dt>
   <dd style="margin-left: 8">A CSR encoding the parameters for the certificate being requested <a href="#RFC2986">[RFC2986]</a>.  The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This field uses the same modified Base64 encoding rules used elsewhere in this document, so it is different from PEM.)</dd>
   <dt>notBefore (optional, string):</dt>
   <dd style="margin-left: 8">The requested value of the notBefore field in the certificate, in the date format defined in <a href="#RFC3339">[RFC3339]</a></dd>
   <dt>notAfter (optional, string):</dt>
   <dd style="margin-left: 8">The requested value of the notAfter field in the certificate, in the date format defined in <a href="#RFC3339">[RFC3339]</a></dd>
-  <dt>requirements (required, array):</dt>
-  <dd style="margin-left: 8">The requirements that the client needs to fulfill before the requested certificate can be granted (for pending applications).  For final applications, the requirements that were met.  Each entry is a dictionary with parameters describing the requirement (see below).</dd>
+  <dt>authorizations (required, array):</dt>
+  <dd style="margin-left: 8">For pending orders, the authorizations that the client needs to complete before the requested certificate can be granted (see <a href="#identifier-authorization">Section 6.5</a>).  For final orders, the authorizations that were completed.  Each entry is a dictionary with parameters describing the authorization: <dl><dt>status (required, string):</dt><dd style="margin-left: 8">The status of the authorization.  This field MUST have the same value as it does in the underlying authorization object.</dd><dt>url (required, string):</dt><dd style="margin-left: 8">A URL from which the authorization can be fetched with a GET request.</dd></dl><p> </p></dd>
   <dt>certificate (optional, string):</dt>
-  <dd style="margin-left: 8">A URL for the certificate that has been issued in response to this application.</dd>
+  <dd style="margin-left: 8">A URL for the certificate that has been issued in response to this order.</dd>
 </dl>
 <pre>
 {
@@ -959,52 +954,22 @@ Link: href="/acme/reg/1/apps?cursor=2", rel="next"
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
-  "requirements": [
+  "authorizations": [
     {
-      "type": "authorization",
       "status": "valid",
       "url": "https://example.com/acme/authz/1234"
     },
     {
-      "type": "out-of-band",
       "status": "pending",
-      "url": "https://example.com/acme/payment/1234"
+      "url": "https://example.com/acme/authz/2345"
     }
   ]
 
   "certificate": "https://example.com/acme/cert/1234"
 }
 </pre>
-<p id="rfc.section.6.1.3.p.3">The elements of the &#8220;requirements&#8221; array are immutable once set, except for their &#8220;status&#8221; fields.  If any other part of the object changes after the object is created, the client MUST consider the application invalid.</p>
-<p id="rfc.section.6.1.3.p.4">The &#8220;requirements&#8221; array in the challenge SHOULD reflect everything that the CA required the client to do before issuance, even if some requirements were fulfilled in earlier applications.  For example, if a CA allows multiple applications to be fufilled based on a single authorization transaction, then it must reflect that authorization in all of the applications.</p>
-<p id="rfc.section.6.1.3.p.5">Each entry in the &#8220;requirements&#8221; array expresses a requirement from the CA for the client to take a particular action.  All requirements objects have the following basic fields:</p>
-<p/>
-
-<dl>
-  <dt>type (required, string):</dt>
-  <dd style="margin-left: 8">The type of requirement (see below for defined types)</dd>
-  <dt>status (required, string):</dt>
-  <dd style="margin-left: 8">The status of this requirement.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
-</dl>
-<p id="rfc.section.6.1.3.p.7">All additional fields are specified by the requirement type.</p>
-<h1 id="rfc.section.6.1.3.1"><a href="#rfc.section.6.1.3.1">6.1.3.1.</a> <a href="#authorization-requirement" id="authorization-requirement">Authorization Requirement</a></h1>
-<p id="rfc.section.6.1.3.1.p.1">A requirement with type &#8220;authorization&#8221; requests that the ACME client complete an authorization transaction.  The server specifies the authorization by pre-provisioning a pending authorization resource and providing the URI for this resource in the requirement.</p>
-<p/>
-
-<dl>
-  <dt>url (required, string):</dt>
-  <dd style="margin-left: 8">The URL for the authorization resource</dd>
-</dl>
-<p id="rfc.section.6.1.3.1.p.3">To fulfill this requirement, the ACME client should fetch the authorization object from the indicated URL, then follow the process for obtaining authorization as specified in <a href="#identifier-authorization">Section 6.5</a>.</p>
-<h1 id="rfc.section.6.1.3.2"><a href="#rfc.section.6.1.3.2">6.1.3.2.</a> <a href="#out-of-band-requirement" id="out-of-band-requirement">Out-of-Band Requirement</a></h1>
-<p id="rfc.section.6.1.3.2.p.1">A requirement with type &#8220;out-of-band&#8221; requests that the ACME client have a human user visit a web page in order to receive further instructions for how to fulfill the requirement.  The requirement object provides a URI for the web page to be visited.</p>
-<p/>
-
-<dl>
-  <dt>url (required, string):</dt>
-  <dd style="margin-left: 8">The URL to be visited.  The scheme of this URL MUST be &#8220;http&#8221; or &#8220;https&#8221;</dd>
-</dl>
-<p id="rfc.section.6.1.3.2.p.3">To fulfill this requirement, the ACME client should direct the user to the indicated web page.</p>
+<p id="rfc.section.6.1.3.p.3">The elements of the &#8220;authorizations&#8221; array are immutable once set, except for their &#8220;status&#8221; fields.  If any other part of the object changes after the object is created, the client MUST consider the order invalid.</p>
+<p id="rfc.section.6.1.3.p.4">The &#8220;authorizations&#8221; array in the challenge SHOULD reflect all authorizations that the CA takes into account in deciding to issue, even if some authorizations were fulfilled in earlier orders or in pre-authorization transactions.  For example, if a CA allows multiple orders to be fufilled based on a single authorization transaction, then it SHOULD reflect that authorization in all of the order.</p>
 <h1 id="rfc.section.6.1.4"><a href="#rfc.section.6.1.4">6.1.4.</a> <a href="#authorization-objects" id="authorization-objects">Authorization Objects</a></h1>
 <p id="rfc.section.6.1.4.p.1">An ACME authorization object represents a server&#8217;s authorization for an account to represent an identifier.  In addition to the identifier, an authorization includes several metadata fields, such as the status of the authorization (e.g., &#8220;pending&#8221;, &#8220;valid&#8221;, or &#8220;revoked&#8221;) and which challenges were used to validate possession of the identifier.</p>
 <p id="rfc.section.6.1.4.p.2">The structure of an ACME authorization resource is as follows:</p>
@@ -1018,7 +983,7 @@ Link: href="/acme/reg/1/apps?cursor=2", rel="next"
   <dt>expires (optional, string):</dt>
   <dd style="margin-left: 8">The timestamp after which the server will consider this authorization invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;valid&#8221; in the &#8220;status&#8221; field.</dd>
   <dt>scope (optional, string):</dt>
-  <dd style="margin-left: 8">If this field is present, then it MUST contain a URI for an application resource, such that this authorization is only valid for that resource.  If this field is absent, then the CA MUST consider this authorization valid for all applications until the authorization expires. [[ Open issue: More flexible scoping? ]]</dd>
+  <dd style="margin-left: 8">If this field is present, then it MUST contain a URI for an order resource, such that this authorization is only valid for that resource.  If this field is absent, then the CA MUST consider this authorization valid for all orders until the authorization expires. [[ Open issue: More flexible scoping? ]]</dd>
   <dt>challenges (required, array):</dt>
   <dd style="margin-left: 8">The challenges that the client can fulfill in order to prove possession of the identifier (for pending authorizations).  For final authorizations, the challenges that were used.  Each array entry is a dictionary with parameters required to validate the challenge, as specified in <a href="#identifier-validation-challenges">Section 7</a>. A client should attempt to fulfill at most one of these challenges, and a server should consider any one of the challenges sufficient to make the authorization valid.</dd>
 </dl>
@@ -1055,10 +1020,10 @@ Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 </pre>
 <p id="rfc.section.6.2.p.3">Caching of responses from the new-nonce resource can cause clients to be unable to communicate with the ACME server.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the new-nonce resource, in order to prevent caching of this resource.</p>
-<h1 id="rfc.section.6.3"><a href="#rfc.section.6.3">6.3.</a> <a href="#registration" id="registration">Registration</a></h1>
-<p id="rfc.section.6.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-registration URI.  The body of the request is a stub registration object containing only the &#8220;contact&#8221; field.</p>
+<h1 id="rfc.section.6.3"><a href="#rfc.section.6.3">6.3.</a> <a href="#account-creation" id="account-creation">Account Creation</a></h1>
+<p id="rfc.section.6.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URI.  The body of the request is a stub account object containing only the &#8220;contact&#8221; field.</p>
 <pre>
-POST /acme/new-reg HTTP/1.1
+POST /acme/new-acct HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1067,7 +1032,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "jwk": {...},
     "nonce": "6S8IqOGY7eL2lsGoTZYifg",
-    "url": "https://example.com/acme/new-reg"
+    "url": "https://example.com/acme/new-acct"
   })
   "payload": base64url({
     "terms-of-service-agreed": true,
@@ -1079,16 +1044,16 @@ Content-Type: application/jose+json
   "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
 }
 </pre>
-<p id="rfc.section.6.3.p.2">The server MUST ignore any values provided in the &#8220;key&#8221;, and &#8220;applications&#8221; fields in registration bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they may be provided by the client.</p>
+<p id="rfc.section.6.3.p.2">The server MUST ignore any values provided in the &#8220;key&#8221;, and &#8220;orders&#8221; fields in account bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they may be provided by the client.</p>
 <p id="rfc.section.6.3.p.3">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server.  If the client provides the server with an invalid or unsupported contact URL, then the server MUST return an error of type &#8220;invalidContact&#8221;, with a description describing the error and what types of contact URL the server considers acceptable.</p>
-<p id="rfc.section.6.3.p.4">The server creates a registration object with the included contact information.  The &#8220;key&#8221; element of the registration is set to the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header).  The server returns this registration object in a 201 (Created) response, with the registration URI in a Location header field.</p>
-<p id="rfc.section.6.3.p.5">If the server already has a registration object with the provided account key, then it MUST return a 200 (OK) response and provide the URI of that registration in a Content-Location header field.  This allows a client that has an account key but not the corresponding registration URI to recover the registration URI.</p>
-<p id="rfc.section.6.3.p.6">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URI where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-registration requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.</p>
+<p id="rfc.section.6.3.p.4">The server creates an account object with the included contact information.  The &#8220;key&#8221; element of the account is set to the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header).  The server returns this account object in a 201 (Created) response, with the account URI in a Location header field.</p>
+<p id="rfc.section.6.3.p.5">If the server already has an account registered with the provided account key, then it MUST return a 200 (OK) response and provide the URI of that account in a Content-Location header field.  This allows a client that has an account key but not the corresponding account URI to recover the account URI.</p>
+<p id="rfc.section.6.3.p.6">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URI where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.</p>
 <pre>
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Location: https://example.com/acme/reg/asdf
+Location: https://example.com/acme/acct/asdf
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
 {
@@ -1101,19 +1066,19 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
   ]
 }
 </pre>
-<p id="rfc.section.6.3.p.7">If the client wishes to update this information in the future, it sends a POST request with updated information to the registration URI.  The server MUST ignore any updates to the &#8220;key&#8221;, or &#8220;applications&#8221; fields or any other fields it does not recognize. The server MUST verify that the request is signed with the private key corresponding to the &#8220;key&#8221; field of the request before updating the registration.</p>
-<p id="rfc.section.6.3.p.8">For example, to update the contact information in the above registration, the client could send the following request:</p>
+<p id="rfc.section.6.3.p.7">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URI.  The server MUST ignore any updates to the &#8220;key&#8221;, or &#8220;order&#8221; fields or any other fields it does not recognize. The server MUST verify that the request is signed with the private key corresponding to the &#8220;key&#8221; field of the request before updating the registration.</p>
+<p id="rfc.section.6.3.p.8">For example, to update the contact information in the above account, the client could send the following request:</p>
 <pre>
-POST /acme/reg/asdf HTTP/1.1
+POST /acme/acct/asdf HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
-    "url": "https://example.com/acme/reg/asdf"
+    "url": "https://example.com/acme/acct/asdf"
   })
   "payload": base64url({
     "contact": [
@@ -1124,9 +1089,9 @@ Content-Type: application/jose+json
   "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
 }
 </pre>
-<p id="rfc.section.6.3.p.9">Servers SHOULD NOT respond to GET requests for registration resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is trivial ({}).</p>
+<p id="rfc.section.6.3.p.9">Servers SHOULD NOT respond to GET requests for account resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is trivial ({}).</p>
 <h1 id="rfc.section.6.3.1"><a href="#rfc.section.6.3.1">6.3.1.</a> <a href="#changes-of-terms-of-service" id="changes-of-terms-of-service">Changes of Terms of Service</a></h1>
-<p id="rfc.section.6.3.1.p.1">As described above, a client can indicate its agreement with the CA&#8217;s terms of service by setting the &#8220;terms-of-service-agreed&#8221; field in its registration object to &#8220;true&#8221;.</p>
+<p id="rfc.section.6.3.1.p.1">As described above, a client can indicate its agreement with the CA&#8217;s terms of service by setting the &#8220;terms-of-service-agreed&#8221; field in its account object to &#8220;true&#8221;.</p>
 <p id="rfc.section.6.3.1.p.2">If the server has changed its terms of service since a client initially agreed, and the server is unwilling to process a request without explicit agreement to the new terms, then it MUST return an error response with status code 403 (Forbidden) and type &#8220;urn:ietf:params:acme:error:userActionRequired&#8221;.  This response MUST include a Link header with link relation &#8220;terms-of-service&#8221; and the latest terms-of-service URL.</p>
 <p id="rfc.section.6.3.1.p.3">The problem document returned with the error MUST also include an &#8220;instance&#8221; field, indicating a URL that the client should direct a human user to visit in order for instructions on how to agree to the terms.</p>
 <pre>
@@ -1142,13 +1107,13 @@ Content-Language: en
 }
 </pre>
 <h1 id="rfc.section.6.3.2"><a href="#rfc.section.6.3.2">6.3.2.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a></h1>
-<p id="rfc.section.6.3.2.p.1">A client may wish to change the public key that is associated with a registration in order to recover from a key compromise or proactively mitigate the impact of an unnoticed key compromise.</p>
+<p id="rfc.section.6.3.2.p.1">A client may wish to change the public key that is associated with a account in order to recover from a key compromise or proactively mitigate the impact of an unnoticed key compromise.</p>
 <p id="rfc.section.6.3.2.p.2">To change the key associated with an account, the client first constructs a key-change object describing the change that it would like the server to make:</p>
 <p/>
 
 <dl>
   <dt>account (required, string):</dt>
-  <dd style="margin-left: 8">The URL for account being modified.  The content of this field MUST be the exact string provided in the Location header field in response to the new-registration request that created the account.</dd>
+  <dd style="margin-left: 8">The URL for account being modified.  The content of this field MUST be the exact string provided in the Location header field in response to the new-account request that created the account.</dd>
   <dt>newKey (required, JWK):</dt>
   <dd style="margin-left: 8">The JWK representation of the new key</dd>
 </dl>
@@ -1179,7 +1144,7 @@ Content-Type: application/jose+json
       "jwk": /* new key */,
     }),
     "payload": base64url({
-      "account": "https://example.com/acme/reg/asdf",
+      "account": "https://example.com/acme/acct/asdf",
       "newKey": /* new key */
     })
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1197,23 +1162,23 @@ Content-Type: application/jose+json
   <li>Check that the inner JWS verifies using the key in its &#8220;jwk&#8221; field</li>
   <li>Check that the payload of the inner JWS is a well-formed key-change object (as described above)</li>
   <li>Check that the &#8220;url&#8221; parameters of the inner and outer JWSs are the same</li>
-  <li>Check that the &#8220;account&#8221; field of the key-change object contains the URL for the registration matching the old key</li>
+  <li>Check that the &#8220;account&#8221; field of the key-change object contains the URL for the account matching the old key</li>
   <li>Check that the &#8220;newKey&#8221; field of the key-change object contains the key used to sign the inner JWS.</li>
 </ol>
-<p id="rfc.section.6.3.2.p.10">If all of these checks pass, then the server updates the corresponding registration by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>
+<p id="rfc.section.6.3.2.p.10">If all of these checks pass, then the server updates the corresponding account by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>
 <h1 id="rfc.section.6.3.3"><a href="#rfc.section.6.3.3">6.3.3.</a> <a href="#account-deactivation" id="account-deactivation">Account deactivation</a></h1>
 <p id="rfc.section.6.3.3.p.1">A client may deactivate an account by posting a signed update to the server with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised.</p>
 <pre>
-POST /acme/reg/asdf HTTP/1.1
+POST /acme/acct/asdf HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
-    "url": "https://example.com/acme/reg/asdf"
+    "url": "https://example.com/acme/acct/asdf"
   })
   "payload": base64url({
     "status": "deactivated"
@@ -1221,10 +1186,10 @@ Content-Type: application/jose+json
   "signature": "earzVLd3m5M4xJzR...bVTqn7R08AKOVf3Y"
 }
 </pre>
-<p id="rfc.section.6.3.3.p.2">The server MUST verify that the request is signed by the account key. If the server accepts the deactivation request, it should reply with a 200 (OK) status code and the current contents of the registration object.</p>
+<p id="rfc.section.6.3.3.p.2">The server MUST verify that the request is signed by the account key. If the server accepts the deactivation request, it should reply with a 200 (OK) status code and the current contents of the account object.</p>
 <p id="rfc.section.6.3.3.p.3">Once an account is deactivated, the server MUST NOT accept further requests authorized by that account&#8217;s key. It is up to server policy how long to retain data related to that account, whether to revoke certificates issued by that account, and whether to send email to that account&#8217;s contacts. ACME does not provide a way to reactivate a deactivated account.</p>
 <h1 id="rfc.section.6.4"><a href="#rfc.section.6.4">6.4.</a> <a href="#applying-for-certificate-issuance" id="applying-for-certificate-issuance">Applying for Certificate Issuance</a></h1>
-<p id="rfc.section.6.4.p.1">The holder of an account key pair may use ACME to submit an application for a certificate to be issued.  The client makes this request by sending a POST request to the server&#8217;s new-application resource.  The body of the POST is a JWS object whose JSON payload is a subset of the application object defined in <a href="#application-objects">Section 6.1.3</a>, containing the fields that describe the certificate to be issued:</p>
+<p id="rfc.section.6.4.p.1">The holder of an account key pair may use ACME to submit an order for a certificate to be issued.  The client makes this request by sending a POST request to the server&#8217;s new-order resource.  The body of the POST is a JWS object whose JSON payload is a subset of the order object defined in <a href="#order-objects">Section 6.1.3</a>, containing the fields that describe the certificate to be issued:</p>
 <p/>
 
 <dl>
@@ -1236,16 +1201,16 @@ Content-Type: application/jose+json
   <dd style="margin-left: 8">The requested value of the notAfter field in the certificate, in the date format defined in <a href="#RFC3339">[RFC3339]</a></dd>
 </dl>
 <pre>
-POST /acme/new-app HTTP/1.1
+POST /acme/new-order HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
-    "url": "https://example.com/acme/new-app"
+    "url": "https://example.com/acme/new-order"
   })
   "payload": base64url({
     "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
@@ -1257,11 +1222,11 @@ Content-Type: application/jose+json
 </pre>
 <p id="rfc.section.6.4.p.3">The CSR encodes the client&#8217;s requests with regard to the content of the certificate to be issued.  The CSR MUST indicate the requested identifiers, either in the commonName portion of the requested subject name, or in an extensionRequest attribute <a href="#RFC2985">[RFC2985]</a> requesting a subjectAltName extension.</p>
 <p id="rfc.section.6.4.p.4">The server MUST return an error if it cannot fulfil the request as specified, and MUST NOT issue a certificate with contents other than those requested.  If the server requires the request to be modified in a certain way, it should indicate the required changes using an appropriate error code and description.</p>
-<p id="rfc.section.6.4.p.5">If the server is willing to issue the requested certificate, it responds with a 201 (Created) response.  The body of this response is an application object reflecting the client&#8217;s request and any requirements the client must fulfill before the certificate will be issued.</p>
+<p id="rfc.section.6.4.p.5">If the server is willing to issue the requested certificate, it responds with a 201 (Created) response.  The body of this response is an order object reflecting the client&#8217;s request and any authorizations the client must complete before the certificate will be issued.</p>
 <pre>
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-Location: https://example.com/acme/app/asdf
+Location: https://example.com/acme/order/asdf
 
 {
   "status": "pending",
@@ -1271,34 +1236,32 @@ Location: https://example.com/acme/app/asdf
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
-  "requirements": [
+  "authorizations": [
     {
-      "type": "authorization",
       "status": "valid",
       "url": "https://example.com/acme/authz/1234"
     },
     {
-      "type": "out-of-band",
       "status": "pending",
-      "url": "https://example.com/acme/payment/1234"
+      "url": "https://example.com/acme/authz/2345"
     }
   ]
 }
 </pre>
-<p id="rfc.section.6.4.p.6">The application object returned by the server represents a promise that if the client fulfills the server&#8217;s requirements before the &#8220;expires&#8221; time, then the server will issue the requested certificate.  In the application object, any object in the &#8220;requirements&#8221; array whose status is &#8220;pending&#8221; represents an action that the client must perform before the server will issue the certificate.  If the client fails to complete the required actions before the &#8220;expires&#8221; time, then the server SHOULD change the status of the application to &#8220;invalid&#8221; and MAY delete the application resource.</p>
-<p id="rfc.section.6.4.p.7">The server MUST issue the requested certificate and update the application resource with a URL for the certificate as soon as the client has fulfilled the server&#8217;s requirements.   If the client has already satisfied the server&#8217;s requirements at the time of this request (e.g., by obtaining authorization for all of the identifiers in the certificate in previous transactions), then the server MUST proactively issue the requested certificate and provide a URL for it in the &#8220;certificate&#8221; field of the application.  The server MUST, however, still list the satisfied requirements in the &#8220;requirements&#8221; array, with the state &#8220;valid&#8221;.</p>
-<p id="rfc.section.6.4.p.8">Once the client believes it has fulfilled the server&#8217;s requirements, it should send a GET request to the application resource to obtain its current state.  The status of the application will indicate what action the client should take:</p>
+<p id="rfc.section.6.4.p.6">The order object returned by the server represents a promise that if the client fulfills the server&#8217;s requirements before the &#8220;expires&#8221; time, then the server will issue the requested certificate.  In the order object, any object in the &#8220;authorizations&#8221; array whose status is &#8220;pending&#8221; represents an authorization transaction that the client must complete before the server will issue the certificate (see <a href="#identifier-authorization">Section 6.5</a>).  If the client fails to complete the required actions before the &#8220;expires&#8221; time, then the server SHOULD change the status of the order to &#8220;invalid&#8221; and MAY delete the order resource.</p>
+<p id="rfc.section.6.4.p.7">The server MUST issue the requested certificate and update the order resource with a URL for the certificate as soon as the client has fulfilled the server&#8217;s requirements.   If the client has already satisfied the server&#8217;s requirements at the time of this request (e.g., by obtaining authorization for all of the identifiers in the certificate in previous transactions), then the server MUST proactively issue the requested certificate and provide a URL for it in the &#8220;certificate&#8221; field of the order.  The server MUST, however, still list the completed authorizations in the &#8220;authorizations&#8221; array, with the state &#8220;valid&#8221;.</p>
+<p id="rfc.section.6.4.p.8">Once the client believes it has fulfilled the server&#8217;s requirements, it should send a GET request to the order resource to obtain its current state.  The status of the order will indicate what action the client should take:</p>
 <p/>
 
 <ul>
-  <li>&#8220;invalid&#8221;: The certificate will not be issued.  Consider this application process abandoned.</li>
-  <li>&#8220;pending&#8221;: The server does not believe that the client has fulfilled the requirements.  Check the &#8220;requirements&#8221; array for requirements that are still pending.</li>
+  <li>&#8220;invalid&#8221;: The certificate will not be issued.  Consider this order process abandoned.</li>
+  <li>&#8220;pending&#8221;: The server does not believe that the client has fulfilled the requirements.  Check the &#8220;authorizations&#8221; array for entries that are still pending.</li>
   <li>&#8220;processing&#8221;: The server agrees that the requirements have been fulfilled, and is in the process of generating the certificate.  Retry after the time given in the &#8220;Retry-After&#8221; header field of the response, if any.</li>
-  <li>&#8220;valid&#8221;: The server has issued the certificate and provisioned its URL to the &#8220;certificate&#8221; field of the application.  Download the certificate.</li>
+  <li>&#8220;valid&#8221;: The server has issued the certificate and provisioned its URL to the &#8220;certificate&#8221; field of the order.  Download the certificate.</li>
 </ul>
 <h1 id="rfc.section.6.4.1"><a href="#rfc.section.6.4.1">6.4.1.</a> <a href="#pre-authorization" id="pre-authorization">Pre-Authorization</a></h1>
-<p id="rfc.section.6.4.1.p.1">The application process described above presumes that authorization objects are created reactively, in response to an application for issuance.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any servers are created, and only create a certificate when a server starts up.</p>
-<p id="rfc.section.6.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue for an identifier.  In these case, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already-valid requirements in any issuance applications requested by the client.</p>
+<p id="rfc.section.6.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to an application for issuance.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any servers are created, and only create a certificate when a server starts up.</p>
+<p id="rfc.section.6.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue for an identifier.  In these case, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already valid in any orders submitted by the client.</p>
 <p id="rfc.section.6.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the key &#8220;new-authz&#8221; with a URL for the new authorization resource.</p>
 <p id="rfc.section.6.4.1.p.4">To request authorization for an identifier, the client sends a POST request to the new-authorization resource specifying the identifier for which authorization is being requested and how the server should behave with respect to existing authorizations for this identifier.</p>
 <p/>
@@ -1346,7 +1309,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.6.4.2.p.1">To download the issued certificate, the client simply sends a GET request to the certificate URL.</p>
 <p id="rfc.section.6.4.2.p.2">The default format of the certificate is PEM (application/x-pem-file) as specified by <a href="#RFC7468">[RFC7468]</a>. This format should contain the end-entity certificate first, followed by any intermediate certificates that are needed to build a path to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The client may request other formats by including an Accept header in its request.  For example, the client may use the media type application/pkix-cert to request the end-entity certificate in DER format.</p>
 <p id="rfc.section.6.4.2.p.3">The server MAY provide one or more link relation header fields <a href="#RFC5988">[RFC5988]</a> with relation &#8220;alternate&#8221;. Each such field should express an alternative certificate chain starting with the same end-entity certificate. This can be used to express paths to various trust anchors. Clients can fetch these alternates and use their own heuristics to decide which is optimal.</p>
-<p id="rfc.section.6.4.2.p.4">The server MUST also provide a link relation header field with relation &#8220;author&#8221; to indicate the application under which this certificate was issued.</p>
+<p id="rfc.section.6.4.2.p.4">The server MUST also provide a link relation header field with relation &#8220;author&#8221; to indicate the order under which this certificate was issued.</p>
 <p id="rfc.section.6.4.2.p.5">If the CA participates in Certificate Transparency (CT) <a href="#RFC6962">[RFC6962]</a>, then they may want to provide the client with a Signed Certificate Timestamp (SCT) that can be used to prove that a certificate was submitted to a CT log.  An SCT can be included as an extension in the certificate or as an extension to OCSP responses for the certificate.  The server can also provide the client with direct access to an SCT for a certificate using a Link relation header field with relation &#8220;ct-sct&#8221;.</p>
 <pre>
 GET /acme/cert/asdf HTTP/1.1
@@ -1357,7 +1320,7 @@ HTTP/1.1 200 OK
 Content-Type: application/pkix-cert
 Link: &lt;https://example.com/acme/ca-cert&gt;;rel="up";title="issuer"
 Link: &lt;https://example.com/acme/revoke-cert&gt;;rel="revoke"
-Link: &lt;https://example.com/acme/app/asdf&gt;;rel="author"
+Link: &lt;https://example.com/acme/order/asdf&gt;;rel="author"
 Link: &lt;https://example.com/acme/sct/asdf&gt;;rel="ct-sct"
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
@@ -1370,14 +1333,13 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 -----BEGIN CERTIFICATE-----
 [Other certificate contents]
 -----END CERTIFICATE-----
-
 </pre>
-<p id="rfc.section.6.4.2.p.6">A certificate resource represents a single, immutable certificate. If the client wishes to obtain a renewed certificate, the client initiates a new application process to request one.</p>
+<p id="rfc.section.6.4.2.p.6">A certificate resource represents a single, immutable certificate. If the client wishes to obtain a renewed certificate, the client initiates a new order process to request one.</p>
 <p id="rfc.section.6.4.2.p.7">Because certificate resources are immutable once issuance is complete, the server MAY enable the caching of the resource by adding Expires and Cache-Control headers specifying a point in time in the distant future. These headers have no relation to the certificate&#8217;s period of validity.</p>
 <h1 id="rfc.section.6.5"><a href="#rfc.section.6.5">6.5.</a> <a href="#identifier-authorization" id="identifier-authorization">Identifier Authorization</a></h1>
-<p id="rfc.section.6.5.p.1">The identifier authorization process establishes the authorization of an account to manage certificates for a given identifier.  This process must assure the server of two things: First, that the client controls the private key of the account key pair, and second, that the client holds the identifier in question.  This process may be repeated to associate multiple identifiers to a key pair (e.g., to request certificates with multiple identifiers), or to associate multiple accounts with an identifier (e.g., to allow multiple entities to manage certificates).  The server may declare that an authorization is only valid for a specific application by setting the &#8220;scope&#8221; field of the authorization to the URI for that application.</p>
-<p id="rfc.section.6.5.p.2">Authorization resources are created by the server in response to certificate applications or authorization requests submitted by an account key holder; their URLs are provided to the client in the responses to these requests.  The authorization object is implicitly tied to the account key used to sign the request.</p>
-<p id="rfc.section.6.5.p.3">When a client receives an application from the server with an &#8220;authorization&#8221; requirement, it downloads the authorization resource by sending a GET request to the indicated URL.  If the client initiates authorization using a request to the new authorization resource, it will have already recevied the pending authorization object in the response to that request.</p>
+<p id="rfc.section.6.5.p.1">The identifier authorization process establishes the authorization of an account to manage certificates for a given identifier.  This process must assure the server of two things: First, that the client controls the private key of the account key pair, and second, that the client holds the identifier in question.  This process may be repeated to associate multiple identifiers to a key pair (e.g., to request certificates with multiple identifiers), or to associate multiple accounts with an identifier (e.g., to allow multiple entities to manage certificates).  The server may declare that an authorization is only valid for a specific order by setting the &#8220;scope&#8221; field of the authorization to the URI for that order.</p>
+<p id="rfc.section.6.5.p.2">Authorization resources are created by the server in response to certificate orders or authorization requests submitted by an account key holder; their URLs are provided to the client in the responses to these requests.  The authorization object is implicitly tied to the account key used to sign the request.</p>
+<p id="rfc.section.6.5.p.3">When a client receives an order from the server with &#8220;pending&#8221; entry in the authorizations array, it downloads the authorization resource by sending a GET request to the indicated URL.  If the client initiates authorization using a request to the new authorization resource, it will have already recevied the pending authorization object in the response to that request.</p>
 <pre>
 GET /acme/authz/1234 HTTP/1.1
 Host: example.com
@@ -1420,7 +1382,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
   })
@@ -1472,7 +1434,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf",
+    "kid": "https://example.com/acme/acct/asdf",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
   })
@@ -1502,7 +1464,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/reg/asdf", // OR "jwk"
+    "kid": "https://example.com/acme/acct/asdf", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   })
@@ -1849,13 +1811,13 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   </thead>
   <tbody>
     <tr>
-      <td class="left">new-reg</td>
-      <td class="left">New registration</td>
+      <td class="left">new-acct</td>
+      <td class="left">New account</td>
       <td class="left">RFC XXXX</td>
     </tr>
     <tr>
-      <td class="left">new-app</td>
-      <td class="left">New application</td>
+      <td class="left">new-order</td>
+      <td class="left">New order</td>
       <td class="left">RFC XXXX</td>
     </tr>
     <tr>
@@ -1970,14 +1932,14 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 <p id="rfc.section.9.1.p.4">Broadly speaking, ACME aims to be secure against active and passive attackers on any individual channel.  Some vulnerabilities arise (noted below), when an attacker can exploit both the ACME channel and one of the others.</p>
 <p id="rfc.section.9.1.p.5">On the ACME channel, in addition to network-layer attackers, we also need to account for application-layer man in the middle attacks, and for abusive use of the protocol itself.  Protection against application-layer MitM addresses potential attackers such as Content Distribution Networks (CDNs) and middleboxes with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an attacker with access to the validation channel can&#8217;t obtain illegitimate authorization by acting as an ACME client (legitimately, in terms of the protocol).</p>
 <h1 id="rfc.section.9.2"><a href="#rfc.section.9.2">9.2.</a> <a href="#integrity-of-authorizations" id="integrity-of-authorizations">Integrity of Authorizations</a></h1>
-<p id="rfc.section.9.2.p.1">ACME allows anyone to request challenges for an identifier by registering an account key and sending a new-application request under that account key.  The integrity of the authorization process thus depends on the identifier validation challenges to ensure that the challenge can only be completed by someone who both (1) holds the private key of the account key pair, and (2) controls the identifier in question.</p>
+<p id="rfc.section.9.2.p.1">ACME allows anyone to request challenges for an identifier by registering an account key and sending a new-order request under that account key.  The integrity of the authorization process thus depends on the identifier validation challenges to ensure that the challenge can only be completed by someone who both (1) holds the private key of the account key pair, and (2) controls the identifier in question.</p>
 <p id="rfc.section.9.2.p.2">Validation responses need to be bound to an account key pair in order to avoid situations where an ACME MitM can switch out a legitimate domain holder&#8217;s account key for one of his choosing, e.g.:</p>
 <p/>
 
 <ul>
   <li>Legitimate domain holder registers account key pair A</li>
   <li>MitM registers account key pair B</li>
-  <li>Legitimate domain holder sends a new-application request signed under account key A</li>
+  <li>Legitimate domain holder sends a new-order request signed under account key A</li>
   <li>MitM suppresses the legitimate request, but sends the same request signed under account key B</li>
   <li>ACME server issues challenges and MitM forwards them to the legitimate domain holder</li>
   <li>Legitimate domain holder provisions the validation response</li>

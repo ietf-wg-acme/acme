@@ -98,14 +98,14 @@ Table of Contents
    6.  Certificate Management  . . . . . . . . . . . . . . . . . . .  15
      6.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  15
        6.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  17
-       6.1.2.  Registration Objects  . . . . . . . . . . . . . . . .  19
-       6.1.3.  Application Objects . . . . . . . . . . . . . . . . .  20
-       6.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  23
-     6.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  25
-     6.3.  Registration  . . . . . . . . . . . . . . . . . . . . . .  25
-       6.3.1.  Changes of Terms of Service . . . . . . . . . . . . .  28
-       6.3.2.  Account Key Roll-over . . . . . . . . . . . . . . . .  29
-       6.3.3.  Account deactivation  . . . . . . . . . . . . . . . .  31
+       6.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  19
+       6.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  20
+       6.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  22
+     6.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  24
+     6.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  25
+       6.3.1.  Changes of Terms of Service . . . . . . . . . . . . .  27
+       6.3.2.  Account Key Roll-over . . . . . . . . . . . . . . . .  28
+       6.3.3.  Account deactivation  . . . . . . . . . . . . . . . .  30
 
 
 
@@ -114,45 +114,45 @@ Barnes, et al.            Expires June 2, 2017                  [Page 2]
 Internet-Draft                    ACME                     November 2016
 
 
-     6.4.  Applying for Certificate Issuance . . . . . . . . . . . .  32
-       6.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  34
-       6.4.2.  Downloading the Certificate . . . . . . . . . . . . .  36
-     6.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  38
-       6.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  39
-       6.5.2.  Deactivating an Authorization . . . . . . . . . . . .  41
-     6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  42
-   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  44
-     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  46
-     7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  46
-     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  48
-     7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  50
-     7.5.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  52
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  52
-     8.1.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  53
-     8.2.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  53
-     8.3.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  53
-     8.4.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  53
-     8.5.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  54
-     8.6.  New Registries  . . . . . . . . . . . . . . . . . . . . .  54
-       8.6.1.  Error Codes . . . . . . . . . . . . . . . . . . . . .  54
-       8.6.2.  Resource Types  . . . . . . . . . . . . . . . . . . .  55
-       8.6.3.  Identifier Types  . . . . . . . . . . . . . . . . . .  55
-       8.6.4.  Challenge Types . . . . . . . . . . . . . . . . . . .  56
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  57
-     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  57
-     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  58
-     9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  60
-     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  61
-     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  62
-   10. Operational Considerations  . . . . . . . . . . . . . . . . .  62
-     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  62
-     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  63
-     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  63
-   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  64
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  64
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  64
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  66
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  67
+     6.4.  Applying for Certificate Issuance . . . . . . . . . . . .  31
+       6.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  33
+       6.4.2.  Downloading the Certificate . . . . . . . . . . . . .  35
+     6.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  37
+       6.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  38
+       6.5.2.  Deactivating an Authorization . . . . . . . . . . . .  40
+     6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  41
+   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  43
+     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  45
+     7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  45
+     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  47
+     7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  49
+     7.5.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  51
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  51
+     8.1.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  52
+     8.2.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  52
+     8.3.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  52
+     8.4.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  52
+     8.5.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  53
+     8.6.  New Registries  . . . . . . . . . . . . . . . . . . . . .  53
+       8.6.1.  Error Codes . . . . . . . . . . . . . . . . . . . . .  53
+       8.6.2.  Resource Types  . . . . . . . . . . . . . . . . . . .  54
+       8.6.3.  Identifier Types  . . . . . . . . . . . . . . . . . .  54
+       8.6.4.  Challenge Types . . . . . . . . . . . . . . . . . . .  55
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  56
+     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  56
+     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  57
+     9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  59
+     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  60
+     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  60
+   10. Operational Considerations  . . . . . . . . . . . . . . . . .  61
+     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  61
+     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  61
+     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  62
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  62
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  63
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  63
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  65
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  66
 
 1.  Introduction
 
@@ -339,25 +339,25 @@ Internet-Draft                    ACME                     November 2016
 
 
    contact information.  The server acknowledges the registration by
-   replying with a registration object echoing the client's input.
+   replying with a account object echoing the client's input.
 
          Client                                                  Server
 
          Contact Information
          Signature                     ------->
 
-                                       <-------            Registration
+                                       <-------                 Account
 
    Once the client is registered, there are three major steps it needs
    to take to get a certificate:
 
-   1.  Apply for a certificate to be issued
+   1.  Submit an order for a certificate to be issued
 
-   2.  Fulfill the server's requirements for issuance
+   2.  Prove control of any identifiers requested in the certificate
 
    3.  Await issuance and download the issued certificate
 
-   The client's application for a certificate describes the desired
+   The client's order for a certificate describes the desired
    certificate using a PKCS#10 Certificate Signing Request (CSR) plus a
    few additional fields that capture semantics that are not supported
    in the CSR format.  If the server is willing to consider issuing such
@@ -394,10 +394,10 @@ Barnes, et al.            Expires June 2, 2017                  [Page 7]
 Internet-Draft                    ACME                     November 2016
 
 
-         Application
+         Order
          Signature                     ------->
-                                       <-------            Requirements
-                                                     (e.g., Challenges)
+                                                                Required
+                                       <-------           Authorizations
 
          Responses
          Signature                     ------->
@@ -797,7 +797,7 @@ Internet-Draft                    ACME                     November 2016
 
    o  Account Key Registration
 
-   o  Application for a Certificate
+   o  Ordering a Certificate
 
    o  Account Key Authorization
 
@@ -810,9 +810,9 @@ Internet-Draft                    ACME                     November 2016
    ACME is structured as a REST application with a few types of
    resources:
 
-   o  Registration resources, representing information about an account
+   o  Account resources, representing information about an account
 
-   o  Application resources, representing an account's requests to issue
+   o  Order resources, representing an account's requests to issue
       certificates
 
    o  Authorization resources, representing an account's authorization
@@ -827,9 +827,9 @@ Internet-Draft                    ACME                     November 2016
 
    o  A "new-nonce" resource
 
-   o  A "new-registration" resource
+   o  A "new-account" resource
 
-   o  A "new-application" resource
+   o  A "new-order" resource
 
    o  A "revoke-certificate" resource
 
@@ -845,9 +845,9 @@ Internet-Draft                    ACME                     November 2016
    The server MUST provide "directory" and "new-nonce" resources.
 
    For the singular resources above ("directory", "new-nonce", "new-
-   registration", "new-application", "revoke-certificate", and "key-
-   change") the resource may be addressed by multiple URIs, but all must
-   provide equivalent functionality.
+   account", "new-order", "revoke-certificate", and "key-change") the
+   resource may be addressed by multiple URIs, but all must provide
+   equivalent functionality.
 
    ACME uses different URIs for different management functions.  Each
    function is listed in a directory along with its corresponding URI,
@@ -876,11 +876,11 @@ Internet-Draft                    ACME                     November 2016
           |          |          |                           |
           |          |          |                           |
           V          V          V                           V
-       new-reg   new-authz   new-app                   revoke-cert
+       new-acct  new-authz  new-order                  revoke-cert
           |          |          |                           ^
-          |          |          |                           | "revoke"
-          V          |          V                           |
-         reg         |         app ---------> cert ---------+
+          |          |          |    "author"               | "revoke"
+          V          |          V   <--------               |
+         acct        |        order --------> cert ---------+
                      |         | ^              |
                      |         | | "up"         | "up"
                      |         V |              V
@@ -904,25 +904,23 @@ Internet-Draft                    ACME                     November 2016
    some time after issuance.  The "->" is a mnemonic for a Location
    header pointing to a created resource.
 
-           +--------------------+----------------+------------+
-           | Action             | Request        | Response   |
-           +--------------------+----------------+------------+
-           | Get a nonce        | HEAD new-nonce | 200        |
-           |                    |                |            |
-           | Register           | POST new-reg   | 201 -> reg |
-           |                    |                |            |
-           | Apply for a cert   | POST new-app   | 201 -> app |
-           |                    |                |            |
-           | Fetch challenges   | GET  authz     | 200        |
-           |                    |                |            |
-           | Answer challenges  | POST challenge | 200        |
-           |                    |                |            |
-           | Poll for status    | GET  authz     | 200        |
-           |                    |                |            |
-           | Request issuance   | POST app       | 200        |
-           |                    |                |            |
-           | Check for new cert | GET  cert      | 200        |
-           +--------------------+----------------+------------+
+         +----------------------+----------------+--------------+
+         | Action               | Request        | Response     |
+         +----------------------+----------------+--------------+
+         | Get a nonce          | HEAD new-nonce | 200          |
+         |                      |                |              |
+         | Register             | POST new-acct  | 201 -> acct  |
+         |                      |                |              |
+         | Submit an order      | POST new-order | 201 -> order |
+         |                      |                |              |
+         | Fetch challenges     | GET  authz     | 200          |
+         |                      |                |              |
+         | Respond to challenge | POST challenge | 200          |
+         |                      |                |              |
+         | Poll for status      | GET  order     | 200          |
+         |                      |                |              |
+         | Check for new cert   | GET  cert      | 200          |
+         +----------------------+----------------+--------------+
 
    The remainder of this section provides the details of how these
    resources are structured and how the ACME protocol makes use of them.
@@ -949,6 +947,8 @@ Internet-Draft                    ACME                     November 2016
 
 
 
+
+
 Barnes, et al.            Expires June 2, 2017                 [Page 17]
 
 Internet-Draft                    ACME                     November 2016
@@ -959,9 +959,9 @@ Internet-Draft                    ACME                     November 2016
                    +-------------+--------------------+
                    | new-nonce   | New nonce          |
                    |             |                    |
-                   | new-reg     | New registration   |
+                   | new-acct    | New account        |
                    |             |                    |
-                   | new-app     | New application    |
+                   | new-order   | New order          |
                    |             |                    |
                    | new-authz   | New authorization  |
                    |             |                    |
@@ -1015,8 +1015,8 @@ Internet-Draft                    ACME                     November 2016
 
    {
      "new-nonce": "https://example.com/acme/new-nonce",
-     "new-reg": "https://example.com/acme/new-reg",
-     "new-app": "https://example.com/acme/new-app",
+     "new-acct": "https://example.com/acme/new-acct",
+     "new-order": "https://example.com/acme/new-order",
      "new-authz": "https://example.com/acme/new-authz",
      "revoke-cert": "https://example.com/acme/revoke-cert",
      "key-change": "https://example.com/acme/key-change",
@@ -1027,18 +1027,17 @@ Internet-Draft                    ACME                     November 2016
      }
    }
 
-6.1.2.  Registration Objects
+6.1.2.  Account Objects
 
-   An ACME registration resource represents a set of metadata associated
-   to an account key pair.  Registration resources have the following
-   structure:
+   An ACME account resource represents a set of metadata associated to
+   an account key pair.  Account resources have the following structure:
 
    key (required, dictionary):  The public key of the account key pair,
       encoded as a JSON Web Key object [RFC7517].  This field is not
       updateable by the client.
 
-   status (required, string):  The status of this registration.
-      Possible values are: "valid", "deactivated", and "revoked".
+   status (required, string):  The status of this account.  Possible
+      values are: "valid", "deactivated", and "revoked".  The value
       "deactivated" should be used to indicate user initiated
       deactivation whereas "revoked" should be used to indicate
       administratively initiated deactivation.
@@ -1049,15 +1048,16 @@ Internet-Draft                    ACME                     November 2016
       client about server-initiated revocation.
 
    terms-of-service-agreed (optional, boolean):  Including this field in
-      a new-registration request, with a value of true, indicates the
+      a new-account request, with a value of true, indicates the
       client's agreement with the terms of service.  This field is not
       updateable by the client.
 
-   applications (required, string):  A URI from which a list of
-      authorizations submitted by this account can be fetched via a GET
-      request.  The result of the GET request MUST be a JSON object
-      whose "applications" field is an array of strings, where each
-      string is the URI of an authorization belonging to this
+   order (required, string):  A URI from which a list of orders
+      submitted by this account can be fetched via a GET request, as
+      described in Section 6.1.2.1
+
+
+
 
 
 
@@ -1066,54 +1066,54 @@ Barnes, et al.            Expires June 2, 2017                 [Page 19]
 Internet-Draft                    ACME                     November 2016
 
 
-      registration.  The server SHOULD include pending applications, and
-      SHOULD NOT include applications that are invalid.  The server MAY
-      return an incomplete list, along with a Link header with link
-      relation "next" indicating a URL to retrieve further entries.
-      This field is not updateable by the client.
-
    {
      "contact": [
        "mailto:cert-admin@example.com",
        "tel:+12025551212"
      ],
      "terms-of-service-agreed": true,
-     "applications": "https://example.com/acme/reg/1/apps"
+     "orders": "https://example.com/acme/acct/1/orders"
    }
 
-6.1.2.1.  Applications List
+6.1.2.1.  Orders List
 
-   Each registration object includes an applications URI from which a
-   list of applications created by the registration can be fetched via
-   GET request.  The result of the GET request MUST be a JSON object
-   whose "applications" field is an array of URIs, each identifying an
-   applications belonging to the registration.  The server SHOULD
-   include pending applications, and SHOULD NOT include applications
-   that are invalid in the array of URIs.  The server MAY return an
-   incomplete list, along with a Link header with link relation "next"
-   indicating a URL to retrieve further entries.
+   Each account object includes an "orders" URI from which a list of
+   orders created by the account can be fetched via GET request.  The
+   result of the GET request MUST be a JSON object whose "orders" field
+   is an array of URIs, each identifying an order belonging to the
+   account.  The server SHOULD include pending orders, and SHOULD NOT
+   include orders that are invalid in the array of URIs.  The server MAY
+   return an incomplete list, along with a Link header with link
+   relation "next" indicating a URL to retrieve further entries.
 
    HTTP/1.1 200 OK
    Content-Type: application/json
-   Link: href="/acme/reg/1/apps?cursor=2", rel="next"
+   Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 
    {
-     "applications": [
-       "https://example.com/acme/reg/1/apps/1",
-       "https://example.com/acme/reg/1/apps/2",
+     "orders": [
+       "https://example.com/acme/acct/1/order/1",
+       "https://example.com/acme/acct/1/order/2",
        /* 47 more URLs not shown for example brevity */
-       "https://example.com/acme/reg/1/apps/50"
+       "https://example.com/acme/acct/1/order/50"
      ]
    }
 
-6.1.3.  Application Objects
+6.1.3.  Order Objects
 
-   An ACME application object represents a client's request for a
-   certificate, and is used to track the progress of that application
-   through to issuance.  Thus, the object contains information about the
-   requested certificate, the server's requirements, and any
-   certificates that have resulted from this application.
+   An ACME order object represents a client's request for a certificate,
+   and is used to track the progress of that order through to issuance.
+   Thus, the object contains information about the requested
+   certificate, the authorizations that the server requires the client
+   to complete, and any certificates that have resulted from this order.
 
+   status (required, string):  The status of this order.  Possible
+      values are: "pending", "valid", and "invalid".
+
+   expires (optional, string):  The timestamp after which the server
+      will consider this order invalid, encoded in the format specified
+      in RFC 3339 [RFC3339].  This field is REQUIRED for objects with
+      "pending" or "valid" in the status field.
 
 
 
@@ -1121,14 +1121,6 @@ Barnes, et al.            Expires June 2, 2017                 [Page 20]
 
 Internet-Draft                    ACME                     November 2016
 
-
-   status (required, string):  The status of this application.  Possible
-      values are: "pending", "valid", and "invalid".
-
-   expires (optional, string):  The timestamp after which the server
-      will consider this application invalid, encoded in the format
-      specified in RFC 3339 [RFC3339].  This field is REQUIRED for
-      objects with "pending" or "valid" in the status field.
 
    csr (required, string):  A CSR encoding the parameters for the
       certificate being requested [RFC2986].  The CSR is sent in the
@@ -1142,14 +1134,22 @@ Internet-Draft                    ACME                     November 2016
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339]
 
-   requirements (required, array):  The requirements that the client
-      needs to fulfill before the requested certificate can be granted
-      (for pending applications).  For final applications, the
-      requirements that were met.  Each entry is a dictionary with
-      parameters describing the requirement (see below).
+   authorizations (required, array):  For pending orders, the
+      authorizations that the client needs to complete before the
+      requested certificate can be granted (see Section 6.5).  For final
+      orders, the authorizations that were completed.  Each entry is a
+      dictionary with parameters describing the authorization:
+
+      status (required, string):  The status of the authorization.  This
+         field MUST have the same value as it does in the underlying
+         authorization object.
+
+      url (required, string):  A URL from which the authorization can be
+         fetched with a GET request.
 
    certificate (optional, string):  A URL for the certificate that has
-      been issued in response to this application.
+      been issued in response to this order.
+
 
 
 
@@ -1186,79 +1186,31 @@ Internet-Draft                    ACME                     November 2016
      "notBefore": "2016-01-01T00:00:00Z",
      "notAfter": "2016-01-08T00:00:00Z",
 
-     "requirements": [
+     "authorizations": [
        {
-         "type": "authorization",
          "status": "valid",
          "url": "https://example.com/acme/authz/1234"
        },
        {
-         "type": "out-of-band",
          "status": "pending",
-         "url": "https://example.com/acme/payment/1234"
+         "url": "https://example.com/acme/authz/2345"
        }
      ]
 
      "certificate": "https://example.com/acme/cert/1234"
    }
 
-   The elements of the "requirements" array are immutable once set,
+   The elements of the "authorizations" array are immutable once set,
    except for their "status" fields.  If any other part of the object
    changes after the object is created, the client MUST consider the
-   application invalid.
+   order invalid.
 
-   The "requirements" array in the challenge SHOULD reflect everything
-   that the CA required the client to do before issuance, even if some
-   requirements were fulfilled in earlier applications.  For example, if
-   a CA allows multiple applications to be fufilled based on a single
-   authorization transaction, then it must reflect that authorization in
-   all of the applications.
-
-   Each entry in the "requirements" array expresses a requirement from
-   the CA for the client to take a particular action.  All requirements
-   objects have the following basic fields:
-
-   type (required, string):  The type of requirement (see below for
-      defined types)
-
-   status (required, string):  The status of this requirement.  Possible
-      values are: "pending", "valid", and "invalid".
-
-   All additional fields are specified by the requirement type.
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 22]
-
-Internet-Draft                    ACME                     November 2016
-
-
-6.1.3.1.  Authorization Requirement
-
-   A requirement with type "authorization" requests that the ACME client
-   complete an authorization transaction.  The server specifies the
-   authorization by pre-provisioning a pending authorization resource
-   and providing the URI for this resource in the requirement.
-
-   url (required, string):  The URL for the authorization resource
-
-   To fulfill this requirement, the ACME client should fetch the
-   authorization object from the indicated URL, then follow the process
-   for obtaining authorization as specified in Section 6.5.
-
-6.1.3.2.  Out-of-Band Requirement
-
-   A requirement with type "out-of-band" requests that the ACME client
-   have a human user visit a web page in order to receive further
-   instructions for how to fulfill the requirement.  The requirement
-   object provides a URI for the web page to be visited.
-
-   url (required, string):  The URL to be visited.  The scheme of this
-      URL MUST be "http" or "https"
-
-   To fulfill this requirement, the ACME client should direct the user
-   to the indicated web page.
+   The "authorizations" array in the challenge SHOULD reflect all
+   authorizations that the CA takes into account in deciding to issue,
+   even if some authorizations were fulfilled in earlier orders or in
+   pre-authorization transactions.  For example, if a CA allows multiple
+   orders to be fufilled based on a single authorization transaction,
+   then it SHOULD reflect that authorization in all of the order.
 
 6.1.4.  Authorization Objects
 
@@ -1274,6 +1226,14 @@ Internet-Draft                    ACME                     November 2016
    identifier (required, dictionary of string):  The identifier that the
       account is authorized to represent
 
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 22]
+
+Internet-Draft                    ACME                     November 2016
+
+
       type (required, string):  The type of identifier.
 
       value (required, string):  The identifier itself.
@@ -1283,24 +1243,17 @@ Internet-Draft                    ACME                     November 2016
       and "revoked".  If this field is missing, then the default value
       is "pending".
 
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 23]
-
-Internet-Draft                    ACME                     November 2016
-
-
    expires (optional, string):  The timestamp after which the server
       will consider this authorization invalid, encoded in the format
       specified in RFC 3339 [RFC3339].  This field is REQUIRED for
       objects with "valid" in the "status" field.
 
    scope (optional, string):  If this field is present, then it MUST
-      contain a URI for an application resource, such that this
-      authorization is only valid for that resource.  If this field is
-      absent, then the CA MUST consider this authorization valid for all
-      applications until the authorization expires. [[ Open issue: More
-      flexible scoping? ]]
+      contain a URI for an order resource, such that this authorization
+      is only valid for that resource.  If this field is absent, then
+      the CA MUST consider this authorization valid for all orders until
+      the authorization expires. [[ Open issue: More flexible scoping?
+      ]]
 
    challenges (required, array):  The challenges that the client can
       fulfill in order to prove possession of the identifier (for
@@ -1320,6 +1273,23 @@ Internet-Draft                    ACME                     November 2016
    [RFC5890] are properly encoded.  Wildcard domain names (with "*" as
    the first label) MUST NOT be included in authorization requests.
 
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 23]
+
+Internet-Draft                    ACME                     November 2016
+
+
    {
      "status": "valid",
      "expires": "2015-03-01T14:09:00Z",
@@ -1338,13 +1308,6 @@ Internet-Draft                    ACME                     November 2016
        }
      ]
    }
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 24]
-
-Internet-Draft                    ACME                     November 2016
-
 
 6.2.  Getting a Nonce
 
@@ -1375,34 +1338,21 @@ Internet-Draft                    ACME                     November 2016
    responses for the new-nonce resource, in order to prevent caching of
    this resource.
 
-6.3.  Registration
-
-   A client creates a new account with the server by sending a POST
-   request to the server's new-registration URI.  The body of the
-   request is a stub registration object containing only the "contact"
-   field.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 25]
+Barnes, et al.            Expires June 2, 2017                 [Page 24]
 
 Internet-Draft                    ACME                     November 2016
 
 
-   POST /acme/new-reg HTTP/1.1
+6.3.  Account Creation
+
+   A client creates a new account with the server by sending a POST
+   request to the server's new-account URI.  The body of the request is
+   a stub account object containing only the "contact" field.
+
+   POST /acme/new-acct HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
 
@@ -1411,7 +1361,7 @@ Internet-Draft                    ACME                     November 2016
        "alg": "ES256",
        "jwk": {...},
        "nonce": "6S8IqOGY7eL2lsGoTZYifg",
-       "url": "https://example.com/acme/new-reg"
+       "url": "https://example.com/acme/new-acct"
      })
      "payload": base64url({
        "terms-of-service-agreed": true,
@@ -1423,11 +1373,11 @@ Internet-Draft                    ACME                     November 2016
      "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
    }
 
-   The server MUST ignore any values provided in the "key", and
-   "applications" fields in registration bodies sent by the client, as
-   well as any other fields that it does not recognize.  If new fields
-   are specified in the future, the specification of those fields MUST
-   describe whether they may be provided by the client.
+   The server MUST ignore any values provided in the "key", and "orders"
+   fields in account bodies sent by the client, as well as any other
+   fields that it does not recognize.  If new fields are specified in
+   the future, the specification of those fields MUST describe whether
+   they may be provided by the client.
 
    The server SHOULD validate that the contact URLs in the "contact"
    field are valid and supported by the server.  If the client provides
@@ -1436,39 +1386,37 @@ Internet-Draft                    ACME                     November 2016
    description describing the error and what types of contact URL the
    server considers acceptable.
 
-   The server creates a registration object with the included contact
-   information.  The "key" element of the registration is set to the
-   public key used to verify the JWS (i.e., the "jwk" element of the JWS
-   header).  The server returns this registration object in a 201
-   (Created) response, with the registration URI in a Location header
-   field.
+   The server creates an account object with the included contact
+   information.  The "key" element of the account is set to the public
+   key used to verify the JWS (i.e., the "jwk" element of the JWS
+   header).  The server returns this account object in a 201 (Created)
+   response, with the account URI in a Location header field.
 
-   If the server already has a registration object with the provided
+   If the server already has an account registered with the provided
    account key, then it MUST return a 200 (OK) response and provide the
-   URI of that registration in a Content-Location header field.  This
-   allows a client that has an account key but not the corresponding
-   registration URI to recover the registration URI.
 
 
 
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 26]
+Barnes, et al.            Expires June 2, 2017                 [Page 25]
 
 Internet-Draft                    ACME                     November 2016
 
 
+   URI of that account in a Content-Location header field.  This allows
+   a client that has an account key but not the corresponding account
+   URI to recover the account URI.
+
    If the server wishes to present the client with terms under which the
    ACME service is to be used, it MUST indicate the URI where such terms
    can be accessed in the "terms-of-service" subfield of the "meta"
-   field in the directory object, and the server MUST reject new-
-   registration requests that do not have the "terms-of-service-agreed"
-   set to "true".
+   field in the directory object, and the server MUST reject new-account
+   requests that do not have the "terms-of-service-agreed" set to
+   "true".
 
    HTTP/1.1 201 Created
    Content-Type: application/json
    Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-   Location: https://example.com/acme/reg/asdf
+   Location: https://example.com/acme/acct/asdf
    Link: <https://example.com/acme/some-directory>;rel="directory"
 
    {
@@ -1482,16 +1430,14 @@ Internet-Draft                    ACME                     November 2016
    }
 
    If the client wishes to update this information in the future, it
-   sends a POST request with updated information to the registration
-   URI.  The server MUST ignore any updates to the "key", or
-   "applications" fields or any other fields it does not recognize.  The
-   server MUST verify that the request is signed with the private key
-   corresponding to the "key" field of the request before updating the
-   registration.
+   sends a POST request with updated information to the account URI.
+   The server MUST ignore any updates to the "key", or "order" fields or
+   any other fields it does not recognize.  The server MUST verify that
+   the request is signed with the private key corresponding to the "key"
+   field of the request before updating the registration.
 
-   For example, to update the contact information in the above
-   registration, the client could send the following request:
-
+   For example, to update the contact information in the above account,
+   the client could send the following request:
 
 
 
@@ -1507,23 +1453,21 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 27]
+Barnes, et al.            Expires June 2, 2017                 [Page 26]
 
 Internet-Draft                    ACME                     November 2016
 
 
-   POST /acme/reg/asdf HTTP/1.1
+   POST /acme/acct/asdf HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
 
    {
      "protected": base64url({
        "alg": "ES256",
-       "kid": "https://example.com/acme/reg/asdf",
+       "kid": "https://example.com/acme/acct/asdf",
        "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
-       "url": "https://example.com/acme/reg/asdf"
+       "url": "https://example.com/acme/acct/asdf"
      })
      "payload": base64url({
        "contact": [
@@ -1534,8 +1478,8 @@ Internet-Draft                    ACME                     November 2016
      "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
    }
 
-   Servers SHOULD NOT respond to GET requests for registration resources
-   as these requests are not authenticated.  If a client wishes to query
+   Servers SHOULD NOT respond to GET requests for account resources as
+   these requests are not authenticated.  If a client wishes to query
    the server for information about its account (e.g., to examine the
    "contact" or "certificates" fields), then it SHOULD do so by sending
    a POST request with an empty update.  That is, it should send a JWS
@@ -1545,7 +1489,7 @@ Internet-Draft                    ACME                     November 2016
 
    As described above, a client can indicate its agreement with the CA's
    terms of service by setting the "terms-of-service-agreed" field in
-   its registration object to "true".
+   its account object to "true".
 
    If the server has changed its terms of service since a client
    initially agreed, and the server is unwilling to process a request
@@ -1565,7 +1509,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 28]
+Barnes, et al.            Expires June 2, 2017                 [Page 27]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -1584,7 +1528,7 @@ Internet-Draft                    ACME                     November 2016
 6.3.2.  Account Key Roll-over
 
    A client may wish to change the public key that is associated with a
-   registration in order to recover from a key compromise or proactively
+   account in order to recover from a key compromise or proactively
    mitigate the impact of an unnoticed key compromise.
 
    To change the key associated with an account, the client first
@@ -1593,8 +1537,8 @@ Internet-Draft                    ACME                     November 2016
 
    account (required, string):  The URL for account being modified.  The
       content of this field MUST be the exact string provided in the
-      Location header field in response to the new-registration request
-      that created the account.
+      Location header field in response to the new-account request that
+      created the account.
 
    newKey (required, JWK):  The JWK representation of the new key
 
@@ -1621,7 +1565,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 29]
+Barnes, et al.            Expires June 2, 2017                 [Page 28]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -1643,7 +1587,7 @@ Internet-Draft                    ACME                     November 2016
          "jwk": /* new key */,
        }),
        "payload": base64url({
-         "account": "https://example.com/acme/reg/asdf",
+         "account": "https://example.com/acme/acct/asdf",
          "newKey": /* new key */
        })
        "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1673,11 +1617,11 @@ Internet-Draft                    ACME                     November 2016
        the same
 
    7.  Check that the "account" field of the key-change object contains
-       the URL for the registration matching the old key
+       the URL for the account matching the old key
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 30]
+Barnes, et al.            Expires June 2, 2017                 [Page 29]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -1686,8 +1630,8 @@ Internet-Draft                    ACME                     November 2016
        the key used to sign the inner JWS.
 
    If all of these checks pass, then the server updates the
-   corresponding registration by replacing the old account key with the
-   new public key and returns status code 200.  Otherwise, the server
+   corresponding account by replacing the old account key with the new
+   public key and returns status code 200.  Otherwise, the server
    responds with an error status code and a problem document describing
    the error.
 
@@ -1697,16 +1641,16 @@ Internet-Draft                    ACME                     November 2016
    server with a status field of "deactivated."  Clients may wish to do
    this when the account key is compromised.
 
-   POST /acme/reg/asdf HTTP/1.1
+   POST /acme/acct/asdf HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
 
    {
      "protected": base64url({
        "alg": "ES256",
-       "kid": "https://example.com/acme/reg/asdf",
+       "kid": "https://example.com/acme/acct/asdf",
        "nonce": "ntuJWWSic4WVNSqeUmshgg",
-       "url": "https://example.com/acme/reg/asdf"
+       "url": "https://example.com/acme/acct/asdf"
      })
      "payload": base64url({
        "status": "deactivated"
@@ -1716,7 +1660,7 @@ Internet-Draft                    ACME                     November 2016
 
    The server MUST verify that the request is signed by the account key.
    If the server accepts the deactivation request, it should reply with
-   a 200 (OK) status code and the current contents of the registration
+   a 200 (OK) status code and the current contents of the account
    object.
 
    Once an account is deactivated, the server MUST NOT accept further
@@ -1733,19 +1677,19 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 31]
+Barnes, et al.            Expires June 2, 2017                 [Page 30]
 
 Internet-Draft                    ACME                     November 2016
 
 
 6.4.  Applying for Certificate Issuance
 
-   The holder of an account key pair may use ACME to submit an
-   application for a certificate to be issued.  The client makes this
-   request by sending a POST request to the server's new-application
-   resource.  The body of the POST is a JWS object whose JSON payload is
-   a subset of the application object defined in Section 6.1.3,
-   containing the fields that describe the certificate to be issued:
+   The holder of an account key pair may use ACME to submit an order for
+   a certificate to be issued.  The client makes this request by sending
+   a POST request to the server's new-order resource.  The body of the
+   POST is a JWS object whose JSON payload is a subset of the order
+   object defined in Section 6.1.3, containing the fields that describe
+   the certificate to be issued:
 
    csr (required, string):  A CSR encoding the parameters for the
       certificate being requested [RFC2986].  The CSR is sent in the
@@ -1759,16 +1703,16 @@ Internet-Draft                    ACME                     November 2016
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339]
 
-   POST /acme/new-app HTTP/1.1
+   POST /acme/new-order HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
 
    {
      "protected": base64url({
        "alg": "ES256",
-       "kid": "https://example.com/acme/reg/asdf",
+       "kid": "https://example.com/acme/acct/asdf",
        "nonce": "5XJ1L3lEkMG7tR6pA00clA",
-       "url": "https://example.com/acme/new-app"
+       "url": "https://example.com/acme/new-order"
      })
      "payload": base64url({
        "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
@@ -1789,7 +1733,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 32]
+Barnes, et al.            Expires June 2, 2017                 [Page 31]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -1800,13 +1744,13 @@ Internet-Draft                    ACME                     November 2016
 
    If the server is willing to issue the requested certificate, it
    responds with a 201 (Created) response.  The body of this response is
-   an application object reflecting the client's request and any
-   requirements the client must fulfill before the certificate will be
-   issued.
+   an order object reflecting the client's request and any
+   authorizations the client must complete before the certificate will
+   be issued.
 
    HTTP/1.1 201 Created
    Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-   Location: https://example.com/acme/app/asdf
+   Location: https://example.com/acme/order/asdf
 
    {
      "status": "pending",
@@ -1816,60 +1760,58 @@ Internet-Draft                    ACME                     November 2016
      "notBefore": "2016-01-01T00:00:00Z",
      "notAfter": "2016-01-08T00:00:00Z",
 
-     "requirements": [
+     "authorizations": [
        {
-         "type": "authorization",
          "status": "valid",
          "url": "https://example.com/acme/authz/1234"
        },
        {
-         "type": "out-of-band",
          "status": "pending",
-         "url": "https://example.com/acme/payment/1234"
+         "url": "https://example.com/acme/authz/2345"
        }
      ]
    }
 
-   The application object returned by the server represents a promise
-   that if the client fulfills the server's requirements before the
-   "expires" time, then the server will issue the requested certificate.
-   In the application object, any object in the "requirements" array
-   whose status is "pending" represents an action that the client must
-   perform before the server will issue the certificate.  If the client
-   fails to complete the required actions before the "expires" time,
-   then the server SHOULD change the status of the application to
-   "invalid" and MAY delete the application resource.
+   The order object returned by the server represents a promise that if
+   the client fulfills the server's requirements before the "expires"
+   time, then the server will issue the requested certificate.  In the
+   order object, any object in the "authorizations" array whose status
+   is "pending" represents an authorization transaction that the client
+   must complete before the server will issue the certificate (see
+   Section 6.5).  If the client fails to complete the required actions
+   before the "expires" time, then the server SHOULD change the status
+   of the order to "invalid" and MAY delete the order resource.
 
-   The server MUST issue the requested certificate and update the
-   application resource with a URL for the certificate as soon as the
+   The server MUST issue the requested certificate and update the order
+   resource with a URL for the certificate as soon as the client has
+   fulfilled the server's requirements.  If the client has already
+   satisfied the server's requirements at the time of this request
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 33]
+Barnes, et al.            Expires June 2, 2017                 [Page 32]
 
 Internet-Draft                    ACME                     November 2016
 
 
-   client has fulfilled the server's requirements.  If the client has
-   already satisfied the server's requirements at the time of this
-   request (e.g., by obtaining authorization for all of the identifiers
-   in the certificate in previous transactions), then the server MUST
+   (e.g., by obtaining authorization for all of the identifiers in the
+   certificate in previous transactions), then the server MUST
    proactively issue the requested certificate and provide a URL for it
-   in the "certificate" field of the application.  The server MUST,
-   however, still list the satisfied requirements in the "requirements"
+   in the "certificate" field of the order.  The server MUST, however,
+   still list the completed authorizations in the "authorizations"
    array, with the state "valid".
 
    Once the client believes it has fulfilled the server's requirements,
-   it should send a GET request to the application resource to obtain
-   its current state.  The status of the application will indicate what
-   action the client should take:
+   it should send a GET request to the order resource to obtain its
+   current state.  The status of the order will indicate what action the
+   client should take:
 
    o  "invalid": The certificate will not be issued.  Consider this
-      application process abandoned.
+      order process abandoned.
 
    o  "pending": The server does not believe that the client has
-      fulfilled the requirements.  Check the "requirements" array for
-      requirements that are still pending.
+      fulfilled the requirements.  Check the "authorizations" array for
+      entries that are still pending.
 
    o  "processing": The server agrees that the requirements have been
       fulfilled, and is in the process of generating the certificate.
@@ -1877,38 +1819,36 @@ Internet-Draft                    ACME                     November 2016
       the response, if any.
 
    o  "valid": The server has issued the certificate and provisioned its
-      URL to the "certificate" field of the application.  Download the
+      URL to the "certificate" field of the order.  Download the
       certificate.
 
 6.4.1.  Pre-Authorization
 
-   The application process described above presumes that authorization
-   objects are created reactively, in response to an application for
-   issuance.  Some servers may also wish to enable clients to obtain
-   authorization for an identifier proactively, outside of the context
-   of a specific issuance.  For example, a client hosting virtual
-   servers for a collection of names might wish to obtain authorization
-   before any servers are created, and only create a certificate when a
-   server starts up.
+   The order process described above presumes that authorization objects
+   are created reactively, in response to an application for issuance.
+   Some servers may also wish to enable clients to obtain authorization
+   for an identifier proactively, outside of the context of a specific
+   issuance.  For example, a client hosting virtual servers for a
+   collection of names might wish to obtain authorization before any
+   servers are created, and only create a certificate when a server
+   starts up.
 
    In some cases, a CA running an ACME server might have a completely
    external, non-ACME process for authorizing a client to issue for an
    identifier.  In these case, the CA should provision its ACME server
    with authorization objects corresponding to these authorizations and
-   reflect them as already-valid requirements in any issuance
-   applications requested by the client.
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 34]
-
-Internet-Draft                    ACME                     November 2016
-
+   reflect them as already valid in any orders submitted by the client.
 
    If a CA wishes to allow pre-authorization within ACME, it can offer a
    "new authorization" resource in its directory by adding the key "new-
    authz" with a URL for the new authorization resource.
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 33]
+
+Internet-Draft                    ACME                     November 2016
+
 
    To request authorization for an identifier, the client sends a POST
    request to the new-authorization resource specifying the identifier
@@ -1955,16 +1895,17 @@ Internet-Draft                    ACME                     November 2016
    (Forbidden) error, with a problem document describing the reason for
    the rejection.
 
+   If the authorization request specifies "existing" with a value of
+   "accept" or "require", before proceeding, the server SHOULD determine
+   whether there are any existing, valid authorization resources for the
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 35]
+
+Barnes, et al.            Expires June 2, 2017                 [Page 34]
 
 Internet-Draft                    ACME                     November 2016
 
 
-   If the authorization request specifies "existing" with a value of
-   "accept" or "require", before proceeding, the server SHOULD determine
-   whether there are any existing, valid authorization resources for the
    account and given identifier.  If one or more such authorizations
    exists, a response SHOULD returned with status code 303 (See Other)
    and a Location header pointing to the existing resource URL;
@@ -2010,20 +1951,20 @@ Internet-Draft                    ACME                     November 2016
    [RFC5988] with relation "alternate".  Each such field should express
    an alternative certificate chain starting with the same end-entity
    certificate.  This can be used to express paths to various trust
+   anchors.  Clients can fetch these alternates and use their own
+   heuristics to decide which is optimal.
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 36]
+
+Barnes, et al.            Expires June 2, 2017                 [Page 35]
 
 Internet-Draft                    ACME                     November 2016
 
 
-   anchors.  Clients can fetch these alternates and use their own
-   heuristics to decide which is optimal.
-
    The server MUST also provide a link relation header field with
-   relation "author" to indicate the application under which this
-   certificate was issued.
+   relation "author" to indicate the order under which this certificate
+   was issued.
 
    If the CA participates in Certificate Transparency (CT) [RFC6962],
    then they may want to provide the client with a Signed Certificate
@@ -2042,7 +1983,7 @@ Internet-Draft                    ACME                     November 2016
    Content-Type: application/pkix-cert
    Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
    Link: <https://example.com/acme/revoke-cert>;rel="revoke"
-   Link: <https://example.com/acme/app/asdf>;rel="author"
+   Link: <https://example.com/acme/order/asdf>;rel="author"
    Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
    Link: <https://example.com/acme/some-directory>;rel="directory"
 
@@ -2056,10 +1997,9 @@ Internet-Draft                    ACME                     November 2016
    [Other certificate contents]
    -----END CERTIFICATE-----
 
-
    A certificate resource represents a single, immutable certificate.
    If the client wishes to obtain a renewed certificate, the client
-   initiates a new application process to request one.
+   initiates a new order process to request one.
 
    Because certificate resources are immutable once issuance is
    complete, the server MAY enable the caching of the resource by adding
@@ -2069,7 +2009,11 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 37]
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 36]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2085,17 +2029,17 @@ Internet-Draft                    ACME                     November 2016
    request certificates with multiple identifiers), or to associate
    multiple accounts with an identifier (e.g., to allow multiple
    entities to manage certificates).  The server may declare that an
-   authorization is only valid for a specific application by setting the
-   "scope" field of the authorization to the URI for that application.
+   authorization is only valid for a specific order by setting the
+   "scope" field of the authorization to the URI for that order.
 
    Authorization resources are created by the server in response to
-   certificate applications or authorization requests submitted by an
-   account key holder; their URLs are provided to the client in the
-   responses to these requests.  The authorization object is implicitly
-   tied to the account key used to sign the request.
+   certificate orders or authorization requests submitted by an account
+   key holder; their URLs are provided to the client in the responses to
+   these requests.  The authorization object is implicitly tied to the
+   account key used to sign the request.
 
-   When a client receives an application from the server with an
-   "authorization" requirement, it downloads the authorization resource
+   When a client receives an order from the server with "pending" entry
+   in the authorizations array, it downloads the authorization resource
    by sending a GET request to the indicated URL.  If the client
    initiates authorization using a request to the new authorization
    resource, it will have already recevied the pending authorization
@@ -2125,7 +2069,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 38]
+Barnes, et al.            Expires June 2, 2017                 [Page 37]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2181,7 +2125,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 39]
+Barnes, et al.            Expires June 2, 2017                 [Page 38]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2193,7 +2137,7 @@ Internet-Draft                    ACME                     November 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "kid": "https://example.com/acme/reg/asdf",
+       "kid": "https://example.com/acme/acct/asdf",
        "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
        "url": "https://example.com/acme/authz/asdf/0"
      })
@@ -2237,7 +2181,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 40]
+Barnes, et al.            Expires June 2, 2017                 [Page 39]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2293,7 +2237,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 41]
+Barnes, et al.            Expires June 2, 2017                 [Page 40]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2305,7 +2249,7 @@ Internet-Draft                    ACME                     November 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "kid": "https://example.com/acme/reg/asdf",
+       "kid": "https://example.com/acme/acct/asdf",
        "nonce": "xWCM9lGbIyCgue8di6ueWQ",
        "url": "https://example.com/acme/authz/asdf"
      })
@@ -2349,7 +2293,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 42]
+Barnes, et al.            Expires June 2, 2017                 [Page 41]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2361,7 +2305,7 @@ Internet-Draft                    ACME                     November 2016
    {
      "protected": base64url({
        "alg": "ES256",
-       "kid": "https://example.com/acme/reg/asdf", // OR "jwk"
+       "kid": "https://example.com/acme/acct/asdf", // OR "jwk"
        "nonce": "JHb54aT_KTXBWQOzGYkt9A",
        "url": "https://example.com/acme/revoke-cert"
      })
@@ -2405,7 +2349,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 43]
+Barnes, et al.            Expires June 2, 2017                 [Page 42]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2461,7 +2405,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 44]
+Barnes, et al.            Expires June 2, 2017                 [Page 43]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2517,7 +2461,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 45]
+Barnes, et al.            Expires June 2, 2017                 [Page 44]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2573,7 +2517,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 46]
+Barnes, et al.            Expires June 2, 2017                 [Page 45]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2629,7 +2573,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 47]
+Barnes, et al.            Expires June 2, 2017                 [Page 46]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2685,7 +2629,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 48]
+Barnes, et al.            Expires June 2, 2017                 [Page 47]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2741,7 +2685,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 49]
+Barnes, et al.            Expires June 2, 2017                 [Page 48]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2797,7 +2741,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 50]
+Barnes, et al.            Expires June 2, 2017                 [Page 49]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2853,7 +2797,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 51]
+Barnes, et al.            Expires June 2, 2017                 [Page 50]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2909,7 +2853,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 52]
+Barnes, et al.            Expires June 2, 2017                 [Page 51]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -2965,7 +2909,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 53]
+Barnes, et al.            Expires June 2, 2017                 [Page 52]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -3021,7 +2965,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 54]
+Barnes, et al.            Expires June 2, 2017                 [Page 53]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -3056,9 +3000,9 @@ Internet-Draft                    ACME                     November 2016
              +-------------+--------------------+-----------+
              | Key         | Resource type      | Reference |
              +-------------+--------------------+-----------+
-             | new-reg     | New registration   | RFC XXXX  |
+             | new-acct    | New account        | RFC XXXX  |
              |             |                    |           |
-             | new-app     | New application    | RFC XXXX  |
+             | new-order   | New order          | RFC XXXX  |
              |             |                    |           |
              | revoke-cert | Revoke certificate | RFC XXXX  |
              |             |                    |           |
@@ -3077,7 +3021,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 55]
+Barnes, et al.            Expires June 2, 2017                 [Page 54]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -3133,7 +3077,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 56]
+Barnes, et al.            Expires June 2, 2017                 [Page 55]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -3189,7 +3133,7 @@ Internet-Draft                    ACME                     November 2016
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 57]
+Barnes, et al.            Expires June 2, 2017                 [Page 56]
 
 Internet-Draft                    ACME                     November 2016
 
@@ -3218,12 +3162,11 @@ Internet-Draft                    ACME                     November 2016
 9.2.  Integrity of Authorizations
 
    ACME allows anyone to request challenges for an identifier by
-   registering an account key and sending a new-application request
-   under that account key.  The integrity of the authorization process
-   thus depends on the identifier validation challenges to ensure that
-   the challenge can only be completed by someone who both (1) holds the
-   private key of the account key pair, and (2) controls the identifier
-   in question.
+   registering an account key and sending a new-order request under that
+   account key.  The integrity of the authorization process thus depends
+   on the identifier validation challenges to ensure that the challenge
+   can only be completed by someone who both (1) holds the private key
+   of the account key pair, and (2) controls the identifier in question.
 
    Validation responses need to be bound to an account key pair in order
    to avoid situations where an ACME MitM can switch out a legitimate
@@ -3233,8 +3176,8 @@ Internet-Draft                    ACME                     November 2016
 
    o  MitM registers account key pair B
 
-   o  Legitimate domain holder sends a new-application request signed
-      under account key A
+   o  Legitimate domain holder sends a new-order request signed under
+      account key A
 
    o  MitM suppresses the legitimate request, but sends the same request
       signed under account key B
@@ -3242,15 +3185,14 @@ Internet-Draft                    ACME                     November 2016
    o  ACME server issues challenges and MitM forwards them to the
       legitimate domain holder
 
+   o  Legitimate domain holder provisions the validation response
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 58]
+Barnes, et al.            Expires June 2, 2017                 [Page 57]
 
 Internet-Draft                    ACME                     November 2016
 
-
-   o  Legitimate domain holder provisions the validation response
 
    o  ACME server performs validation query and sees the response
       provisioned by the legitimate domain holder
@@ -3297,17 +3239,16 @@ Internet-Draft                    ACME                     November 2016
    redirects in HTTP validation and a web site operator provisions a
    catch-all redirect rule that redirects requests for unknown resources
    to a different domain.  Then the target of the redirect could use
+   that to get a certificate through HTTP validation, since the
+   validation path will not be known to the primary server.
 
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 59]
+Barnes, et al.            Expires June 2, 2017                 [Page 58]
 
 Internet-Draft                    ACME                     November 2016
 
-
-   that to get a certificate through HTTP validation, since the
-   validation path will not be known to the primary server.
 
    The DNS is a common point of vulnerability for all of these
    challenges.  An entity that can provision false DNS records for a
@@ -3354,16 +3295,16 @@ Internet-Draft                    ACME                     November 2016
    At the application layer, ACME requires the server to perform a few
    potentially expensive operations.  Identifier validation transactions
    require the ACME server to make outbound connections to potentially
+   attacker-controlled servers, and certificate issuance can require
+   interactions with cryptographic hardware.
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 60]
+
+Barnes, et al.            Expires June 2, 2017                 [Page 59]
 
 Internet-Draft                    ACME                     November 2016
 
-
-   attacker-controlled servers, and certificate issuance can require
-   interactions with cryptographic hardware.
 
    In addition, an attacker can also cause the ACME server to send
    validation requests to a domain of its choosing by submitting
@@ -3407,23 +3348,19 @@ Internet-Draft                    ACME                     November 2016
    to these public servers himself, he can't gain anything extra through
    an SSRF attack on ACME aside from a layer of anonymization.
 
-
-
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 61]
-
-Internet-Draft                    ACME                     November 2016
-
-
 9.5.  CA Policy Considerations
 
    The controls on issuance enabled by ACME are focused on validating
    that a certificate applicant controls the identifier he claims.
    Before issuing a certificate, however, there are many other checks
    that a CA might need to perform, for example:
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 60]
+
+Internet-Draft                    ACME                     November 2016
+
 
    o  Has the client agreed to a subscriber agreement?
 
@@ -3462,18 +3399,6 @@ Internet-Draft                    ACME                     November 2016
    SHOULD perform DNS queries over TCP, which provides better resistance
    to some forgery attacks than DNS over UDP.
 
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 62]
-
-Internet-Draft                    ACME                     November 2016
-
-
 10.2.  Default Virtual Hosts
 
    In many cases, TLS-based services are deployed on hosted platforms
@@ -3485,6 +3410,14 @@ Internet-Draft                    ACME                     November 2016
 
    When a connection comes in with an unknown SNI value, one might
    expect the hosting platform to terminate the TLS connection.
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 61]
+
+Internet-Draft                    ACME                     November 2016
+
+
    However, some hosting platforms will choose a virtual host to be the
    "default", and route connections with unknown SNI values to that
    host.
@@ -3521,15 +3454,6 @@ Internet-Draft                    ACME                     November 2016
    these resolvers both for both CAA record lookups and all record
    lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).
 
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 63]
-
-Internet-Draft                    ACME                     November 2016
-
-
 11.  Acknowledgements
 
    In addition to the editors listed on the front page, this document
@@ -3541,6 +3465,14 @@ Internet-Draft                    ACME                     November 2016
    o  Eric Rescorla, Mozilla
 
    o  Seth Schoen, EFF
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 62]
+
+Internet-Draft                    ACME                     November 2016
+
 
    o  Alex Halderman, University of Michigan
 
@@ -3579,13 +3511,6 @@ Internet-Draft                    ACME                     November 2016
               Timestamps", RFC 3339, DOI 10.17487/RFC3339, July 2002,
               <http://www.rfc-editor.org/info/rfc3339>.
 
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 64]
-
-Internet-Draft                    ACME                     November 2016
-
-
    [RFC3492]  Costello, A., "Punycode: A Bootstring encoding of Unicode
               for Internationalized Domain Names in Applications
               (IDNA)", RFC 3492, DOI 10.17487/RFC3492, March 2003,
@@ -3595,6 +3520,15 @@ Internet-Draft                    ACME                     November 2016
               Resource Identifier (URI): Generic Syntax", STD 66,
               RFC 3986, DOI 10.17487/RFC3986, January 2005,
               <http://www.rfc-editor.org/info/rfc3986>.
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 63]
+
+Internet-Draft                    ACME                     November 2016
+
 
    [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
@@ -3635,13 +3569,6 @@ Internet-Draft                    ACME                     November 2016
               DOI 10.17487/RFC6844, January 2013,
               <http://www.rfc-editor.org/info/rfc6844>.
 
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 65]
-
-Internet-Draft                    ACME                     November 2016
-
-
    [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
               Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
               2014, <http://www.rfc-editor.org/info/rfc7159>.
@@ -3650,6 +3577,14 @@ Internet-Draft                    ACME                     November 2016
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
               DOI 10.17487/RFC7231, June 2014,
               <http://www.rfc-editor.org/info/rfc7231>.
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 64]
+
+Internet-Draft                    ACME                     November 2016
+
 
    [RFC7468]  Josefsson, S. and S. Leonard, "Textual Encodings of PKIX,
               PKCS, and CMS Structures", RFC 7468, DOI 10.17487/RFC7468,
@@ -3687,17 +3622,6 @@ Internet-Draft                    ACME                     November 2016
               DOI 10.17487/RFC3552, July 2003,
               <http://www.rfc-editor.org/info/rfc3552>.
 
-
-
-
-
-
-
-Barnes, et al.            Expires June 2, 2017                 [Page 66]
-
-Internet-Draft                    ACME                     November 2016
-
-
    [RFC3553]  Mealling, M., Masinter, L., Hardie, T., and G. Klyne, "An
               IETF URN Sub-namespace for Registered Protocol
               Parameters", BCP 73, RFC 3553, DOI 10.17487/RFC3553, June
@@ -3707,6 +3631,16 @@ Internet-Draft                    ACME                     November 2016
               IANA Considerations Section in RFCs", BCP 26, RFC 5226,
               DOI 10.17487/RFC5226, May 2008,
               <http://www.rfc-editor.org/info/rfc5226>.
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 65]
+
+Internet-Draft                    ACME                     November 2016
+
 
    [RFC5785]  Nottingham, M. and E. Hammer-Lahav, "Defining Well-Known
               Uniform Resource Identifiers (URIs)", RFC 5785,
@@ -3749,4 +3683,14 @@ Authors' Addresses
 
 
 
-Barnes, et al.            Expires June 2, 2017                 [Page 67]
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2017                 [Page 66]
