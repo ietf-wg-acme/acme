@@ -940,6 +940,11 @@ that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they may be provided by the
 client.
 
+In general, the server MUST ignore any fields in the request object that it does
+not recognize.  In particular, it MUST NOT reflect unrecognized fields in the
+resulting account object.  This allows clients to detect when servers do not
+support an extension field.
+
 The server SHOULD validate that the contact URLs in the "contact" field are
 valid and supported by the server.  If the client provides the server with an
 invalid or unsupported contact URL, then the server MUST return an error of type
