@@ -1152,7 +1152,10 @@ Content-Type: application/jose+json
 ~~~~~
 
 When a CA receives a new-registration request containing an
-"external-account-binding" field, it MUST perform the following steps:
+"external-account-binding" field, it must decide whether or not to verify the
+binding.  If the CA does not verify the binding, then it MUST NOT reflect the
+"external-account-binding" field in the resulting account object (if any).  To
+verify the account binding, the CA MUST take the following steps:
 
 1. Verify that the value of the field is a well-formed JWS
 2. Verify that the JWS protected meets the above criteria
@@ -1163,8 +1166,9 @@ When a CA receives a new-registration request containing an
 
 If all of these checks pass and the CA creates a new account, then the CA may
 consider the new account associated with the external account corresponding to
-the MAC key.  If any of these checks fail, then the CA MUST reject the
-new-registration request.
+the MAC key, and MUST reflect value of the "external-account-binding" field in
+the resulting account object.  If any of these checks fail, then the CA MUST
+reject the new-registration request.
 
 
 ### Account Key Roll-over
