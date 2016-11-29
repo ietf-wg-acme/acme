@@ -1052,7 +1052,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.6.3.p.3">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server.  If the client provides the server with an invalid or unsupported contact URL, then the server MUST return an error of type &#8220;invalidContact&#8221;, with a description describing the error and what types of contact URL the server considers acceptable.</p>
 <p id="rfc.section.6.3.p.4">The server creates an account object with the included contact information.  The &#8220;key&#8221; element of the account is set to the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header).  The server returns this account object in a 201 (Created) response, with the account URI in a Location header field.</p>
 <p id="rfc.section.6.3.p.5">If the server already has an account registered with the provided account key, then it MUST return a 200 (OK) response and provide the URI of that account in a Content-Location header field.  This allows a client that has an account key but not the corresponding account URI to recover the account URI.</p>
-<p id="rfc.section.6.3.p.6">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URI where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.</p>
+<p id="rfc.section.6.3.p.6">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URI where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
 <pre>
 HTTP/1.1 201 Created
 Content-Type: application/json
@@ -2120,6 +2120,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Is the CSR signed with an acceptable algorithm?</li>
 </ul>
 <p id="rfc.section.9.5.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
+<p id="rfc.section.9.5.p.4">CAs using ACME to allow clients to agree to terms of service should keep in mind that ACME clients can automate this agreement, possibly not involving a human user.  If a CA wishes to have stronger evidence of user consent, it may present an out-of-band requirement or challenge to require human involvement.</p>
 <h1 id="rfc.section.10"><a href="#rfc.section.10">10.</a> <a href="#operational-considerations" id="operational-considerations">Operational Considerations</a></h1>
 <p id="rfc.section.10.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.  For example:</p>
 <h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#dns-over-tcp" id="dns-over-tcp">DNS over TCP</a></h1>

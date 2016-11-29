@@ -1411,7 +1411,9 @@ Internet-Draft                    ACME                     November 2016
    can be accessed in the "terms-of-service" subfield of the "meta"
    field in the directory object, and the server MUST reject new-account
    requests that do not have the "terms-of-service-agreed" set to
-   "true".
+   "true".  Clients SHOULD NOT automatically agree to terms by default.
+   Rather, they SHOULD require some user interaction for agreement to
+   terms.
 
    HTTP/1.1 201 Created
    Content-Type: application/json
@@ -1438,8 +1440,6 @@ Internet-Draft                    ACME                     November 2016
 
    For example, to update the contact information in the above account,
    the client could send the following request:
-
-
 
 
 
@@ -3483,6 +3483,12 @@ Internet-Draft                    ACME                     November 2016
    CAs that use ACME to automate issuance will need to ensure that their
    servers perform all necessary checks before issuing.
 
+   CAs using ACME to allow clients to agree to terms of service should
+   keep in mind that ACME clients can automate this agreement, possibly
+   not involving a human user.  If a CA wishes to have stronger evidence
+   of user consent, it may present an out-of-band requirement or
+   challenge to require human involvement.
+
 10.  Operational Considerations
 
    There are certain factors that arise in operational reality that
@@ -3516,12 +3522,6 @@ Internet-Draft                    ACME                     November 2016
    In such cases, the owner of the default virtual host can complete a
    TLS-based challenge (e.g., "tls-sni-02") for any domain with an A
    record that points to the hosting platform.  This could result in
-   mis-issuance in cases where there are multiple hosts with different
-   owners resident on the hosting platform.
-
-   A CA that accepts TLS-based proof of domain control should attempt to
-   check whether a domain is hosted on a domain with a default virtual
-   host before allowing an authorization request for this host to use a
 
 
 
@@ -3530,6 +3530,12 @@ Barnes, et al.            Expires June 2, 2017                 [Page 63]
 Internet-Draft                    ACME                     November 2016
 
 
+   mis-issuance in cases where there are multiple hosts with different
+   owners resident on the hosting platform.
+
+   A CA that accepts TLS-based proof of domain control should attempt to
+   check whether a domain is hosted on a domain with a default virtual
+   host before allowing an authorization request for this host to use a
    TLS-based challenge.  A default virtual host can be detected by
    initiating TLS connections to the host with random SNI values within
    the namespace used for the TLS-based challenge (the "acme.invalid"
@@ -3571,12 +3577,6 @@ Internet-Draft                    ACME                     November 2016
 
    o  Jakub Warmuz, University of Oxford
 
-   This document draws on many concepts established by Eric Rescorla's
-   "Automated Certificate Issuance Protocol" draft.  Martin Thomson
-   provided helpful guidance in the use of HTTP.
-
-
-
 
 
 
@@ -3585,6 +3585,10 @@ Barnes, et al.            Expires June 2, 2017                 [Page 64]
 
 Internet-Draft                    ACME                     November 2016
 
+
+   This document draws on many concepts established by Eric Rescorla's
+   "Automated Certificate Issuance Protocol" draft.  Martin Thomson
+   provided helpful guidance in the use of HTTP.
 
 12.  References
 
@@ -3627,10 +3631,6 @@ Internet-Draft                    ACME                     November 2016
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <http://www.rfc-editor.org/info/rfc4648>.
 
-   [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
-              (TLS) Protocol Version 1.2", RFC 5246,
-              DOI 10.17487/RFC5246, August 2008,
-              <http://www.rfc-editor.org/info/rfc5246>.
 
 
 
@@ -3641,6 +3641,11 @@ Barnes, et al.            Expires June 2, 2017                 [Page 65]
 
 Internet-Draft                    ACME                     November 2016
 
+
+   [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
+              (TLS) Protocol Version 1.2", RFC 5246,
+              DOI 10.17487/RFC5246, August 2008,
+              <http://www.rfc-editor.org/info/rfc5246>.
 
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key
@@ -3685,11 +3690,6 @@ Internet-Draft                    ACME                     November 2016
               PKCS, and CMS Structures", RFC 7468, DOI 10.17487/RFC7468,
               April 2015, <http://www.rfc-editor.org/info/rfc7468>.
 
-   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
-              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
-              2015, <http://www.rfc-editor.org/info/rfc7515>.
-
-
 
 
 
@@ -3697,6 +3697,10 @@ Barnes, et al.            Expires June 2, 2017                 [Page 66]
 
 Internet-Draft                    ACME                     November 2016
 
+
+   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
+              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
+              2015, <http://www.rfc-editor.org/info/rfc7515>.
 
    [RFC7517]  Jones, M., "JSON Web Key (JWK)", RFC 7517,
               DOI 10.17487/RFC7517, May 2015,
@@ -3741,10 +3745,6 @@ Internet-Draft                    ACME                     November 2016
               DOI 10.17487/RFC5785, April 2010,
               <http://www.rfc-editor.org/info/rfc5785>.
 
-   [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
-              Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
-              <http://www.rfc-editor.org/info/rfc6962>.
-
 
 
 
@@ -3753,6 +3753,10 @@ Barnes, et al.            Expires June 2, 2017                 [Page 67]
 
 Internet-Draft                    ACME                     November 2016
 
+
+   [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
+              Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
+              <http://www.rfc-editor.org/info/rfc6962>.
 
    [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
@@ -3781,10 +3785,6 @@ Authors' Addresses
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
 
 
 
