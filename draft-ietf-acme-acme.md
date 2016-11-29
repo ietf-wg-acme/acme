@@ -681,7 +681,7 @@ terms-of-service-agreed (optional, boolean):
 the client's agreement with the terms of service. This field is not updateable
 by the client.
 
-order (required, string):
+orders (required, string):
 : A URI from which a list of orders submitted by this account can be fetched via
 a GET request, as described in {{orders-list}}
 
@@ -1050,6 +1050,79 @@ Content-Language: en
   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
 }
 ~~~~~
+
+### External Account Binding
+
+The server MAY require a value to be present for the "external-account-binding"
+field.  This can be used to an ACME account with an existing account in a
+non-ACME system, such as a CA customer database.
+
+To enable ACME account binding, a CA needs to provision the ACME client with a
+MAC key and a key identifier.  The key identifier MUST be an ASCII string.  The
+MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility
+between provisioning systems and ACME clients.
+
+The ACME client then computes a binding JWS to indicate the external account's
+approval of the ACME account key.  The payload of this JWS is the account key
+being registered, in JWK form.  The protected header of the JWS MUST meet the
+following criteria:
+
+* The "alg" field MUST indicate a MAC-based algorithm
+* The "kid" field MUST contain the key identifier provided by the CA
+* The "nonce" field MUST NOT be present
+* The "url" field MUST be set to the same value as the outer JWS
+
+The "signature" field of the JWS will contain the MAC value computed with the
+MAC key provided by the CA.
+
+~~~~~
+POST /acme/new-reg HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": /* account key */,
+    "nonce": "K60BWPrMQG9SDxBDS_xtSw",
+    "url": "https://example.com/acme/new-acct"
+  }),
+  "payload": base64url({
+    "contact": ["mailto:example@anonymous.invalid"],
+    "terms-of-service-agreed": true,
+
+    "external-account-binding": {
+      "protected": base64url({
+        "alg": "HS256",
+        "kid": /* key identifier from CA */,
+        "url": "https://example.com/acme/new-acct"
+      }),
+      "payload": base64url(/* same as in "jwk" above */),
+      "signature": /* MAC using MAC key from CA */
+    }
+  }),
+  "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
+}
+~~~~~
+
+When a CA receives a new-registration request containing an
+"external-account-binding" field, it must decide whether or not to verify the
+binding.  If the CA does not verify the binding, then it MUST NOT reflect the
+"external-account-binding" field in the resulting account object (if any).  To
+verify the account binding, the CA MUST take the following steps:
+
+1. Verify that the value of the field is a well-formed JWS
+2. Verify that the JWS protected meets the above criteria
+3. Retrieve the MAC key corresponding to the key identifier in the "kid" field
+4. Verify that the MAC on the JWS verifies using that MAC key
+5. Verify that the payload of the JWS represents the same key as was used to
+   verify the outer JWS (i.e., the "jwk" field of the outer JWS)
+
+If all of these checks pass and the CA creates a new account, then the CA may
+consider the new account associated with the external account corresponding to
+the MAC key, and MUST reflect value of the "external-account-binding" field in
+the resulting account object.  If any of these checks fail, then the CA MUST
+reject the new-registration request.
 
 
 ### Account Key Roll-over
