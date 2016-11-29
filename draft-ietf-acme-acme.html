@@ -349,7 +349,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2016-11-27" />
+  <meta name="dct.issued" scheme="ISO8601" content="2016-11-29" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -373,7 +373,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: May 31, 2017</td>
+  <td class="left">Expires: June 2, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -386,7 +386,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">November 27, 2016</td>
+  <td class="right">November 29, 2016</td>
 </tr>
 
     	
@@ -408,7 +408,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on May 31, 2017.</p>
+<p>This Internet-Draft will expire on June 2, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -697,8 +697,8 @@ address {
       <td class="left">Identifier is not supported, but may be in future</td>
     </tr>
     <tr>
-      <td class="left">agreementRequired</td>
-      <td class="left">The client must agree to terms before proceeding</td>
+      <td class="left">userActionRequired</td>
+      <td class="left">The user visit the &#8220;instance&#8221; URL and take actions specified there</td>
     </tr>
   </tbody>
 </table>
@@ -1127,7 +1127,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.6.3.p.9">Servers SHOULD NOT respond to GET requests for registration resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is trivial ({}).</p>
 <h1 id="rfc.section.6.3.1"><a href="#rfc.section.6.3.1">6.3.1.</a> <a href="#changes-of-terms-of-service" id="changes-of-terms-of-service">Changes of Terms of Service</a></h1>
 <p id="rfc.section.6.3.1.p.1">As described above, a client can indicate its agreement with the CA&#8217;s terms of service by setting the &#8220;terms-of-service-agreed&#8221; field in its registration object to &#8220;true&#8221;.</p>
-<p id="rfc.section.6.3.1.p.2">If the server has changed its terms of service since a client initially agreed, and the server is unwilling to process a request without explicit agreement to the new terms, then it MUST return an error response with status code 403 (Forbidden) and type &#8220;urn:ietf:params:acme:error:agreementRequired&#8221;.  This response MUST include a Link header with link relation &#8220;terms-of-service&#8221; and the latest terms-of-service URL.</p>
+<p id="rfc.section.6.3.1.p.2">If the server has changed its terms of service since a client initially agreed, and the server is unwilling to process a request without explicit agreement to the new terms, then it MUST return an error response with status code 403 (Forbidden) and type &#8220;urn:ietf:params:acme:error:userActionRequired&#8221;.  This response MUST include a Link header with link relation &#8220;terms-of-service&#8221; and the latest terms-of-service URL.</p>
 <p id="rfc.section.6.3.1.p.3">The problem document returned with the error MUST also include an &#8220;instance&#8221; field, indicating a URL that the client should direct a human user to visit in order for instructions on how to agree to the terms.</p>
 <pre>
 HTTP/1.1 403 Forbidden
@@ -1136,7 +1136,7 @@ Content-Type: application/problem+json
 Content-Language: en
 
 {
-  "type": "urn:ietf:params:acme:error:agreementRequired"
+  "type": "urn:ietf:params:acme:error:userActionRequired"
   "detail": "Terms of service have changed"
   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
 }
