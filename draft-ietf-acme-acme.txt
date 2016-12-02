@@ -1167,8 +1167,8 @@ Internet-Draft                    ACME                     December 2016
    }
 
    The elements of the "authorizations" array are immutable once set.
-   If any change is made to the array after the object is created, the
-   client MUST consider the order invalid.
+   The server MUST NOT change the contents of the "authorizations" array
+   after it is created.  If a client observes a change in the contents
 
 
 
@@ -1177,6 +1177,9 @@ Barnes, et al.            Expires June 5, 2017                 [Page 21]
 
 Internet-Draft                    ACME                     December 2016
 
+
+   of the "authorizations" array, then it SHOULD consider the order
+   invalid.
 
    The "authorizations" array in the challenge SHOULD reflect all
    authorizations that the CA takes into account in deciding to issue,
@@ -1223,9 +1226,6 @@ Internet-Draft                    ACME                     December 2016
    challenges (required, array):  The challenges that the client can
       fulfill in order to prove possession of the identifier (for
       pending authorizations).  For final authorizations, the challenges
-      that were used.  Each array entry is a dictionary with parameters
-      required to validate the challenge, as specified in Section 7.  A
-      client should attempt to fulfill at most one of these challenges,
 
 
 
@@ -1234,6 +1234,9 @@ Barnes, et al.            Expires June 5, 2017                 [Page 22]
 Internet-Draft                    ACME                     December 2016
 
 
+      that were used.  Each array entry is a dictionary with parameters
+      required to validate the challenge, as specified in Section 7.  A
+      client should attempt to fulfill at most one of these challenges,
       and a server should consider any one of the challenges sufficient
       to make the authorization valid.
 
@@ -1278,9 +1281,6 @@ Internet-Draft                    ACME                     December 2016
    nonce resource on the server.  The server's response MUST include a
    Replay-Nonce header field containing a fresh nonce, and SHOULD have
    status code 200 (OK).  The server SHOULD also respond to GET requests
-   for this resource, returning an empty body (while still providing a
-   Replay-Nonce header).
-
 
 
 
@@ -1289,6 +1289,9 @@ Barnes, et al.            Expires June 5, 2017                 [Page 23]
 
 Internet-Draft                    ACME                     December 2016
 
+
+   for this resource, returning an empty body (while still providing a
+   Replay-Nonce header).
 
    HEAD /acme/new-nonce HTTP/1.1
    Host: example.com
@@ -1336,9 +1339,6 @@ Internet-Draft                    ACME                     December 2016
    the future, the specification of those fields MUST describe whether
    they may be provided by the client.
 
-   The server SHOULD validate that the contact URLs in the "contact"
-   field are valid and supported by the server.  If the client provides
-
 
 
 Barnes, et al.            Expires June 5, 2017                 [Page 24]
@@ -1346,6 +1346,8 @@ Barnes, et al.            Expires June 5, 2017                 [Page 24]
 Internet-Draft                    ACME                     December 2016
 
 
+   The server SHOULD validate that the contact URLs in the "contact"
+   field are valid and supported by the server.  If the client provides
    the server with an invalid or unsupported contact URL, then the
    server MUST return an error of type "invalidContact", with a
    description describing the error and what types of contact URL the
@@ -1392,8 +1394,6 @@ Internet-Draft                    ACME                     December 2016
    sends a POST request with updated information to the account URI.
    The server MUST ignore any updates to the "key", or "order" fields or
    any other fields it does not recognize.  The server MUST verify that
-   the request is signed with the private key corresponding to the "key"
-   field of the request before updating the registration.
 
 
 
@@ -1401,6 +1401,9 @@ Barnes, et al.            Expires June 5, 2017                 [Page 25]
 
 Internet-Draft                    ACME                     December 2016
 
+
+   the request is signed with the private key corresponding to the "key"
+   field of the request before updating the registration.
 
    For example, to update the contact information in the above account,
    the client could send the following request:
@@ -1446,10 +1449,7 @@ Internet-Draft                    ACME                     December 2016
    include a Link header with link relation "terms-of-service" and the
    latest terms-of-service URL.
 
-   The problem document returned with the error MUST also include an
-   "instance" field, indicating a URL that the client should direct a
-   human user to visit in order for instructions on how to agree to the
-   terms.
+
 
 
 
@@ -1457,6 +1457,11 @@ Barnes, et al.            Expires June 5, 2017                 [Page 26]
 
 Internet-Draft                    ACME                     December 2016
 
+
+   The problem document returned with the error MUST also include an
+   "instance" field, indicating a URL that the client should direct a
+   human user to visit in order for instructions on how to agree to the
+   terms.
 
    HTTP/1.1 403 Forbidden
    Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
@@ -1497,11 +1502,6 @@ Internet-Draft                    ACME                     December 2016
 
    The "signature" field of the JWS will contain the MAC value computed
    with the MAC key provided by the CA.
-
-
-
-
-
 
 
 

@@ -968,7 +968,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
   "certificate": "https://example.com/acme/cert/1234"
 }
 </pre>
-<p id="rfc.section.6.1.3.p.3">The elements of the &#8220;authorizations&#8221; array are immutable once set. If any change is made to the array after the object is created, the client MUST consider the order invalid.</p>
+<p id="rfc.section.6.1.3.p.3">The elements of the &#8220;authorizations&#8221; array are immutable once set.  The server MUST NOT change the contents of the &#8220;authorizations&#8221; array after it is created.  If a client observes a change in the contents of the &#8220;authorizations&#8221; array, then it SHOULD consider the order invalid.</p>
 <p id="rfc.section.6.1.3.p.4">The &#8220;authorizations&#8221; array in the challenge SHOULD reflect all authorizations that the CA takes into account in deciding to issue, even if some authorizations were fulfilled in earlier orders or in pre-authorization transactions.  For example, if a CA allows multiple orders to be fufilled based on a single authorization transaction, then it SHOULD reflect that authorization in all of the order.</p>
 <h1 id="rfc.section.6.1.4"><a href="#rfc.section.6.1.4">6.1.4.</a> <a href="#authorization-objects" id="authorization-objects">Authorization Objects</a></h1>
 <p id="rfc.section.6.1.4.p.1">An ACME authorization object represents a server&#8217;s authorization for an account to represent an identifier.  In addition to the identifier, an authorization includes several metadata fields, such as the status of the authorization (e.g., &#8220;pending&#8221;, &#8220;valid&#8221;, or &#8220;revoked&#8221;) and which challenges were used to validate possession of the identifier.</p>
