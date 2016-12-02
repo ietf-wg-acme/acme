@@ -322,13 +322,13 @@ authenticated.  Servers MUST NOT respond to GET requests for resources that
 might be considered sensitive.
 
 If the client sends a JWS signed with an algorithm that the server does not
-support, then the server MUST return an error of type
-:"urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem document
-returned with the error MSUT include an "algorithms" field with an array of
-supported "alg" values.
+support, then the server MUST return an error with status code 400 (Bad Request)
+and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
+document returned with the error MUST include an "algorithms" field with an
+array of supported "alg" values.
 
 ~~~~~
-HTTP/1.1 403 Forbidden
+HTTP/1.1 400 Bad Request
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
