@@ -702,7 +702,7 @@ terms-of-service-agreed (optional, boolean):
 the client's agreement with the terms of service. This field is not updateable
 by the client.
 
-order (required, string):
+orders (required, string):
 : A URI from which a list of orders submitted by this account can be fetched via
 a GET request, as described in {{orders-list}}
 
@@ -773,12 +773,12 @@ notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
 format defined in {{!RFC3339}}
 
-authorizations (required, array):
+authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
-before the requested certificate can be granted (see
-{{identifier-authorization}}).  For final orders, the authorizations that were
-completed.  Each entry is a dictionary with parameters describing the
-authorization:
+before the requested certificate can be issued (see
+{{identifier-authorization}}).  For final orders, the authorizations that
+were completed.  Each entry is a URL from which an authorization can be fetched
+with a GET request.
 
   status (required, string):
   : The status of the authorization.  This field MUST have the same value as it
@@ -800,23 +800,18 @@ certificate (optional, string):
   "notAfter": "2016-01-08T00:00:00Z",
 
   "authorizations": [
-    {
-      "status": "valid",
-      "url": "https://example.com/acme/authz/1234"
-    },
-    {
-      "status": "pending",
-      "url": "https://example.com/acme/authz/2345"
-    }
+    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/authz/2345"
   ]
 
   "certificate": "https://example.com/acme/cert/1234"
 }
 ~~~~~~~~~~
 
-The elements of the "authorizations" array are immutable once set, except for
-their "status" fields.  If any other part of the object changes after the object
-is created, the client MUST consider the order invalid.
+The elements of the "authorizations" array are immutable once set.  The server
+MUST NOT change the contents of the "authorizations" array after it is created.
+If a client observes a change in the contents of the "authorizations" array,
+then it SHOULD consider the order invalid.
 
 The "authorizations" array in the challenge SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
@@ -961,6 +956,11 @@ that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they may be provided by the
 client.
 
+In general, the server MUST ignore any fields in the request object that it does
+not recognize.  In particular, it MUST NOT reflect unrecognized fields in the
+resulting account object.  This allows clients to detect when servers do not
+support an extension field.
+
 The server SHOULD validate that the contact URLs in the "contact" field are
 valid and supported by the server.  If the client provides the server with an
 invalid or unsupported contact URL, then the server MUST return an error of type
@@ -1071,6 +1071,79 @@ Content-Language: en
   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
 }
 ~~~~~
+
+### External Account Binding
+
+The server MAY require a value to be present for the "external-account-binding"
+field.  This can be used to an ACME account with an existing account in a
+non-ACME system, such as a CA customer database.
+
+To enable ACME account binding, a CA needs to provision the ACME client with a
+MAC key and a key identifier.  The key identifier MUST be an ASCII string.  The
+MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility
+between provisioning systems and ACME clients.
+
+The ACME client then computes a binding JWS to indicate the external account's
+approval of the ACME account key.  The payload of this JWS is the account key
+being registered, in JWK form.  The protected header of the JWS MUST meet the
+following criteria:
+
+* The "alg" field MUST indicate a MAC-based algorithm
+* The "kid" field MUST contain the key identifier provided by the CA
+* The "nonce" field MUST NOT be present
+* The "url" field MUST be set to the same value as the outer JWS
+
+The "signature" field of the JWS will contain the MAC value computed with the
+MAC key provided by the CA.
+
+~~~~~
+POST /acme/new-reg HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "jwk": /* account key */,
+    "nonce": "K60BWPrMQG9SDxBDS_xtSw",
+    "url": "https://example.com/acme/new-acct"
+  }),
+  "payload": base64url({
+    "contact": ["mailto:example@anonymous.invalid"],
+    "terms-of-service-agreed": true,
+
+    "external-account-binding": {
+      "protected": base64url({
+        "alg": "HS256",
+        "kid": /* key identifier from CA */,
+        "url": "https://example.com/acme/new-acct"
+      }),
+      "payload": base64url(/* same as in "jwk" above */),
+      "signature": /* MAC using MAC key from CA */
+    }
+  }),
+  "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
+}
+~~~~~
+
+When a CA receives a new-registration request containing an
+"external-account-binding" field, it must decide whether or not to verify the
+binding.  If the CA does not verify the binding, then it MUST NOT reflect the
+"external-account-binding" field in the resulting account object (if any).  To
+verify the account binding, the CA MUST take the following steps:
+
+1. Verify that the value of the field is a well-formed JWS
+2. Verify that the JWS protected meets the above criteria
+3. Retrieve the MAC key corresponding to the key identifier in the "kid" field
+4. Verify that the MAC on the JWS verifies using that MAC key
+5. Verify that the payload of the JWS represents the same key as was used to
+   verify the outer JWS (i.e., the "jwk" field of the outer JWS)
+
+If all of these checks pass and the CA creates a new account, then the CA may
+consider the new account associated with the external account corresponding to
+the MAC key, and MUST reflect value of the "external-account-binding" field in
+the resulting account object.  If any of these checks fail, then the CA MUST
+reject the new-registration request.
 
 
 ### Account Key Roll-over
@@ -1263,26 +1336,21 @@ Location: https://example.com/acme/order/asdf
   "notAfter": "2016-01-08T00:00:00Z",
 
   "authorizations": [
-    {
-      "status": "valid",
-      "url": "https://example.com/acme/authz/1234"
-    },
-    {
-      "status": "pending",
-      "url": "https://example.com/acme/authz/2345"
-    }
+    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/authz/2345"
   ]
 }
 ~~~~~~~~~~
 
-The order object returned by the server represents a promise that if the client
-fulfills the server's requirements before the "expires" time, then the server
-will issue the requested certificate.  In the order object, any object in the
-"authorizations" array whose status is "pending" represents an authorization
-transaction that the client must complete before the server will issue the
-certificate (see {{identifier-authorization}}).  If the client fails to complete
-the required actions before the "expires" time, then the server SHOULD change
-the status of the order to "invalid" and MAY delete the order resource.
+The order object returned by the server represents a promise that if the
+client fulfills the server's requirements before the "expires" time, then the
+server will issue the requested certificate.  In the order object, any
+authorization referenced in the "authorizations" array whose status is "pending"
+represents an authorization transaction that the client must complete before the
+server will issue the certificate (see {{identifier-authorization}}).  If the
+client fails to complete the required actions before the "expires" time, then
+the server SHOULD change the status of the order to "invalid" and MAY
+delete the application resource.
 
 The server MUST issue the requested certificate and update the order resource
 with a URL for the certificate as soon as the client has fulfilled the server's
@@ -1291,7 +1359,7 @@ the time of this request (e.g., by obtaining authorization for all of the
 identifiers in the certificate in previous transactions), then the server MUST
 proactively issue the requested certificate and provide a URL for it in the
 "certificate" field of the order.  The server MUST, however, still list the
-completed authorizations in the "authorizations" array, with the state "valid".
+completed authorizations in the "authorizations" array.
 
 Once the client believes it has fulfilled the server's requirements, it should
 send a GET request to the order resource to obtain its current state.  The
@@ -1488,11 +1556,11 @@ URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
 
-When a client receives an order from the server with "pending" entry in the
-authorizations array, it downloads the authorization resource by sending a GET
-request to the indicated URL.  If the client initiates authorization using a
-request to the new authorization resource, it will have already recevied the
-pending authorization object in the response to that request.
+When a client receives an order from the server it downloads the authorization
+resource by sending a GET request to the indicated URL.  If the client 
+initiates authorization using a request to the new authorization resource, it
+will have already recevied the pending authorization object in the response
+to that request.
 
 ~~~~~~~~~~
 GET /acme/authz/1234 HTTP/1.1
