@@ -300,6 +300,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST be encoded using UTF-8
 * The JWS MUST NOT have the value "none" in its "alg" field
+* The JWS MUST NOT have a MAC-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
   * "jwk" (only for requests to new-reg and revoke-cert resources)
@@ -316,9 +317,28 @@ key, there MUST be a "jwk" field.
 For all other requests, there MUST be a "kid" field. This field must
 contain the account URI received by POSTing to the new-reg resource.
 
-Note that authentication via signed POST implies that GET requests
-are not authenticated.  Servers MUST NOT respond to GET requests for
-resources that might be considered sensitive.
+Note that authentication via signed POST implies that GET requests are not
+authenticated.  Servers MUST NOT respond to GET requests for resources that
+might be considered sensitive.
+
+If the client sends a JWS signed with an algorithm that the server does not
+support, then the server MUST return an error with status code 400 (Bad Request)
+and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
+document returned with the error MUST include an "algorithms" field with an
+array of supported "alg" values.
+
+~~~~~
+HTTP/1.1 400 Bad Request
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+Content-Type: application/problem+json
+Content-Language: en
+
+{
+  "type": "urn:ietf:params:acme:error:badSignatureAlgorithm",
+  "detail": "Algorithm 'ES384' is not supported",
+  "algorithms": ["RS256", "RS384", "ES256"]
+}
+~~~~~
 
 In the examples below, JWS objects are shown in the JSON or flattened JSON
 serialization, with the protected header and payload expressed as
@@ -470,17 +490,18 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 |:----------------------|:-------------------------------------------------------------------|
 | badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
 | badNonce              | The client sent an unacceptable anti-replay nonce                  |
+| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support   |
+| caa                   | CAA records forbid the CA from issuing                             |
 | connection            | The server could not connect to validation target                  |
 | dnssec                | DNSSEC validation failed                                           |
-| caa                   | CAA records forbid the CA from issuing                             |
+| invalidContact        | The contact URI for a registration was invalid                     |
 | malformed             | The request message was malformed                                  |
+| rateLimited           | The request exceeds a rate limit                                   |
+| rejectedIdentifier    | The server will not issue for the identifier                       |
 | serverInternal        | The server experienced an internal error                           |
 | tls                   | The server received a TLS error during validation                  |
 | unauthorized          | The client lacks sufficient authorization                          |
 | unknownHost           | The server could not resolve a domain name                         |
-| rateLimited           | The request exceeds a rate limit                                   |
-| invalidContact        | The contact URI for a registration was invalid                     |
-| rejectedIdentifier    | The server will not issue for the identifier                       |
 | unsupportedIdentifier | Identifier is not supported, but may be in future                  |
 | userActionRequired    | The user visit the "instance" URL and take actions specified there |
 
