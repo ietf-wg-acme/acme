@@ -1346,6 +1346,11 @@ Barnes, et al.            Expires June 5, 2017                 [Page 24]
 Internet-Draft                    ACME                     December 2016
 
 
+   In general, the server MUST ignore any fields in the request object
+   that it does not recognize.  In particular, it MUST NOT reflect
+   unrecognized fields in the resulting account object.  This allows
+   clients to detect when servers do not support an extension field.
+
    The server SHOULD validate that the contact URLs in the "contact"
    field are valid and supported by the server.  If the client provides
    the server with an invalid or unsupported contact URL, then the
@@ -1390,11 +1395,6 @@ Internet-Draft                    ACME                     December 2016
      ]
    }
 
-   If the client wishes to update this information in the future, it
-   sends a POST request with updated information to the account URI.
-   The server MUST ignore any updates to the "key", or "order" fields or
-   any other fields it does not recognize.  The server MUST verify that
-
 
 
 Barnes, et al.            Expires June 5, 2017                 [Page 25]
@@ -1402,6 +1402,10 @@ Barnes, et al.            Expires June 5, 2017                 [Page 25]
 Internet-Draft                    ACME                     December 2016
 
 
+   If the client wishes to update this information in the future, it
+   sends a POST request with updated information to the account URI.
+   The server MUST ignore any updates to the "key", or "order" fields or
+   any other fields it does not recognize.  The server MUST verify that
    the request is signed with the private key corresponding to the "key"
    field of the request before updating the registration.
 
@@ -1446,10 +1450,6 @@ Internet-Draft                    ACME                     December 2016
    without explicit agreement to the new terms, then it MUST return an
    error response with status code 403 (Forbidden) and type
    "urn:ietf:params:acme:error:userActionRequired".  This response MUST
-   include a Link header with link relation "terms-of-service" and the
-   latest terms-of-service URL.
-
-
 
 
 
@@ -1457,6 +1457,9 @@ Barnes, et al.            Expires June 5, 2017                 [Page 26]
 
 Internet-Draft                    ACME                     December 2016
 
+
+   include a Link header with link relation "terms-of-service" and the
+   latest terms-of-service URL.
 
    The problem document returned with the error MUST also include an
    "instance" field, indicating a URL that the client should direct a
@@ -1502,9 +1505,6 @@ Internet-Draft                    ACME                     December 2016
 
    The "signature" field of the JWS will contain the MAC value computed
    with the MAC key provided by the CA.
-
-
-
 
 
 
