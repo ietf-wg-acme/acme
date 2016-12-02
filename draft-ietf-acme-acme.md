@@ -787,9 +787,10 @@ certificate (optional, string):
 }
 ~~~~~~~~~~
 
-The elements of the "authorizations" array are immutable once set. If any change
-is made to the array after the object is created, the client MUST consider the
-order invalid.
+The elements of the "authorizations" array are immutable once set.  The server
+MUST NOT change the contents of the "authorizations" array after it is created.
+If a client observes a change in the contents of the "authorizations" array,
+then it SHOULD consider the order invalid.
 
 The "authorizations" array in the challenge SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
