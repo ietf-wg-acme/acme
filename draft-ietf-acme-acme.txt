@@ -3103,7 +3103,7 @@ Internet-Draft                    ACME                     December 2016
 
    Repository:  URL-TBD
 
-   Index value:  No transformation needed.  The
+   Index value:  No transformation needed.
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document, and replace URL-TBD with the URL assigned by IANA
@@ -3153,23 +3153,23 @@ Internet-Draft                    ACME                     December 2016
    Initial contents: The fields and descriptions defined in
    Section 6.1.2.
 
-   +-------------------------+--------------+--------------+-----------+
-   | Field Name              | Field Type   | Configurable | Reference |
-   +-------------------------+--------------+--------------+-----------+
-   | key                     | dictionary   | false        | RFC XXXX  |
-   |                         |              |              |           |
-   | status                  | string       | false        | RFC XXXX  |
-   |                         |              |              |           |
-   | contact                 | array of     | true         | RFC XXXX  |
-   |                         | string       |              |           |
-   |                         |              |              |           |
-   | external-account-token  | string       | true         | RFC XXXX  |
-   |                         |              |              |           |
-   | terms-of-service-agreed | boolean      | false        | RFC XXXX  |
-   |                         |              |              |           |
-   | orders                  | array of     | false        | RFC XXXX  |
-   |                         | string       |              |           |
-   +-------------------------+--------------+--------------+-----------+
+   +--------------------------+-------------+--------------+-----------+
+   | Field Name               | Field Type  | Configurable | Reference |
+   +--------------------------+-------------+--------------+-----------+
+   | key                      | dictionary  | false        | RFC XXXX  |
+   |                          |             |              |           |
+   | status                   | string      | false        | RFC XXXX  |
+   |                          |             |              |           |
+   | contact                  | array of    | true         | RFC XXXX  |
+   |                          | string      |              |           |
+   |                          |             |              |           |
+   | external-account-binding | dictionary  | true         | RFC XXXX  |
+   |                          |             |              |           |
+   | terms-of-service-agreed  | boolean     | false        | RFC XXXX  |
+   |                          |             |              |           |
+   | orders                   | array of    | false        | RFC XXXX  |
+   |                          | string      |              |           |
+   +--------------------------+-------------+--------------+-----------+
 
 8.6.2.  Fields in Order Objects
 
