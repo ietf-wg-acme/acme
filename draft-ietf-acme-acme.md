@@ -780,13 +780,6 @@ before the requested certificate can be issued (see
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
-  status (required, string):
-  : The status of the authorization.  This field MUST have the same value as it
-  does in the underlying authorization object.
-
-  url (required, string):
-  : A URL from which the authorization can be fetched with a GET request.
-
 certificate (optional, string):
 : A URL for the certificate that has been issued in response to this order.
 
