@@ -101,11 +101,11 @@ Table of Contents
        6.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  20
        6.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  21
        6.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  23
-     6.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  25
-     6.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  26
-       6.3.1.  Changes of Terms of Service . . . . . . . . . . . . .  28
-       6.3.2.  External Account Binding  . . . . . . . . . . . . . .  29
-       6.3.3.  Account Key Roll-over . . . . . . . . . . . . . . . .  31
+     6.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  24
+     6.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  25
+       6.3.1.  Changes of Terms of Service . . . . . . . . . . . . .  27
+       6.3.2.  External Account Binding  . . . . . . . . . . . . . .  28
+       6.3.3.  Account Key Roll-over . . . . . . . . . . . . . . . .  30
 
 
 
@@ -114,48 +114,48 @@ Barnes, et al.            Expires June 7, 2017                  [Page 2]
 Internet-Draft                    ACME                     December 2016
 
 
-       6.3.4.  Account deactivation  . . . . . . . . . . . . . . . .  33
-     6.4.  Applying for Certificate Issuance . . . . . . . . . . . .  34
-       6.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  36
-       6.4.2.  Downloading the Certificate . . . . . . . . . . . . .  38
-     6.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  40
-       6.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  41
-       6.5.2.  Deactivating an Authorization . . . . . . . . . . . .  43
-     6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  44
-   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  46
-     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  48
-     7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  48
-     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  50
-     7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  52
-     7.5.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  54
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  54
-     8.1.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  55
-     8.2.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  55
-     8.3.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  55
-     8.4.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  55
-     8.5.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  56
-     8.6.  New Registries  . . . . . . . . . . . . . . . . . . . . .  56
-       8.6.1.  Fields in Account Objects . . . . . . . . . . . . . .  56
-       8.6.2.  Fields in Order Objects . . . . . . . . . . . . . . .  57
-       8.6.3.  Error Codes . . . . . . . . . . . . . . . . . . . . .  58
-       8.6.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  58
-       8.6.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  59
-       8.6.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  60
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  60
-     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  61
-     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  62
-     9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  64
-     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  65
-     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  65
-   10. Operational Considerations  . . . . . . . . . . . . . . . . .  66
-     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  66
-     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  66
-     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  67
-   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  67
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  68
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  68
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  70
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  71
+       6.3.4.  Account deactivation  . . . . . . . . . . . . . . . .  32
+     6.4.  Applying for Certificate Issuance . . . . . . . . . . . .  33
+       6.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  35
+       6.4.2.  Downloading the Certificate . . . . . . . . . . . . .  37
+     6.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  39
+       6.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  40
+       6.5.2.  Deactivating an Authorization . . . . . . . . . . . .  42
+     6.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  43
+   7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  45
+     7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  47
+     7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  47
+     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  49
+     7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  51
+     7.5.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  53
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  53
+     8.1.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  54
+     8.2.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  54
+     8.3.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  54
+     8.4.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  54
+     8.5.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  55
+     8.6.  New Registries  . . . . . . . . . . . . . . . . . . . . .  55
+       8.6.1.  Fields in Account Objects . . . . . . . . . . . . . .  55
+       8.6.2.  Fields in Order Objects . . . . . . . . . . . . . . .  56
+       8.6.3.  Error Codes . . . . . . . . . . . . . . . . . . . . .  57
+       8.6.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  57
+       8.6.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  58
+       8.6.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  59
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  59
+     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  60
+     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  61
+     9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  63
+     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  64
+     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  64
+   10. Operational Considerations  . . . . . . . . . . . . . . . . .  65
+     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  65
+     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  65
+     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  66
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  66
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  67
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  67
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  69
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  70
 
 1.  Introduction
 
@@ -1204,35 +1204,8 @@ Internet-Draft                    ACME                     December 2016
       orders, the authorizations that were completed.  Each entry is a
       URL from which an authorization can be fetched with a GET request.
 
-      status (required, string):  The status of the authorization.  This
-         field MUST have the same value as it does in the underlying
-         authorization object.
-
-      url (required, string):  A URL from which the authorization can be
-         fetched with a GET request.
-
    certificate (optional, string):  A URL for the certificate that has
       been issued in response to this order.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 7, 2017                 [Page 22]
-
-Internet-Draft                    ACME                     December 2016
-
 
    {
      "status": "pending",
@@ -1253,6 +1226,14 @@ Internet-Draft                    ACME                     December 2016
    The elements of the "authorizations" array are immutable once set.
    The server MUST NOT change the contents of the "authorizations" array
    after it is created.  If a client observes a change in the contents
+
+
+
+Barnes, et al.            Expires June 7, 2017                 [Page 22]
+
+Internet-Draft                    ACME                     December 2016
+
+
    of the "authorizations" array, then it SHOULD consider the order
    invalid.
 
@@ -1281,15 +1262,6 @@ Internet-Draft                    ACME                     December 2016
 
       value (required, string):  The identifier itself.
 
-
-
-
-
-Barnes, et al.            Expires June 7, 2017                 [Page 23]
-
-Internet-Draft                    ACME                     December 2016
-
-
    status (required, string):  The status of this authorization.
       Possible values are: "pending", "processing", "valid", "invalid"
       and "revoked".  If this field is missing, then the default value
@@ -1310,6 +1282,14 @@ Internet-Draft                    ACME                     December 2016
    challenges (required, array):  The challenges that the client can
       fulfill in order to prove possession of the identifier (for
       pending authorizations).  For final authorizations, the challenges
+
+
+
+Barnes, et al.            Expires June 7, 2017                 [Page 23]
+
+Internet-Draft                    ACME                     December 2016
+
+
       that were used.  Each array entry is a dictionary with parameters
       required to validate the challenge, as specified in Section 7.  A
       client should attempt to fulfill at most one of these challenges,
@@ -1324,27 +1304,6 @@ Internet-Draft                    ACME                     December 2016
    begin with the ASCII Compatible Encoding prefix "xn-" as defined in
    [RFC5890] are properly encoded.  Wildcard domain names (with "*" as
    the first label) MUST NOT be included in authorization requests.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 7, 2017                 [Page 24]
-
-Internet-Draft                    ACME                     December 2016
-
 
    {
      "status": "valid",
@@ -1378,6 +1337,15 @@ Internet-Draft                    ACME                     December 2016
    nonce resource on the server.  The server's response MUST include a
    Replay-Nonce header field containing a fresh nonce, and SHOULD have
    status code 204 (No Content).  The server SHOULD also respond to GET
+
+
+
+
+Barnes, et al.            Expires June 7, 2017                 [Page 24]
+
+Internet-Draft                    ACME                     December 2016
+
+
    requests for this resource, returning an empty body (while still
    providing a Replay-Nonce header).
 
@@ -1393,14 +1361,6 @@ Internet-Draft                    ACME                     December 2016
    include a Cache-Control header field with the "no-store" directive in
    responses for the new-nonce resource, in order to prevent caching of
    this resource.
-
-
-
-
-Barnes, et al.            Expires June 7, 2017                 [Page 25]
-
-Internet-Draft                    ACME                     December 2016
-
 
 6.3.  Account Creation
 
@@ -1435,6 +1395,13 @@ Internet-Draft                    ACME                     December 2016
    the future, the specification of those fields MUST describe whether
    they may be provided by the client.
 
+
+
+Barnes, et al.            Expires June 7, 2017                 [Page 25]
+
+Internet-Draft                    ACME                     December 2016
+
+
    In general, the server MUST ignore any fields in the request object
    that it does not recognize.  In particular, it MUST NOT reflect
    unrecognized fields in the resulting account object.  This allows
@@ -1450,14 +1417,6 @@ Internet-Draft                    ACME                     December 2016
    The server creates an account object with the included contact
    information.  The "key" element of the account is set to the public
    key used to verify the JWS (i.e., the "jwk" element of the JWS
-
-
-
-Barnes, et al.            Expires June 7, 2017                 [Page 26]
-
-Internet-Draft                    ACME                     December 2016
-
-
    header).  The server returns this account object in a 201 (Created)
    response, with the account URI in a Location header field.
 
@@ -1492,6 +1451,13 @@ Internet-Draft                    ACME                     December 2016
      ]
    }
 
+
+
+Barnes, et al.            Expires June 7, 2017                 [Page 26]
+
+Internet-Draft                    ACME                     December 2016
+
+
    If the client wishes to update this information in the future, it
    sends a POST request with updated information to the account URI.
    The server MUST ignore any updates to the "key", or "order" fields or
@@ -1501,18 +1467,6 @@ Internet-Draft                    ACME                     December 2016
 
    For example, to update the contact information in the above account,
    the client could send the following request:
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 7, 2017                 [Page 27]
-
-Internet-Draft                    ACME                     December 2016
-
 
    POST /acme/acct/asdf HTTP/1.1
    Host: example.com
@@ -1552,6 +1506,14 @@ Internet-Draft                    ACME                     December 2016
    without explicit agreement to the new terms, then it MUST return an
    error response with status code 403 (Forbidden) and type
    "urn:ietf:params:acme:error:userActionRequired".  This response MUST
+
+
+
+Barnes, et al.            Expires June 7, 2017                 [Page 27]
+
+Internet-Draft                    ACME                     December 2016
+
+
    include a Link header with link relation "terms-of-service" and the
    latest terms-of-service URL.
 
@@ -1559,16 +1521,6 @@ Internet-Draft                    ACME                     December 2016
    "instance" field, indicating a URL that the client should direct a
    human user to visit in order for instructions on how to agree to the
    terms.
-
-
-
-
-
-
-Barnes, et al.            Expires June 7, 2017                 [Page 28]
-
-Internet-Draft                    ACME                     December 2016
-
 
    HTTP/1.1 403 Forbidden
    Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
@@ -1613,15 +1565,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 7, 2017                 [Page 29]
+Barnes, et al.            Expires June 7, 2017                 [Page 28]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -1677,7 +1621,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 30]
+Barnes, et al.            Expires June 7, 2017                 [Page 29]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -1733,7 +1677,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 31]
+Barnes, et al.            Expires June 7, 2017                 [Page 30]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -1789,7 +1733,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 32]
+Barnes, et al.            Expires June 7, 2017                 [Page 31]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -1845,7 +1789,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 33]
+Barnes, et al.            Expires June 7, 2017                 [Page 32]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -1901,7 +1845,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 34]
+Barnes, et al.            Expires June 7, 2017                 [Page 33]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -1957,7 +1901,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 35]
+Barnes, et al.            Expires June 7, 2017                 [Page 34]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2013,7 +1957,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 36]
+Barnes, et al.            Expires June 7, 2017                 [Page 35]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2069,7 +2013,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 37]
+Barnes, et al.            Expires June 7, 2017                 [Page 36]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2125,7 +2069,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 38]
+Barnes, et al.            Expires June 7, 2017                 [Page 37]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2181,7 +2125,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 39]
+Barnes, et al.            Expires June 7, 2017                 [Page 38]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2237,7 +2181,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 40]
+Barnes, et al.            Expires June 7, 2017                 [Page 39]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2293,7 +2237,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 41]
+Barnes, et al.            Expires June 7, 2017                 [Page 40]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2349,7 +2293,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 42]
+Barnes, et al.            Expires June 7, 2017                 [Page 41]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2405,7 +2349,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 43]
+Barnes, et al.            Expires June 7, 2017                 [Page 42]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2461,7 +2405,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 44]
+Barnes, et al.            Expires June 7, 2017                 [Page 43]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2517,7 +2461,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 45]
+Barnes, et al.            Expires June 7, 2017                 [Page 44]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2573,7 +2517,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 46]
+Barnes, et al.            Expires June 7, 2017                 [Page 45]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2629,7 +2573,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 47]
+Barnes, et al.            Expires June 7, 2017                 [Page 46]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2685,7 +2629,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 48]
+Barnes, et al.            Expires June 7, 2017                 [Page 47]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2741,7 +2685,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 49]
+Barnes, et al.            Expires June 7, 2017                 [Page 48]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2797,7 +2741,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 50]
+Barnes, et al.            Expires June 7, 2017                 [Page 49]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2853,7 +2797,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 51]
+Barnes, et al.            Expires June 7, 2017                 [Page 50]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2909,7 +2853,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 52]
+Barnes, et al.            Expires June 7, 2017                 [Page 51]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -2965,7 +2909,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 53]
+Barnes, et al.            Expires June 7, 2017                 [Page 52]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3021,7 +2965,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 54]
+Barnes, et al.            Expires June 7, 2017                 [Page 53]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3077,7 +3021,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 55]
+Barnes, et al.            Expires June 7, 2017                 [Page 54]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3133,7 +3077,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 56]
+Barnes, et al.            Expires June 7, 2017                 [Page 55]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3189,7 +3133,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 57]
+Barnes, et al.            Expires June 7, 2017                 [Page 56]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3245,7 +3189,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 58]
+Barnes, et al.            Expires June 7, 2017                 [Page 57]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3301,7 +3245,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 59]
+Barnes, et al.            Expires June 7, 2017                 [Page 58]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3357,7 +3301,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 60]
+Barnes, et al.            Expires June 7, 2017                 [Page 59]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3413,7 +3357,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 61]
+Barnes, et al.            Expires June 7, 2017                 [Page 60]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3469,7 +3413,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 62]
+Barnes, et al.            Expires June 7, 2017                 [Page 61]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3525,7 +3469,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 63]
+Barnes, et al.            Expires June 7, 2017                 [Page 62]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3581,7 +3525,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 64]
+Barnes, et al.            Expires June 7, 2017                 [Page 63]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3637,7 +3581,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 65]
+Barnes, et al.            Expires June 7, 2017                 [Page 64]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3693,7 +3637,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 66]
+Barnes, et al.            Expires June 7, 2017                 [Page 65]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3749,7 +3693,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 67]
+Barnes, et al.            Expires June 7, 2017                 [Page 66]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3805,7 +3749,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 68]
+Barnes, et al.            Expires June 7, 2017                 [Page 67]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3861,7 +3805,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 69]
+Barnes, et al.            Expires June 7, 2017                 [Page 68]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3917,7 +3861,7 @@ Internet-Draft                    ACME                     December 2016
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 70]
+Barnes, et al.            Expires June 7, 2017                 [Page 69]
 
 Internet-Draft                    ACME                     December 2016
 
@@ -3973,4 +3917,4 @@ Authors' Addresses
 
 
 
-Barnes, et al.            Expires June 7, 2017                 [Page 71]
+Barnes, et al.            Expires June 7, 2017                 [Page 70]

@@ -965,7 +965,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
   <dt>notAfter (optional, string):</dt>
   <dd style="margin-left: 8">The requested value of the notAfter field in the certificate, in the date format defined in <a href="#RFC3339">[RFC3339]</a></dd>
   <dt>authorizations (required, array of string):</dt>
-  <dd style="margin-left: 8">For pending orders, the authorizations that the client needs to complete before the requested certificate can be issued (see <a href="#identifier-authorization">Section 6.5</a>).  For final orders, the authorizations that were completed.  Each entry is a URL from which an authorization can be fetched with a GET request.  <dl><dt>status (required, string):</dt><dd style="margin-left: 8">The status of the authorization.  This field MUST have the same value as it does in the underlying authorization object.</dd><dt>url (required, string):</dt><dd style="margin-left: 8">A URL from which the authorization can be fetched with a GET request.</dd></dl><p> </p></dd>
+  <dd style="margin-left: 8">For pending orders, the authorizations that the client needs to complete before the requested certificate can be issued (see <a href="#identifier-authorization">Section 6.5</a>).  For final orders, the authorizations that were completed.  Each entry is a URL from which an authorization can be fetched with a GET request.</dd>
   <dt>certificate (optional, string):</dt>
   <dd style="margin-left: 8">A URL for the certificate that has been issued in response to this order.</dd>
 </dl>
