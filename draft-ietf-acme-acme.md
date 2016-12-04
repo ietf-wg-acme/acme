@@ -2255,8 +2255,8 @@ Specification:
 Repository:
 : URL-TBD
 
-Index value: 
-: No transformation needed.  The 
+Index value:
+: No transformation needed.
 
 [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document, and replace URL-TBD with the URL assigned by IANA for registries of
@@ -2291,14 +2291,14 @@ Template:
 
 Initial contents: The fields and descriptions defined in {{account-objects}}.
 
-| Field Name              | Field Type      | Configurable | Reference |
-|:------------------------|:----------------|:-------------|:----------|
-| key                     | dictionary      | false        | RFC XXXX  |
-| status                  | string          | false        | RFC XXXX  |
-| contact                 | array of string | true         | RFC XXXX  |
-| external-account-token  | string          | true         | RFC XXXX  |
-| terms-of-service-agreed | boolean         | false        | RFC XXXX  |
-| orders                  | array of string | false        | RFC XXXX  |
+| Field Name               | Field Type      | Configurable | Reference |
+|:-------------------------|:----------------|:-------------|:----------|
+| key                      | dictionary      | false        | RFC XXXX  |
+| status                   | string          | false        | RFC XXXX  |
+| contact                  | array of string | true         | RFC XXXX  |
+| external-account-binding | dictionary      | true         | RFC XXXX  |
+| terms-of-service-agreed  | boolean         | false        | RFC XXXX  |
+| orders                   | array of string | false        | RFC XXXX  |
 
 ### Fields in Order Objects
 
