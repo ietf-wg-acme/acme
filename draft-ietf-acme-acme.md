@@ -646,7 +646,7 @@ The following metadata items are defined, all of which are OPTIONAL:
 "terms-of-service" (optional, string):
 : A URI identifying the current terms of service.
 
-"website" (optional, string)):
+"website" (optional, string):
 : An HTTP or HTTPS URL locating a website providing more
 information about the ACME server.
 
