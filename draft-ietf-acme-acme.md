@@ -2297,7 +2297,7 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 This registry lists field names that are defined for use in ACME order
 objects.  Fields marked as "client configurable" may be included in a
-new-account request.
+new-order request.
 
 Template:
 
