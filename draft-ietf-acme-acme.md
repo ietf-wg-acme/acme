@@ -1188,6 +1188,7 @@ Content-Type: application/jose+json
     "protected": base64url({
       "alg": "ES256",
       "jwk": /* new key */,
+      "url": "https://example.com/acme/key-change"
     }),
     "payload": base64url({
       "account": "https://example.com/acme/acct/asdf",
