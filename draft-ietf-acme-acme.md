@@ -2317,7 +2317,7 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | csr            | string              | true         | RFC XXXX  |
 | notBefore      | string              | true         | RFC XXXX  |
 | notAfter       | string              | true         | RFC XXXX  |
-| authorizations | array of dictionary | false        | RFC XXXX  |
+| authorizations | array of string     | false        | RFC XXXX  |
 | certificate    | string              | false        | RFC XXXX  |
 
 ### Error Codes
