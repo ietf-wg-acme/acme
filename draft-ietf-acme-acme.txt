@@ -1696,7 +1696,8 @@ Internet-Draft                    ACME                      January 2017
      "payload": base64url({
        "protected": base64url({
          "alg": "ES256",
-         "jwk": /* new key */
+         "jwk": /* new key */,
+         "url": "https://example.com/acme/key-change"
        }),
        "payload": base64url({
          "account": "https://example.com/acme/acct/asdf",
@@ -1728,8 +1729,7 @@ Internet-Draft                    ACME                      January 2017
    6.  Check that the "url" parameters of the inner and outer JWSs are
        the same
 
-   7.  Check that the "account" field of the key-change object contains
-       the URL for the account matching the old key
+
 
 
 
@@ -1737,6 +1737,9 @@ Barnes, et al.            Expires July 22, 2017                [Page 31]
 
 Internet-Draft                    ACME                      January 2017
 
+
+   7.  Check that the "account" field of the key-change object contains
+       the URL for the account matching the old key
 
    8.  Check that the "newKey" field of the key-change object contains
        the key used to sign the inner JWS.
@@ -1781,9 +1784,6 @@ Internet-Draft                    ACME                      January 2017
    certificates issued by that account, and whether to send email to
    that account's contacts.  ACME does not provide a way to reactivate a
    deactivated account.
-
-
-
 
 
 
