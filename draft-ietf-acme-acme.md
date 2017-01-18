@@ -646,7 +646,7 @@ The following metadata items are defined, all of which are OPTIONAL:
 "terms-of-service" (optional, string):
 : A URI identifying the current terms of service.
 
-"website" (optional, string)):
+"website" (optional, string):
 : An HTTP or HTTPS URL locating a website providing more
 information about the ACME server.
 
@@ -2317,7 +2317,7 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | csr            | string              | true         | RFC XXXX  |
 | notBefore      | string              | true         | RFC XXXX  |
 | notAfter       | string              | true         | RFC XXXX  |
-| authorizations | array of dictionary | false        | RFC XXXX  |
+| authorizations | array of string     | false        | RFC XXXX  |
 | certificate    | string              | false        | RFC XXXX  |
 
 ### Error Codes
