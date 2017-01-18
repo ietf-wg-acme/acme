@@ -1378,7 +1378,7 @@ Internet-Draft                    ACME                      January 2017
        "jwk": {...},
        "nonce": "6S8IqOGY7eL2lsGoTZYifg",
        "url": "https://example.com/acme/new-acct"
-     })
+     }),
      "payload": base64url({
        "terms-of-service-agreed": true,
        "contact": [
@@ -1478,7 +1478,7 @@ Internet-Draft                    ACME                      January 2017
        "kid": "https://example.com/acme/acct/asdf",
        "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
        "url": "https://example.com/acme/acct/asdf"
-     })
+     }),
      "payload": base64url({
        "contact": [
          "mailto:certificates@example.com",
@@ -1528,8 +1528,8 @@ Internet-Draft                    ACME                      January 2017
    Content-Language: en
 
    {
-     "type": "urn:ietf:params:acme:error:userActionRequired"
-     "detail": "Terms of service have changed"
+     "type": "urn:ietf:params:acme:error:userActionRequired",
+     "detail": "Terms of service have changed",
      "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
    }
 
@@ -1696,12 +1696,12 @@ Internet-Draft                    ACME                      January 2017
      "payload": base64url({
        "protected": base64url({
          "alg": "ES256",
-         "jwk": /* new key */,
+         "jwk": /* new key */
        }),
        "payload": base64url({
          "account": "https://example.com/acme/acct/asdf",
          "newKey": /* new key */
-       })
+       }),
        "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
      }),
      "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
@@ -1763,7 +1763,7 @@ Internet-Draft                    ACME                      January 2017
        "kid": "https://example.com/acme/acct/asdf",
        "nonce": "ntuJWWSic4WVNSqeUmshgg",
        "url": "https://example.com/acme/acct/asdf"
-     })
+     }),
      "payload": base64url({
        "status": "deactivated"
      }),
@@ -1825,7 +1825,7 @@ Internet-Draft                    ACME                      January 2017
        "kid": "https://example.com/acme/acct/asdf",
        "nonce": "5XJ1L3lEkMG7tR6pA00clA",
        "url": "https://example.com/acme/new-order"
-     })
+     }),
      "payload": base64url({
        "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
        "notBefore": "2016-01-01T00:00:00Z",
@@ -1985,7 +1985,7 @@ Internet-Draft                    ACME                      January 2017
        "jwk": {...},
        "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
        "url": "https://example.com/acme/new-authz"
-     })
+     }),
      "payload": base64url({
        "identifier": {
          "type": "dns",
@@ -2212,7 +2212,7 @@ Internet-Draft                    ACME                      January 2017
          "url": "https://example.com/authz/asdf/1",
          "token": "DGyRejmCefe7v4NfDGDKfA"
        }
-     ],
+     ]
    }
 
 6.5.1.  Responding to Challenges
@@ -2252,7 +2252,7 @@ Internet-Draft                    ACME                      January 2017
        "kid": "https://example.com/acme/acct/asdf",
        "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
        "url": "https://example.com/acme/authz/asdf/0"
-     })
+     }),
      "payload": base64url({
        "type": "http-01",
        "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
@@ -2364,7 +2364,7 @@ Internet-Draft                    ACME                      January 2017
        "kid": "https://example.com/acme/acct/asdf",
        "nonce": "xWCM9lGbIyCgue8di6ueWQ",
        "url": "https://example.com/acme/authz/asdf"
-     })
+     }),
      "payload": base64url({
        "status": "deactivated"
      }),
@@ -2420,7 +2420,7 @@ Internet-Draft                    ACME                      January 2017
        "kid": "https://example.com/acme/acct/asdf", // OR "jwk"
        "nonce": "JHb54aT_KTXBWQOzGYkt9A",
        "url": "https://example.com/acme/revoke-cert"
-     })
+     }),
      "payload": base64url({
        "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
        "reason": 1
@@ -2478,8 +2478,8 @@ Internet-Draft                    ACME                      January 2017
    Content-Language: en
 
    {
-     "type": "urn:ietf:params:acme:error:unauthorized"
-     "detail": "No authorization provided for name example.net"
+     "type": "urn:ietf:params:acme:error:unauthorized",
+     "detail": "No authorization provided for name example.net",
      "instance": "http://example.com/doc/unauthorized"
    }
 
