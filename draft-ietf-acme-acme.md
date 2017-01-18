@@ -795,7 +795,7 @@ certificate (optional, string):
   "authorizations": [
     "https://example.com/acme/authz/1234",
     "https://example.com/acme/authz/2345"
-  ]
+  ],
 
   "certificate": "https://example.com/acme/cert/1234"
 }
