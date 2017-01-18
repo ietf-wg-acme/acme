@@ -646,7 +646,7 @@ The following metadata items are defined, all of which are OPTIONAL:
 "terms-of-service" (optional, string):
 : A URI identifying the current terms of service.
 
-"website" (optional, string)):
+"website" (optional, string):
 : An HTTP or HTTPS URL locating a website providing more
 information about the ACME server.
 
@@ -795,7 +795,7 @@ certificate (optional, string):
   "authorizations": [
     "https://example.com/acme/authz/1234",
     "https://example.com/acme/authz/2345"
-  ]
+  ],
 
   "certificate": "https://example.com/acme/cert/1234"
 }
@@ -931,7 +931,7 @@ Content-Type: application/jose+json
     "jwk": {...},
     "nonce": "6S8IqOGY7eL2lsGoTZYifg",
     "url": "https://example.com/acme/new-acct"
-  })
+  }),
   "payload": base64url({
     "terms-of-service-agreed": true,
     "contact": [
@@ -1018,7 +1018,7 @@ Content-Type: application/jose+json
     "kid": "https://example.com/acme/acct/asdf",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
     "url": "https://example.com/acme/acct/asdf"
-  })
+  }),
   "payload": base64url({
     "contact": [
       "mailto:certificates@example.com",
@@ -1059,8 +1059,8 @@ Content-Type: application/problem+json
 Content-Language: en
 
 {
-  "type": "urn:ietf:params:acme:error:userActionRequired"
-  "detail": "Terms of service have changed"
+  "type": "urn:ietf:params:acme:error:userActionRequired",
+  "detail": "Terms of service have changed",
   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
 }
 ~~~~~
@@ -1193,7 +1193,7 @@ Content-Type: application/jose+json
     "payload": base64url({
       "account": "https://example.com/acme/acct/asdf",
       "newKey": /* new key */
-    })
+    }),
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
   }),
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
@@ -1239,7 +1239,7 @@ Content-Type: application/jose+json
     "kid": "https://example.com/acme/acct/asdf",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
     "url": "https://example.com/acme/acct/asdf"
-  })
+  }),
   "payload": base64url({
     "status": "deactivated"
   }),
@@ -1291,7 +1291,7 @@ Content-Type: application/jose+json
     "kid": "https://example.com/acme/acct/asdf",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-order"
-  })
+  }),
   "payload": base64url({
     "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
     "notBefore": "2016-01-01T00:00:00Z",
@@ -1422,7 +1422,7 @@ Content-Type: application/jose+json
     "jwk": {...},
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
     "url": "https://example.com/acme/new-authz"
-  })
+  }),
   "payload": base64url({
     "identifier": {
       "type": "dns",
@@ -1583,7 +1583,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
       "url": "https://example.com/authz/asdf/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
-  ],
+  ]
 }
 ~~~~~~~~~~
 
@@ -1615,7 +1615,7 @@ Content-Type: application/jose+json
     "kid": "https://example.com/acme/acct/asdf",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
-  })
+  }),
   "payload": base64url({
     "type": "http-01",
     "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
@@ -1701,7 +1701,7 @@ Content-Type: application/jose+json
     "kid": "https://example.com/acme/acct/asdf",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
-  })
+  }),
   "payload": base64url({
     "status": "deactivated"
   }),
@@ -1746,7 +1746,7 @@ Content-Type: application/jose+json
     "kid": "https://example.com/acme/acct/asdf", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
-  })
+  }),
   "payload": base64url({
     "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
     "reason": 1
@@ -1782,8 +1782,8 @@ Content-Type: application/problem+json
 Content-Language: en
 
 {
-  "type": "urn:ietf:params:acme:error:unauthorized"
-  "detail": "No authorization provided for name example.net"
+  "type": "urn:ietf:params:acme:error:unauthorized",
+  "detail": "No authorization provided for name example.net",
   "instance": "http://example.com/doc/unauthorized"
 }
 ~~~~~~~~~~
@@ -2298,7 +2298,7 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 This registry lists field names that are defined for use in ACME order
 objects.  Fields marked as "client configurable" may be included in a
-new-account request.
+new-order request.
 
 Template:
 
@@ -2318,7 +2318,7 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | csr            | string              | true         | RFC XXXX  |
 | notBefore      | string              | true         | RFC XXXX  |
 | notAfter       | string              | true         | RFC XXXX  |
-| authorizations | array of dictionary | false        | RFC XXXX  |
+| authorizations | array of string     | false        | RFC XXXX  |
 | certificate    | string              | false        | RFC XXXX  |
 
 ### Error Codes
