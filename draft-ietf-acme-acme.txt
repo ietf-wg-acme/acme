@@ -3119,7 +3119,7 @@ Internet-Draft                    ACME                      January 2017
 
    This registry lists field names that are defined for use in ACME
    order objects.  Fields marked as "client configurable" may be
-   included in a new-account request.
+   included in a new-order request.
 
    Template:
 
