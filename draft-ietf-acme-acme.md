@@ -224,9 +224,8 @@ and make it available to the client.
                                     <-------             Certificate
 ~~~~~~~~~~
 
-To revoke a certificate, the client sends a revocation request indicating
-the certificate to be revoked, signed with the account's private key, or with
-the private key corresponding to the public key in the certificate.
+To revoke a certificate, the client sends a signed revocation request indicating
+the certificate to be revoked:
 
 ~~~~~~~~~~
       Client                                                 Server
