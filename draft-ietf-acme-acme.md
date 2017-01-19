@@ -1490,14 +1490,6 @@ own heuristics to decide which is optimal.
 The server MUST also provide a link relation header field with relation "author"
 to indicate the order under which this certificate was issued.
 
-If the CA participates in Certificate Transparency (CT) {{?RFC6962}}, then they
-may want to provide the client with a Signed Certificate Timestamp (SCT) that
-can be used to prove that a certificate was submitted to a CT log.  An SCT can
-be included as an extension in the certificate or as an extension to OCSP
-responses for the certificate.  The server can also provide the client with
-direct access to an SCT for a certificate using a Link relation header field
-with relation "ct-sct".
-
 ~~~~~~~~~~
 GET /acme/cert/asdf HTTP/1.1
 Host: example.com
