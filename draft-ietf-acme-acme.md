@@ -1500,7 +1500,6 @@ Content-Type: application/pkix-cert
 Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
 Link: <https://example.com/acme/revoke-cert>;rel="revoke"
 Link: <https://example.com/acme/order/asdf>;rel="author"
-Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 -----BEGIN CERTIFICATE-----
