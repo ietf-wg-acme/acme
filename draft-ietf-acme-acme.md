@@ -1583,7 +1583,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
       "type": "tls-sni-02",
       "url": "https://example.com/authz/1234/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
-    }
+    },
     {
       "type": "dns-01",
       "url": "https://example.com/authz/1234/2",
@@ -2173,7 +2173,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
-    "url": "https://example.com/acme/authz/1234/1"
+    "url": "https://example.com/acme/authz/1234/2"
   }),
   "payload": base64url({
     "keyAuthorization": "evaGxfADs...62jcerQ"
