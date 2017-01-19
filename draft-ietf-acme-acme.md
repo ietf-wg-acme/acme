@@ -520,7 +520,7 @@ enables:
 
   * Account Creation
   * Ordering a Certificate
-  * Identifiear Authorization
+  * Identifier Authorization
   * Certificate Issuance
   * Certificate Revocation
 
