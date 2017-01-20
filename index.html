@@ -352,7 +352,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-1-18" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-1-20" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -376,7 +376,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: July 22, 2017</td>
+  <td class="left">Expires: July 24, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -389,7 +389,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">January 18, 2017</td>
+  <td class="right">January 20, 2017</td>
 </tr>
 
     	
@@ -411,7 +411,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on July 22, 2017.</p>
+<p>This Internet-Draft will expire on July 24, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -959,7 +959,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
   <dt>expires (optional, string):</dt>
   <dd style="margin-left: 8">The timestamp after which the server will consider this order invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;pending&#8221; or &#8220;valid&#8221; in the status field.</dd>
   <dt>csr (required, string):</dt>
-  <dd style="margin-left: 8">A CSR encoding the parameters for the certificate being requested <a href="#RFC2986">[RFC2986]</a>.  The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This field uses the same modified Base64 encoding rules used elsewhere in this document, so it is different from PEM.)</dd>
+  <dd style="margin-left: 8">A CSR encoding the parameters for the certificate being requested <a href="#RFC2986">[RFC2986]</a>.  The CSR is sent in the base64url-encoded version of the DER format. (Note: Because this field uses base64url, and does not include headers, it is different from PEM.)</dd>
   <dt>notBefore (optional, string):</dt>
   <dd style="margin-left: 8">The requested value of the notBefore field in the certificate, in the date format defined in <a href="#RFC3339">[RFC3339]</a></dd>
   <dt>notAfter (optional, string):</dt>
@@ -1267,7 +1267,7 @@ Content-Type: application/jose+json
 
 <dl>
   <dt>csr (required, string):</dt>
-  <dd style="margin-left: 8">A CSR encoding the parameters for the certificate being requested <a href="#RFC2986">[RFC2986]</a>.  The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This field uses the same modified Base64 encoding rules used elsewhere in this document, so it is different from PEM.)</dd>
+  <dd style="margin-left: 8">A CSR encoding the parameters for the certificate being requested <a href="#RFC2986">[RFC2986]</a>.  The CSR is sent in the base64url-encoded version of the DER format.  (Note: Because this field uses base64url, and does not include headers, it is different from PEM.)</dd>
   <dt>notBefore (optional, string):</dt>
   <dd style="margin-left: 8">The requested value of the notBefore field in the certificate, in the date format defined in <a href="#RFC3339">[RFC3339]</a></dd>
   <dt>notAfter (optional, string):</dt>
@@ -1303,7 +1303,7 @@ Location: https://example.com/acme/order/asdf
 
 {
   "status": "pending",
-  "expires": "2015-03-01T14:09:00Z",
+  "expires": "2016-01-01T00:00:00Z",
 
   "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
   "notBefore": "2016-01-01T00:00:00Z",
@@ -1315,8 +1315,8 @@ Location: https://example.com/acme/order/asdf
   ]
 }
 </pre>
-<p id="rfc.section.6.4.p.6">The order object returned by the server represents a promise that if the client fulfills the server&#8217;s requirements before the &#8220;expires&#8221; time, then the server will issue the requested certificate.  In the order object, any authorization referenced in the &#8220;authorizations&#8221; array whose status is &#8220;pending&#8221; represents an authorization transaction that the client must complete before the server will issue the certificate (see <a href="#identifier-authorization">Section 6.5</a>).  If the client fails to complete the required actions before the &#8220;expires&#8221; time, then the server SHOULD change the status of the order to &#8220;invalid&#8221; and MAY delete the application resource.</p>
-<p id="rfc.section.6.4.p.7">The server MUST issue the requested certificate and update the order resource with a URL for the certificate as soon as the client has fulfilled the server&#8217;s requirements.   If the client has already satisfied the server&#8217;s requirements at the time of this request (e.g., by obtaining authorization for all of the identifiers in the certificate in previous transactions), then the server MUST proactively issue the requested certificate and provide a URL for it in the &#8220;certificate&#8221; field of the order.  The server MUST, however, still list the completed authorizations in the &#8220;authorizations&#8221; array.</p>
+<p id="rfc.section.6.4.p.6">The order object returned by the server represents a promise that if the client fulfills the server&#8217;s requirements before the &#8220;expires&#8221; time, then the server will issue the requested certificate.  In the order object, any authorization referenced in the &#8220;authorizations&#8221; array whose status is &#8220;pending&#8221; represents an authorization transaction that the client must complete before the server will issue the certificate (see <a href="#identifier-authorization">Section 6.5</a>).  If the client fails to complete the required actions before the &#8220;expires&#8221; time, then the server SHOULD change the status of the order to &#8220;invalid&#8221; and MAY delete the order resource.</p>
+<p id="rfc.section.6.4.p.7">The server MUST issue the requested certificate and update the order resource with a URL for the certificate shortly after the client has fulfilled the server&#8217;s requirements.   If the client has already satisfied the server&#8217;s requirements at the time of this request (e.g., by obtaining authorization for all of the identifiers in the certificate in previous transactions), then the server MUST proactively issue the requested certificate and provide a URL for it in the &#8220;certificate&#8221; field of the order.  The server MUST, however, still list the completed authorizations in the &#8220;authorizations&#8221; array.</p>
 <p id="rfc.section.6.4.p.8">Once the client believes it has fulfilled the server&#8217;s requirements, it should send a GET request to the order resource to obtain its current state.  The status of the order will indicate what action the client should take:</p>
 <p/>
 
@@ -1327,7 +1327,7 @@ Location: https://example.com/acme/order/asdf
   <li>&#8220;valid&#8221;: The server has issued the certificate and provisioned its URL to the &#8220;certificate&#8221; field of the order.  Download the certificate.</li>
 </ul>
 <h1 id="rfc.section.6.4.1"><a href="#rfc.section.6.4.1">6.4.1.</a> <a href="#pre-authorization" id="pre-authorization">Pre-Authorization</a></h1>
-<p id="rfc.section.6.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to an application for issuance.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any servers are created, and only create a certificate when a server starts up.</p>
+<p id="rfc.section.6.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to a certificate order.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any servers are created, and only create a certificate when a server starts up.</p>
 <p id="rfc.section.6.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue for an identifier.  In these case, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already valid in any orders submitted by the client.</p>
 <p id="rfc.section.6.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the key &#8220;new-authz&#8221; with a URL for the new authorization resource.</p>
 <p id="rfc.section.6.4.1.p.4">To request authorization for an identifier, the client sends a POST request to the new-authorization resource specifying the identifier for which authorization is being requested and how the server should behave with respect to existing authorizations for this identifier.</p>
@@ -1519,9 +1519,9 @@ Content-Type: application/jose+json
 
 <dl>
   <dt>certificate (required, string):</dt>
-  <dd style="margin-left: 8">The certificate to be revoked, in the base64url-encoded version of the DER format.  (Note: This field uses the same modified Base64 encoding rules used elsewhere in this document, so it is different from PEM.)</dd>
+  <dd style="margin-left: 8">The certificate to be revoked, in the base64url-encoded version of the DER format.  (Note: Because this field uses base64url, and does not include headers, it is different from PEM.)</dd>
   <dt>reason (optional, int):</dt>
-  <dd style="margin-left: 8">One of the revocation reasonCodes defined in RFC 5280 <a href="#RFC5280">[RFC5280]</a> Section 5.3.1 to be used when generating OCSP responses and CRLs. If this field is not set the server SHOULD use the unspecified (0) reasonCode value when generating OCSP responses and CRLs. The server MAY disallow a subset of reasonCodes from being used by the user.</dd>
+  <dd style="margin-left: 8">One of the revocation reasonCodes defined in <a href="#RFC5280">[RFC5280]</a> Section 5.3.1 to be used when generating OCSP responses and CRLs. If this field is not set the server SHOULD use the unspecified (0) reasonCode value when generating OCSP responses and CRLs. The server MAY disallow a subset of reasonCodes from being used by the user.</dd>
 </dl>
 <pre>
 POST /acme/revoke-cert HTTP/1.1
@@ -1611,7 +1611,7 @@ Content-Language: en
 <pre>
 key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 </pre>
-<p id="rfc.section.7.1.p.2">The &#8220;JWK_Thumbprint&#8221; step indicates the computation specified in <a href="#RFC7638">[RFC7638]</a>, using the SHA-256 digest.  As specified in the individual challenges below, the token for a challenge is a JSON string comprised entirely of characters in the URL-safe Base64 alphabet.  The &#8220;||&#8221; operator indicates concatenation of strings.</p>
+<p id="rfc.section.7.1.p.2">The &#8220;JWK_Thumbprint&#8221; step indicates the computation specified in <a href="#RFC7638">[RFC7638]</a>, using the SHA-256 digest.  As specified in the individual challenges below, the token for a challenge is a JSON string comprised entirely of characters in the URL-safe base64 alphabet.  The &#8220;||&#8221; operator indicates concatenation of strings.</p>
 <p id="rfc.section.7.1.p.3">In computations involving key authorizations, such as the digest computations required for the DNS and TLS SNI challenges, the key authorization string MUST be represented in UTF-8 form (or, equivalently, ASCII).</p>
 <p id="rfc.section.7.1.p.4">An example of how to compute a JWK thumbprint can be found in Section 3.1 of <a href="#RFC7638">[RFC7638]</a>.  Note that some cryptographic libraries prepend a zero octet to the representation of the RSA public key parameters N and E, in order to avoid ambiguity with regard to the sign of the number.  As noted in JWA <a href="#RFC7518">[RFC7518]</a>, a JWK object MUST NOT include this zero octet.  That is, any initial zero octets MUST be stripped before the values are base64url-encoded.</p>
 <h1 id="rfc.section.7.2"><a href="#rfc.section.7.2">7.2.</a> <a href="#http" id="http">HTTP</a></h1>
@@ -1623,7 +1623,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;http-01&#8221;</dd>
   <dt>token (required, string):</dt>
-  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
+  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the base64url alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
 {
@@ -1670,7 +1670,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;tls-sni-02&#8221;</dd>
   <dt>token (required, string):</dt>
-  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
+  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the base64url alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
 {
@@ -1716,7 +1716,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dt>type (required, string):</dt>
   <dd style="margin-left: 8">The string &#8220;dns-01&#8221;</dd>
   <dt>token (required, string):</dt>
-  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
+  <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the base64url alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
 {
