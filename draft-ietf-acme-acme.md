@@ -761,9 +761,9 @@ objects with "pending" or "valid" in the status field.
 
 csr (required, string):
 : A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
-The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This
-field uses the same modified Base64 encoding rules used elsewhere in this
-document, so it is different from PEM.)
+The CSR is sent in the base64url-encoded version of the DER format. (Note:
+Because this field uses base64url, and does not include headers, it is different
+from PEM.)
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
@@ -1268,9 +1268,9 @@ issued:
 
 csr (required, string):
 : A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
-The CSR is sent in the Base64url-encoded version of the DER format.  (Note: This
-field uses the same modified Base64 encoding rules used elsewhere in this
-document, so it is different from PEM.)
+The CSR is sent in the base64url-encoded version of the DER format.  (Note:
+Because this field uses base64url, and does not include headers, it is different
+from PEM.)
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
@@ -1323,7 +1323,7 @@ Location: https://example.com/acme/order/asdf
 
 {
   "status": "pending",
-  "expires": "2015-03-01T14:09:00Z",
+  "expires": "2016-01-01T00:00:00Z",
 
   "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
   "notBefore": "2016-01-01T00:00:00Z",
@@ -1344,10 +1344,10 @@ represents an authorization transaction that the client must complete before the
 server will issue the certificate (see {{identifier-authorization}}).  If the
 client fails to complete the required actions before the "expires" time, then
 the server SHOULD change the status of the order to "invalid" and MAY
-delete the application resource.
+delete the order resource.
 
 The server MUST issue the requested certificate and update the order resource
-with a URL for the certificate as soon as the client has fulfilled the server's
+with a URL for the certificate shortly after the client has fulfilled the server's
 requirements.   If the client has already satisfied the server's requirements at
 the time of this request (e.g., by obtaining authorization for all of the
 identifiers in the certificate in previous transactions), then the server MUST
@@ -1376,7 +1376,7 @@ status of the order will indicate what action the client should take:
 ### Pre-Authorization
 
 The order process described above presumes that authorization objects are
-created reactively, in response to an application for issuance.  Some servers
+created reactively, in response to a certificate order.  Some servers
 may also wish to enable clients to obtain authorization for an identifier
 proactively, outside of the context of a specific issuance.  For example, a
 client hosting virtual servers for a collection of names might wish to obtain
@@ -1725,11 +1725,11 @@ JSON payload contains the certificate to be revoked:
 
 certificate (required, string):
 : The certificate to be revoked, in the base64url-encoded version of the DER
-format.  (Note: This field uses the same modified Base64 encoding rules used
-elsewhere in this document, so it is different from PEM.)
+format.  (Note: Because this field uses base64url, and does not include headers,
+it is different from PEM.)
 
 reason (optional, int):
-: One of the revocation reasonCodes defined in RFC 5280 {{RFC5280}} Section 5.3.1
+: One of the revocation reasonCodes defined in {{RFC5280}} Section 5.3.1
 to be used when generating OCSP responses and CRLs. If this field is not set
 the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
 responses and CRLs. The server MAY disallow a subset of reasonCodes from being
@@ -1880,7 +1880,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
 The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
 using the SHA-256 digest.  As specified in the individual challenges below, the
 token for a challenge is a JSON string comprised entirely of characters in the
-URL-safe Base64 alphabet.  The "||" operator indicates concatenation of strings.
+URL-safe base64 alphabet.  The "||" operator indicates concatenation of strings.
 
 In computations involving key authorizations, such as the digest computations
 required for the DNS and TLS SNI challenges, the key authorization string MUST
@@ -1912,7 +1912,7 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST
+It MUST NOT contain any characters outside the base64url alphabet and MUST
 NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
@@ -1992,7 +1992,7 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST
+It MUST NOT contain any characters outside the base64url alphabet and MUST
 NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
@@ -2078,7 +2078,7 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the URL-safe Base64 alphabet and MUST
+It MUST NOT contain any characters outside the base64url alphabet and MUST
 NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
