@@ -1930,7 +1930,9 @@ for the domain in question.
 The path at which the resource is provisioned is comprised of the fixed prefix
 ".well-known/acme-challenge/", followed by the "token" value in the challenge.
 The value of the resource MUST be the ASCII representation of the key
-authorization.
+authorization. The resource should remain provisioned there until the client
+observes that the authorization resource has a status of either "valid" or
+"invalid."
 
 ~~~~~~~~~~
 .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
@@ -1971,6 +1973,9 @@ domain by verifying that the resource was provisioned as expected.
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the server matches the token for
    this challenge and the client's account key.
+
+It is RECOMMENDED that the server dereference the URI multiple times from
+various network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
