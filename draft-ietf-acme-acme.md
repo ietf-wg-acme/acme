@@ -1645,7 +1645,8 @@ that have been provisioned to a web server.
 The server is said to "finalize" the authorization when it has completed
 one of the validations, by assigning the authorization a status of "valid"
 or "invalid", corresponding to whether it considers the account authorized
-for the identifier. When finalizing an authorization, the server MAY remove
+for the identifier. If the final state is "valid", then the server MUST include
+an "expires" field. When finalizing an authorization, the server MAY remove
 challenges other than the one that was completed, and may modify the "expires"
 field. The server SHOULD NOT remove challenges with status "invalid".
 
@@ -1767,12 +1768,13 @@ Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
 at least the following accounts authorized for a given certificate:
 
-* the public key in the certificate.
-
 * the account that issued the certificate.
 
 * an account that holds authorizations for all of the identifiers in the
   certificate.
+
+The server SHOULD also consider a revocation request valid if it is signed with
+the private key corresponding to the public key in the certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
 the revocation fails, the server returns an error.
@@ -1996,11 +1998,6 @@ domain by verifying that the resource was provisioned as expected.
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the server matches the token for
    this challenge and the client's account key.
-
-The server MAY follow redirects when dereferencing the URI.
-
-It is RECOMMENDED that the server dereference the URI multiple times from
-various network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
