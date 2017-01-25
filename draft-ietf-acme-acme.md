@@ -2635,6 +2635,8 @@ perform all necessary checks before issuing.
 
 CAs using ACME to allow clients to agree to terms of service should keep in mind
 that ACME clients can automate this agreement, possibly not involving a human
+# Operational Considerations
+
 There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
