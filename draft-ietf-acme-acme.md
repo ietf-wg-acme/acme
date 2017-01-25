@@ -1930,7 +1930,7 @@ for the domain in question.
 The path at which the resource is provisioned is comprised of the fixed prefix
 ".well-known/acme-challenge/", followed by the "token" value in the challenge.
 The value of the resource MUST be the ASCII representation of the key
-authorization. The resource should remain provisioned there until the client
+authorization. The resource should remain provisioned until the client
 observes that the authorization resource has a status of either "valid" or
 "invalid."
 
@@ -2635,11 +2635,6 @@ perform all necessary checks before issuing.
 
 CAs using ACME to allow clients to agree to terms of service should keep in mind
 that ACME clients can automate this agreement, possibly not involving a human
-user.  If a CA wishes to have stronger evidence of user consent, it may present
-an out-of-band requirement or challenge to require human involvement.
-
-# Operational Considerations
-
 There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
