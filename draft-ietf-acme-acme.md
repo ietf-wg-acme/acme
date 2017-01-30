@@ -1643,6 +1643,9 @@ for the identifier.  If the final state is "valid", the server MUST add an
 "expires" field to the authorization.  When finalizing an authorization,
 the server MAY remove challenges other than the one that was completed. The
 server SHOULD NOT remove challenges with status "invalid".
+If the final state is "valid", the server SHOULD invalidate any other
+currently-valid authorizations for the same identifier. See
+{{security-considerations}} for reasoning.
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
@@ -2687,6 +2690,23 @@ RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
 within their trusted network and use these resolvers both for both CAA record
 lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
 TXT, etc.).
+
+## Recovery From Host Compromise
+
+If a host is compromised, once the owner regains exclusive control of the host,
+they will want to take steps to revoke any certificates the attacker may have
+issued, and to ensure that the attacker cannot issue new certificates for the
+affected hostnames.
+
+If the attacker gained access to the private key for an ACME account, but has
+not yet changed the ACME account keypair, the proper owner can use the key
+rotation functionality to regain exclusive control of their ACME account.
+
+If the attacker did change the ACME account keypair, or if the attacker created
+their own ACME account and authorized the hostname, the proper owner, after
+regaining control of the host, can authorize that hostname on their own account
+(which should invalidate previous authorizations for that hostname), and can use
+that authorization to revoke any certificates the attacker may have issued.
 
 # Acknowledgements
 
