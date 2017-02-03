@@ -751,8 +751,8 @@ the server requires the client to complete, and any certificates that have
 resulted from this order.
 
 status (required, string):
-: The status of this order.  Possible values are: "pending", "valid", and
-"invalid".
+: The status of this order.  Possible values are: "pending", "processing",
+"valid", and "invalid".
 
 expires (optional, string):
 : The timestamp after which the server will consider this order invalid, encoded
@@ -1536,7 +1536,7 @@ headers have no relation to the certificate's period of validity.
 The identifier authorization process establishes the authorization of an account
 to manage certificates for a given identifier.  This process must assure the
 server of two things: First, that the client controls the private key of the
-account key pair, and second, that the client holds the identifier in question.
+account key pair, and second, that the client controls the identifier in question.
 This process may be repeated to associate multiple identifiers to a key pair
 (e.g., to request certificates with multiple identifiers), or to associate
 multiple accounts with an identifier (e.g., to allow multiple entities to manage
@@ -1551,7 +1551,7 @@ authorization object is implicitly tied to the account key used to sign the
 request.
 
 When a client receives an order from the server it downloads the authorization
-resource by sending a GET request to the indicated URL.  If the client 
+resource by sending a GET request to the indicated URL.  If the client
 initiates authorization using a request to the new authorization resource, it
 will have already recevied the pending authorization object in the response
 to that request.
@@ -1566,6 +1566,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
   "status": "pending",
+  "expires": "2018-03-03T14:09:00Z",
 
   "identifier": {
     "type": "dns",
@@ -1575,12 +1576,17 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
   "challenges": [
     {
       "type": "http-01",
-      "url": "https://example.com/authz/asdf/0",
-      "token": "IlirfxKKXAsHtmzK29Pj8A"
+      "url": "https://example.com/authz/1234/0",
+      "token": "DGyRejmCefe7v4NfDGDKfA"
+    },
+    {
+      "type": "tls-sni-02",
+      "url": "https://example.com/authz/1234/1",
+      "token": "DGyRejmCefe7v4NfDGDKfA"
     },
     {
       "type": "dns-01",
-      "url": "https://example.com/authz/asdf/1",
+      "url": "https://example.com/authz/1234/2",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ]
@@ -1639,10 +1645,10 @@ that have been provisioned to a web server.
 The server is said to "finalize" the authorization when it has completed
 one of the validations, by assigning the authorization a status of "valid"
 or "invalid", corresponding to whether it considers the account authorized
-for the identifier.  If the final state is "valid", the server MUST add an
-"expires" field to the authorization.  When finalizing an authorization,
-the server MAY remove challenges other than the one that was completed. The
-server SHOULD NOT remove challenges with status "invalid".
+for the identifier. If the final state is "valid", then the server MUST include
+an "expires" field. When finalizing an authorization, the server MAY remove
+challenges other than the one that was completed, and may modify the "expires"
+field. The server SHOULD NOT remove challenges with status "invalid".
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
@@ -1664,7 +1670,7 @@ HTTP/1.1 200 OK
 
 {
   "status": "valid",
-  "expires": "2015-03-01T14:09:00Z",
+  "expires": "2018-09-09T14:09:00Z",
 
   "identifier": {
     "type": "dns",
@@ -1674,6 +1680,7 @@ HTTP/1.1 200 OK
   "challenges": [
     {
       "type": "http-01"
+      "url": "https://example.com/authz/asdf/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -1759,12 +1766,15 @@ Revocation requests are different from other ACME request in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
-at least the following keys authorized for a given certificate:
+at least the following accounts authorized for a given certificate:
 
-* the public key in the certificate.
+* the account that issued the certificate.
 
-* an account key that is authorized to act for all of the identifier(s) in the
+* an account that holds authorizations for all of the identifiers in the
   certificate.
+
+The server SHOULD also consider a revocation request valid if it is signed with
+the private key corresponding to the public key in the certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
 the revocation fails, the server returns an error.
@@ -1796,7 +1806,7 @@ mechanism to prove possession of a given identifier.  In all practical cases,
 CAs rely on a variety of means to test whether an entity applying for a
 certificate with a given identifier actually controls that identifier.
 
-Challenges provide the server with assurance that an account key holder is also
+Challenges provide the server with assurance that an account holder is also
 the entity that controls an identifier.  For each type of challenge, it must be
 the case that in order for an entity to successfully complete the challenge the
 entity must both:
@@ -1848,7 +1858,7 @@ challenge's "status" to "invalid", it SHOULD also include the "error" field to
 help the client diagnose why they failed the challenge.
 
 Different challenges allow the server to obtain proof of different aspects of
-control over an identifier.  In some challenges, like HTTP and TLS SNI, the
+control over an identifier.  In some challenges, like HTTP, TLS SNI, and DNS, the
 client directly proves its ability to do certain things related to the
 identifier.  The choice of which challenges to offer to a client under which
 circumstances is a matter of server policy.
@@ -1916,8 +1926,14 @@ It MUST NOT contain any characters outside the base64url alphabet and MUST
 NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
+GET /acme/authz/1234/0 HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
 {
   "type": "http-01",
+  "url": "https://example.com/acme/authz/0",
+  "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
@@ -1945,11 +1961,22 @@ keyAuthorization (required, string):
 from the challenge and the client's account key.
 
 ~~~~~~~~~~
-/* BEGIN JWS-signed content */
+POST /acme/authz/1234/0
+Host: example.com
+Content-Type: application/jose+json
+
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ"
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/authz/1234/0"
+  }),
+  "payload": base64url({
+    "keyAuthorization": "evaGxfADs...62jcerQ"
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
@@ -1996,8 +2023,14 @@ It MUST NOT contain any characters outside the base64url alphabet and MUST
 NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
+GET /acme/authz/1234/1 HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
 {
   "type": "tls-sni-02",
+  "url": "https://example.com/acme/authz/1234/1",
+  "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
@@ -2031,11 +2064,22 @@ keyAuthorization (required, string):
 from the challenge and the client's account key.
 
 ~~~~~~~~~~
-/* BEGIN JWS-signed content */
+POST /acme/authz/1234/1
+Host: example.com
+Content-Type: application/jose+json
+
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ"
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/authz/1234/1"
+  }),
+  "payload": base64url({
+    "keyAuthorization": "evaGxfADs...62jcerQ"
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
@@ -2059,8 +2103,8 @@ using these steps:
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
 
-It is RECOMMENDED that the ACME server validation TLS connections from multiple
-vantage points to reduce the risk of DNS hijacking attacks.
+It is RECOMMENDED that the server open multiple TLS connections from various
+network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
 Otherwise, the validation fails.
@@ -2082,8 +2126,14 @@ It MUST NOT contain any characters outside the base64url alphabet and MUST
 NOT contain any padding characters ("=").
 
 ~~~~~~~~~~
+GET /acme/authz/1234/2 HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
 {
   "type": "dns-01",
+  "url": "https://example.com/acme/authz/1234/2",
+  "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 ~~~~~~~~~~
@@ -2111,11 +2161,22 @@ keyAuthorization (required, string):
 from the challenge and the client's account key.
 
 ~~~~~~~~~~
-/* BEGIN JWS-signed content */
+POST /acme/authz/1234/2
+Host: example.com
+Content-Type: application/jose+json
+
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ"
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/authz/1234/2"
+  }),
+  "payload": base64url({
+    "keyAuthorization": "evaGxfADs...62jcerQ"
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the key authorization in
@@ -2128,6 +2189,9 @@ To validate a DNS challenge, the server performs the following steps:
 1. Compute the SHA-256 digest of the key authorization
 2. Query for TXT records under the validation domain name
 3. Verify that the contents of one of the TXT records matches the digest value
+
+It is RECOMMENDED that the server perform multiple DNS queries from various
+network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
@@ -2154,6 +2218,10 @@ Note that this field is distinct from the "url" field of the challenge, which
 identifies the challenge itself.
 
 ~~~~~~~~~~
+GET /acme/authz/1234/3 HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
 {
   "type": "oob-01",
   "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
@@ -2169,15 +2237,26 @@ type (required, string):
 : The string "oob-01"
 
 ~~~~~~~~~~
-/* BEGIN JWS-signed content */
+POST /acme/authz/1234/3
+Host: example.com
+Content-Type: application/jose+json
+
 {
-  "type": "oob-01"
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/authz/1234/3"
+  }),
+  "payload": base64url({
+    "type": "oob-01"
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed content */
 ~~~~~~~~~~
 
 On receiving a response, the server MUST verify that the value of the "type"
-field is as required.  Otherwise, the steps the server takes to validate
+field is "oob-01".  Otherwise, the steps the server takes to validate
 identifier possession are determined by the server's local policy.
 
 # IANA Considerations
@@ -2271,7 +2350,7 @@ policy {{?RFC5226}}.
 ### Fields in Account Objects
 
 This registry lists field names that are defined for use in ACME account
-objects.  Fields marked as "client configurable" may be included in a
+objects.  Fields marked as "configurable" may be included in a
 new-account request.
 
 Template:
@@ -2297,7 +2376,7 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 ### Fields in Order Objects
 
 This registry lists field names that are defined for use in ACME order
-objects.  Fields marked as "client configurable" may be included in a
+objects.  Fields marked as "configurable" may be included in a
 new-order request.
 
 Template:
