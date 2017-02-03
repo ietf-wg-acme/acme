@@ -529,18 +529,19 @@ address {
 <p id="rfc.section.3.p.2">The two main roles in ACME are &#8220;client&#8221; and &#8220;server&#8221;.  The ACME client uses the protocol to request certificate management actions, such as issuance or revocation.  An ACME client therefore typically runs on a web server, mail server, or some other server system which requires valid TLS certificates.  The ACME server runs at a certificate authority, and responds to client requests, performing the requested actions if the client is authorized.</p>
 <p id="rfc.section.3.p.3">An ACME client is represented by an &#8220;account key pair&#8221;.  The client uses the private key of this key pair to sign all messages sent to the server.  The server uses the public key to verify the authenticity and integrity of messages from the client.</p>
 <h1 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#protocol-overview" id="protocol-overview">Protocol Overview</a></h1>
-<p id="rfc.section.4.p.1">ACME allows a client to request certificate management actions using a set of JSON messages carried over HTTPS.   In some ways, ACME functions much like a traditional CA, in which a user creates an account, adds identifiers to that account (proving control of the domains), and requests certificate issuance for those domains while logged in to the account.</p>
-<p id="rfc.section.4.p.2">In ACME, the account is represented by an account key pair.  The &#8220;add a domain&#8221; function is accomplished by authorizing the key pair for a given domain.  Certificate issuance and revocation are authorized by a signature with the key pair.</p>
-<p id="rfc.section.4.p.3">The first phase of ACME is for the client to register with the ACME server.  The client generates an asymmetric key pair and associates this key pair with a set of contact information by signing the contact information.  The server acknowledges the registration by replying with a account object echoing the client&#8217;s input.</p>
+<p id="rfc.section.4.p.1">ACME allows a client to request certificate management actions using a set of JSON messages carried over HTTPS.   In many ways, ACME functions much like a traditional CA, in which a user creates an account, requests a certificate, and proves control of the domains in that certificate in order for the CA to sign the requested certificate.</p>
+<p id="rfc.section.4.p.2">The first phase of ACME is for the client to request an account with the ACME server.  The client generates an asymmetric key pair and requests a new account, optionally providing contact information, agreeing to terms of service, and/or associating the account with an existing account in another system. The creation request is signed with the generated private key to prove that the client controls it.</p>
 <pre>
       Client                                                  Server
 
       Contact Information
+      ToS Agreement
+      Additional Data
       Signature                     -------&gt;
 
                                     &lt;-------                 Account
 </pre>
-<p id="rfc.section.4.p.4">Once the client is registered, there are three major steps it needs to take to get a certificate:</p>
+<p id="rfc.section.4.p.3">Once an account is registered, there are three major steps the client needs to take to get a certificate:</p>
 <p/>
 
 <ol>
@@ -548,9 +549,9 @@ address {
   <li>Prove control of any identifiers requested in the certificate</li>
   <li>Await issuance and download the issued certificate</li>
 </ol>
-<p id="rfc.section.4.p.6">The client&#8217;s order for a certificate describes the desired certificate using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that capture semantics that are not supported in the CSR format.  If the server is willing to consider issuing such a certificate, it responds with a list of requirements that the client must satisfy before the certificate will be issued.</p>
-<p id="rfc.section.4.p.7">For example, in most cases, the server will require the client to demonstrate that it controls the identifiers in the requested certificate.  Because there are many different ways to validate possession of different types of identifiers, the server will choose from an extensible set of challenges that are appropriate for the identifier being claimed.  The client responds with a set of responses that tell the server which challenges the client has completed.  The server then validates the challenges to check that the client has accomplished the challenge.</p>
-<p id="rfc.section.4.p.8">Once the validation process is complete and the server is satisfied that the client has met its requirements, the server will issue the requested certificate and make it available to the client.</p>
+<p id="rfc.section.4.p.5">The client&#8217;s order for a certificate describes the desired certificate using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that capture semantics that are not supported in the CSR format.  If the server is willing to consider issuing such a certificate, it responds with a list of requirements that the client must satisfy before the certificate will be issued.</p>
+<p id="rfc.section.4.p.6">For example, in most cases, the server will require the client to demonstrate that it controls the identifiers in the requested certificate.  Because there are many different ways to validate possession of different types of identifiers, the server will choose from an extensible set of challenges that are appropriate for the identifier being claimed.  The client responds with a set of responses that tell the server which challenges the client has completed.  The server then validates the challenges to check that the client has accomplished the challenge.</p>
+<p id="rfc.section.4.p.7">Once the validation process is complete and the server is satisfied that the client has met its requirements, the server will issue the requested certificate and make it available to the client.</p>
 <pre>
       Order
       Signature                     -------&gt;
@@ -564,7 +565,7 @@ address {
 
                                     &lt;-------             Certificate
 </pre>
-<p id="rfc.section.4.p.9">To revoke a certificate, the client simply sends a revocation request indicating the certificate to be revoked, signed with an authorized key pair. The server indicates whether the request has succeeded.</p>
+<p id="rfc.section.4.p.8">To revoke a certificate, the client sends a signed revocation request indicating the certificate to be revoked:</p>
 <pre>
       Client                                                 Server
 
@@ -573,7 +574,7 @@ address {
 
                                    &lt;--------                 Result
 </pre>
-<p id="rfc.section.4.p.10">Note that while ACME is defined with enough flexibility to handle different types of identifiers in principle, the primary use case addressed by this document is the case where domain names are used as identifiers.  For example, all of the identifier validation challenges described in <a href="#identifier-validation-challenges">Section 7</a> below address validation of domain names.  The use of ACME for other identifiers will require further specification, in order to describe how these identifiers are encoded in the protocol, and what types of validation challenges the server might require.</p>
+<p id="rfc.section.4.p.9">Note that while ACME is defined with enough flexibility to handle different types of identifiers in principle, the primary use case addressed by this document is the case where domain names are used as identifiers.  For example, all of the identifier validation challenges described in <a href="#identifier-validation-challenges">Section 7</a> below address validation of domain names.  The use of ACME for other identifiers will require further specification, in order to describe how these identifiers are encoded in the protocol, and what types of validation challenges the server might require.</p>
 <h1 id="rfc.section.5"><a href="#rfc.section.5">5.</a> <a href="#message-transport" id="message-transport">Message Transport</a></h1>
 <p id="rfc.section.5.p.1">Communications between an ACME client and an ACME server are done over HTTPS, using JSON Web Signature (JWS) <a href="#RFC7515">[RFC7515]</a> to provide some additional security properties for messages sent from the client to the server.  HTTPS provides server authentication and confidentiality.  With some ACME-specific extensions, JWS provides authentication of the client&#8217;s request payloads, anti-replay protection, and integrity for the HTTPS request URI.</p>
 <h1 id="rfc.section.5.1"><a href="#rfc.section.5.1">5.1.</a> <a href="#https-requests" id="https-requests">HTTPS Requests</a></h1>
@@ -584,7 +585,7 @@ address {
 <p id="rfc.section.5.1.p.5">ACME servers that are intended to be generally accessible need to use Cross-Origin Resource Sharing (CORS) in order to be accessible from browser-based clients <a href="#W3C.CR-cors-20130129">[W3C.CR-cors-20130129]</a>.  Such servers SHOULD set the Access-Control-Allow-Origin header field to the value &#8220;*&#8221;.</p>
 <p id="rfc.section.5.1.p.6">Binary fields in the JSON objects used by ACME are encoded using base64url encoding described in <a href="#RFC4648">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
 <h1 id="rfc.section.5.2"><a href="#rfc.section.5.2">5.2.</a> <a href="#request-authentication" id="request-authentication">Request Authentication</a></h1>
-<p id="rfc.section.5.2.p.1">All ACME requests with a non-empty body MUST encapsulate the body in a JWS object, signed using the account key pair.  The server MUST verify the JWS before processing the request.  (For readability, however, the examples below omit this encapsulation.)  Encapsulating request bodies in JWS provides a simple authentication of requests by way of key continuity.</p>
+<p id="rfc.section.5.2.p.1">All ACME requests with a non-empty body MUST encapsulate their payload in a JWS object, signed (in most cases) using the account&#8217;s private key.  The server MUST verify the JWS before processing the request.  Encapsulating request bodies in JWS provides a simple authentication of requests.</p>
 <p id="rfc.section.5.2.p.2">JWS objects sent in ACME requests MUST meet the following additional criteria:</p>
 <p/>
 
@@ -597,7 +598,7 @@ address {
 <p id="rfc.section.5.2.p.4">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
 <p id="rfc.section.5.2.p.5">For new-reg requests, and for revoke-cert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field.</p>
 <p id="rfc.section.5.2.p.6">For all other requests, there MUST be a &#8220;kid&#8221; field. This field must contain the account URI received by POSTing to the new-reg resource.</p>
-<p id="rfc.section.5.2.p.7">Note that authentication via signed POST implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
+<p id="rfc.section.5.2.p.7">Note that authentication via signed JWS request bodies implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
 <p id="rfc.section.5.2.p.8">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221;.  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.</p>
 <pre>
 HTTP/1.1 400 Bad Request
