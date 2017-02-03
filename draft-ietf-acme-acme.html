@@ -352,7 +352,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-1-20" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-2-03" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -376,7 +376,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: July 24, 2017</td>
+  <td class="left">Expires: August 7, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -389,7 +389,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">January 20, 2017</td>
+  <td class="right">February 03, 2017</td>
 </tr>
 
     	
@@ -411,7 +411,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on July 24, 2017.</p>
+<p>This Internet-Draft will expire on August 7, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -955,7 +955,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 
 <dl>
   <dt>status (required, string):</dt>
-  <dd style="margin-left: 8">The status of this order.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
+  <dd style="margin-left: 8">The status of this order.  Possible values are: &#8220;pending&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
   <dt>expires (optional, string):</dt>
   <dd style="margin-left: 8">The timestamp after which the server will consider this order invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;pending&#8221; or &#8220;valid&#8221; in the status field.</dd>
   <dt>csr (required, string):</dt>
@@ -1404,7 +1404,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 <p id="rfc.section.6.4.2.p.6">A certificate resource represents a single, immutable certificate. If the client wishes to obtain a renewed certificate, the client initiates a new order process to request one.</p>
 <p id="rfc.section.6.4.2.p.7">Because certificate resources are immutable once issuance is complete, the server MAY enable the caching of the resource by adding Expires and Cache-Control headers specifying a point in time in the distant future. These headers have no relation to the certificate&#8217;s period of validity.</p>
 <h1 id="rfc.section.6.5"><a href="#rfc.section.6.5">6.5.</a> <a href="#identifier-authorization" id="identifier-authorization">Identifier Authorization</a></h1>
-<p id="rfc.section.6.5.p.1">The identifier authorization process establishes the authorization of an account to manage certificates for a given identifier.  This process must assure the server of two things: First, that the client controls the private key of the account key pair, and second, that the client holds the identifier in question.  This process may be repeated to associate multiple identifiers to a key pair (e.g., to request certificates with multiple identifiers), or to associate multiple accounts with an identifier (e.g., to allow multiple entities to manage certificates).  The server may declare that an authorization is only valid for a specific order by setting the &#8220;scope&#8221; field of the authorization to the URI for that order.</p>
+<p id="rfc.section.6.5.p.1">The identifier authorization process establishes the authorization of an account to manage certificates for a given identifier.  This process must assure the server of two things: First, that the client controls the private key of the account key pair, and second, that the client controls the identifier in question.  This process may be repeated to associate multiple identifiers to a key pair (e.g., to request certificates with multiple identifiers), or to associate multiple accounts with an identifier (e.g., to allow multiple entities to manage certificates).  The server may declare that an authorization is only valid for a specific order by setting the &#8220;scope&#8221; field of the authorization to the URI for that order.</p>
 <p id="rfc.section.6.5.p.2">Authorization resources are created by the server in response to certificate orders or authorization requests submitted by an account key holder; their URLs are provided to the client in the responses to these requests.  The authorization object is implicitly tied to the account key used to sign the request.</p>
 <p id="rfc.section.6.5.p.3">When a client receives an order from the server it downloads the authorization resource by sending a GET request to the indicated URL.  If the client initiates authorization using a request to the new authorization resource, it will have already recevied the pending authorization object in the response to that request.</p>
 <pre>
@@ -1417,6 +1417,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
 {
   "status": "pending",
+  "expires": "2018-03-03T14:09:00Z",
 
   "identifier": {
     "type": "dns",
@@ -1426,12 +1427,17 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
   "challenges": [
     {
       "type": "http-01",
-      "url": "https://example.com/authz/asdf/0",
-      "token": "IlirfxKKXAsHtmzK29Pj8A"
+      "url": "https://example.com/authz/1234/0",
+      "token": "DGyRejmCefe7v4NfDGDKfA"
+    },
+    {
+      "type": "tls-sni-02",
+      "url": "https://example.com/authz/1234/1",
+      "token": "DGyRejmCefe7v4NfDGDKfA"
     },
     {
       "type": "dns-01",
-      "url": "https://example.com/authz/asdf/1",
+      "url": "https://example.com/authz/1234/2",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ]
@@ -1462,7 +1468,7 @@ Content-Type: application/jose+json
 </pre>
 <p id="rfc.section.6.5.1.p.4">The server updates the authorization document by updating its representation of the challenge with the response fields provided by the client.  The server MUST ignore any fields in the response object that are not specified as response fields for this type of challenge.  The server provides a 200 (OK) response with the updated challenge object as its body.</p>
 <p id="rfc.section.6.5.1.p.5">If the client&#8217;s response is invalid for some reason, or does not provide the server with appropriate information to validate the challenge, then the server MUST return an HTTP error.  On receiving such an error, the client SHOULD undo any actions that have been taken to fulfill the challenge, e.g., removing files that have been provisioned to a web server.</p>
-<p id="rfc.section.6.5.1.p.6">The server is said to &#8220;finalize&#8221; the authorization when it has completed one of the validations, by assigning the authorization a status of &#8220;valid&#8221; or &#8220;invalid&#8221;, corresponding to whether it considers the account authorized for the identifier.  If the final state is &#8220;valid&#8221;, the server MUST add an &#8220;expires&#8221; field to the authorization.  When finalizing an authorization, the server MAY remove challenges other than the one that was completed. The server SHOULD NOT remove challenges with status &#8220;invalid&#8221;.</p>
+<p id="rfc.section.6.5.1.p.6">The server is said to &#8220;finalize&#8221; the authorization when it has completed one of the validations, by assigning the authorization a status of &#8220;valid&#8221; or &#8220;invalid&#8221;, corresponding to whether it considers the account authorized for the identifier. If the final state is &#8220;valid&#8221;, then the server MUST include an &#8220;expires&#8221; field. When finalizing an authorization, the server MAY remove challenges other than the one that was completed, and may modify the &#8220;expires&#8221; field. The server SHOULD NOT remove challenges with status &#8220;invalid&#8221;.</p>
 <p id="rfc.section.6.5.1.p.7">Usually, the validation process will take some time, so the client will need to poll the authorization resource to see when it is finalized.  For challenges where the client can tell when the server has validated the challenge (e.g., by seeing an HTTP or DNS request from the server), the client SHOULD NOT begin polling until it has seen the validation request from the server.</p>
 <p id="rfc.section.6.5.1.p.8">To check on the status of an authorization, the client sends a GET request to the authorization URI, and the server responds with the current  authorization object. In responding to poll requests while the validation is still in progress, the server MUST return a 202 (Accepted) response, and MAY include a Retry-After header field to suggest a polling interval to the client.</p>
 <pre>
@@ -1473,7 +1479,7 @@ HTTP/1.1 200 OK
 
 {
   "status": "valid",
-  "expires": "2015-03-01T14:09:00Z",
+  "expires": "2018-09-09T14:09:00Z",
 
   "identifier": {
     "type": "dns",
@@ -1483,6 +1489,7 @@ HTTP/1.1 200 OK
   "challenges": [
     {
       "type": "http-01"
+      "url": "https://example.com/authz/asdf/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -1542,14 +1549,15 @@ Content-Type: application/jose+json
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.6.6.p.3">Revocation requests are different from other ACME request in that they can be signed either with an account key pair or the key pair in the certificate.  Before revoking a certificate, the server MUST verify that the key used to sign the request is authorized to revoke the certificate.  The server SHOULD consider at least the following keys authorized for a given certificate:</p>
+<p id="rfc.section.6.6.p.3">Revocation requests are different from other ACME request in that they can be signed either with an account key pair or the key pair in the certificate.  Before revoking a certificate, the server MUST verify that the key used to sign the request is authorized to revoke the certificate.  The server SHOULD consider at least the following accounts authorized for a given certificate:</p>
 <p/>
 
 <ul>
-  <li>the public key in the certificate.</li>
-  <li>an account key that is authorized to act for all of the identifier(s) in the certificate.</li>
+  <li>the account that issued the certificate.</li>
+  <li>an account that holds authorizations for all of the identifiers in the certificate.</li>
 </ul>
-<p id="rfc.section.6.6.p.5">If the revocation succeeds, the server responds with status code 200 (OK).  If the revocation fails, the server returns an error.</p>
+<p id="rfc.section.6.6.p.5">The server SHOULD also consider a revocation request valid if it is signed with the private key corresponding to the public key in the certificate.</p>
+<p id="rfc.section.6.6.p.6">If the revocation succeeds, the server responds with status code 200 (OK).  If the revocation fails, the server returns an error.</p>
 <pre>
 HTTP/1.1 200 OK
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
@@ -1570,7 +1578,7 @@ Content-Language: en
 </pre>
 <h1 id="rfc.section.7"><a href="#rfc.section.7">7.</a> <a href="#identifier-validation-challenges" id="identifier-validation-challenges">Identifier Validation Challenges</a></h1>
 <p id="rfc.section.7.p.1">There are few types of identifiers in the world for which there is a standardized mechanism to prove possession of a given identifier.  In all practical cases, CAs rely on a variety of means to test whether an entity applying for a certificate with a given identifier actually controls that identifier.</p>
-<p id="rfc.section.7.p.2">Challenges provide the server with assurance that an account key holder is also the entity that controls an identifier.  For each type of challenge, it must be the case that in order for an entity to successfully complete the challenge the entity must both:</p>
+<p id="rfc.section.7.p.2">Challenges provide the server with assurance that an account holder is also the entity that controls an identifier.  For each type of challenge, it must be the case that in order for an entity to successfully complete the challenge the entity must both:</p>
 <p/>
 
 <ul>
@@ -1603,7 +1611,7 @@ Content-Language: en
   <dd style="margin-left: 8">The error that occurred while the server was validating the challenge, if any.  This field is structured as a problem document <a href="#RFC7807">[RFC7807]</a>.</dd>
 </dl>
 <p id="rfc.section.7.p.10">All additional fields are specified by the challenge type.  If the server sets a challenge&#8217;s &#8220;status&#8221; to &#8220;invalid&#8221;, it SHOULD also include the &#8220;error&#8221; field to help the client diagnose why they failed the challenge.</p>
-<p id="rfc.section.7.p.11">Different challenges allow the server to obtain proof of different aspects of control over an identifier.  In some challenges, like HTTP and TLS SNI, the client directly proves its ability to do certain things related to the identifier.  The choice of which challenges to offer to a client under which circumstances is a matter of server policy.</p>
+<p id="rfc.section.7.p.11">Different challenges allow the server to obtain proof of different aspects of control over an identifier.  In some challenges, like HTTP, TLS SNI, and DNS, the client directly proves its ability to do certain things related to the identifier.  The choice of which challenges to offer to a client under which circumstances is a matter of server policy.</p>
 <p id="rfc.section.7.p.12">The identifier validation challenges described in this section all relate to validation of domain names.  If ACME is extended in the future to support other types of identifier, there will need to be new challenge types, and they will need to specify which types of identifier they apply to.</p>
 <p id="rfc.section.7.p.13">[[ Editor&#8217;s Note: In pre-RFC versions of this specification, challenges are labeled by type, and with the version of the draft in which they were introduced.  For example, if an HTTP challenge were introduced in version -03 and a breaking change made in version -05, then there would be a challenge labeled &#8220;http-03&#8221; and one labeled &#8220;http-05&#8221; &#8211; but not one labeled &#8220;http-04&#8221;, since challenge in version -04 was compatible with one in version -04. ]]</p>
 <h1 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1.</a> <a href="#key-authorizations" id="key-authorizations">Key Authorizations</a></h1>
@@ -1626,8 +1634,14 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the base64url alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
+GET /acme/authz/1234/0 HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
 {
   "type": "http-01",
+  "url": "https://example.com/acme/authz/0",
+  "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 </pre>
@@ -1644,11 +1658,22 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dd style="margin-left: 8">The key authorization for this challenge.  This value MUST match the token from the challenge and the client&#8217;s account key.</dd>
 </dl>
 <pre>
-/* BEGIN JWS-signed content */
+POST /acme/authz/1234/0
+Host: example.com
+Content-Type: application/jose+json
+
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ"
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/authz/1234/0"
+  }),
+  "payload": base64url({
+    "keyAuthorization": "evaGxfADs...62jcerQ"
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed content */
 </pre>
 <p id="rfc.section.7.2.p.8">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
 <p id="rfc.section.7.2.p.9">Given a challenge/response pair, the server verifies the client&#8217;s control of the domain by verifying that the resource was provisioned as expected.</p>
@@ -1673,8 +1698,14 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the base64url alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
+GET /acme/authz/1234/1 HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
 {
   "type": "tls-sni-02",
+  "url": "https://example.com/acme/authz/1234/1",
+  "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 </pre>
@@ -1691,11 +1722,22 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dd style="margin-left: 8">The key authorization for this challenge.  This value MUST match the token from the challenge and the client&#8217;s account key.</dd>
 </dl>
 <pre>
-/* BEGIN JWS-signed content */
+POST /acme/authz/1234/1
+Host: example.com
+Content-Type: application/jose+json
+
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ"
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/authz/1234/1"
+  }),
+  "payload": base64url({
+    "keyAuthorization": "evaGxfADs...62jcerQ"
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed content */
 </pre>
 <p id="rfc.section.7.3.p.10">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
 <p id="rfc.section.7.3.p.11">Given a challenge/response pair, the ACME server verifies the client&#8217;s control of the domain by verifying that the TLS server was configured appropriately, using these steps:</p>
@@ -1706,7 +1748,7 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <li>Open a TLS connection to the domain name being validated, presenting SAN A in the SNI field. This connection MUST be sent to TCP port 443 on the server. In the ClientHello initiating the TLS handshake, the server MUST include a server_name extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does not reveal SAN B in any way when making the TLS connection, such that the presentation of SAN B in the returned certificate proves association with the client.</li>
   <li>Verify that the certificate contains a subjectAltName extension containing dNSName entries of SAN A and SAN B and no other entries.  The comparison MUST be insensitive to case and ordering of names.</li>
 </ol>
-<p id="rfc.section.7.3.p.13">It is RECOMMENDED that the ACME server validation TLS connections from multiple vantage points to reduce the risk of DNS hijacking attacks.</p>
+<p id="rfc.section.7.3.p.13">It is RECOMMENDED that the server open multiple TLS connections from various network perspectives, in order to make MitM attacks harder.</p>
 <p id="rfc.section.7.3.p.14">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
 <h1 id="rfc.section.7.4"><a href="#rfc.section.7.4">7.4.</a> <a href="#dns" id="dns">DNS</a></h1>
 <p id="rfc.section.7.4.p.1">When the identifier being validated is a domain name, the client can prove control of that domain by provisioning a resource record under it.   The DNS challenge requires the client to provision a TXT record containing a designated value under a specific validation domain name.</p>
@@ -1719,8 +1761,14 @@ key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
   <dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy, in order to prevent an attacker from guessing it.  It MUST NOT contain any characters outside the base64url alphabet and MUST NOT contain any padding characters (&#8220;=&#8221;).</dd>
 </dl>
 <pre>
+GET /acme/authz/1234/2 HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
 {
   "type": "dns-01",
+  "url": "https://example.com/acme/authz/1234/2",
+  "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 </pre>
@@ -1737,11 +1785,22 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <dd style="margin-left: 8">The key authorization for this challenge.  This value MUST match the token from the challenge and the client&#8217;s account key.</dd>
 </dl>
 <pre>
-/* BEGIN JWS-signed content */
+POST /acme/authz/1234/2
+Host: example.com
+Content-Type: application/jose+json
+
 {
-  "keyAuthorization": "evaGxfADs...62jcerQ"
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/authz/1234/2"
+  }),
+  "payload": base64url({
+    "keyAuthorization": "evaGxfADs...62jcerQ"
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed content */
 </pre>
 <p id="rfc.section.7.4.p.7">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
 <p id="rfc.section.7.4.p.8">To validate a DNS challenge, the server performs the following steps:</p>
@@ -1752,7 +1811,8 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <li>Query for TXT records under the validation domain name</li>
   <li>Verify that the contents of one of the TXT records matches the digest value</li>
 </ol>
-<p id="rfc.section.7.4.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
+<p id="rfc.section.7.4.p.10">It is RECOMMENDED that the server perform multiple DNS queries from various network perspectives, in order to make MitM attacks harder.</p>
+<p id="rfc.section.7.4.p.11">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
 <h1 id="rfc.section.7.5"><a href="#rfc.section.7.5">7.5.</a> <a href="#out-of-band" id="out-of-band">Out-of-Band</a></h1>
 <p id="rfc.section.7.5.p.1">There may be cases where a server cannot perform automated validation of an identifier, for example if validation requires some manual steps.  In such cases, the server may provide an &#8220;out of band&#8221; (OOB) challenge to request that the client perform some action outside of ACME in order to validate possession of the identifier.</p>
 <p id="rfc.section.7.5.p.2">The OOB challenge requests that the client have a human user visit a web page to receive instructions on how to validate possession of the identifier, by providing a URL for that web page.</p>
@@ -1765,6 +1825,10 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <dd style="margin-left: 8">The URL to be visited.  The scheme of this URL MUST be &#8220;http&#8221; or &#8220;https&#8221;.  Note that this field is distinct from the &#8220;url&#8221; field of the challenge, which identifies the challenge itself.</dd>
 </dl>
 <pre>
+GET /acme/authz/1234/3 HTTP/1.1
+Host: example.com
+
+HTTP/1.1 200 OK
 {
   "type": "oob-01",
   "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
@@ -1778,13 +1842,24 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   <dd style="margin-left: 8">The string &#8220;oob-01&#8221;</dd>
 </dl>
 <pre>
-/* BEGIN JWS-signed content */
+POST /acme/authz/1234/3
+Host: example.com
+Content-Type: application/jose+json
+
 {
-  "type": "oob-01"
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/authz/1234/3"
+  }),
+  "payload": base64url({
+    "type": "oob-01"
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
-/* END JWS-signed content */
 </pre>
-<p id="rfc.section.7.5.p.6">On receiving a response, the server MUST verify that the value of the &#8220;type&#8221; field is as required.  Otherwise, the steps the server takes to validate identifier possession are determined by the server&#8217;s local policy.</p>
+<p id="rfc.section.7.5.p.6">On receiving a response, the server MUST verify that the value of the &#8220;type&#8221; field is &#8220;oob-01&#8221;.  Otherwise, the steps the server takes to validate identifier possession are determined by the server&#8217;s local policy.</p>
 <h1 id="rfc.section.8"><a href="#rfc.section.8">8.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a></h1>
 <h1 id="rfc.section.8.1"><a href="#rfc.section.8.1">8.1.</a> <a href="#well-known-uri-for-the-http-challenge" id="well-known-uri-for-the-http-challenge">Well-Known URI for the HTTP Challenge</a></h1>
 <p id="rfc.section.8.1.p.1">The &#8220;Well-Known URIs&#8221; registry should be updated with the following additional value (using the template from <a href="#RFC5785">[RFC5785]</a>):</p>
@@ -1846,7 +1921,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 </ol>
 <p id="rfc.section.8.6.p.3">All of these registries should be administered under a Specification Required policy <a href="#RFC5226">[RFC5226]</a>.</p>
 <h1 id="rfc.section.8.6.1"><a href="#rfc.section.8.6.1">8.6.1.</a> <a href="#fields-in-account-objects" id="fields-in-account-objects">Fields in Account Objects</a></h1>
-<p id="rfc.section.8.6.1.p.1">This registry lists field names that are defined for use in ACME account objects.  Fields marked as &#8220;client configurable&#8221; may be included in a new-account request.</p>
+<p id="rfc.section.8.6.1.p.1">This registry lists field names that are defined for use in ACME account objects.  Fields marked as &#8220;configurable&#8221; may be included in a new-account request.</p>
 <p id="rfc.section.8.6.1.p.2">Template:</p>
 <p/>
 
@@ -1906,7 +1981,7 @@ _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
   </tbody>
 </table>
 <h1 id="rfc.section.8.6.2"><a href="#rfc.section.8.6.2">8.6.2.</a> <a href="#fields-in-order-objects" id="fields-in-order-objects">Fields in Order Objects</a></h1>
-<p id="rfc.section.8.6.2.p.1">This registry lists field names that are defined for use in ACME order objects.  Fields marked as &#8220;client configurable&#8221; may be included in a new-order request.</p>
+<p id="rfc.section.8.6.2.p.1">This registry lists field names that are defined for use in ACME order objects.  Fields marked as &#8220;configurable&#8221; may be included in a new-order request.</p>
 <p id="rfc.section.8.6.2.p.2">Template:</p>
 <p/>
 

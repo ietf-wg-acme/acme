@@ -5,10 +5,10 @@
 Network Working Group                                          R. Barnes
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                      J. Hoffman-Andrews
-Expires: July 24, 2017                                               EFF
+Expires: August 7, 2017                                              EFF
                                                                J. Kasten
                                                   University of Michigan
-                                                        January 20, 2017
+                                                       February 03, 2017
 
 
           Automatic Certificate Management Environment (ACME)
@@ -53,15 +53,15 @@ Status of This Memo
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 1]
+Barnes, et al.           Expires August 7, 2017                 [Page 1]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 24, 2017.
+   This Internet-Draft will expire on August 7, 2017.
 
 Copyright Notice
 
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 2]
+Barnes, et al.           Expires August 7, 2017                 [Page 2]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
        6.3.4.  Account deactivation  . . . . . . . . . . . . . . . .  32
@@ -125,37 +125,37 @@ Internet-Draft                    ACME                      January 2017
    7.  Identifier Validation Challenges  . . . . . . . . . . . . . .  45
      7.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  47
      7.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  47
-     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  49
-     7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  51
-     7.5.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  53
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  53
-     8.1.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  54
-     8.2.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  54
-     8.3.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  54
-     8.4.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  54
-     8.5.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  55
-     8.6.  New Registries  . . . . . . . . . . . . . . . . . . . . .  55
-       8.6.1.  Fields in Account Objects . . . . . . . . . . . . . .  55
-       8.6.2.  Fields in Order Objects . . . . . . . . . . . . . . .  56
-       8.6.3.  Error Codes . . . . . . . . . . . . . . . . . . . . .  57
-       8.6.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  57
-       8.6.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  58
-       8.6.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  59
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  59
-     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  60
-     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  61
-     9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  63
-     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  64
-     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  64
-   10. Operational Considerations  . . . . . . . . . . . . . . . . .  65
-     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  65
-     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  65
-     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  66
-   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  66
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  67
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  67
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  69
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  70
+     7.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  50
+     7.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  52
+     7.5.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  54
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  55
+     8.1.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  55
+     8.2.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  55
+     8.3.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  56
+     8.4.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  56
+     8.5.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  56
+     8.6.  New Registries  . . . . . . . . . . . . . . . . . . . . .  57
+       8.6.1.  Fields in Account Objects . . . . . . . . . . . . . .  57
+       8.6.2.  Fields in Order Objects . . . . . . . . . . . . . . .  58
+       8.6.3.  Error Codes . . . . . . . . . . . . . . . . . . . . .  59
+       8.6.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  59
+       8.6.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  60
+       8.6.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  60
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  61
+     9.1.  Threat model  . . . . . . . . . . . . . . . . . . . . . .  62
+     9.2.  Integrity of Authorizations . . . . . . . . . . . . . . .  63
+     9.3.  Denial-of-Service Considerations  . . . . . . . . . . . .  65
+     9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  65
+     9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  66
+   10. Operational Considerations  . . . . . . . . . . . . . . . . .  67
+     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  67
+     10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  67
+     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  68
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  68
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  69
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  69
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  71
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  72
 
 1.  Introduction
 
@@ -165,9 +165,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 3]
+Barnes, et al.           Expires August 7, 2017                 [Page 3]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    PKI are trusted to verify that an applicant for a certificate
@@ -221,9 +221,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 4]
+Barnes, et al.           Expires August 7, 2017                 [Page 4]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    systems because it inhibits mechanization of tasks related to
@@ -277,9 +277,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 5]
+Barnes, et al.           Expires August 7, 2017                 [Page 5]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    o  The ACME client periodically contacts the CA to get updated
@@ -333,9 +333,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 6]
+Barnes, et al.           Expires August 7, 2017                 [Page 6]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    this key pair with a set of contact information by signing the
@@ -389,9 +389,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 7]
+Barnes, et al.           Expires August 7, 2017                 [Page 7]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
          Order
@@ -445,9 +445,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 8]
+Barnes, et al.           Expires August 7, 2017                 [Page 8]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    support HTTP public key pinning [RFC7469], and servers SHOULD emit
@@ -501,9 +501,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                 [Page 9]
+Barnes, et al.           Expires August 7, 2017                 [Page 9]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
       *  "alg"
@@ -557,9 +557,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 10]
+Barnes, et al.           Expires August 7, 2017                [Page 10]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
 5.3.  Equivalence of JWKs
@@ -613,9 +613,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 11]
+Barnes, et al.           Expires August 7, 2017                [Page 11]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    the server (rather than performing any re-encoding on the URL).  The
@@ -669,9 +669,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 12]
+Barnes, et al.           Expires August 7, 2017                [Page 12]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
 5.5.1.  Replay-Nonce
@@ -725,9 +725,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 13]
+Barnes, et al.           Expires August 7, 2017                [Page 13]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
 5.7.  Errors
@@ -781,9 +781,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 14]
+Barnes, et al.           Expires August 7, 2017                [Page 14]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    +-----------------------+-------------------------------------------+
@@ -837,9 +837,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 15]
+Barnes, et al.           Expires August 7, 2017                [Page 15]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    MUST NOT use the ACME URN namespace for errors other than the
@@ -893,9 +893,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 16]
+Barnes, et al.           Expires August 7, 2017                [Page 16]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    o  A "revoke-certificate" resource
@@ -949,9 +949,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 17]
+Barnes, et al.           Expires August 7, 2017                [Page 17]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
                                   directory
@@ -1005,9 +1005,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 18]
+Barnes, et al.           Expires August 7, 2017                [Page 18]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
 6.1.1.  Directory
@@ -1061,9 +1061,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 19]
+Barnes, et al.           Expires August 7, 2017                [Page 19]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    "caa-identities" (optional, array of string):  Each string MUST be a
@@ -1117,9 +1117,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 20]
+Barnes, et al.           Expires August 7, 2017                [Page 20]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
       client's agreement with the terms of service.  This field is not
@@ -1173,13 +1173,13 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 21]
+Barnes, et al.           Expires August 7, 2017                [Page 21]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    status (required, string):  The status of this order.  Possible
-      values are: "pending", "valid", and "invalid".
+      values are: "pending", "processing", "valid", and "invalid".
 
    expires (optional, string):  The timestamp after which the server
       will consider this order invalid, encoded in the format specified
@@ -1229,9 +1229,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 22]
+Barnes, et al.           Expires August 7, 2017                [Page 22]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    of the "authorizations" array, then it SHOULD consider the order
@@ -1285,9 +1285,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 23]
+Barnes, et al.           Expires August 7, 2017                [Page 23]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
       that were used.  Each array entry is a dictionary with parameters
@@ -1341,9 +1341,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 24]
+Barnes, et al.           Expires August 7, 2017                [Page 24]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    requests for this resource, returning an empty body (while still
@@ -1397,9 +1397,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 25]
+Barnes, et al.           Expires August 7, 2017                [Page 25]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    In general, the server MUST ignore any fields in the request object
@@ -1453,9 +1453,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 26]
+Barnes, et al.           Expires August 7, 2017                [Page 26]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    If the client wishes to update this information in the future, it
@@ -1509,9 +1509,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 27]
+Barnes, et al.           Expires August 7, 2017                [Page 27]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    include a Link header with link relation "terms-of-service" and the
@@ -1565,9 +1565,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 28]
+Barnes, et al.           Expires August 7, 2017                [Page 28]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    POST /acme/new-reg HTTP/1.1
@@ -1621,9 +1621,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 29]
+Barnes, et al.           Expires August 7, 2017                [Page 29]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    If all of these checks pass and the CA creates a new account, then
@@ -1677,9 +1677,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 30]
+Barnes, et al.           Expires August 7, 2017                [Page 30]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    POST /acme/key-change HTTP/1.1
@@ -1733,9 +1733,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 31]
+Barnes, et al.           Expires August 7, 2017                [Page 31]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    7.  Check that the "account" field of the key-change object contains
@@ -1789,9 +1789,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 32]
+Barnes, et al.           Expires August 7, 2017                [Page 32]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
 6.4.  Applying for Certificate Issuance
@@ -1845,9 +1845,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 33]
+Barnes, et al.           Expires August 7, 2017                [Page 33]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    those requested.  If the server requires the request to be modified
@@ -1901,9 +1901,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 34]
+Barnes, et al.           Expires August 7, 2017                [Page 34]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    still list the completed authorizations in the "authorizations"
@@ -1957,9 +1957,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 35]
+Barnes, et al.           Expires August 7, 2017                [Page 35]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    for which authorization is being requested and how the server should
@@ -2013,9 +2013,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 36]
+Barnes, et al.           Expires August 7, 2017                [Page 36]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    and a Location header pointing to the existing resource URL;
@@ -2069,9 +2069,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 37]
+Barnes, et al.           Expires August 7, 2017                [Page 37]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    The server MUST also provide a link relation header field with
@@ -2125,9 +2125,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 38]
+Barnes, et al.           Expires August 7, 2017                [Page 38]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
 6.5.  Identifier Authorization
@@ -2136,7 +2136,7 @@ Internet-Draft                    ACME                      January 2017
    an account to manage certificates for a given identifier.  This
    process must assure the server of two things: First, that the client
    controls the private key of the account key pair, and second, that
-   the client holds the identifier in question.  This process may be
+   the client controls the identifier in question.  This process may be
    repeated to associate multiple identifiers to a key pair (e.g., to
    request certificates with multiple identifiers), or to associate
    multiple accounts with an identifier (e.g., to allow multiple
@@ -2181,9 +2181,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 39]
+Barnes, et al.           Expires August 7, 2017                [Page 39]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    GET /acme/authz/1234 HTTP/1.1
@@ -2195,6 +2195,7 @@ Internet-Draft                    ACME                      January 2017
 
    {
      "status": "pending",
+     "expires": "2018-03-03T14:09:00Z",
 
      "identifier": {
        "type": "dns",
@@ -2204,12 +2205,17 @@ Internet-Draft                    ACME                      January 2017
      "challenges": [
        {
          "type": "http-01",
-         "url": "https://example.com/authz/asdf/0",
-         "token": "IlirfxKKXAsHtmzK29Pj8A"
+         "url": "https://example.com/authz/1234/0",
+         "token": "DGyRejmCefe7v4NfDGDKfA"
+       },
+       {
+         "type": "tls-sni-02",
+         "url": "https://example.com/authz/1234/1",
+         "token": "DGyRejmCefe7v4NfDGDKfA"
        },
        {
          "type": "dns-01",
-         "url": "https://example.com/authz/asdf/1",
+         "url": "https://example.com/authz/1234/2",
          "token": "DGyRejmCefe7v4NfDGDKfA"
        }
      ]
@@ -2227,20 +2233,20 @@ Internet-Draft                    ACME                      January 2017
    The client sends these updates back to the server in the form of a
    JSON object with the response fields required by the challenge type,
    carried in a POST request to the challenge URI (not authorization
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 40]
+
+Internet-Draft                    ACME                     February 2017
+
+
    URI).  This allows the client to send information only for challenges
    it is responding to.
 
    For example, if the client were to respond to the "http-01" challenge
    in the above authorization, it would send the following request:
-
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 40]
-
-Internet-Draft                    ACME                      January 2017
-
 
    POST /acme/authz/asdf/0 HTTP/1.1
    Host: example.com
@@ -2278,10 +2284,19 @@ Internet-Draft                    ACME                      January 2017
    completed one of the validations, by assigning the authorization a
    status of "valid" or "invalid", corresponding to whether it considers
    the account authorized for the identifier.  If the final state is
-   "valid", the server MUST add an "expires" field to the authorization.
-   When finalizing an authorization, the server MAY remove challenges
-   other than the one that was completed.  The server SHOULD NOT remove
-   challenges with status "invalid".
+   "valid", then the server MUST include an "expires" field.  When
+   finalizing an authorization, the server MAY remove challenges other
+   than the one that was completed, and may modify the "expires" field.
+   The server SHOULD NOT remove challenges with status "invalid".
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 41]
+
+Internet-Draft                    ACME                     February 2017
+
 
    Usually, the validation process will take some time, so the client
    will need to poll the authorization resource to see when it is
@@ -2289,14 +2304,6 @@ Internet-Draft                    ACME                      January 2017
    has validated the challenge (e.g., by seeing an HTTP or DNS request
    from the server), the client SHOULD NOT begin polling until it has
    seen the validation request from the server.
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 41]
-
-Internet-Draft                    ACME                      January 2017
-
 
    To check on the status of an authorization, the client sends a GET
    request to the authorization URI, and the server responds with the
@@ -2312,7 +2319,7 @@ Internet-Draft                    ACME                      January 2017
 
    {
      "status": "valid",
-     "expires": "2015-03-01T14:09:00Z",
+     "expires": "2018-09-09T14:09:00Z",
 
      "identifier": {
        "type": "dns",
@@ -2322,6 +2329,7 @@ Internet-Draft                    ACME                      January 2017
      "challenges": [
        {
          "type": "http-01"
+         "url": "https://example.com/authz/asdf/0",
          "status": "valid",
          "validated": "2014-12-01T12:05:00Z",
          "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -2341,17 +2349,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 42]
+Barnes, et al.           Expires August 7, 2017                [Page 42]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    POST /acme/authz/asdf HTTP/1.1
@@ -2405,9 +2405,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 43]
+Barnes, et al.           Expires August 7, 2017                [Page 43]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    POST /acme/revoke-cert HTTP/1.1
@@ -2433,12 +2433,16 @@ Internet-Draft                    ACME                      January 2017
    the certificate.  Before revoking a certificate, the server MUST
    verify that the key used to sign the request is authorized to revoke
    the certificate.  The server SHOULD consider at least the following
-   keys authorized for a given certificate:
+   accounts authorized for a given certificate:
 
-   o  the public key in the certificate.
+   o  the account that issued the certificate.
 
-   o  an account key that is authorized to act for all of the
-      identifier(s) in the certificate.
+   o  an account that holds authorizations for all of the identifiers in
+      the certificate.
+
+   The server SHOULD also consider a revocation request valid if it is
+   signed with the private key corresponding to the public key in the
+   certificate.
 
    If the revocation succeeds, the server responds with status code 200
    (OK).  If the revocation fails, the server returns an error.
@@ -2457,13 +2461,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 44]
+Barnes, et al.           Expires August 7, 2017                [Page 44]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    HTTP/1.1 200 OK
@@ -2491,9 +2491,9 @@ Internet-Draft                    ACME                      January 2017
    an entity applying for a certificate with a given identifier actually
    controls that identifier.
 
-   Challenges provide the server with assurance that an account key
-   holder is also the entity that controls an identifier.  For each type
-   of challenge, it must be the case that in order for an entity to
+   Challenges provide the server with assurance that an account holder
+   is also the entity that controls an identifier.  For each type of
+   challenge, it must be the case that in order for an entity to
    successfully complete the challenge the entity must both:
 
    o  Hold the private key of the account key pair used to respond to
@@ -2517,9 +2517,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 45]
+Barnes, et al.           Expires August 7, 2017                [Page 45]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    1.  Content of challenge objects
@@ -2554,11 +2554,11 @@ Internet-Draft                    ACME                      January 2017
    the challenge.
 
    Different challenges allow the server to obtain proof of different
-   aspects of control over an identifier.  In some challenges, like HTTP
-   and TLS SNI, the client directly proves its ability to do certain
-   things related to the identifier.  The choice of which challenges to
-   offer to a client under which circumstances is a matter of server
-   policy.
+   aspects of control over an identifier.  In some challenges, like
+   HTTP, TLS SNI, and DNS, the client directly proves its ability to do
+   certain things related to the identifier.  The choice of which
+   challenges to offer to a client under which circumstances is a matter
+   of server policy.
 
    The identifier validation challenges described in this section all
    relate to validation of domain names.  If ACME is extended in the
@@ -2573,9 +2573,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 46]
+Barnes, et al.           Expires August 7, 2017                [Page 46]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    then there would be a challenge labeled "http-03" and one labeled
@@ -2629,9 +2629,9 @@ Internet-Draft                    ACME                      January 2017
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 47]
+Barnes, et al.           Expires August 7, 2017                [Page 47]
 
-Internet-Draft                    ACME                      January 2017
+Internet-Draft                    ACME                     February 2017
 
 
    type (required, string):  The string "http-01"
@@ -2642,8 +2642,14 @@ Internet-Draft                    ACME                      January 2017
       contain any characters outside the base64url alphabet and MUST NOT
       contain any padding characters ("=").
 
+   GET /acme/authz/1234/0 HTTP/1.1
+   Host: example.com
+
+   HTTP/1.1 200 OK
    {
      "type": "http-01",
+     "url": "https://example.com/acme/authz/0",
+     "status": "pending",
      "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
    }
 
@@ -2668,27 +2674,44 @@ Internet-Draft                    ACME                      January 2017
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
 
-   /* BEGIN JWS-signed content */
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 48]
+
+Internet-Draft                    ACME                     February 2017
+
+
+   POST /acme/authz/1234/0
+   Host: example.com
+   Content-Type: application/jose+json
+
    {
-     "keyAuthorization": "evaGxfADs...62jcerQ"
+     "protected": base64url({
+       "alg": "ES256",
+       "kid": "https://example.com/acme/acct/1",
+       "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+       "url": "https://example.com/acme/authz/1234/0"
+     }),
+     "payload": base64url({
+       "keyAuthorization": "evaGxfADs...62jcerQ"
+     }),
+     "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
    }
-   /* END JWS-signed content */
 
    On receiving a response, the server MUST verify that the key
    authorization in the response matches the "token" value in the
    challenge and the client's account key.  If they do not match, then
    the server MUST return an HTTP error in response to the POST request
    in which the client sent the challenge.
-
-
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 48]
-
-Internet-Draft                    ACME                      January 2017
-
 
    Given a challenge/response pair, the server verifies the client's
    control of the domain by verifying that the resource was provisioned
@@ -2713,6 +2736,16 @@ Internet-Draft                    ACME                      January 2017
    5.  Verify that key authorization provided by the server matches the
        token for this challenge and the client's account key.
 
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 49]
+
+Internet-Draft                    ACME                     February 2017
+
+
    If all of the above verifications succeed, then the validation is
    successful.  If the request fails, or the body does not pass these
    checks, then it has failed.
@@ -2735,19 +2768,14 @@ Internet-Draft                    ACME                      January 2017
       contain any characters outside the base64url alphabet and MUST NOT
       contain any padding characters ("=").
 
+   GET /acme/authz/1234/1 HTTP/1.1
+   Host: example.com
 
-
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 49]
-
-Internet-Draft                    ACME                      January 2017
-
-
+   HTTP/1.1 200 OK
    {
      "type": "tls-sni-02",
+     "url": "https://example.com/acme/authz/1234/1",
+     "status": "pending",
      "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
    }
 
@@ -2765,6 +2793,15 @@ Internet-Draft                    ACME                      January 2017
    is the first half of the hexadecimal representation and y is the
    second half.
 
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 50]
+
+Internet-Draft                    ACME                     February 2017
+
+
    SAN B MUST be constructed as follows: compute the SHA-256 digest of
    the UTF-8 encoded key authorization and encode it in lowercase
    hexadecimal form.  The dNSName is "x.y.ka.acme.invalid" where x is
@@ -2781,26 +2818,28 @@ Internet-Draft                    ACME                      January 2017
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
 
-   /* BEGIN JWS-signed content */
+   POST /acme/authz/1234/1
+   Host: example.com
+   Content-Type: application/jose+json
+
    {
-     "keyAuthorization": "evaGxfADs...62jcerQ"
+     "protected": base64url({
+       "alg": "ES256",
+       "kid": "https://example.com/acme/acct/1",
+       "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+       "url": "https://example.com/acme/authz/1234/1"
+     }),
+     "payload": base64url({
+       "keyAuthorization": "evaGxfADs...62jcerQ"
+     }),
+     "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
    }
-   /* END JWS-signed content */
 
    On receiving a response, the server MUST verify that the key
    authorization in the response matches the "token" value in the
    challenge and the client's account key.  If they do not match, then
    the server MUST return an HTTP error in response to the POST request
    in which the client sent the challenge.
-
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 50]
-
-Internet-Draft                    ACME                      January 2017
-
 
    Given a challenge/response pair, the ACME server verifies the
    client's control of the domain by verifying that the TLS server was
@@ -2811,6 +2850,14 @@ Internet-Draft                    ACME                      January 2017
    2.  Open a TLS connection to the domain name being validated,
        presenting SAN A in the SNI field.  This connection MUST be sent
        to TCP port 443 on the server.  In the ClientHello initiating the
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 51]
+
+Internet-Draft                    ACME                     February 2017
+
+
        TLS handshake, the server MUST include a server_name extension
        (i.e., SNI) containing SAN A.  The server SHOULD ensure that it
        does not reveal SAN B in any way when making the TLS connection,
@@ -2822,9 +2869,8 @@ Internet-Draft                    ACME                      January 2017
        entries.  The comparison MUST be insensitive to case and ordering
        of names.
 
-   It is RECOMMENDED that the ACME server validation TLS connections
-   from multiple vantage points to reduce the risk of DNS hijacking
-   attacks.
+   It is RECOMMENDED that the server open multiple TLS connections from
+   various network perspectives, in order to make MitM attacks harder.
 
    If all of the above verifications succeed, then the validation is
    successful.  Otherwise, the validation fails.
@@ -2845,23 +2891,28 @@ Internet-Draft                    ACME                      January 2017
       contain any characters outside the base64url alphabet and MUST NOT
       contain any padding characters ("=").
 
+   GET /acme/authz/1234/2 HTTP/1.1
+   Host: example.com
+
+   HTTP/1.1 200 OK
    {
      "type": "dns-01",
+     "url": "https://example.com/acme/authz/1234/2",
+     "status": "pending",
      "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
    }
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 51]
-
-Internet-Draft                    ACME                      January 2017
-
 
    A client responds to this challenge by constructing a key
    authorization from the "token" value provided in the challenge and
    the client's account key.  The client then computes the SHA-256
    digest of the key authorization.
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 52]
+
+Internet-Draft                    ACME                     February 2017
+
 
    The record provisioned to the DNS is the base64url encoding of this
    digest.  The client constructs the validation domain name by
@@ -2881,11 +2932,22 @@ Internet-Draft                    ACME                      January 2017
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
 
-   /* BEGIN JWS-signed content */
+   POST /acme/authz/1234/2
+   Host: example.com
+   Content-Type: application/jose+json
+
    {
-     "keyAuthorization": "evaGxfADs...62jcerQ"
+     "protected": base64url({
+       "alg": "ES256",
+       "kid": "https://example.com/acme/acct/1",
+       "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+       "url": "https://example.com/acme/authz/1234/2"
+     }),
+     "payload": base64url({
+       "keyAuthorization": "evaGxfADs...62jcerQ"
+     }),
+     "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
    }
-   /* END JWS-signed content */
 
    On receiving a response, the server MUST verify that the key
    authorization in the response matches the "token" value in the
@@ -2899,20 +2961,24 @@ Internet-Draft                    ACME                      January 2017
 
    2.  Query for TXT records under the validation domain name
 
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 53]
+
+Internet-Draft                    ACME                     February 2017
+
+
    3.  Verify that the contents of one of the TXT records matches the
        digest value
+
+   It is RECOMMENDED that the server perform multiple DNS queries from
+   various network perspectives, in order to make MitM attacks harder.
 
    If all of the above verifications succeed, then the validation is
    successful.  If no DNS record is found, or DNS record and response
    payload do not pass these checks, then the validation fails.
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 52]
-
-Internet-Draft                    ACME                      January 2017
-
 
 7.5.  Out-of-Band
 
@@ -2933,6 +2999,10 @@ Internet-Draft                    ACME                      January 2017
       from the "url" field of the challenge, which identifies the
       challenge itself.
 
+   GET /acme/authz/1234/3 HTTP/1.1
+   Host: example.com
+
+   HTTP/1.1 200 OK
    {
      "type": "oob-01",
      "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
@@ -2946,29 +3016,39 @@ Internet-Draft                    ACME                      January 2017
 
    type (required, string):  The string "oob-01"
 
-   /* BEGIN JWS-signed content */
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 54]
+
+Internet-Draft                    ACME                     February 2017
+
+
+   POST /acme/authz/1234/3
+   Host: example.com
+   Content-Type: application/jose+json
+
    {
-     "type": "oob-01"
+     "protected": base64url({
+       "alg": "ES256",
+       "kid": "https://example.com/acme/acct/1",
+       "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+       "url": "https://example.com/acme/authz/1234/3"
+     }),
+     "payload": base64url({
+       "type": "oob-01"
+     }),
+     "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
    }
-   /* END JWS-signed content */
 
    On receiving a response, the server MUST verify that the value of the
-   "type" field is as required.  Otherwise, the steps the server takes
-   to validate identifier possession are determined by the server's
-   local policy.
+   "type" field is "oob-01".  Otherwise, the steps the server takes to
+   validate identifier possession are determined by the server's local
+   policy.
 
 8.  IANA Considerations
-
-
-
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 53]
-
-Internet-Draft                    ACME                      January 2017
-
 
 8.1.  Well-Known URI for the HTTP Challenge
 
@@ -2991,6 +3071,16 @@ Internet-Draft                    ACME                      January 2017
    | Header Field Name | Protocol | Status | Reference |
    +:------------+:------+:------+:-----------+ | Replay-Nonce | http |
    standard | Section 5.5.1 |
+
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 55]
+
+Internet-Draft                    ACME                     February 2017
+
 
 8.3.  "url" JWS Header Parameter
 
@@ -3019,13 +3109,6 @@ Internet-Draft                    ACME                      January 2017
 
    o  Header Parameter Description: Nonce
 
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 54]
-
-Internet-Draft                    ACME                      January 2017
-
-
    o  Header Parameter Usage Location(s): JWE, JWS
 
    o  Change Controller: IESG
@@ -3046,6 +3129,14 @@ Internet-Draft                    ACME                      January 2017
    Specification:  RFC XXXX
 
    Repository:  URL-TBD
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 56]
+
+Internet-Draft                    ACME                     February 2017
+
 
    Index value:  No transformation needed.
 
@@ -3071,16 +3162,8 @@ Internet-Draft                    ACME                      January 2017
 8.6.1.  Fields in Account Objects
 
    This registry lists field names that are defined for use in ACME
-   account objects.  Fields marked as "client configurable" may be
-   included in a new-account request.
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 55]
-
-Internet-Draft                    ACME                      January 2017
-
+   account objects.  Fields marked as "configurable" may be included in
+   a new-account request.
 
    Template:
 
@@ -3096,6 +3179,20 @@ Internet-Draft                    ACME                      January 2017
 
    Initial contents: The fields and descriptions defined in
    Section 6.1.2.
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 57]
+
+Internet-Draft                    ACME                     February 2017
+
 
    +--------------------------+-------------+--------------+-----------+
    | Field Name               | Field Type  | Configurable | Reference |
@@ -3118,8 +3215,8 @@ Internet-Draft                    ACME                      January 2017
 8.6.2.  Fields in Order Objects
 
    This registry lists field names that are defined for use in ACME
-   order objects.  Fields marked as "client configurable" may be
-   included in a new-order request.
+   order objects.  Fields marked as "configurable" may be included in a
+   new-order request.
 
    Template:
 
@@ -3131,17 +3228,27 @@ Internet-Draft                    ACME                      January 2017
    o  Client configurable: Boolean indicating whether the server should
       accept values provided by the client
 
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 56]
-
-Internet-Draft                    ACME                      January 2017
-
-
    o  Reference: Where this field is defined
 
    Initial contents: The fields and descriptions defined in
    Section 6.1.3.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 58]
+
+Internet-Draft                    ACME                     February 2017
+
 
      +----------------+-------------------+--------------+-----------+
      | Field Name     | Field Type        | Configurable | Reference |
@@ -3186,18 +3293,18 @@ Internet-Draft                    ACME                      January 2017
 
    Template:
 
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 57]
-
-Internet-Draft                    ACME                      January 2017
-
-
    o  Key: The value to be used as a dictionary key in the directory
       object
 
    o  Resource type: The type of resource labeled by the key
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 59]
+
+Internet-Draft                    ACME                     February 2017
+
 
    o  Reference: Where the identifier type is defined
 
@@ -3241,21 +3348,19 @@ Internet-Draft                    ACME                      January 2017
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 58]
-
-Internet-Draft                    ACME                      January 2017
-
-
 8.6.6.  Challenge Types
 
    This registry lists the ways that ACME servers can offer to validate
    control of an identifier.  The "Identifier Type" field in template
    must be contained in the Label column of the ACME Identifier Types
    registry.
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 60]
+
+Internet-Draft                    ACME                     February 2017
+
 
    Template:
 
@@ -3298,18 +3403,20 @@ Internet-Draft                    ACME                      January 2017
    2.  Once authorized, an account key's authorizations cannot be
        improperly transferred to another account key
 
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 59]
-
-Internet-Draft                    ACME                      January 2017
-
-
    In this section, we discuss the threat model that underlies ACME and
    the ways that ACME achieves these security goals within that threat
    model.  We also discuss the denial-of-service risks that ACME servers
    face, and a few other miscellaneous considerations.
+
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 61]
+
+Internet-Draft                    ACME                     February 2017
+
 
 9.1.  Threat model
 
@@ -3354,18 +3461,18 @@ Internet-Draft                    ACME                      January 2017
    for abusive use of the protocol itself.  Protection against
    application-layer MitM addresses potential attackers such as Content
    Distribution Networks (CDNs) and middleboxes with a TLS MitM
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 60]
-
-Internet-Draft                    ACME                      January 2017
-
-
    function.  Preventing abusive use of ACME means ensuring that an
    attacker with access to the validation channel can't obtain
    illegitimate authorization by acting as an ACME client (legitimately,
    in terms of the protocol).
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 62]
+
+Internet-Draft                    ACME                     February 2017
+
 
 9.2.  Integrity of Authorizations
 
@@ -3409,19 +3516,19 @@ Internet-Draft                    ACME                      January 2017
    private key, reflects the corresponding public key, and is provided
    to the server in the validation response.
 
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 61]
-
-Internet-Draft                    ACME                      January 2017
-
-
    The association of challenges to identifiers is typically done by
    requiring the client to perform some action that only someone who
    effectively controls the identifier can perform.  For the challenges
    in this document, the actions are:
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 63]
+
+Internet-Draft                    ACME                     February 2017
+
 
    o  HTTP: Provision files under .well-known on a web server for the
       domain
@@ -3465,20 +3572,20 @@ Internet-Draft                    ACME                      January 2017
    o  Querying the DNS from multiple vantage points to address local
       attackers
 
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 62]
-
-Internet-Draft                    ACME                      January 2017
-
-
    o  Applying mitigations against DNS off-path attackers, e.g., adding
       entropy to requests [I-D.vixie-dnsext-dns0x20] or only using TCP
 
    Given these considerations, the ACME validation process makes it
    impossible for any attacker on the ACME channel, or a passive
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 64]
+
+Internet-Draft                    ACME                     February 2017
+
+
    attacker on the validation channel to hijack the authorization
    process to authorize a key of the attacker's choice.
 
@@ -3522,19 +3629,19 @@ Internet-Draft                    ACME                      January 2017
    or the rate at which validation can be requested within a given
    subtree of the DNS.
 
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 63]
-
-Internet-Draft                    ACME                      January 2017
-
-
 9.4.  Server-Side Request Forgery
 
    Server-Side Request Forgery (SSRF) attacks can arise when an attacker
    can cause a server to perform HTTP requests to an attacker-chosen
    URL.  In the ACME HTTP challenge validation process, the ACME server
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 65]
+
+Internet-Draft                    ACME                     February 2017
+
+
    performs an HTTP GET request to a URL in which the attacker can
    choose the domain.  This request is made before the server has
    verified that the client controls the domain, so any client can cause
@@ -3579,16 +3686,17 @@ Internet-Draft                    ACME                      January 2017
 
       *  Is the name a high-value name?
 
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 64]
-
-Internet-Draft                    ACME                      January 2017
-
-
       *  Is the name a known phishing domain?
 
    o  Is the key in the CSR sufficiently strong?
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 66]
+
+Internet-Draft                    ACME                     February 2017
+
 
    o  Is the CSR signed with an acceptable algorithm?
 
@@ -3634,16 +3742,17 @@ Internet-Draft                    ACME                      January 2017
    In such cases, the owner of the default virtual host can complete a
    TLS-based challenge (e.g., "tls-sni-02") for any domain with an A
    record that points to the hosting platform.  This could result in
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 65]
-
-Internet-Draft                    ACME                      January 2017
-
-
    mis-issuance in cases where there are multiple hosts with different
    owners resident on the hosting platform.
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 67]
+
+Internet-Draft                    ACME                     February 2017
+
 
    A CA that accepts TLS-based proof of domain control should attempt to
    check whether a domain is hosted on a domain with a default virtual
@@ -3689,18 +3798,17 @@ Internet-Draft                    ACME                      January 2017
 
    o  Jakub Warmuz, University of Oxford
 
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 66]
-
-Internet-Draft                    ACME                      January 2017
-
-
    This document draws on many concepts established by Eric Rescorla's
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 68]
+
+Internet-Draft                    ACME                     February 2017
+
 
 12.  References
 
@@ -3743,21 +3851,20 @@ Internet-Draft                    ACME                      January 2017
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <http://www.rfc-editor.org/info/rfc4648>.
 
-
-
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 67]
-
-Internet-Draft                    ACME                      January 2017
-
-
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
               DOI 10.17487/RFC5246, August 2008,
               <http://www.rfc-editor.org/info/rfc5246>.
+
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 69]
+
+Internet-Draft                    ACME                     February 2017
+
 
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key
@@ -3802,17 +3909,18 @@ Internet-Draft                    ACME                      January 2017
               PKCS, and CMS Structures", RFC 7468, DOI 10.17487/RFC7468,
               April 2015, <http://www.rfc-editor.org/info/rfc7468>.
 
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 68]
-
-Internet-Draft                    ACME                      January 2017
-
-
    [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
               Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
               2015, <http://www.rfc-editor.org/info/rfc7515>.
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 70]
+
+Internet-Draft                    ACME                     February 2017
+
 
    [RFC7517]  Jones, M., "JSON Web Key (JWK)", RFC 7517,
               DOI 10.17487/RFC7517, May 2015,
@@ -3857,18 +3965,18 @@ Internet-Draft                    ACME                      January 2017
               DOI 10.17487/RFC5785, April 2010,
               <http://www.rfc-editor.org/info/rfc5785>.
 
-
-
-
-
-Barnes, et al.            Expires July 24, 2017                [Page 69]
-
-Internet-Draft                    ACME                      January 2017
-
-
    [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
               Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
               <http://www.rfc-editor.org/info/rfc6962>.
+
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 71]
+
+Internet-Draft                    ACME                     February 2017
+
 
    [RFC7469]  Evans, C., Palmer, C., and R. Sleevi, "Public Key Pinning
               Extension for HTTP", RFC 7469, DOI 10.17487/RFC7469, April
@@ -3917,4 +4025,8 @@ Authors' Addresses
 
 
 
-Barnes, et al.            Expires July 24, 2017                [Page 70]
+
+
+
+
+Barnes, et al.           Expires August 7, 2017                [Page 72]
