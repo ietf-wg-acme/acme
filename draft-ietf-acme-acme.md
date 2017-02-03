@@ -160,33 +160,31 @@ from the client.
 # Protocol Overview
 
 ACME allows a client to request certificate management actions using a set of
-JSON messages carried over HTTPS.   In some ways, ACME functions much like a
-traditional CA, in which a user creates an account, adds identifiers to that
-account (proving control of the domains), and requests certificate issuance for
-those domains while logged in to the account.
+JSON messages carried over HTTPS.   In many ways, ACME functions much like a
+traditional CA, in which a user creates an account, requests a certificate,
+and proves control of the domains in that certificate in order for the CA to
+sign the requested certificate.
 
-In ACME, the account is represented by an account key pair.  The "add a domain"
-function is accomplished by authorizing the key pair for a given domain.
-Certificate issuance and revocation are authorized by a signature with the key
-pair.
-
-The first phase of ACME is for the client to register with the ACME server.  The
-client generates an asymmetric key pair and associates this key pair with a set
-of contact information by signing the contact information.  The server
-acknowledges the registration by replying with a account object echoing the
-client's input.
+The first phase of ACME is for the client to request an account with the
+ACME server.  The client generates an asymmetric key pair and requests a
+new account, optionally providing contact information, agreeing to terms
+of service, and/or associating the account with an existing account
+in another system. The creation request is signed with the generated
+private key to prove that the client controls it.
 
 ~~~~~~~~~~
       Client                                                  Server
 
       Contact Information
+      ToS Agreement
+      Additional Data
       Signature                     ------->
 
                                     <-------                 Account
 ~~~~~~~~~~
 
 
-Once the client is registered, there are three major steps it needs to take to
+Once an account is registered, there are three major steps the client needs to take to
 get a certificate:
 
 1. Submit an order for a certificate to be issued
@@ -226,9 +224,8 @@ and make it available to the client.
                                     <-------             Certificate
 ~~~~~~~~~~
 
-To revoke a certificate, the client simply sends a revocation request indicating
-the certificate to be revoked, signed with an authorized key pair. The server
-indicates whether the request has succeeded.
+To revoke a certificate, the client sends a signed revocation request indicating
+the certificate to be revoked:
 
 ~~~~~~~~~~
       Client                                                 Server
@@ -290,11 +287,11 @@ character set. Trailing '=' characters MUST be stripped.
 
 ## Request Authentication
 
-All ACME requests with a non-empty body MUST encapsulate the body in a JWS
-object, signed using the account key pair.  The server MUST verify the JWS
-before processing the request.  (For readability, however, the examples below
-omit this encapsulation.)  Encapsulating request bodies in JWS provides a simple
-authentication of requests by way of key continuity.
+All ACME requests with a non-empty body MUST encapsulate their payload
+in a JWS object, signed (in most cases) using the account's private
+key.  The server MUST verify the JWS before processing the request.
+Encapsulating request bodies in JWS provides a simple authentication
+of requests.
 
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
@@ -317,9 +314,9 @@ key, there MUST be a "jwk" field.
 For all other requests, there MUST be a "kid" field. This field must
 contain the account URI received by POSTing to the new-reg resource.
 
-Note that authentication via signed POST implies that GET requests are not
-authenticated.  Servers MUST NOT respond to GET requests for resources that
-might be considered sensitive.
+Note that authentication via signed JWS request bodies implies that GET
+requests are not authenticated.  Servers MUST NOT respond to GET requests
+for resources that might be considered sensitive.
 
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
