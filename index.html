@@ -623,11 +623,11 @@ Content-Language: en
 <p id="rfc.section.5.3.p.3">Note that this comparison is equivalent to computing the JWK thumbprints of the two keys and comparing thumbprints.  The only difference is that there is no requirement for a hash computation (and thus it is independent of the choice of hash function) and no risk of hash collision.</p>
 <h1 id="rfc.section.5.4"><a href="#rfc.section.5.4">5.4.</a> <a href="#request-uri-integrity" id="request-uri-integrity">Request URI Integrity</a></h1>
 <p id="rfc.section.5.4.p.1">It is common in deployment for the entity terminating TLS for HTTPS to be different from the entity operating the logical HTTPS server, with a &#8220;request routing&#8221; layer in the middle.  For example, an ACME CA might have a content delivery network terminate TLS connections from clients so that it can inspect client requests for denial-of-service protection.</p>
-<p id="rfc.section.5.4.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to provide a limited integrity mechanism, which protects against an intermediary changing the request URI to another ACME URI of a different type.  (It does not protect against changing between URIs of the same type, e.g., from one authorization URI to another).</p>
+<p id="rfc.section.5.4.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to provide an integrity mechanism, which protects against an intermediary changing the request URI to another ACME URI.</p>
 <p id="rfc.section.5.4.p.3">As noted above, all ACME request objects carry a &#8220;url&#8221; parameter in their protected header.  This header parameter encodes the URL to which the client is directing the request.  On receiving such an object in an HTTP request, the server MUST compare the &#8220;url&#8221; parameter to the request URI.  If the two do not match, then the server MUST reject the request as unauthorized.</p>
 <p id="rfc.section.5.4.p.4">Except for the directory resource, all ACME resources are addressed with URLs provided to the client by the server.  For these resources, the client MUST set the &#8220;url&#8221; field to the exact string provided by the server (rather than performing any re-encoding on the URL).  The server SHOULD perform the corresponding string equality check, configuring each resource with the URL string provided to clients and having the resource check that requests have the same string in their &#8220;url&#8221; fields.</p>
 <h1 id="rfc.section.5.4.1"><a href="#rfc.section.5.4.1">5.4.1.</a> <a href="#url-url-jws-header-parameter" id="url-url-jws-header-parameter">&#8220;url&#8221; (URL) JWS header parameter</a></h1>
-<p id="rfc.section.5.4.1.p.1">The &#8220;url&#8221; header parameter specifies the URL to which this JWS object is directed <a href="#RFC3986">[RFC3986]</a>.  The &#8220;url&#8221; parameter MUST be carried in the protected header of the JWS.  The value of the &#8220;url&#8221; header MUST be a JSON string representing the URL.</p>
+<p id="rfc.section.5.4.1.p.1">The &#8220;url&#8221; header parameter specifies the URL <a href="#RFC3986">[RFC3986]</a> to which this JWS object is directed.  The &#8220;url&#8221; parameter MUST be carried in the protected header of the JWS.  The value of the &#8220;url&#8221; header MUST be a JSON string representing the URL.</p>
 <h1 id="rfc.section.5.5"><a href="#rfc.section.5.5">5.5.</a> <a href="#replay-protection" id="replay-protection">Replay protection</a></h1>
 <p id="rfc.section.5.5.p.1">In order to protect ACME resources from any possible replay attacks, ACME requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
 <p id="rfc.section.5.5.p.2">An ACME server provides nonces to clients using the Replay-Nonce header field, as specified below.  The server MUST include a Replay-Nonce header field in every successful response to a POST request, and SHOULD provide it in error responses as well.</p>
@@ -647,7 +647,7 @@ Content-Language: en
 <p id="rfc.section.5.5.2.p.1">The &#8220;nonce&#8221; header parameter provides a unique value that enables the verifier of a JWS to recognize when replay has occurred. The &#8220;nonce&#8221; header parameter MUST be carried in the protected header of the JWS.</p>
 <p id="rfc.section.5.5.2.p.2">The value of the &#8220;nonce&#8221; header parameter MUST be an octet string, encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  If the value of a &#8220;nonce&#8221; header parameter is not valid according to this encoding, then the verifier MUST reject the JWS as malformed.</p>
 <h1 id="rfc.section.5.6"><a href="#rfc.section.5.6">5.6.</a> <a href="#rate-limits" id="rate-limits">Rate limits</a></h1>
-<p id="rfc.section.5.6.p.1">Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the code &#8220;rateLimited&#8221;.  Additionally, the server SHOULD send a &#8220;Retry-After&#8221; header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.</p>
+<p id="rfc.section.5.6.p.1">Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the type &#8220;urn:ietf:params:acme:error:rateLimited&#8221;.  Additionally, the server SHOULD send a &#8220;Retry-After&#8221; header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.</p>
 <p id="rfc.section.5.6.p.2">In addition to the human readable &#8220;detail&#8221; field of the error response, the server MAY send one or multiple tokens in the &#8220;Link&#8221; header pointing to documentation about the specific hit rate limits using the &#8220;rate-limit&#8221; relation.</p>
 <h1 id="rfc.section.5.7"><a href="#rfc.section.5.7">5.7.</a> <a href="#errors" id="errors">Errors</a></h1>
 <p id="rfc.section.5.7.p.1">Errors can be reported in ACME both at the HTTP layer and within ACME payloads.  ACME servers can return responses with an HTTP error response code (4XX or 5XX).  For example:  If the client submits a request using a method not allowed in this document, then the server MAY return status code 405 (Method Not Allowed).</p>
@@ -726,16 +726,16 @@ Content-Language: en
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.5.7.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of such errors.</p>
+<p id="rfc.section.5.7.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of all errors.</p>
 <p id="rfc.section.5.7.p.4">Authorization and challenge objects can also contain error information to indicate why the server was unable to validate authorization.</p>
 <h1 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#certificate-management" id="certificate-management">Certificate Management</a></h1>
 <p id="rfc.section.6.p.1">In this section, we describe the certificate management functions that ACME enables:</p>
 <p/>
 
 <ul>
-  <li>Account Key Registration</li>
+  <li>Account Creation</li>
   <li>Ordering a Certificate</li>
-  <li>Account Key Authorization</li>
+  <li>Identifier Authorization</li>
   <li>Certificate Issuance</li>
   <li>Certificate Revocation</li>
 </ul>
@@ -757,11 +757,10 @@ Content-Language: en
   <li>A &#8220;key-change&#8221; resource</li>
 </ul>
 <p id="rfc.section.6.1.p.3">The server MUST provide &#8220;directory&#8221; and &#8220;new-nonce&#8221; resources.</p>
-<p id="rfc.section.6.1.p.4">For the singular resources above (&#8220;directory&#8221;, &#8220;new-nonce&#8221;, &#8220;new-account&#8221;, &#8220;new-order&#8221;, &#8220;revoke-certificate&#8221;, and &#8220;key-change&#8221;) the resource may be addressed by multiple URIs, but all must provide equivalent functionality.</p>
-<p id="rfc.section.6.1.p.5">ACME uses different URIs for different management functions. Each function is listed in a directory along with its corresponding URI, so clients only need to be configured with the directory URI.  These URIs are connected by a few different link relations <a href="#RFC5988">[RFC5988]</a>.</p>
-<p id="rfc.section.6.1.p.6">The &#8220;up&#8221; link relation is used with challenge resources to indicate the authorization resource to which a challenge belongs.  It is also used from certificate resources to indicate a resource from which the client may fetch a chain of CA certificates that could be used to validate the certificate in the original resource.</p>
-<p id="rfc.section.6.1.p.7">The &#8220;directory&#8221; link relation is present on all resources other than the directory and indicates the directory URL.</p>
-<p id="rfc.section.6.1.p.8">The following diagram illustrates the relations between resources on an ACME server.  For the most part, these relations are expressed by URLs provided as strings in the resources&#8217; JSON representations.  Lines with labels in quotes indicate HTTP link relations</p>
+<p id="rfc.section.6.1.p.4">ACME uses different URIs for different management functions. Each function is listed in a directory along with its corresponding URI, so clients only need to be configured with the directory URI.  These URIs are connected by a few different link relations <a href="#RFC5988">[RFC5988]</a>.</p>
+<p id="rfc.section.6.1.p.5">The &#8220;up&#8221; link relation is used with challenge resources to indicate the authorization resource to which a challenge belongs.  It is also used from certificate resources to indicate a resource from which the client may fetch a chain of CA certificates that could be used to validate the certificate in the original resource.</p>
+<p id="rfc.section.6.1.p.6">The &#8220;directory&#8221; link relation is present on all resources other than the directory and indicates the directory URL.</p>
+<p id="rfc.section.6.1.p.7">The following diagram illustrates the relations between resources on an ACME server.  For the most part, these relations are expressed by URLs provided as strings in the resources&#8217; JSON representations.  Lines with labels in quotes indicate HTTP link relations</p>
 <pre>
                                directory
                                    |
@@ -771,7 +770,7 @@ Content-Language: en
        |          |          |                           |
        |          |          |                           |
        V          V          V                           V
-    new-acct  new-authz  new-order                  revoke-cert
+ new-account  new-authz  new-order                  revoke-cert
        |          |          |                           ^
        |          |          |    "author"               | "revoke"
        V          |          V   &lt;--------               |
@@ -785,7 +784,7 @@ Content-Language: en
                             V |
                           challenge
 </pre>
-<p id="rfc.section.6.1.p.9">The following table illustrates a typical sequence of requests required to establish a new account with the server, prove control of an identifier, issue a certificate, and fetch an updated certificate some time after issuance.  The &#8220;-&gt;&#8221; is a mnemonic for a Location header pointing to a created resource.</p>
+<p id="rfc.section.6.1.p.8">The following table illustrates a typical sequence of requests required to establish a new account with the server, prove control of an identifier, issue a certificate, and fetch an updated certificate some time after issuance.  The &#8220;-&gt;&#8221; is a mnemonic for a Location header pointing to a created resource.</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
@@ -801,9 +800,9 @@ Content-Language: en
       <td class="left">204</td>
     </tr>
     <tr>
-      <td class="left">Register</td>
-      <td class="left">POST new-acct</td>
-      <td class="left">201 -&gt; acct</td>
+      <td class="left">Create account</td>
+      <td class="left">POST new-account</td>
+      <td class="left">201 -&gt; account</td>
     </tr>
     <tr>
       <td class="left">Submit an order</td>
@@ -822,7 +821,7 @@ Content-Language: en
     </tr>
     <tr>
       <td class="left">Poll for status</td>
-      <td class="left">GET  order</td>
+      <td class="left">GET  authz</td>
       <td class="left">200</td>
     </tr>
     <tr>
@@ -832,7 +831,7 @@ Content-Language: en
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.6.1.p.10">The remainder of this section provides the details of how these resources are structured and how the ACME protocol makes use of them.</p>
+<p id="rfc.section.6.1.p.9">The remainder of this section provides the details of how these resources are structured and how the ACME protocol makes use of them.</p>
 <h1 id="rfc.section.6.1.1"><a href="#rfc.section.6.1.1">6.1.1.</a> <a href="#directory" id="directory">Directory</a></h1>
 <p id="rfc.section.6.1.1.p.1">In order to help clients configure themselves with the right URIs for each ACME operation, ACME servers provide a directory object. This should be the only URL needed to configure clients. It is a JSON dictionary, whose keys are drawn from the following table and whose values are the corresponding URLs.</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
@@ -848,7 +847,7 @@ Content-Language: en
       <td class="left">New nonce</td>
     </tr>
     <tr>
-      <td class="left">new-acct</td>
+      <td class="left">new-account</td>
       <td class="left">New account</td>
     </tr>
     <tr>
@@ -895,7 +894,7 @@ Content-Type: application/json
 
 {
   "new-nonce": "https://example.com/acme/new-nonce",
-  "new-acct": "https://example.com/acme/new-acct",
+  "new-account": "https://example.com/acme/new-account",
   "new-order": "https://example.com/acme/new-order",
   "new-authz": "https://example.com/acme/new-authz",
   "revoke-cert": "https://example.com/acme/revoke-cert",
@@ -908,16 +907,16 @@ Content-Type: application/json
 }
 </pre>
 <h1 id="rfc.section.6.1.2"><a href="#rfc.section.6.1.2">6.1.2.</a> <a href="#account-objects" id="account-objects">Account Objects</a></h1>
-<p id="rfc.section.6.1.2.p.1">An ACME account resource represents a set of metadata associated to an account key pair.  Account resources have the following structure:</p>
+<p id="rfc.section.6.1.2.p.1">An ACME account resource represents a set of metadata associated to an account.  Account resources have the following structure:</p>
 <p/>
 
 <dl>
   <dt>key (required, dictionary):</dt>
-  <dd style="margin-left: 8">The public key of the account key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>. This field is not updateable by the client.</dd>
+  <dd style="margin-left: 8">The public key of the account&#8217;s key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>. The client may not directly update this field, but must use the key-change resource instead.</dd>
   <dt>status (required, string):</dt>
   <dd style="margin-left: 8">The status of this account. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;.  The value &#8220;deactivated&#8221; should be used to indicate user initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate administratively initiated deactivation.</dd>
   <dt>contact (optional, array of string):</dt>
-  <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this authorization. For example, the server may wish to notify the client about server-initiated revocation.</dd>
+  <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this account. For example, the server may wish to notify the client about server-initiated revocation or certificate expiration.</dd>
   <dt>terms-of-service-agreed (optional, boolean):</dt>
   <dd style="margin-left: 8">Including this field in a new-account request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field is not updateable by the client.</dd>
   <dt>orders (required, string):</dt>
@@ -1005,7 +1004,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
   <dt>challenges (required, array):</dt>
   <dd style="margin-left: 8">The challenges that the client can fulfill in order to prove possession of the identifier (for pending authorizations).  For final authorizations, the challenges that were used.  Each array entry is a dictionary with parameters required to validate the challenge, as specified in <a href="#identifier-validation-challenges">Section 7</a>. A client should attempt to fulfill at most one of these challenges, and a server should consider any one of the challenges sufficient to make the authorization valid.</dd>
 </dl>
-<p id="rfc.section.6.1.4.p.4">The only type of identifier defined by this specification is a fully-qualified domain name (type: &#8220;dns&#8221;). The value of the identifier MUST be the ASCII representation of the domain name. If a domain name contains Unicode characters it MUST be encoded using the rules defined in <a href="#RFC3492">[RFC3492]</a>. Servers MUST verify any identifier values that begin with the ASCII Compatible Encoding prefix &#8220;xn&#8211;&#8221; as defined in <a href="#RFC5890">[RFC5890]</a> are properly encoded. Wildcard domain names (with &#8220;*&#8221; as the first label) MUST NOT be included in authorization requests.</p>
+<p id="rfc.section.6.1.4.p.4">The only type of identifier defined by this specification is a fully-qualified domain name (type: &#8220;dns&#8221;). The value of the identifier MUST be the ASCII representation of the domain name. If a domain name contains Unicode characters it MUST be encoded using the rules defined in <a href="#RFC3492">[RFC3492]</a>. Servers MUST verify any identifier values that begin with the ASCII Compatible Encoding prefix &#8220;xn&#8211;&#8221; as defined in <a href="#RFC5890">[RFC5890]</a> are properly encoded. Wildcard domain names (with &#8220;*&#8221; as the first label) MUST NOT be included in authorization objects.</p>
 <pre>
 {
   "status": "valid",
@@ -1037,11 +1036,11 @@ HTTP/1.1 204 No Content
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 </pre>
-<p id="rfc.section.6.2.p.3">Caching of responses from the new-nonce resource can cause clients to be unable to communicate with the ACME server.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the new-nonce resource, in order to prevent caching of this resource.</p>
+<p id="rfc.section.6.2.p.3">Proxy caching of responses from the new-nonce resource can cause clients receive the same nonce repeatedly, leading to badNonce errors.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the new-nonce resource, in order to prevent caching of this resource.</p>
 <h1 id="rfc.section.6.3"><a href="#rfc.section.6.3">6.3.</a> <a href="#account-creation" id="account-creation">Account Creation</a></h1>
 <p id="rfc.section.6.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URI.  The body of the request is a stub account object containing only the &#8220;contact&#8221; field.</p>
 <pre>
-POST /acme/new-acct HTTP/1.1
+POST /acme/new-account HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1050,7 +1049,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "jwk": {...},
     "nonce": "6S8IqOGY7eL2lsGoTZYifg",
-    "url": "https://example.com/acme/new-acct"
+    "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
     "terms-of-service-agreed": true,
@@ -1072,7 +1071,7 @@ Content-Type: application/jose+json
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Location: https://example.com/acme/acct/asdf
+Location: https://example.com/acme/acct/1
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 
 {
@@ -1088,16 +1087,16 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
 <p id="rfc.section.6.3.p.8">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URI.  The server MUST ignore any updates to the &#8220;key&#8221;, or &#8220;order&#8221; fields or any other fields it does not recognize. The server MUST verify that the request is signed with the private key corresponding to the &#8220;key&#8221; field of the request before updating the registration.</p>
 <p id="rfc.section.6.3.p.9">For example, to update the contact information in the above account, the client could send the following request:</p>
 <pre>
-POST /acme/acct/asdf HTTP/1.1
+POST /acme/acct/1 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
-    "url": "https://example.com/acme/acct/asdf"
+    "url": "https://example.com/acme/acct/1"
   }),
   "payload": base64url({
     "contact": [
@@ -1148,7 +1147,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "jwk": /* account key */,
     "nonce": "K60BWPrMQG9SDxBDS_xtSw",
-    "url": "https://example.com/acme/new-acct"
+    "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
     "contact": ["mailto:example@anonymous.invalid"],
@@ -1158,7 +1157,7 @@ Content-Type: application/jose+json
       "protected": base64url({
         "alg": "HS256",
         "kid": /* key identifier from CA */,
-        "url": "https://example.com/acme/new-acct"
+        "url": "https://example.com/acme/new-account"
       }),
       "payload": base64url(/* same as in "jwk" above */),
       "signature": /* MAC using MAC key from CA */
@@ -1167,7 +1166,7 @@ Content-Type: application/jose+json
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 </pre>
-<p id="rfc.section.6.3.2.p.6">When a CA receives a new-registration request containing an &#8220;external-account-binding&#8221; field, it must decide whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;external-account-binding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
+<p id="rfc.section.6.3.2.p.6">When a CA receives a new-account request containing an &#8220;external-account-binding&#8221; field, it must decide whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;external-account-binding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
 <p/>
 
 <ol>
@@ -1217,7 +1216,7 @@ Content-Type: application/jose+json
       "url": "https://example.com/acme/key-change"
     }),
     "payload": base64url({
-      "account": "https://example.com/acme/acct/asdf",
+      "account": "https://example.com/acme/acct/1",
       "newKey": /* new key */
     }),
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1242,16 +1241,16 @@ Content-Type: application/jose+json
 <h1 id="rfc.section.6.3.4"><a href="#rfc.section.6.3.4">6.3.4.</a> <a href="#account-deactivation" id="account-deactivation">Account deactivation</a></h1>
 <p id="rfc.section.6.3.4.p.1">A client may deactivate an account by posting a signed update to the server with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised.</p>
 <pre>
-POST /acme/acct/asdf HTTP/1.1
+POST /acme/acct/1 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
-    "url": "https://example.com/acme/acct/asdf"
+    "url": "https://example.com/acme/acct/1"
   }),
   "payload": base64url({
     "status": "deactivated"
@@ -1262,7 +1261,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.6.3.4.p.2">The server MUST verify that the request is signed by the account key. If the server accepts the deactivation request, it should reply with a 200 (OK) status code and the current contents of the account object.</p>
 <p id="rfc.section.6.3.4.p.3">Once an account is deactivated, the server MUST NOT accept further requests authorized by that account&#8217;s key. It is up to server policy how long to retain data related to that account, whether to revoke certificates issued by that account, and whether to send email to that account&#8217;s contacts. ACME does not provide a way to reactivate a deactivated account.</p>
 <h1 id="rfc.section.6.4"><a href="#rfc.section.6.4">6.4.</a> <a href="#applying-for-certificate-issuance" id="applying-for-certificate-issuance">Applying for Certificate Issuance</a></h1>
-<p id="rfc.section.6.4.p.1">The holder of an account key pair may use ACME to submit an order for a certificate to be issued.  The client makes this request by sending a POST request to the server&#8217;s new-order resource.  The body of the POST is a JWS object whose JSON payload is a subset of the order object defined in <a href="#order-objects">Section 6.1.3</a>, containing the fields that describe the certificate to be issued:</p>
+<p id="rfc.section.6.4.p.1">A client may use ACME to submit an order for a certificate to be issued.  The client makes this request by sending a POST request to the server&#8217;s new-order resource.  The body of the POST is a JWS object whose JSON payload is a subset of the order object defined in <a href="#order-objects">Section 6.1.3</a>, containing the fields that describe the certificate to be issued:</p>
 <p/>
 
 <dl>
@@ -1281,7 +1280,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-order"
   }),
@@ -1455,7 +1454,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
   }),
@@ -1508,7 +1507,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
   }),
@@ -1538,7 +1537,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf", // OR "jwk"
+    "kid": "https://example.com/acme/acct/1", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   }),
@@ -2078,7 +2077,7 @@ Content-Type: application/jose+json
   </thead>
   <tbody>
     <tr>
-      <td class="left">new-acct</td>
+      <td class="left">new-account</td>
       <td class="left">New account</td>
       <td class="left">RFC XXXX</td>
     </tr>
