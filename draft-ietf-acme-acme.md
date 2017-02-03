@@ -374,10 +374,8 @@ requests for denial-of-service protection.
 
 These intermediaries can also change values in the request that are not signed
 in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to
-provide a limited integrity mechanism, which protects against an intermediary
-changing the request URI to another ACME URI of a different type.  (It does not
-protect against changing between URIs of the same type, e.g., from one
-authorization URI to another).
+provide an integrity mechanism, which protects against an intermediary
+changing the request URI to another ACME URI.
 
 As noted above, all ACME request objects carry a "url" parameter in their
 protected header.  This header parameter encodes the URL to which the client is
@@ -395,8 +393,8 @@ their "url" fields.
 
 ### "url" (URL) JWS header parameter
 
-The "url" header parameter specifies the URL to which this JWS object is
-directed {{!RFC3986}}.  The "url" parameter MUST be carried in the protected
+The "url" header parameter specifies the URL {{!RFC3986}} to which this JWS object is
+directed.  The "url" parameter MUST be carried in the protected
 header of the JWS.  The value of the "url" header MUST be a JSON string
 representing the URL.
 
@@ -462,12 +460,13 @@ then the verifier MUST reject the JWS as malformed.
 
 ## Rate limits
 
-Creation of resources can be rate limited to ensure fair usage and prevent
-abuse.  Once the rate limit is exceeded, the server MUST respond with an error
-with the code "rateLimited".  Additionally, the server SHOULD send a
-"Retry-After" header indicating when the current request may succeed again.  If
-multiple rate limits are in place, that is the time where all rate limits allow
-access again for the current request with exactly the same parameters.
+Creation of resources can be rate limited to ensure fair usage and
+prevent abuse.  Once the rate limit is exceeded, the server MUST respond
+with an error with the type "urn:ietf:params:acme:error:rateLimited".
+Additionally, the server SHOULD send a "Retry-After" header indicating
+when the current request may succeed again.  If multiple rate limits are
+in place, that is the time where all rate limits allow access again for
+the current request with exactly the same parameters.
 
 In addition to the human readable "detail" field of the error response, the
 server MAY send one or multiple tokens in the "Link" header pointing to
@@ -508,7 +507,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
 namespace for errors other than the standard types.  Clients SHOULD display the
-"detail" field of such errors.
+"detail" field of all errors.
 
 Authorization and challenge objects can also contain error information to
 indicate why the server was unable to validate authorization.
@@ -519,9 +518,9 @@ indicate why the server was unable to validate authorization.
 In this section, we describe the certificate management functions that ACME
 enables:
 
-  * Account Key Registration
+  * Account Creation
   * Ordering a Certificate
-  * Account Key Authorization
+  * Identifier Authorization
   * Certificate Issuance
   * Certificate Revocation
 
@@ -544,10 +543,6 @@ ACME is structured as a REST application with a few types of resources:
 * A "key-change" resource
 
 The server MUST provide "directory" and "new-nonce" resources.
-
-For the singular resources above ("directory", "new-nonce", "new-account",
-"new-order", "revoke-certificate", and "key-change") the resource may be
-addressed by multiple URIs, but all must provide equivalent functionality.
 
 ACME uses different URIs for different management functions. Each function is
 listed in a directory along with its corresponding URI, so clients only need to
@@ -577,7 +572,7 @@ indicate HTTP link relations
        |          |          |                           |
        |          |          |                           |
        V          V          V                           V
-    new-acct  new-authz  new-order                  revoke-cert
+ new-account  new-authz  new-order                  revoke-cert
        |          |          |                           ^
        |          |          |    "author"               | "revoke"
        V          |          V   <--------               |
@@ -597,15 +592,15 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action               | Request        | Response     |
-|:---------------------|:---------------|:-------------|
-| Get a nonce          | HEAD new-nonce | 204          |
-| Register             | POST new-acct  | 201 -> acct  |
-| Submit an order      | POST new-order | 201 -> order |
-| Fetch challenges     | GET  authz     | 200          |
-| Respond to challenge | POST challenge | 200          |
-| Poll for status      | GET  order     | 200          |
-| Check for new cert   | GET  cert      | 200          |
+| Action               | Request           | Response        |
+|:---------------------|:------------------|:----------------|
+| Get a nonce          | HEAD new-nonce    | 204             |
+| Create account       | POST new-account  | 201 -> account  |
+| Submit an order      | POST new-order    | 201 -> order    |
+| Fetch challenges     | GET  authz        | 200             |
+| Respond to challenge | POST challenge    | 200             |
+| Poll for status      | GET  authz        | 200             |
+| Check for new cert   | GET  cert         | 200             |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -617,14 +612,14 @@ operation, ACME servers provide a directory object. This should be the only URL
 needed to configure clients. It is a JSON dictionary, whose keys are drawn from
 the following table and whose values are the corresponding URLs.
 
-| Key         | URL in value         |
-|:------------|:---------------------|
-| new-nonce   | New nonce            |
-| new-acct    | New account          |
-| new-order   | New order            |
-| new-authz   | New authorization    |
-| revoke-cert | Revoke certificate   |
-| key-change  | Key change           |
+| Key            | URL in value         |
+|:---------------|:---------------------|
+| new-nonce      | New nonce            |
+| new-account    | New account          |
+| new-order      | New order            |
+| new-authz      | New authorization    |
+| revoke-cert    | Revoke certificate   |
+| key-change     | Key change           |
 
 There is no constraint on the actual URI of the directory except that it
 should be different from the other ACME server resources' URIs, and that it
@@ -664,7 +659,7 @@ Content-Type: application/json
 
 {
   "new-nonce": "https://example.com/acme/new-nonce",
-  "new-acct": "https://example.com/acme/new-acct",
+  "new-account": "https://example.com/acme/new-account",
   "new-order": "https://example.com/acme/new-order",
   "new-authz": "https://example.com/acme/new-authz",
   "revoke-cert": "https://example.com/acme/revoke-cert",
@@ -679,12 +674,13 @@ Content-Type: application/json
 
 ### Account Objects
 
-An ACME account resource represents a set of metadata associated to an account
-key pair.  Account resources have the following structure:
+An ACME account resource represents a set of metadata associated to an account.
+Account resources have the following structure:
 
 key (required, dictionary):
-: The public key of the account key pair, encoded as a JSON Web Key object
-{{!RFC7517}}. This field is not updateable by the client.
+: The public key of the account's key pair, encoded as a JSON Web Key object
+{{!RFC7517}}. The client may not directly update this field, but must use the
+key-change resource instead.
 
 status (required, string):
 : The status of this account. Possible values are: "valid", "deactivated", and
@@ -694,8 +690,8 @@ initiated deactivation.
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
-related to this authorization. For example, the server may wish to notify the
-client about server-initiated revocation.
+related to this account. For example, the server may wish to notify the
+client about server-initiated revocation or certificate expiration.
 
 terms-of-service-agreed (optional, boolean):
 : Including this field in a new-account request, with a value of true, indicates
@@ -863,7 +859,7 @@ representation of the domain name. If a domain name contains Unicode characters
 it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
 any identifier values that begin with the ASCII Compatible Encoding prefix "xn--"
 as defined in {{!RFC5890}} are properly encoded. Wildcard domain names (with "*"
-as the first label) MUST NOT be included in authorization requests.
+as the first label) MUST NOT be included in authorization objects.
 
 ~~~~~~~~~~
 {
@@ -909,10 +905,11 @@ Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 ~~~~~~~~~~
 
-Caching of responses from the new-nonce resource can cause clients to be unable
-to communicate with the ACME server.  The server MUST include a Cache-Control
-header field with the "no-store" directive in responses for the new-nonce
-resource, in order to prevent caching of this resource.
+Proxy caching of responses from the new-nonce resource can cause
+clients receive the same nonce repeatedly, leading to badNonce errors.
+The server MUST include a Cache-Control header field with the "no-store"
+directive in responses for the new-nonce resource, in order to prevent
+caching of this resource.
 
 ## Account Creation
 
@@ -921,7 +918,7 @@ server's new-account URI.  The body of the request is a stub account object
 containing only the "contact" field.
 
 ~~~~~~~~~~
-POST /acme/new-acct HTTP/1.1
+POST /acme/new-account HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -930,7 +927,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "jwk": {...},
     "nonce": "6S8IqOGY7eL2lsGoTZYifg",
-    "url": "https://example.com/acme/new-acct"
+    "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
     "terms-of-service-agreed": true,
@@ -983,7 +980,7 @@ agreement to terms.
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Location: https://example.com/acme/acct/asdf
+Location: https://example.com/acme/acct/1
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
@@ -1008,16 +1005,16 @@ For example, to update the contact information in the above account, the client
 could send the following request:
 
 ~~~~~~~~~~
-POST /acme/acct/asdf HTTP/1.1
+POST /acme/acct/1 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
-    "url": "https://example.com/acme/acct/asdf"
+    "url": "https://example.com/acme/acct/1"
   }),
   "payload": base64url({
     "contact": [
@@ -1099,7 +1096,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "jwk": /* account key */,
     "nonce": "K60BWPrMQG9SDxBDS_xtSw",
-    "url": "https://example.com/acme/new-acct"
+    "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
     "contact": ["mailto:example@anonymous.invalid"],
@@ -1109,7 +1106,7 @@ Content-Type: application/jose+json
       "protected": base64url({
         "alg": "HS256",
         "kid": /* key identifier from CA */,
-        "url": "https://example.com/acme/new-acct"
+        "url": "https://example.com/acme/new-account"
       }),
       "payload": base64url(/* same as in "jwk" above */),
       "signature": /* MAC using MAC key from CA */
@@ -1119,7 +1116,7 @@ Content-Type: application/jose+json
 }
 ~~~~~
 
-When a CA receives a new-registration request containing an
+When a CA receives a new-account request containing an
 "external-account-binding" field, it must decide whether or not to verify the
 binding.  If the CA does not verify the binding, then it MUST NOT reflect the
 "external-account-binding" field in the resulting account object (if any).  To
@@ -1191,7 +1188,7 @@ Content-Type: application/jose+json
       "url": "https://example.com/acme/key-change"
     }),
     "payload": base64url({
-      "account": "https://example.com/acme/acct/asdf",
+      "account": "https://example.com/acme/acct/1",
       "newKey": /* new key */
     }),
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1205,14 +1202,14 @@ addition to the typical JWS validation:
 
 1. Validate the POST request belongs to a currently active account, as described
    in Message Transport.
-1. Check that the payload of the JWS is a well-formed JWS object (the "inner
+2. Check that the payload of the JWS is a well-formed JWS object (the "inner
    JWS")
-2. Check that the JWS protected header of the inner JWS has a "jwk" field.
-3. Check that the inner JWS verifies using the key in its "jwk" field
-4. Check that the payload of the inner JWS is a well-formed key-change object
+3. Check that the JWS protected header of the inner JWS has a "jwk" field.
+4. Check that the inner JWS verifies using the key in its "jwk" field
+5. Check that the payload of the inner JWS is a well-formed key-change object
    (as described above)
-5. Check that the "url" parameters of the inner and outer JWSs are the same
-6. Check that the "account" field of the key-change object contains the URL for
+6. Check that the "url" parameters of the inner and outer JWSs are the same
+7. Check that the "account" field of the key-change object contains the URL for
    the account matching the old key
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
@@ -1229,16 +1226,16 @@ a status field of "deactivated." Clients may wish to do this when the account
 key is compromised.
 
 ~~~~~~~~~~
-POST /acme/acct/asdf HTTP/1.1
+POST /acme/acct/1 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
-    "url": "https://example.com/acme/acct/asdf"
+    "url": "https://example.com/acme/acct/1"
   }),
   "payload": base64url({
     "status": "deactivated"
@@ -1259,7 +1256,7 @@ provide a way to reactivate a deactivated account.
 
 ## Applying for Certificate Issuance
 
-The holder of an account key pair may use ACME to submit an order for a
+A client may use ACME to submit an order for a
 certificate to be issued.  The client makes this request by sending a POST
 request to the server's new-order resource.  The body of the POST is a JWS
 object whose JSON payload is a subset of the order object defined in
@@ -1288,7 +1285,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-order"
   }),
@@ -1618,7 +1615,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/asdf/0"
   }),
@@ -1705,7 +1702,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf",
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
     "url": "https://example.com/acme/authz/asdf"
   }),
@@ -1750,7 +1747,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/asdf", // OR "jwk"
+    "kid": "https://example.com/acme/acct/1", // OR "jwk"
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   }),
@@ -2428,12 +2425,12 @@ Template:
 
 Initial contents:
 
-| Key         | Resource type        | Reference |
-|:------------|:---------------------|:----------|
-| new-acct    | New account          | RFC XXXX  |
-| new-order   | New order            | RFC XXXX  |
-| revoke-cert | Revoke certificate   | RFC XXXX  |
-| key-change  | Key change           | RFC XXXX  |
+| Key            | Resource type        | Reference |
+|:---------------|:---------------------|:----------|
+| new-account    | New account          | RFC XXXX  |
+| new-order      | New order            | RFC XXXX  |
+| revoke-cert    | Revoke certificate   | RFC XXXX  |
+| key-change     | Key change           | RFC XXXX  |
 
 [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
