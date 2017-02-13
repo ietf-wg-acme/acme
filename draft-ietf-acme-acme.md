@@ -1533,7 +1533,7 @@ headers have no relation to the certificate's period of validity.
 ## Identifier Authorization
 
 The identifier authorization process establishes the authorization of an account
-to manage certificates for a given identifier.  This process must assure the
+to manage certificates for a given identifier.  This process assures the
 server of two things:
 
 1. That the client controls the private key of the account key pair, and
