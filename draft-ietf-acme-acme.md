@@ -2353,15 +2353,18 @@ ACME parameters. ]]
 
 This document requests that IANA create the following new registries:
 
-1. ACME Error Codes
-2. ACME Resource Types
-3. ACME Identifier Types
-4. ACME Challenge Types
+1. ACME Account Object Fields ({{iana-account}})
+2. ACME Order Object Fields ({{iana-order}})
+3. ACME Error Codes ({{iana-error}})
+4. ACME Resource Types ({{iana-resource}})
+5. ACME Identifier Types ({{iana-identifier}})
+6. ACME Challenge Types ({{iana-challenge}})
 
-All of these registries should be administered under a Specification Required
-policy {{?RFC5226}}.
+All of these registries are under a heading of "Automated Certificate Management
+Environment (ACME) Protocol" and are be administered under a Specification
+Required policy {{!RFC5226}}.
 
-### Fields in Account Objects
+### Fields in Account Objects {#iana-account}
 
 This registry lists field names that are defined for use in ACME account
 objects.  Fields marked as "configurable" may be included in a
@@ -2387,7 +2390,7 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 | terms-of-service-agreed  | boolean         | false        | RFC XXXX  |
 | orders                   | array of string | false        | RFC XXXX  |
 
-### Fields in Order Objects
+### Fields in Order Objects {#iana-order}
 
 This registry lists field names that are defined for use in ACME order
 objects.  Fields marked as "configurable" may be included in a
@@ -2411,10 +2414,10 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | csr            | string              | true         | RFC XXXX  |
 | notBefore      | string              | true         | RFC XXXX  |
 | notAfter       | string              | true         | RFC XXXX  |
-| authorizations | array of string     | false        | RFC XXXX  |
+| authorizations | array of string     | false        | RFC XXXX  |
 | certificate    | string              | false        | RFC XXXX  |
 
-### Error Codes
+### Error Codes {#iana-error}
 
 This registry lists values that are used within URN values that are provided in
 the "type" field of problem documents in ACME.
@@ -2429,7 +2432,7 @@ Template:
 Initial contents: The codes and descriptions in the table in {{errors}} above,
 with the Reference field set to point to this specification.
 
-### Resource Types
+### Resource Types {#iana-resource}
 
 This registry lists the types of resources that ACME servers may list in their
 directory objects.
@@ -2452,7 +2455,7 @@ Initial contents:
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
-### Identifier Types
+### Identifier Types {#iana-identifier}
 
 This registry lists the types of identifiers that ACME clients may request
 authorization to issue in certificates.
@@ -2471,7 +2474,7 @@ Initial contents:
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
-### Challenge Types
+### Challenge Types {#iana-challenge}
 
 This registry lists the ways that ACME servers can offer to validate control of
 an identifier.  The "Identifier Type" field in template must be contained in the
