@@ -1223,7 +1223,7 @@ document describing the error.
 
 ### Account deactivation
 
-A client may deactivate an account by posting a signed update to the server with
+A client can deactivate an account by posting a signed update to the server with
 a status field of "deactivated." Clients may wish to do this when the account
 key is compromised.
 
