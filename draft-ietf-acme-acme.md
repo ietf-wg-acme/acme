@@ -42,7 +42,7 @@ the most significant of which is the authentication of domain names.  Thus,
 certificate authorities in the Web PKI are trusted to verify that an applicant
 for a certificate legitimately represents the domain name(s) in the certificate.
 Today, this verification is done through a collection of ad hoc mechanisms.
-This document describes a protocol that a certificate authority (CA) and an
+This document describes a protocol that a certification authority (CA) and an
 applicant can use to automate the process of verification and certificate
 issuance.  The protocol also provides facilities for other certificate
 management functions, such as certificate revocation.
@@ -114,8 +114,8 @@ for one or more domains, and the process of certificate issuance is intended to
 verify that this server actually speaks for the domain(s).
 
 DV certificate validation commonly checks claims about properties related to
-control of a domain name -- properties that can be observed by the issuing
-authority in an interactive process that can be conducted purely online.  That
+control of a domain name -- properties that can be observed by the certificate
+issuer in an interactive process that can be conducted purely online.  That
 means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
@@ -159,7 +159,7 @@ The two main roles in ACME are “client” and “server”.  The ACME client u
 protocol to request certificate management actions, such as issuance or
 revocation.  An ACME client therefore typically runs on a web server, mail
 server, or some other server system which requires valid TLS certificates.  The
-ACME server runs at a certificate authority, and responds to client requests,
+ACME server runs at a certification authority, and responds to client requests,
 performing the requested actions if the client is authorized.
 
 An ACME client is represented by an "account key pair".  The client uses the
