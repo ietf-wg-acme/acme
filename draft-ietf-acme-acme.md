@@ -37,7 +37,7 @@ normative:
 
 --- abstract
 
-Certificates in the Web's X.509 PKI (PKIX) are used for a number of purposes,
+Certificates in PKI using X.509 (PKIX) are used for a number of purposes,
 the most significant of which is the authentication of domain names.  Thus,
 certificate authorities in the Web PKI are trusted to verify that an applicant
 for a certificate legitimately represents the domain name(s) in the certificate.
@@ -60,7 +60,7 @@ discussed on the ACME mailing list (acme@ietf.org).
 
 # Introduction
 
-Certificates in the Web PKI {{!RFC5280}} are most commonly used to authenticate
+Certificates {{!RFC5280}} in the Web PKI are most commonly used to authenticate
 domain names.  Thus, certificate authorities in the Web PKI are trusted to
 verify that an applicant for a certificate legitimately represents the domain
 name(s) in the certificate.
@@ -298,7 +298,8 @@ character set. Trailing '=' characters MUST be stripped.
 ## Request Authentication
 
 All ACME requests with a non-empty body MUST encapsulate their payload
-in a JWS object, signed (in most cases) using the account's private
+in a JSON Web Signature (JWS) {{!RFC7515}} object, signed (in most
+cases) using the account's private
 key.  The server MUST verify the JWS before processing the request.
 Encapsulating request bodies in JWS provides a simple authentication
 of requests.
@@ -334,23 +335,10 @@ and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
 document returned with the error MUST include an "algorithms" field with an
 array of supported "alg" values.
 
-~~~~~
-HTTP/1.1 400 Bad Request
-Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
-Content-Type: application/problem+json
-Content-Language: en
-
-{
-  "type": "urn:ietf:params:acme:error:badSignatureAlgorithm",
-  "detail": "Algorithm 'ES384' is not supported",
-  "algorithms": ["RS256", "RS384", "ES256"]
-}
-~~~~~
-
 In the examples below, JWS objects are shown in the JSON or flattened JSON
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
-is readable.  Some fields are omitted for brevity, marked with "...".
+is readable.
 
 ## Equivalence of JWKs
 
@@ -635,7 +623,7 @@ There is no constraint on the actual URI of the directory except that it
 should be different from the other ACME server resources' URIs, and that it
 should not clash with other services. For instance:
 
- * a host which function as both an ACME and Web server may want to keep
+ * a host which functions as both an ACME and Web server may want to keep
    the root path "/" for an HTML "front page", and and place the ACME
    directory under path "/acme".
 
@@ -684,7 +672,7 @@ Content-Type: application/json
 
 ### Account Objects
 
-An ACME account resource represents a set of metadata associated to an account.
+An ACME account resource represents a set of metadata associated with an account.
 Account resources have the following structure:
 
 key (required, dictionary):
@@ -852,7 +840,7 @@ scope (optional, string):
 : If this field is present, then it MUST contain a URI for an order resource,
 such that this authorization is only valid for that resource.  If this field is
 absent, then the CA MUST consider this authorization valid for all orders until
-the authorization expires. \[\[ Open issue: More flexible scoping? ]]
+the authorization expires.
 
 challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
@@ -1925,7 +1913,7 @@ responds for that domain name.  The ACME server challenges the client to
 provision a file at a specific path, with a specific string as its content.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
-connect to at least one of the hosts found in A and AAAA records, at its
+connect to at least one of the hosts found in the DNS A and AAAA records, at its
 discretion.  Because many webservers allocate a default HTTPS virtual host to a
 particular low-privilege tenant user in a subtle and non-intuitive manner, the
 challenge must be completed over HTTP, not HTTPS.
@@ -2021,7 +2009,7 @@ failed.
 
 The TLS with Server Name Indication (TLS SNI) validation method
 proves control over a domain name by requiring the client to configure a TLS
-server referenced by an A/AAAA record under the domain name to respond to
+server referenced by the DNS A and AAAA resource records under the domain name to respond to
 specific connection attempts utilizing the Server Name Indication extension
 {{!RFC6066}}. The server verifies the client's challenge by accessing the
 reconfigured server and verifying a particular challenge certificate is
@@ -2554,7 +2542,7 @@ any individual channel.  Some vulnerabilities arise (noted below), when an
 attacker can exploit both the ACME channel and one of the others.
 
 On the ACME channel, in addition to network-layer attackers, we also need to
-account for application-layer man in the middle attacks, and for abusive use of
+account for application-layer man-in-the-middle (MitM) attacks, and for abusive use of
 the protocol itself.  Protection against application-layer MitM addresses
 potential attackers such as Content Distribution Networks (CDNs) and middleboxes
 with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an
