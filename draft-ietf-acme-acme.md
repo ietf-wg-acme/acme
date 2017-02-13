@@ -1247,8 +1247,8 @@ Content-Type: application/jose+json
 ~~~~~~~~~~
 
 The server MUST verify that the request is signed by the account key. If the
-server accepts the deactivation request, it should reply with a 200 (OK) status
-code and the current contents of the account object.
+server accepts the deactivation request, it replies with a 200 (OK) status code
+and the current contents of the account object.
 
 Once an account is deactivated, the server MUST NOT accept further requests
 authorized by that account's key. It is up to server policy how long to retain
