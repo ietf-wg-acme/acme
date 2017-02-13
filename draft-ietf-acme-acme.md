@@ -259,8 +259,7 @@ integrity for the HTTPS request URI.
 
 Each ACME function is accomplished by the client sending a sequence of HTTPS
 requests to the server, carrying JSON messages {{!RFC2818}}{{!RFC7159}}.  Use of
-HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning {{?RFC7469}},
-and servers SHOULD emit pinning headers.  Each subsection of
+HTTPS is REQUIRED. Each subsection of
 {{certificate-management}} below describes the message formats used by the
 function, and the order in which messages are sent.
 
