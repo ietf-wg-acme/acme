@@ -1739,7 +1739,7 @@ format.  (Note: Because this field uses base64url, and does not include headers,
 it is different from PEM.)
 
 reason (optional, int):
-: One of the revocation reasonCodes defined in {{RFC5280}} Section 5.3.1
+: One of the revocation reasonCodes defined in Section 5.3.1 of {{RFC5280}}
 to be used when generating OCSP responses and CRLs. If this field is not set
 the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
 responses and CRLs. The server MAY disallow a subset of reasonCodes from being
