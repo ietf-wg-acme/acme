@@ -1937,7 +1937,7 @@ HTTP/1.1 200 OK
   "type": "http-01",
   "url": "https://example.com/acme/authz/0",
   "status": "pending",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
+  "token": "evaGxfADs6pSRb2LAv9IZf17"
 }
 ~~~~~~~~~~
 
@@ -1952,7 +1952,7 @@ The value of the resource MUST be the ASCII representation of the key
 authorization.
 
 ~~~~~~~~~~
-.well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
+.well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
 ~~~~~~~~~~
 
 The client's response to this challenge indicates its agreement to this
