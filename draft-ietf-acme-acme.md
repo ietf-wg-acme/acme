@@ -1534,8 +1534,12 @@ headers have no relation to the certificate's period of validity.
 
 The identifier authorization process establishes the authorization of an account
 to manage certificates for a given identifier.  This process must assure the
-server of two things: First, that the client controls the private key of the
-account key pair, and second, that the client controls the identifier in question.
+server of two things:
+
+1. That the client controls the private key of the account key pair, and
+
+2. that the client controls the identifier in question.
+
 This process may be repeated to associate multiple identifiers to a key pair
 (e.g., to request certificates with multiple identifiers), or to associate
 multiple accounts with an identifier (e.g., to allow multiple entities to manage
