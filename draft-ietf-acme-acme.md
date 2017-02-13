@@ -845,11 +845,10 @@ absent, then the CA MUST consider this authorization valid for all orders until
 the authorization expires. [[ Open issue: More flexible scoping? ]]
 
 challenges (required, array):
-: The challenges that the client can fulfill
-in order to prove possession of the identifier (for pending authorizations).
-For final authorizations, the challenges that were used.  Each array entry is a
-dictionary with parameters required to validate the challenge, as specified in
-{{identifier-validation-challenges}}. A client should attempt to fulfill at most
+: The challenges that the client can fulfill in order to prove possession of the
+identifier (for pending authorizations).  For final authorizations, the
+challenges that were used.  Each array entry is a dictionary with parameters
+required to validate the challenge.  A client should attempt to fulfill at most
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
 
@@ -857,9 +856,12 @@ The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). The value of the identifier MUST be the ASCII
 representation of the domain name. If a domain name contains Unicode characters
 it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
-any identifier values that begin with the ASCII Compatible Encoding prefix "xn--"
-as defined in {{!RFC5890}} are properly encoded. Wildcard domain names (with "*"
-as the first label) MUST NOT be included in authorization objects.
+any identifier values that begin with the ASCII Compatible Encoding prefix
+"xn--" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
+(with "*" as the first label) MUST NOT be included in authorization objects.
+
+{{identifier-validation-challenges}} describes a set of challenges for domain
+name validation.
 
 ~~~~~~~~~~
 {
