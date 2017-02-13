@@ -1225,7 +1225,7 @@ document describing the error.
 
 A client can deactivate an account by posting a signed update to the server with
 a status field of "deactivated." Clients may wish to do this when the account
-key is compromised.
+key is compromised or decommissioned.
 
 ~~~~~~~~~~
 POST /acme/acct/1 HTTP/1.1
