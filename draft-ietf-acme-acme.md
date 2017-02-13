@@ -1398,7 +1398,7 @@ is being requested and how the server should behave with respect to existing
 authorizations for this identifier.
 
 identifier (required, dictionary of string):
-: The identifier that the account is authorized to represent
+: The identifier that the account is authorized to represent:
 
   type (required, string):
   : The type of identifier.
