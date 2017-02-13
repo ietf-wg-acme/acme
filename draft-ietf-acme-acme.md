@@ -1477,8 +1477,8 @@ specified by {{!RFC7468}}. This format should contain the end-entity certificate
 first, followed by any intermediate certificates that are needed to build a path
 to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
 client may request other formats by including an Accept header in its request.
-For example, the client may use the media type application/pkix-cert to request
-the end-entity certificate in DER format.
+For example, the client could use the media type `application/pkix-cert` to
+request the end-entity certificate in DER format.
 
 The server MAY provide one or more link relation header fields {{RFC5988}} with
 relation "alternate". Each such field should express an alternative certificate
