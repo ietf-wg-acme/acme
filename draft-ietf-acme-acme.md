@@ -1548,7 +1548,7 @@ server of two things:
 
 1. That the client controls the private key of the account key pair, and
 
-2. that the client controls the identifier in question.
+2. That the client controls the identifier in question.
 
 This process may be repeated to associate multiple identifiers to a key pair
 (e.g., to request certificates with multiple identifiers), or to associate
