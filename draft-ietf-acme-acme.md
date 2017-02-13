@@ -526,18 +526,21 @@ enables:
 ACME is structured as a REST application with a few types of resources:
 
 * Account resources, representing information about an account
+  ({{account-objects}}, {{account-creation}})
 * Order resources, representing an account's requests to issue certificates
+  ({{order-objects}})
 * Authorization resources, representing an account's authorization to act for an
-  identifier
+  identifier ({{authorization-objects}})
 * Challenge resources, representing a challenge to prove control of an
-  identifier
+  identifier ({{identifier-authorization}})
 * Certificate resources, representing issued certificates
-* A "directory" resource
-* A "new-nonce" resource
-* A "new-account" resource
-* A "new-order" resource
-* A "revoke-certificate" resource
-* A "key-change" resource
+  ({{downloading-the-certificate}})
+* A "directory" resource ({{directory}})
+* A "new-nonce" resource ({{getting-a-nonce}})
+* A "new-account" resource ({{account-creation}})
+* A "new-order" resource ({{applying-for-certificate-issuance}})
+* A "revoke-certificate" resource ({{certificate-revocation}})
+* A "key-change" resource ({{account-key-roll-over}})
 
 The server MUST provide "directory" and "new-nonce" resources.
 
