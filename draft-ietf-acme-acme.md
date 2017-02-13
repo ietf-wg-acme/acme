@@ -1119,7 +1119,7 @@ Content-Type: application/jose+json
 ~~~~~
 
 When a CA receives a new-account request containing an
-"external-account-binding" field, it must decide whether or not to verify the
+"external-account-binding" field, it decides whether or not to verify the
 binding.  If the CA does not verify the binding, then it MUST NOT reflect the
 "external-account-binding" field in the resulting account object (if any).  To
 verify the account binding, the CA MUST take the following steps:
