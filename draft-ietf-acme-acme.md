@@ -763,11 +763,11 @@ from PEM.)
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
-format defined in {{!RFC3339}}
+format defined in {{!RFC3339}}.
 
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
-format defined in {{!RFC3339}}
+format defined in {{!RFC3339}}.
 
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
