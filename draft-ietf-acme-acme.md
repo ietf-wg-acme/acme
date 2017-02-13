@@ -1456,9 +1456,9 @@ If the server is willing to proceed, it builds a pending authorization object
 from the inputs submitted by the client.
 
 * "identifier" the identifier submitted by the client
-* "status": MUST be "pending" unless the server has out-of-band information
+* "status" MUST be "pending" unless the server has out-of-band information
   about the client's authorization status
-* "challenges" and "combinations": As selected by the server's policy for this
+* "challenges" and "combinations" as selected by the server's policy for this
   identifier
 
 The server allocates a new URI for this authorization, and returns a 201
