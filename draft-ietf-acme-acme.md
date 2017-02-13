@@ -1556,7 +1556,7 @@ request.
 When a client receives an order from the server it downloads the authorization
 resource by sending a GET request to the indicated URL.  If the client
 initiates authorization using a request to the new authorization resource, it
-will have already recevied the pending authorization object in the response
+will have already received the pending authorization object in the response
 to that request.
 
 ~~~~~~~~~~
