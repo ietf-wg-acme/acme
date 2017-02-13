@@ -2294,7 +2294,7 @@ The "Message Headers" registry should be updated with the following additional
 value:
 
 | Header Field Name | Protocol | Status   | Reference        |
-+:------------------+:---------+:---------+:-----------------+
+|:------------------|:---------|:---------|:-----------------|
 | Replay-Nonce      | http     | standard | {{replay-nonce}} |
 
 ## "url" JWS Header Parameter
