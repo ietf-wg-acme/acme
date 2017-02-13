@@ -700,7 +700,7 @@ by the client.
 
 orders (required, string):
 : A URI from which a list of orders submitted by this account can be fetched via
-a GET request, as described in {{orders-list}}
+a GET request, as described in {{orders-list}}.
 
 ~~~~~~~~~~
 {
