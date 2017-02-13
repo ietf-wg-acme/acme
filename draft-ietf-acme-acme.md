@@ -1887,7 +1887,7 @@ concatenating the token for the challenge with a key fingerprint, separated by a
 "." character:
 
 ~~~~~~~~~~
-key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
+key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 ~~~~~~~~~~
 
 The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
