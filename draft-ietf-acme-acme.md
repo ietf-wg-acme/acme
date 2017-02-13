@@ -25,6 +25,16 @@ author:
     org: University of Michigan
     email: jdkasten@umich.edu
 
+normative:
+  FIPS180-4:
+    title: NIST FIPS 180-4, Secure Hash Standard
+    author:
+      name: NIST
+      ins: National Institute of Standards and Technology, U.S. Department of Commerce
+    date: 2012-03
+    target: http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+
+
 --- abstract
 
 Certificates in the Web's X.509 PKI (PKIX) are used for a number of purposes,
@@ -1891,9 +1901,10 @@ key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 ~~~~~~~~~~
 
 The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
-using the SHA-256 digest.  As specified in the individual challenges below, the
-token for a challenge is a JSON string comprised entirely of characters in the
-URL-safe base64 alphabet.  The "||" operator indicates concatenation of strings.
+using the SHA-256 digest [FIPS180-4].  As specified in the individual challenges
+below, the token for a challenge is a JSON string comprised entirely of
+characters in the URL-safe base64 alphabet.  The "||" operator indicates
+concatenation of strings.
 
 In computations involving key authorizations, such as the digest computations
 required for the DNS and TLS SNI challenges, the key authorization string MUST
@@ -2046,9 +2057,9 @@ The certificate may be constructed arbitrarily, except that each certificate
 MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be
 dNSNames.
 
-SAN A MUST be constructed as follows: compute the SHA-256 digest of the
-UTF-8-encoded challenge token and encode it in lowercase hexadecimal form.  The
-dNSName is "x.y.token.acme.invalid", where x is the first half of the
+SAN A MUST be constructed as follows: compute the SHA-256 digest [FIPS180-4] of
+the UTF-8-encoded challenge token and encode it in lowercase hexadecimal form.
+The dNSName is "x.y.token.acme.invalid", where x is the first half of the
 hexadecimal representation and y is the second half.
 
 SAN B MUST be constructed as follows: compute the SHA-256 digest of
@@ -2143,7 +2154,7 @@ HTTP/1.1 200 OK
 
 A client responds to this challenge by constructing a key authorization from the
 "token" value provided in the challenge and the client's account key.  The
-client then computes the SHA-256 digest of the key authorization.
+client then computes the SHA-256 digest [FIPS180-4] of the key authorization.
 
 The record provisioned to the DNS is the base64url encoding of this digest.  The
 client constructs the validation domain name by prepending the label
@@ -2189,7 +2200,7 @@ response to the POST request in which the client sent the challenge.
 
 To validate a DNS challenge, the server performs the following steps:
 
-1. Compute the SHA-256 digest of the key authorization
+1. Compute the SHA-256 digest [FIPS180-4] of the key authorization
 2. Query for TXT records under the validation domain name
 3. Verify that the contents of one of the TXT records matches the digest value
 
