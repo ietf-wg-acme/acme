@@ -842,7 +842,7 @@ scope (optional, string):
 : If this field is present, then it MUST contain a URI for an order resource,
 such that this authorization is only valid for that resource.  If this field is
 absent, then the CA MUST consider this authorization valid for all orders until
-the authorization expires. [[ Open issue: More flexible scoping? ]]
+the authorization expires. \[\[ Open issue: More flexible scoping? ]]
 
 challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
@@ -1871,7 +1871,7 @@ validation of domain names.  If ACME is extended in the future to support other
 types of identifier, there will need to be new challenge types, and they will
 need to specify which types of identifier they apply to.
 
-[[ Editor's Note: In pre-RFC versions of this specification, challenges are
+\[\[ Editor's Note: In pre-RFC versions of this specification, challenges are
 labeled by type, and with the version of the draft in which they were
 introduced.  For example, if an HTTP challenge were introduced in version -03
 and a breaking change made in version -05, then there would be a challenge
@@ -2298,7 +2298,7 @@ updated with the following additional value:
 *  Specification Document(s): {{url-url-jws-header-parameter}} of
    RFC XXXX
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ## "nonce" JWS Header Parameter
@@ -2313,7 +2313,7 @@ updated with the following additional value:
 *  Specification Document(s): {{nonce-nonce-jws-header-parameter}} of
    RFC XXXX
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ## URN Sub-namespace for ACME (urn:ietf:params:acme)
@@ -2334,7 +2334,7 @@ Repository:
 Index value:
 : No transformation needed.
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document, and replace URL-TBD with the URL assigned by IANA for registries of
 ACME parameters. ]]
 
@@ -2438,7 +2438,7 @@ Initial contents:
 | revoke-cert    | Revoke certificate   | RFC XXXX  |
 | key-change     | Key change           | RFC XXXX  |
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ### Identifier Types
@@ -2457,7 +2457,7 @@ Initial contents:
 |:------|:----------|
 | dns   | RFC XXXX  |
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ### Challenge Types
@@ -2481,7 +2481,7 @@ Initial Contents
 | tls-sni | dns             | RFC XXXX  |
 | dns     | dns             | RFC XXXX  |
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 # Security Considerations
