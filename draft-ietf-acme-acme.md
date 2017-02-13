@@ -1443,9 +1443,9 @@ error, with a problem document describing the reason for the rejection.
 If the authorization request specifies "existing" with a value of "accept" or
 "require", before proceeding, the server SHOULD determine whether there are any
 existing, valid authorization resources for the account and given identifier. If
-one or more such authorizations exists, a response SHOULD returned with status
-code 303 (See Other) and a Location header pointing to the existing resource
-URL; processing of the request then stops. If there are multiple such
+one or more such authorizations exists, a response SHOULD be returned with
+status code 303 (See Other) and a Location header pointing to the existing
+resource URL; processing of the request then stops. If there are multiple such
 authorizations, the authorization with the latest expiry date SHOULD be
 returned. If no existing authorizations were found and the value for "existing"
 was "require", then the server MUST return status code 404 (Not Found); if it
