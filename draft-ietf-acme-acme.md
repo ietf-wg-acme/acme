@@ -558,7 +558,7 @@ directory and indicates the directory URL.
 The following diagram illustrates the relations between resources on an ACME
 server.  For the most part, these relations are expressed by URLs provided as
 strings in the resources' JSON representations.  Lines with labels in quotes
-indicate HTTP link relations
+indicate HTTP link relations.
 
 ~~~~~~~~~~
                                directory
@@ -646,7 +646,7 @@ information about the ACME server.
 : Each string MUST be a lowercase hostname which the ACME server recognises as
 referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
-use when configuring CAA record.
+use when configuring CAA records.
 
 Clients access the directory by sending a GET request to the directory URI.
 
