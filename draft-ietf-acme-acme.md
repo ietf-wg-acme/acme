@@ -25,6 +25,16 @@ author:
     org: University of Michigan
     email: jdkasten@umich.edu
 
+normative:
+  FIPS180-4:
+    title: NIST FIPS 180-4, Secure Hash Standard
+    author:
+      name: NIST
+      ins: National Institute of Standards and Technology, U.S. Department of Commerce
+    date: 2012-03
+    target: http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+
+
 --- abstract
 
 Certificates in the Web's X.509 PKI (PKIX) are used for a number of purposes,
@@ -526,18 +536,21 @@ enables:
 ACME is structured as a REST application with a few types of resources:
 
 * Account resources, representing information about an account
+  ({{account-objects}}, {{account-creation}})
 * Order resources, representing an account's requests to issue certificates
+  ({{order-objects}})
 * Authorization resources, representing an account's authorization to act for an
-  identifier
+  identifier ({{authorization-objects}})
 * Challenge resources, representing a challenge to prove control of an
-  identifier
+  identifier ({{identifier-authorization}})
 * Certificate resources, representing issued certificates
-* A "directory" resource
-* A "new-nonce" resource
-* A "new-account" resource
-* A "new-order" resource
-* A "revoke-certificate" resource
-* A "key-change" resource
+  ({{downloading-the-certificate}})
+* A "directory" resource ({{directory}})
+* A "new-nonce" resource ({{getting-a-nonce}})
+* A "new-account" resource ({{account-creation}})
+* A "new-order" resource ({{applying-for-certificate-issuance}})
+* A "revoke-certificate" resource ({{certificate-revocation}})
+* A "key-change" resource ({{account-key-roll-over}})
 
 The server MUST provide "directory" and "new-nonce" resources.
 
@@ -558,7 +571,7 @@ directory and indicates the directory URL.
 The following diagram illustrates the relations between resources on an ACME
 server.  For the most part, these relations are expressed by URLs provided as
 strings in the resources' JSON representations.  Lines with labels in quotes
-indicate HTTP link relations
+indicate HTTP link relations.
 
 ~~~~~~~~~~
                                directory
@@ -646,7 +659,7 @@ information about the ACME server.
 : Each string MUST be a lowercase hostname which the ACME server recognises as
 referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
-use when configuring CAA record.
+use when configuring CAA records.
 
 Clients access the directory by sending a GET request to the directory URI.
 
@@ -697,7 +710,7 @@ by the client.
 
 orders (required, string):
 : A URI from which a list of orders submitted by this account can be fetched via
-a GET request, as described in {{orders-list}}
+a GET request, as described in {{orders-list}}.
 
 ~~~~~~~~~~
 {
@@ -717,8 +730,8 @@ by the account can be fetched via GET request. The result of the GET request
 MUST be a JSON object whose "orders" field is an array of URIs, each identifying
 an order belonging to the account.  The server SHOULD include pending orders,
 and SHOULD NOT include orders that are invalid in the array of URIs. The server
-MAY return an incomplete list, along with a Link header with link relation
-“next” indicating a URL to retrieve further entries.
+MAY return an incomplete list, along with a Link header with a "next" link
+relation indicating where further entries can be acquired.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
@@ -760,11 +773,11 @@ from PEM.)
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
-format defined in {{!RFC3339}}
+format defined in {{!RFC3339}}.
 
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
-format defined in {{!RFC3339}}
+format defined in {{!RFC3339}}.
 
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
@@ -839,14 +852,13 @@ scope (optional, string):
 : If this field is present, then it MUST contain a URI for an order resource,
 such that this authorization is only valid for that resource.  If this field is
 absent, then the CA MUST consider this authorization valid for all orders until
-the authorization expires. [[ Open issue: More flexible scoping? ]]
+the authorization expires. \[\[ Open issue: More flexible scoping? ]]
 
 challenges (required, array):
-: The challenges that the client can fulfill
-in order to prove possession of the identifier (for pending authorizations).
-For final authorizations, the challenges that were used.  Each array entry is a
-dictionary with parameters required to validate the challenge, as specified in
-{{identifier-validation-challenges}}. A client should attempt to fulfill at most
+: The challenges that the client can fulfill in order to prove possession of the
+identifier (for pending authorizations).  For final authorizations, the
+challenges that were used.  Each array entry is a dictionary with parameters
+required to validate the challenge.  A client should attempt to fulfill at most
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
 
@@ -854,9 +866,12 @@ The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). The value of the identifier MUST be the ASCII
 representation of the domain name. If a domain name contains Unicode characters
 it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
-any identifier values that begin with the ASCII Compatible Encoding prefix "xn--"
-as defined in {{!RFC5890}} are properly encoded. Wildcard domain names (with "*"
-as the first label) MUST NOT be included in authorization objects.
+any identifier values that begin with the ASCII Compatible Encoding prefix
+"xn--" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
+(with "*" as the first label) MUST NOT be included in authorization objects.
+
+{{identifier-validation-challenges}} describes a set of challenges for domain
+name validation.
 
 ~~~~~~~~~~
 {
@@ -940,7 +955,7 @@ Content-Type: application/jose+json
 The server MUST ignore any values provided in the "key", and "orders"
 fields in account bodies sent by the client, as well as any other fields
 that it does not recognize.  If new fields are specified in the future, the
-specification of those fields MUST describe whether they may be provided by the
+specification of those fields MUST describe whether they can be provided by the
 client.
 
 In general, the server MUST ignore any fields in the request object that it does
@@ -1114,7 +1129,7 @@ Content-Type: application/jose+json
 ~~~~~
 
 When a CA receives a new-account request containing an
-"external-account-binding" field, it must decide whether or not to verify the
+"external-account-binding" field, it decides whether or not to verify the
 binding.  If the CA does not verify the binding, then it MUST NOT reflect the
 "external-account-binding" field in the resulting account object (if any).  To
 verify the account binding, the CA MUST take the following steps:
@@ -1218,9 +1233,9 @@ document describing the error.
 
 ### Account deactivation
 
-A client may deactivate an account by posting a signed update to the server with
+A client can deactivate an account by posting a signed update to the server with
 a status field of "deactivated." Clients may wish to do this when the account
-key is compromised.
+key is compromised or decommissioned.
 
 ~~~~~~~~~~
 POST /acme/acct/1 HTTP/1.1
@@ -1242,8 +1257,8 @@ Content-Type: application/jose+json
 ~~~~~~~~~~
 
 The server MUST verify that the request is signed by the account key. If the
-server accepts the deactivation request, it should reply with a 200 (OK) status
-code and the current contents of the account object.
+server accepts the deactivation request, it replies with a 200 (OK) status code
+and the current contents of the account object.
 
 Once an account is deactivated, the server MUST NOT accept further requests
 authorized by that account's key. It is up to server policy how long to retain
@@ -1393,7 +1408,7 @@ is being requested and how the server should behave with respect to existing
 authorizations for this identifier.
 
 identifier (required, dictionary of string):
-: The identifier that the account is authorized to represent
+: The identifier that the account is authorized to represent:
 
   type (required, string):
   : The type of identifier.
@@ -1438,9 +1453,9 @@ error, with a problem document describing the reason for the rejection.
 If the authorization request specifies "existing" with a value of "accept" or
 "require", before proceeding, the server SHOULD determine whether there are any
 existing, valid authorization resources for the account and given identifier. If
-one or more such authorizations exists, a response SHOULD returned with status
-code 303 (See Other) and a Location header pointing to the existing resource
-URL; processing of the request then stops. If there are multiple such
+one or more such authorizations exists, a response SHOULD be returned with
+status code 303 (See Other) and a Location header pointing to the existing
+resource URL; processing of the request then stops. If there are multiple such
 authorizations, the authorization with the latest expiry date SHOULD be
 returned. If no existing authorizations were found and the value for "existing"
 was "require", then the server MUST return status code 404 (Not Found); if it
@@ -1451,9 +1466,9 @@ If the server is willing to proceed, it builds a pending authorization object
 from the inputs submitted by the client.
 
 * "identifier" the identifier submitted by the client
-* "status": MUST be "pending" unless the server has out-of-band information
+* "status" MUST be "pending" unless the server has out-of-band information
   about the client's authorization status
-* "challenges" and "combinations": As selected by the server's policy for this
+* "challenges" and "combinations" as selected by the server's policy for this
   identifier
 
 The server allocates a new URI for this authorization, and returns a 201
@@ -1472,8 +1487,8 @@ specified by {{!RFC7468}}. This format should contain the end-entity certificate
 first, followed by any intermediate certificates that are needed to build a path
 to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
 client may request other formats by including an Accept header in its request.
-For example, the client may use the media type application/pkix-cert to request
-the end-entity certificate in DER format.
+For example, the client could use the media type `application/pkix-cert` to
+request the end-entity certificate in DER format.
 
 The server MAY provide one or more link relation header fields {{RFC5988}} with
 relation "alternate". Each such field should express an alternative certificate
@@ -1528,9 +1543,13 @@ headers have no relation to the certificate's period of validity.
 ## Identifier Authorization
 
 The identifier authorization process establishes the authorization of an account
-to manage certificates for a given identifier.  This process must assure the
-server of two things: First, that the client controls the private key of the
-account key pair, and second, that the client controls the identifier in question.
+to manage certificates for a given identifier.  This process assures the
+server of two things:
+
+1. That the client controls the private key of the account key pair, and
+
+2. that the client controls the identifier in question.
+
 This process may be repeated to associate multiple identifiers to a key pair
 (e.g., to request certificates with multiple identifiers), or to associate
 multiple accounts with an identifier (e.g., to allow multiple entities to manage
@@ -1547,7 +1566,7 @@ request.
 When a client receives an order from the server it downloads the authorization
 resource by sending a GET request to the indicated URL.  If the client
 initiates authorization using a request to the new authorization resource, it
-will have already recevied the pending authorization object in the response
+will have already received the pending authorization object in the response
 to that request.
 
 ~~~~~~~~~~
@@ -1630,7 +1649,7 @@ ignore any fields in the response object that are not specified as response
 fields for this type of challenge.  The server provides a 200 (OK) response
 with the updated challenge object as its body.
 
-If the client's response is invalid for some reason, or does not provide the
+If the client's response is invalid for any reason, or does not provide the
 server with appropriate information to validate the challenge, then the server
 MUST return an HTTP error.  On receiving such an error, the client SHOULD undo
 any actions that have been taken to fulfill the challenge, e.g., removing files
@@ -1730,7 +1749,7 @@ format.  (Note: Because this field uses base64url, and does not include headers,
 it is different from PEM.)
 
 reason (optional, int):
-: One of the revocation reasonCodes defined in {{RFC5280}} Section 5.3.1
+: One of the revocation reasonCodes defined in Section 5.3.1 of {{RFC5280}}
 to be used when generating OCSP responses and CRLs. If this field is not set
 the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
 responses and CRLs. The server MAY disallow a subset of reasonCodes from being
@@ -1862,7 +1881,7 @@ validation of domain names.  If ACME is extended in the future to support other
 types of identifier, there will need to be new challenge types, and they will
 need to specify which types of identifier they apply to.
 
-[[ Editor's Note: In pre-RFC versions of this specification, challenges are
+\[\[ Editor's Note: In pre-RFC versions of this specification, challenges are
 labeled by type, and with the version of the draft in which they were
 introduced.  For example, if an HTTP challenge were introduced in version -03
 and a breaking change made in version -05, then there would be a challenge
@@ -1878,13 +1897,14 @@ concatenating the token for the challenge with a key fingerprint, separated by a
 "." character:
 
 ~~~~~~~~~~
-key-authz = token || '.' || base64url(JWK\_Thumbprint(accountKey))
+key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 ~~~~~~~~~~
 
 The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
-using the SHA-256 digest.  As specified in the individual challenges below, the
-token for a challenge is a JSON string comprised entirely of characters in the
-URL-safe base64 alphabet.  The "||" operator indicates concatenation of strings.
+using the SHA-256 digest [FIPS180-4].  As specified in the individual challenges
+below, the token for a challenge is a JSON string comprised entirely of
+characters in the URL-safe base64 alphabet.  The "||" operator indicates
+concatenation of strings.
 
 In computations involving key authorizations, such as the digest computations
 required for the DNS and TLS SNI challenges, the key authorization string MUST
@@ -1916,8 +1936,8 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the base64url alphabet and MUST
-NOT contain any padding characters ("=").
+It MUST NOT contain any characters outside the base64url alphabet, including
+padding characters ("=").
 
 ~~~~~~~~~~
 GET /acme/authz/1234/0 HTTP/1.1
@@ -1928,7 +1948,7 @@ HTTP/1.1 200 OK
   "type": "http-01",
   "url": "https://example.com/acme/authz/0",
   "status": "pending",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
+  "token": "evaGxfADs6pSRb2LAv9IZf17"
 }
 ~~~~~~~~~~
 
@@ -1943,7 +1963,7 @@ The value of the resource MUST be the ASCII representation of the key
 authorization.
 
 ~~~~~~~~~~
-.well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA
+.well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
 ~~~~~~~~~~
 
 The client's response to this challenge indicates its agreement to this
@@ -2013,8 +2033,8 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the base64url alphabet and MUST
-NOT contain any padding characters ("=").
+It MUST NOT contain any characters outside the base64url alphabet, including
+padding characters ("=").
 
 ~~~~~~~~~~
 GET /acme/authz/1234/1 HTTP/1.1
@@ -2037,9 +2057,9 @@ The certificate may be constructed arbitrarily, except that each certificate
 MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be
 dNSNames.
 
-SAN A MUST be constructed as follows: compute the SHA-256 digest of the
-UTF-8-encoded challenge token and encode it in lowercase hexadecimal form.  The
-dNSName is "x.y.token.acme.invalid", where x is the first half of the
+SAN A MUST be constructed as follows: compute the SHA-256 digest [FIPS180-4] of
+the UTF-8-encoded challenge token and encode it in lowercase hexadecimal form.
+The dNSName is "x.y.token.acme.invalid", where x is the first half of the
 hexadecimal representation and y is the second half.
 
 SAN B MUST be constructed as follows: compute the SHA-256 digest of
@@ -2116,8 +2136,8 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the base64url alphabet and MUST
-NOT contain any padding characters ("=").
+It MUST NOT contain any characters outside the base64url alphabet, including
+padding characters ("=").
 
 ~~~~~~~~~~
 GET /acme/authz/1234/2 HTTP/1.1
@@ -2134,7 +2154,7 @@ HTTP/1.1 200 OK
 
 A client responds to this challenge by constructing a key authorization from the
 "token" value provided in the challenge and the client's account key.  The
-client then computes the SHA-256 digest of the key authorization.
+client then computes the SHA-256 digest [FIPS180-4] of the key authorization.
 
 The record provisioned to the DNS is the base64url encoding of this digest.  The
 client constructs the validation domain name by prepending the label
@@ -2180,7 +2200,7 @@ response to the POST request in which the client sent the challenge.
 
 To validate a DNS challenge, the server performs the following steps:
 
-1. Compute the SHA-256 digest of the key authorization
+1. Compute the SHA-256 digest [FIPS180-4] of the key authorization
 2. Query for TXT records under the validation domain name
 3. Verify that the contents of one of the TXT records matches the digest value
 
@@ -2274,7 +2294,7 @@ The "Message Headers" registry should be updated with the following additional
 value:
 
 | Header Field Name | Protocol | Status   | Reference        |
-+:------------------+:---------+:---------+:-----------------+
+|:------------------|:---------|:---------|:-----------------|
 | Replay-Nonce      | http     | standard | {{replay-nonce}} |
 
 ## "url" JWS Header Parameter
@@ -2289,7 +2309,7 @@ updated with the following additional value:
 *  Specification Document(s): {{url-url-jws-header-parameter}} of
    RFC XXXX
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ## "nonce" JWS Header Parameter
@@ -2304,7 +2324,7 @@ updated with the following additional value:
 *  Specification Document(s): {{nonce-nonce-jws-header-parameter}} of
    RFC XXXX
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ## URN Sub-namespace for ACME (urn:ietf:params:acme)
@@ -2325,7 +2345,7 @@ Repository:
 Index value:
 : No transformation needed.
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document, and replace URL-TBD with the URL assigned by IANA for registries of
 ACME parameters. ]]
 
@@ -2333,15 +2353,18 @@ ACME parameters. ]]
 
 This document requests that IANA create the following new registries:
 
-1. ACME Error Codes
-2. ACME Resource Types
-3. ACME Identifier Types
-4. ACME Challenge Types
+1. ACME Account Object Fields ({{iana-account}})
+2. ACME Order Object Fields ({{iana-order}})
+3. ACME Error Codes ({{iana-error}})
+4. ACME Resource Types ({{iana-resource}})
+5. ACME Identifier Types ({{iana-identifier}})
+6. ACME Challenge Types ({{iana-challenge}})
 
-All of these registries should be administered under a Specification Required
-policy {{?RFC5226}}.
+All of these registries are under a heading of "Automated Certificate Management
+Environment (ACME) Protocol" and are be administered under a Specification
+Required policy {{!RFC5226}}.
 
-### Fields in Account Objects
+### Fields in Account Objects {#iana-account}
 
 This registry lists field names that are defined for use in ACME account
 objects.  Fields marked as "configurable" may be included in a
@@ -2367,7 +2390,7 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 | terms-of-service-agreed  | boolean         | false        | RFC XXXX  |
 | orders                   | array of string | false        | RFC XXXX  |
 
-### Fields in Order Objects
+### Fields in Order Objects {#iana-order}
 
 This registry lists field names that are defined for use in ACME order
 objects.  Fields marked as "configurable" may be included in a
@@ -2391,10 +2414,10 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | csr            | string              | true         | RFC XXXX  |
 | notBefore      | string              | true         | RFC XXXX  |
 | notAfter       | string              | true         | RFC XXXX  |
-| authorizations | array of string     | false        | RFC XXXX  |
+| authorizations | array of string     | false        | RFC XXXX  |
 | certificate    | string              | false        | RFC XXXX  |
 
-### Error Codes
+### Error Codes {#iana-error}
 
 This registry lists values that are used within URN values that are provided in
 the "type" field of problem documents in ACME.
@@ -2409,7 +2432,7 @@ Template:
 Initial contents: The codes and descriptions in the table in {{errors}} above,
 with the Reference field set to point to this specification.
 
-### Resource Types
+### Resource Types {#iana-resource}
 
 This registry lists the types of resources that ACME servers may list in their
 directory objects.
@@ -2429,10 +2452,10 @@ Initial contents:
 | revoke-cert    | Revoke certificate   | RFC XXXX  |
 | key-change     | Key change           | RFC XXXX  |
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
-### Identifier Types
+### Identifier Types {#iana-identifier}
 
 This registry lists the types of identifiers that ACME clients may request
 authorization to issue in certificates.
@@ -2448,10 +2471,10 @@ Initial contents:
 |:------|:----------|
 | dns   | RFC XXXX  |
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
-### Challenge Types
+### Challenge Types {#iana-challenge}
 
 This registry lists the ways that ACME servers can offer to validate control of
 an identifier.  The "Identifier Type" field in template must be contained in the
@@ -2472,7 +2495,7 @@ Initial Contents
 | tls-sni | dns             | RFC XXXX  |
 | dns     | dns             | RFC XXXX  |
 
-[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 # Security Considerations
