@@ -352,7 +352,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-2-13" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-2-14" />
   <meta name="dct.abstract" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in the Web&#8217;s X.509 PKI (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certificate authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -376,7 +376,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: August 17, 2017</td>
+  <td class="left">Expires: August 18, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -389,7 +389,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">February 13, 2017</td>
+  <td class="right">February 14, 2017</td>
 </tr>
 
     	
@@ -411,7 +411,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on August 17, 2017.</p>
+<p>This Internet-Draft will expire on August 18, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -651,7 +651,7 @@ Content-Language: en
 <p id="rfc.section.5.6.p.1">Creation of resources can be rate limited to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the type &#8220;urn:ietf:params:acme:error:rateLimited&#8221;.  Additionally, the server SHOULD send a &#8220;Retry-After&#8221; header indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.</p>
 <p id="rfc.section.5.6.p.2">In addition to the human readable &#8220;detail&#8221; field of the error response, the server MAY send one or multiple tokens in the &#8220;Link&#8221; header pointing to documentation about the specific hit rate limits using the &#8220;rate-limit&#8221; relation.</p>
 <h1 id="rfc.section.5.7"><a href="#rfc.section.5.7">5.7.</a> <a href="#errors" id="errors">Errors</a></h1>
-<p id="rfc.section.5.7.p.1">Errors can be reported in ACME both at the HTTP layer and within ACME payloads.  ACME servers can return responses with an HTTP error response code (4XX or 5XX).  For example:  If the client submits a request using a method not allowed in this document, then the server MAY return status code 405 (Method Not Allowed).</p>
+<p id="rfc.section.5.7.p.1">Errors can be reported in ACME both at the HTTP layer and within challenge objects as defined in {{identifier-validation-challenges}. ACME servers can return responses with an HTTP error response code (4XX or 5XX). For example:  If the client submits a request using a method not allowed in this document, then the server MAY return status code 405 (Method Not Allowed).</p>
 <p id="rfc.section.5.7.p.2">When the server responds with an error status, it SHOULD provide additional information using problem document <a href="#RFC7807">[RFC7807]</a>.  To facilitate automatic response to errors, this document defines the following standard tokens for use in the &#8220;type&#8221; field (within the &#8220;urn:ietf:params:acme:error:&#8221; namespace):</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
@@ -728,7 +728,6 @@ Content-Language: en
   </tbody>
 </table>
 <p id="rfc.section.5.7.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of all errors.</p>
-<p id="rfc.section.5.7.p.4">Authorization and challenge objects can also contain error information to indicate why the server was unable to validate authorization.</p>
 <h1 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#certificate-management" id="certificate-management">Certificate Management</a></h1>
 <p id="rfc.section.6.p.1">In this section, we describe the certificate management functions that ACME enables:</p>
 <p/>
@@ -1615,7 +1614,7 @@ Content-Language: en
   <dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
   <dt>validated (optional, string):</dt>
   <dd style="margin-left: 8">The time at which this challenge was completed by the server, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED if the &#8220;status&#8221; field is &#8220;valid&#8221;.</dd>
-  <dt>error (optional, dictionary of string):</dt>
+  <dt>error (optional, object):</dt>
   <dd style="margin-left: 8">The error that occurred while the server was validating the challenge, if any.  This field is structured as a problem document <a href="#RFC7807">[RFC7807]</a>.</dd>
 </dl>
 <p id="rfc.section.7.p.10">All additional fields are specified by the challenge type.  If the server sets a challenge&#8217;s &#8220;status&#8221; to &#8220;invalid&#8221;, it SHOULD also include the &#8220;error&#8221; field to help the client diagnose why they failed the challenge.</p>
