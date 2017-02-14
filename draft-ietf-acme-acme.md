@@ -482,10 +482,11 @@ relation.
 
 ## Errors
 
-Errors can be reported in ACME both at the HTTP layer and within ACME payloads.
-ACME servers can return responses with an HTTP error response code (4XX or 5XX).
-For example:  If the client submits a request using a method not allowed in this
-document, then the server MAY return status code 405 (Method Not Allowed).
+Errors can be reported in ACME both at the HTTP layer and within challenge objects
+as defined in {{identifier-validation-challenges}. ACME servers can return
+responses with an HTTP error response code (4XX or 5XX). For example:  If the
+client submits a request using a method not allowed in this document, then the
+server MAY return status code 405 (Method Not Allowed).
 
 When the server responds with an error status, it SHOULD provide additional
 information using problem document {{!RFC7807}}.  To facilitate automatic
@@ -515,9 +516,6 @@ This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
-
-Authorization and challenge objects can also contain error information to
-indicate why the server was unable to validate authorization.
 
 
 # Certificate Management
@@ -1863,8 +1861,7 @@ format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 
 error (optional, object):
 : The error that occurred while the server was validating the challenge, if any.
-This field is structured as a problem document
-{{!RFC7807}}.
+This field is structured as a problem document {{!RFC7807}}.
 
 All additional fields are specified by the challenge type.  If the server sets a
 challenge's "status" to "invalid", it SHOULD also include the "error" field to
