@@ -2735,13 +2735,13 @@ There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
 
-## DNS over TCP
+## DNS securitry
 
 As noted above, DNS forgery attacks against the ACME server can result in the
 server making incorrect decisions about domain control and thus mis-issuing
 certificates.  Servers SHOULD verify DNSSEC when it is available for a domain.
-When DNSSEC is not available, servers SHOULD perform DNS queries over TCP, which
-provides better resistance to some forgery attacks than DNS over UDP.
+Servers SHOULD perform DNS queries over TCP, which provides better resistance
+to some forgery attacks than DNS over UDP.
 
 ## Default Virtual Hosts
 
