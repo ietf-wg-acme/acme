@@ -148,9 +148,8 @@ Internet-Draft                    ACME                     February 2017
      9.4.  Server-Side Request Forgery . . . . . . . . . . . . . . .  65
      9.5.  CA Policy Considerations  . . . . . . . . . . . . . . . .  66
    10. Operational Considerations  . . . . . . . . . . . . . . . . .  67
-     10.1.  DNS over TCP . . . . . . . . . . . . . . . . . . . . . .  67
+     10.1.  DNS securitry  . . . . . . . . . . . . . . . . . . . . .  67
      10.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  67
-     10.3.  Use of DNSSEC Resolvers  . . . . . . . . . . . . . . . .  68
    11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  68
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  69
      12.1.  Normative References . . . . . . . . . . . . . . . . . .  69
@@ -161,7 +160,8 @@ Internet-Draft                    ACME                     February 2017
 
    Certificates in the Web PKI [RFC5280] are most commonly used to
    authenticate domain names.  Thus, certificate authorities in the Web
-
+   PKI are trusted to verify that an applicant for a certificate
+   legitimately represents the domain name(s) in the certificate.
 
 
 
@@ -169,9 +169,6 @@ Barnes, et al.           Expires August 18, 2017                [Page 3]
 
 Internet-Draft                    ACME                     February 2017
 
-
-   PKI are trusted to verify that an applicant for a certificate
-   legitimately represents the domain name(s) in the certificate.
 
    Different types of certificates reflect different kinds of CA
    verification of information about the certificate subject.  "Domain
@@ -217,6 +214,9 @@ Internet-Draft                    ACME                     February 2017
    obtain and install a certificate for a domain.  Even in the best
    case, the lack of published, standardized mechanisms presents an
    obstacle to the wide deployment of HTTPS and other PKIX-dependent
+   systems because it inhibits mechanization of tasks related to
+   certificate issuance, deployment, and revocation.
+
 
 
 
@@ -225,9 +225,6 @@ Barnes, et al.           Expires August 18, 2017                [Page 4]
 
 Internet-Draft                    ACME                     February 2017
 
-
-   systems because it inhibits mechanization of tasks related to
-   certificate issuance, deployment, and revocation.
 
    This document describes an extensible framework for automating the
    issuance and domain validation procedure, thereby allowing servers
@@ -275,6 +272,9 @@ Internet-Draft                    ACME                     February 2017
       client automatically downloads and installs it, potentially
       notifying the operator via e-mail, SMS, etc.
 
+   o  The ACME client periodically contacts the CA to get updated
+      certificates, stapled OCSP responses, or whatever else would be
+
 
 
 Barnes, et al.           Expires August 18, 2017                [Page 5]
@@ -282,8 +282,6 @@ Barnes, et al.           Expires August 18, 2017                [Page 5]
 Internet-Draft                    ACME                     February 2017
 
 
-   o  The ACME client periodically contacts the CA to get updated
-      certificates, stapled OCSP responses, or whatever else would be
       required to keep the server functional and its credentials up-to-
       date.
 
@@ -329,6 +327,8 @@ Internet-Draft                    ACME                     February 2017
    agreeing to terms of service, and/or associating the account with an
    existing account in another system.  The creation request is signed
    with the generated private key to prove that the client controls it.
+
+
 
 
 
@@ -3715,54 +3715,13 @@ Internet-Draft                    ACME                     February 2017
    operators of ACME-based CAs will need to keep in mind when
    configuring their services.  For example:
 
-10.1.  DNS over TCP
+10.1.  DNS securitry
 
    As noted above, DNS forgery attacks against the ACME server can
    result in the server making incorrect decisions about domain control
-   and thus mis-issuing certificates.  Servers SHOULD verify DNSSEC when
-   it is available for a domain.  When DNSSEC is not available, servers
-   SHOULD perform DNS queries over TCP, which provides better resistance
-   to some forgery attacks than DNS over UDP.
-
-10.2.  Default Virtual Hosts
-
-   In many cases, TLS-based services are deployed on hosted platforms
-   that use the Server Name Indication (SNI) TLS extension to
-   distinguish between different hosted services or "virtual hosts".
-   When a client initiates a TLS connection with an SNI value indicating
-   a provisioned host, the hosting platform routes the connection to
-   that host.
-
-   When a connection comes in with an unknown SNI value, one might
-   expect the hosting platform to terminate the TLS connection.
-   However, some hosting platforms will choose a virtual host to be the
-   "default", and route connections with unknown SNI values to that
-   host.
-
-   In such cases, the owner of the default virtual host can complete a
-   TLS-based challenge (e.g., "tls-sni-02") for any domain with an A
-   record that points to the hosting platform.  This could result in
-   mis-issuance in cases where there are multiple hosts with different
-   owners resident on the hosting platform.
-
-
-
-
-
-Barnes, et al.           Expires August 18, 2017               [Page 67]
-
-Internet-Draft                    ACME                     February 2017
-
-
-   A CA that accepts TLS-based proof of domain control should attempt to
-   check whether a domain is hosted on a domain with a default virtual
-   host before allowing an authorization request for this host to use a
-   TLS-based challenge.  A default virtual host can be detected by
-   initiating TLS connections to the host with random SNI values within
-   the namespace used for the TLS-based challenge (the "acme.invalid"
-   namespace for "tls-sni-02").
-
-10.3.  Use of DNSSEC Resolvers
+   and thus mis-issuing certificates.  Servers SHOULD perform DNS
+   queries over TCP, which provides better resistance to some forgery
+   attacks than DNS over UDP.
 
    An ACME-based CA will often need to make DNS queries, e.g., to
    validate control of DNS names.  Because the security of such
@@ -3779,6 +3738,44 @@ Internet-Draft                    ACME                     February 2017
    DNSSEC-validating resolvers within their trusted network and use
    these resolvers both for both CAA record lookups and all record
    lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).
+
+10.2.  Default Virtual Hosts
+
+   In many cases, TLS-based services are deployed on hosted platforms
+   that use the Server Name Indication (SNI) TLS extension to
+   distinguish between different hosted services or "virtual hosts".
+   When a client initiates a TLS connection with an SNI value indicating
+
+
+
+
+Barnes, et al.           Expires August 18, 2017               [Page 67]
+
+Internet-Draft                    ACME                     February 2017
+
+
+   a provisioned host, the hosting platform routes the connection to
+   that host.
+
+   When a connection comes in with an unknown SNI value, one might
+   expect the hosting platform to terminate the TLS connection.
+   However, some hosting platforms will choose a virtual host to be the
+   "default", and route connections with unknown SNI values to that
+   host.
+
+   In such cases, the owner of the default virtual host can complete a
+   TLS-based challenge (e.g., "tls-sni-02") for any domain with an A
+   record that points to the hosting platform.  This could result in
+   mis-issuance in cases where there are multiple hosts with different
+   owners resident on the hosting platform.
+
+   A CA that accepts TLS-based proof of domain control should attempt to
+   check whether a domain is hosted on a domain with a default virtual
+   host before allowing an authorization request for this host to use a
+   TLS-based challenge.  A default virtual host can be detected by
+   initiating TLS connections to the host with random SNI values within
+   the namespace used for the TLS-based challenge (the "acme.invalid"
+   namespace for "tls-sni-02").
 
 11.  Acknowledgements
 
@@ -3801,6 +3798,9 @@ Internet-Draft                    ACME                     February 2017
    This document draws on many concepts established by Eric Rescorla's
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
+
+
+
 
 
 

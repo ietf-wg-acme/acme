@@ -337,9 +337,8 @@ address {
 <link href="#rfc.section.9.4" rel="Chapter" title="9.4 Server-Side Request Forgery"/>
 <link href="#rfc.section.9.5" rel="Chapter" title="9.5 CA Policy Considerations"/>
 <link href="#rfc.section.10" rel="Chapter" title="10 Operational Considerations"/>
-<link href="#rfc.section.10.1" rel="Chapter" title="10.1 DNS over TCP"/>
+<link href="#rfc.section.10.1" rel="Chapter" title="10.1 DNS securitry"/>
 <link href="#rfc.section.10.2" rel="Chapter" title="10.2 Default Virtual Hosts"/>
-<link href="#rfc.section.10.3" rel="Chapter" title="10.3 Use of DNSSEC Resolvers"/>
 <link href="#rfc.section.11" rel="Chapter" title="11 Acknowledgements"/>
 <link href="#rfc.references" rel="Chapter" title="12 References"/>
 <link href="#rfc.references.1" rel="Chapter" title="12.1 Normative References"/>
@@ -483,9 +482,8 @@ address {
 <li>9.4.   <a href="#rfc.section.9.4">Server-Side Request Forgery</a></li>
 <li>9.5.   <a href="#rfc.section.9.5">CA Policy Considerations</a></li>
 </ul><li>10.   <a href="#rfc.section.10">Operational Considerations</a></li>
-<ul><li>10.1.   <a href="#rfc.section.10.1">DNS over TCP</a></li>
+<ul><li>10.1.   <a href="#rfc.section.10.1">DNS securitry</a></li>
 <li>10.2.   <a href="#rfc.section.10.2">Default Virtual Hosts</a></li>
-<li>10.3.   <a href="#rfc.section.10.3">Use of DNSSEC Resolvers</a></li>
 </ul><li>11.   <a href="#rfc.section.11">Acknowledgements</a></li>
 <li>12.   <a href="#rfc.references">References</a></li>
 <ul><li>12.1.   <a href="#rfc.references.1">Normative References</a></li>
@@ -2289,16 +2287,15 @@ Content-Type: application/jose+json
 <p id="rfc.section.9.5.p.4">CAs using ACME to allow clients to agree to terms of service should keep in mind that ACME clients can automate this agreement, possibly not involving a human user.  If a CA wishes to have stronger evidence of user consent, it may present an out-of-band requirement or challenge to require human involvement.</p>
 <h1 id="rfc.section.10"><a href="#rfc.section.10">10.</a> <a href="#operational-considerations" id="operational-considerations">Operational Considerations</a></h1>
 <p id="rfc.section.10.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.  For example:</p>
-<h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#dns-over-tcp" id="dns-over-tcp">DNS over TCP</a></h1>
-<p id="rfc.section.10.1.p.1">As noted above, DNS forgery attacks against the ACME server can result in the server making incorrect decisions about domain control and thus mis-issuing certificates.  Servers SHOULD verify DNSSEC when it is available for a domain.  When DNSSEC is not available, servers SHOULD perform DNS queries over TCP, which provides better resistance to some forgery attacks than DNS over UDP.</p>
+<h1 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> <a href="#dns-securitry" id="dns-securitry">DNS securitry</a></h1>
+<p id="rfc.section.10.1.p.1">As noted above, DNS forgery attacks against the ACME server can result in the server making incorrect decisions about domain control and thus mis-issuing certificates. Servers SHOULD perform DNS queries over TCP, which provides better resistance to some forgery attacks than DNS over UDP.</p>
+<p id="rfc.section.10.1.p.2">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
+<p id="rfc.section.10.1.p.3">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
 <h1 id="rfc.section.10.2"><a href="#rfc.section.10.2">10.2.</a> <a href="#default-virtual-hosts" id="default-virtual-hosts">Default Virtual Hosts</a></h1>
 <p id="rfc.section.10.2.p.1">In many cases, TLS-based services are deployed on hosted platforms that use the Server Name Indication (SNI) TLS extension to distinguish between different hosted services or &#8220;virtual hosts&#8221;.  When a client initiates a TLS connection with an SNI value indicating a provisioned host, the hosting platform routes the connection to that host.</p>
 <p id="rfc.section.10.2.p.2">When a connection comes in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>
 <p id="rfc.section.10.2.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-02&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
 <p id="rfc.section.10.2.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).</p>
-<h1 id="rfc.section.10.3"><a href="#rfc.section.10.3">10.3.</a> <a href="#use-of-dnssec-resolvers" id="use-of-dnssec-resolvers">Use of DNSSEC Resolvers</a></h1>
-<p id="rfc.section.10.3.p.1">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
-<p id="rfc.section.10.3.p.2">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
 <h1 id="rfc.section.11"><a href="#rfc.section.11">11.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a></h1>
 <p id="rfc.section.11.p.1">In addition to the editors listed on the front page, this document has benefited from contributions from a broad set of contributors, all the way back to its inception.</p>
 <p/>
