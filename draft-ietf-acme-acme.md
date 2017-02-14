@@ -1751,7 +1751,8 @@ reason (optional, int):
 to be used when generating OCSP responses and CRLs. If this field is not set
 the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
 responses and CRLs. The server MAY disallow a subset of reasonCodes from being
-used by the user.
+used by the user. If a request contains a disallowed reasonCode the server MUST
+it.
 
 ~~~~~~~~~~
 POST /acme/revoke-cert HTTP/1.1
