@@ -829,7 +829,7 @@ possession of the identifier.
 
 The structure of an ACME authorization resource is as follows:
 
-identifier (required, dictionary of string):
+identifier (required, object):
 : The identifier that the account is authorized to represent
 
   type (required, string):
@@ -1407,7 +1407,7 @@ the new-authorization resource specifying the identifier for which authorization
 is being requested and how the server should behave with respect to existing
 authorizations for this identifier.
 
-identifier (required, dictionary of string):
+identifier (required, object):
 : The identifier that the account is authorized to represent:
 
   type (required, string):
@@ -1861,7 +1861,7 @@ validated (optional, string):
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
-error (optional, dictionary of string):
+error (optional, object):
 : The error that occurred while the server was validating the challenge, if any.
 This field is structured as a problem document
 {{!RFC7807}}.
