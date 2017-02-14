@@ -2739,9 +2739,22 @@ For example:
 
 As noted above, DNS forgery attacks against the ACME server can result in the
 server making incorrect decisions about domain control and thus mis-issuing
-certificates.  Servers SHOULD verify DNSSEC when it is available for a domain.
-Servers SHOULD perform DNS queries over TCP, which provides better resistance
-to some forgery attacks than DNS over UDP.
+certificates. Servers SHOULD perform DNS queries over TCP, which provides better
+resistance to some forgery attacks than DNS over UDP.
+
+An ACME-based CA will often need to make DNS queries, e.g., to validate control
+of DNS names.  Because the security of such validations ultimately depends on
+the authenticity of DNS data, every possible precaution should be taken to
+secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based
+CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This
+provides additional protection to domains which choose to make use of DNSSEC.
+
+An ACME-based CA must use only a resolver if it trusts the resolver and every
+component of the network route by which it is accessed. It is therefore
+RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
+within their trusted network and use these resolvers both for both CAA record
+lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
+TXT, etc.).
 
 ## Default Virtual Hosts
 
@@ -2767,22 +2780,6 @@ allowing an authorization request for this host to use a TLS-based challenge.
 A default virtual host can be detected by initiating TLS connections to the host
 with random SNI values within the namespace used for the TLS-based challenge
 (the "acme.invalid" namespace for "tls-sni-02").
-
-## Use of DNSSEC Resolvers
-
-An ACME-based CA will often need to make DNS queries, e.g., to validate control
-of DNS names.  Because the security of such validations ultimately depends on
-the authenticity of DNS data, every possible precaution should be taken to
-secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based
-CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This
-provides additional protection to domains which choose to make use of DNSSEC.
-
-An ACME-based CA must use only a resolver if it trusts the resolver and every
-component of the network route by which it is accessed. It is therefore
-RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
-within their trusted network and use these resolvers both for both CAA record
-lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
-TXT, etc.).
 
 # Acknowledgements
 
