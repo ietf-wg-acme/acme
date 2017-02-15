@@ -497,7 +497,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | tls                   | The server received a TLS error during validation                  |
 | unauthorized          | The client lacks sufficient authorization                          |
 | unknownHost           | The server could not resolve a domain name                         |
-| unsupportedIdentifier | Identifier is not supported, but may be in future                  |
+| unsupportedIdentifier | Identifier is not supported but may be in future                  |
 | userActionRequired    | The user visit the "instance" URL and take actions specified there |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
