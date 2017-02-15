@@ -622,7 +622,7 @@ should be different from the other ACME server resources' URIs, and that it
 should not clash with other services. For instance:
 
  * a host which functions as both an ACME and Web server may want to keep
-   the root path "/" for an HTML "front page", and and place the ACME
+   the root path "/" for an HTML "front page", and place the ACME
    directory under path "/acme".
 
  * a host which only functions as an ACME server could place the directory
