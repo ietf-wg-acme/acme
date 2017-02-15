@@ -1905,8 +1905,8 @@ MUST be stripped before the values are base64url-encoded.
 ## HTTP
 
 With HTTP validation, the client in an ACME transaction proves its control over
-a domain name by proving that it can provision resources on an HTTP server that
-responds for that domain name.  The ACME server challenges the client to
+a domain name by proving that for that domain name it can provision resources
+to be returned by an HTTP server. The ACME server challenges the client to
 provision a file at a specific path, with a specific string as its content.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
