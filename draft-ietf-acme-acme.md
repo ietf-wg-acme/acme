@@ -2609,7 +2609,7 @@ validation path will not be known to the primary server.
 
 The DNS is a common point of vulnerability for all of these challenges.  An
 entity that can provision false DNS records for a domain can attack the DNS
-challenge directly, and can provision false A/AAAA records to direct the ACME
+challenge directly and can provision false A/AAAA records to direct the ACME
 server to send its TLS SNI or HTTP validation query to a server of the
 attacker's choosing.  There are a few different mitigations that ACME servers
 can apply:
