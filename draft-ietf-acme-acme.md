@@ -477,8 +477,8 @@ the current request with exactly the same parameters.
 
 In addition to the human readable "detail" field of the error response, the
 server MAY send one or multiple tokens in the "Link" header pointing to
-documentation about the specific hit rate limits using the "rate-limit"
-relation.
+documentation about the specific hit rate limits using the
+"urn:ietf:params:acme:documentation" relation.
 
 ## Errors
 
