@@ -2563,7 +2563,7 @@ account key for one of his choosing, e.g.:
 * Legitimate domain holder registers account key pair A
 * MitM registers account key pair B
 * Legitimate domain holder sends a new-order request signed under account key A
-* MitM suppresses the legitimate request, but sends the same request signed
+* MitM suppresses the legitimate request but sends the same request signed
   under account key B
 * ACME server issues challenges and MitM forwards them to the legitimate domain
   holder
