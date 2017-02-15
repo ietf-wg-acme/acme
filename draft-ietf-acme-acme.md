@@ -1458,7 +1458,7 @@ from the inputs submitted by the client.
   identifier
 
 The server allocates a new URI for this authorization, and returns a 201
-(Created) response, with the authorization URI in a Location header field, and
+(Created) response, with the authorization URI in the Location header field, and
 the JSON authorization object in the body.  The client then follows the process
 described in {{identifier-authorization}} to complete the authorization process.
 
