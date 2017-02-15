@@ -962,7 +962,7 @@ object in a 201 (Created) response, with the account URI in a Location header
 field.
 
 If the server already has an account registered with the provided account key,
-then it MUST return a 200 (OK) response and provide the URI of that account in a
+then it MUST return a 200 (OK) response and provide the URI of that account in the
 Content-Location header field.  This allows a client that has an account key but
 not the corresponding account URI to recover the account URI.
 
