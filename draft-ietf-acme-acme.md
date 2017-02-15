@@ -1863,7 +1863,7 @@ circumstances is a matter of server policy.
 
 The identifier validation challenges described in this section all relate to
 validation of domain names.  If ACME is extended in the future to support other
-types of identifier, there will need to be new challenge types, and they will
+types of identifiers, there will need to be new challenge types, and they will
 need to specify which types of identifier they apply to.
 
 \[\[ Editor's Note: In pre-RFC versions of this specification, challenges are
