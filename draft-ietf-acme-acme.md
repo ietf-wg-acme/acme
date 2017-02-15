@@ -621,7 +621,7 @@ There is no constraint on the actual URI of the directory except that it
 should be different from the other ACME server resources' URIs, and that it
 should not clash with other services. For instance:
 
- * a host which functions as both an ACME and Web server may want to keep
+ * a host which functions as both an ACME and a Web server may want to keep
    the root path "/" for an HTML "front page", and place the ACME
    directory under path "/acme".
 
