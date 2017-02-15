@@ -1875,7 +1875,7 @@ since challenge in version -04 was compatible with one in version -04. ]]
 
 ## Key Authorizations
 
-Several of the challenges in this document makes use of a key authorization
+Several of the challenges in this document make use of a key authorization
 string.  A key authorization is a string that expresses a domain holder's
 authorization for a specified key to satisfy a specified challenge, by
 concatenating the token for the challenge with a key fingerprint, separated by a
