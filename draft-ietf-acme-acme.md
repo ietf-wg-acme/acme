@@ -132,8 +132,8 @@ this:
   of CAs and updates to ACME configuration.) The ACME client might prompt the
   operator for payment information at this point.
 * The operator selects a CA.
-* In the background, the ACME client contacts the CA and requests that a
-  certificate be issued for the intended domain name(s).
+* In the background, the ACME client contacts the CA and requests that it
+  issue a certificate for the intended domain name(s).
 * Once the CA is satisfied, the certificate is issued and the ACME client
   automatically downloads and installs it, potentially notifying the operator
   via e-mail, SMS, etc.
