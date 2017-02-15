@@ -654,7 +654,7 @@ The following metadata items are defined, all of which are OPTIONAL:
 information about the ACME server.
 
 "caa-identities" (optional, array of string):
-: Each string MUST be a lowercase hostname which the ACME server recognises as
+: Each string MUST be a lowercase hostname which the ACME server recognizes as
 referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
 use when configuring CAA records.
@@ -813,7 +813,7 @@ then it SHOULD consider the order invalid.
 The "authorizations" array in the challenge SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
 were fulfilled in earlier orders or in pre-authorization transactions.  For
-example, if a CA allows multiple orders to be fufilled based on a single
+example, if a CA allows multiple orders to be fulfilled based on a single
 authorization transaction, then it SHOULD reflect that authorization in all of
 the order.
 
@@ -1313,7 +1313,7 @@ certificate to be issued.  The CSR MUST indicate the requested identifiers,
 either in the commonName portion of the requested subject name, or in an
 extensionRequest attribute {{!RFC2985}} requesting a subjectAltName extension.
 
-The server MUST return an error if it cannot fulfil the request as specified,
+The server MUST return an error if it cannot fulfill the request as specified,
 and MUST NOT issue a certificate with contents other than those requested.  If
 the server requires the request to be modified in a certain way, it should
 indicate the required changes using an appropriate error code and description.
@@ -2240,7 +2240,7 @@ HTTP/1.1 200 OK
 ~~~~~~~~~~
 
 A client responds to this challenge by presenting the indicated URL for a human
-user to navigate to.  If the user choses to complete this challege (by vising
+user to navigate to.  If the user chooses to complete this challenge (by visiting
 the website and completing its instructions), the client indicates this by
 sending a simple acknowledgement response to the server.
 
@@ -2732,7 +2732,7 @@ There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
 
-## DNS securitry
+## DNS security
 
 As noted above, DNS forgery attacks against the ACME server can result in the
 server making incorrect decisions about domain control and thus mis-issuing
