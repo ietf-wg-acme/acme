@@ -626,7 +626,7 @@ should not clash with other services. For instance:
    directory under the path "/acme".
 
  * a host which only functions as an ACME server could place the directory
-   under path "/".
+   under the path "/".
 
 The dictionary MAY additionally contain a key "meta". If present, it MUST be a
 JSON dictionary; each item in the dictionary is an item of metadata relating to
