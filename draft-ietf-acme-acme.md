@@ -1129,7 +1129,7 @@ verify the account binding, the CA MUST take the following steps:
 
 If all of these checks pass and the CA creates a new account, then the CA may
 consider the new account associated with the external account corresponding to
-the MAC key, and MUST reflect value of the "external-account-binding" field in
+the MAC key and MUST reflect value of the "external-account-binding" field in
 the resulting account object.  If any of these checks fail, then the CA MUST
 reject the new-account request.
 
