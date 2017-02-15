@@ -2199,7 +2199,7 @@ checks, then the validation fails.
 ## Out-of-Band
 
 There may be cases where a server cannot perform automated validation of an
-identifier, for example if validation requires some manual steps.  In such
+identifier, for example, if validation requires some manual steps.  In such
 cases, the server may provide an "out of band" (OOB) challenge to request that
 the client perform some action outside of ACME in order to validate possession
 of the identifier.
