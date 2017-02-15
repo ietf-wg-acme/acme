@@ -120,7 +120,7 @@ means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
 
-At time of writing, when deploying an HTTPS server, an operator typically gets a
+Prior to ACME, when deploying an HTTPS server, an operator typically gets a
 prompt to generate a self-signed certificate.  If the operator were instead
 deploying an ACME-compatible web server, the experience would be something like
 this:
