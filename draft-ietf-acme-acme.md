@@ -1375,7 +1375,7 @@ created reactively, in response to a certificate order.  Some servers
 may also wish to enable clients to obtain authorization for an identifier
 proactively, outside of the context of a specific issuance.  For example, a
 client hosting virtual servers for a collection of names might wish to obtain
-authorization before any servers are created, and only create a certificate when
+authorization before any servers are created and only create a certificate when
 a server starts up.
 
 In some cases, a CA running an ACME server might have a completely external,
