@@ -1986,7 +1986,7 @@ response to the POST request in which the client sent the challenge.
 Given a challenge/response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
 
-1. Form a URI by populating the URI template {{!RFC6570}}
+1. Construct a URI by populating the URI template {{!RFC6570}}
    "http://{domain}/.well-known/acme-challenge/{token}", where:
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
