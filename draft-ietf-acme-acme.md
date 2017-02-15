@@ -2102,7 +2102,7 @@ using these steps:
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
 
-It is RECOMMENDED that the server open multiple TLS connections from various
+It is RECOMMENDED that the server opens multiple TLS connections from various
 network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
