@@ -654,7 +654,7 @@ The following metadata items are defined, all of which are OPTIONAL:
 information about the ACME server.
 
 "caa-identities" (optional, array of string):
-: Each string MUST be a lowercase hostname which the ACME server recognises as
+: Each string MUST be a lowercase hostname which the ACME server recognizes as
 referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
 use when configuring CAA records.
