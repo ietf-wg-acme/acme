@@ -1658,7 +1658,7 @@ polling until it has seen the validation request from the server.
 To check on the status of an authorization, the client sends a GET request to
 the authorization URI, and the server responds with the current  authorization
 object. In responding to poll requests while the validation is still in
-progress, the server MUST return a 202 (Accepted) response, and MAY include a
+progress, the server MUST return a 202 (Accepted) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
