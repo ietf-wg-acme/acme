@@ -124,7 +124,7 @@ are addressed to:
  * Any IETF working group or portion thereof
  * Any Birds of a Feather (BOF) session
  * The IAB or any member thereof on behalf of the IAB
- * The RFC Editor or the Internet-Drafts function
+ * The RFC-Editor or the Internet-Drafts function
  * All IETF Contributions are subject to the rules of
    [RFC 5378](https://tools.ietf.org/html/rfc5378) and
    [RFC 3979](https://tools.ietf.org/html/rfc3979)
