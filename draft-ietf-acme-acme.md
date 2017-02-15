@@ -2240,7 +2240,7 @@ HTTP/1.1 200 OK
 ~~~~~~~~~~
 
 A client responds to this challenge by presenting the indicated URL for a human
-user to navigate to.  If the user choses to complete this challenge (by vising
+user to navigate to.  If the user chooses to complete this challenge (by vising
 the website and completing its instructions), the client indicates this by
 sending a simple acknowledgement response to the server.
 
