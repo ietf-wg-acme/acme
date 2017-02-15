@@ -2658,7 +2658,7 @@ limits.  Issues closer to the front end, like POST body validation, can be
 addressed using HTTP request limiting.  For validation and certificate requests,
 there are other identifiers on which rate limits can be keyed.  For example, the
 server might limit the rate at which any individual account key can issue
-certificates, or the rate at which validation can be requested within a given
+certificates or the rate at which validation can be requested within a given
 subtree of the DNS.
 
 ## Server-Side Request Forgery
