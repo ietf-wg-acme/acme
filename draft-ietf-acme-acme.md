@@ -2621,7 +2621,7 @@ can apply:
   requests {{?I-D.vixie-dnsext-dns0x20}} or only using TCP
 
 Given these considerations, the ACME validation process makes it impossible for
-any attacker on the ACME channel, or a passive attacker on the validation
+any attacker on the ACME channel or a passive attacker on the validation
 channel to hijack the authorization process to authorize a key of the attacker's
 choice.
 
