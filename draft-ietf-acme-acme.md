@@ -2732,7 +2732,7 @@ There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
 
-## DNS securitry
+## DNS security
 
 As noted above, DNS forgery attacks against the ACME server can result in the
 server making incorrect decisions about domain control and thus mis-issuing
