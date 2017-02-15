@@ -1911,7 +1911,7 @@ provision a file at a specific path, with a specific string as its content.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
 connect to at least one of the hosts found in the DNS A and AAAA records, at its
-discretion.  Because many webservers allocate a default HTTPS virtual host to a
+discretion.  Because many web servers allocate a default HTTPS virtual host to a
 particular low-privilege tenant user in a subtle and non-intuitive manner, the
 challenge must be completed over HTTP, not HTTPS.
 
