@@ -2462,8 +2462,8 @@ document ]]
 ### Challenge Types {#iana-challenge}
 
 This registry lists the ways that ACME servers can offer to validate control of
-an identifier.  The "Identifier Type" field in template must be contained in the
-Label column of the ACME Identifier Types registry.
+an identifier.  The "Identifier Type" field in the template must be contained
+in the Label column of the ACME Identifier Types registry.
 
 Template:
 
