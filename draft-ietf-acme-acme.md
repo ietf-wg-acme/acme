@@ -2588,7 +2588,7 @@ identifier can perform.  For the challenges in this document, the actions are:
 * DNS: Provision DNS resource records for the domain
 
 There are several ways that these assumptions can be violated, both by
-misconfiguration and by attack.  For example, on a web server that allows
+misconfiguration and by attacks.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
 server's hostname by responding to an HTTP challenge, and likewise for TLS
 configuration and TLS SNI.
