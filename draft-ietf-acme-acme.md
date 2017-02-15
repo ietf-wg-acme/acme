@@ -2488,7 +2488,7 @@ document ]]
 ACME is a protocol for managing certificates that attest to identifier/key
 bindings.  Thus the foremost security goal of ACME is to ensure the integrity of
 this process, i.e., to ensure that the bindings attested by certificates are
-correct, and that only authorized entities can manage certificates.  ACME
+correct and that only authorized entities can manage certificates.  ACME
 identifies clients by their account keys, so this overall goal breaks down into
 two more precise goals:
 
