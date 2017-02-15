@@ -2442,8 +2442,8 @@ document ]]
 
 ### Identifier Types {#iana-identifier}
 
-This registry lists the types of identifiers that ACME clients may request
-authorization to issue in certificates.
+This registry lists the types of identifiers in certificates that ACME clients
+may request authorization to issue.
 
 Template:
 
