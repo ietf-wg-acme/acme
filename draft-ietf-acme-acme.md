@@ -1692,7 +1692,7 @@ HTTP/1.1 200 OK
 ### Deactivating an Authorization
 
 If a client wishes to relinquish its authorization to issue certificates for an
-identifier, then it may request that the server deactivate each authorization
+identifier, then it may request that the server deactivates each authorization
 associated with that identifier by sending a POST request with the static object
 {"status": "deactivated"}.
 
