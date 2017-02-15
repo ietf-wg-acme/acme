@@ -108,7 +108,7 @@ authentication for other protocols based on TLS {{!RFC5246}}.
 
 # Deployment Model and Operator Experience
 
-The guiding use case for ACME is obtaining certificates for Web sites
+The guiding use case for ACME is obtaining certificates for websites
 (HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
 verify that this server actually speaks for the domain(s).
@@ -2596,13 +2596,13 @@ configuration and TLS SNI.
 The use of hosting providers is a particular risk for ACME validation.  If the
 owner of the domain has outsourced operation of DNS or web services to a hosting
 provider, there is nothing that can be done against tampering by the hosting
-provider.  As far as the outside world is concerned, the zone or web site
+provider.  As far as the outside world is concerned, the zone or website
 provided by the hosting provider is the real thing.
 
 More limited forms of delegation can also lead to an unintended party gaining
 the ability to successfully complete a validation transaction.  For example,
 suppose an ACME server follows HTTP redirects in HTTP validation and a
-web site operator provisions a catch-all redirect rule that redirects requests
+website operator provisions a catch-all redirect rule that redirects requests
 for unknown resources to a different domain.  Then the target of the redirect
 could use that to get a certificate through HTTP validation, since the
 validation path will not be known to the primary server.
