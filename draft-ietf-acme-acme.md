@@ -2539,11 +2539,11 @@ any individual channel.  Some vulnerabilities arise (noted below) when an
 attacker can exploit both the ACME channel and one of the others.
 
 On the ACME channel, in addition to network-layer attackers, we also need to
-account for application-layer man-in-the-middle (MitM) attacks, and for abusive use of
-the protocol itself.  Protection against application-layer MitM addresses
-potential attackers such as Content Distribution Networks (CDNs) and middleboxes
-with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an
-attacker with access to the validation channel can't obtain
+account for man-in-the-middle (MitM) attacks at the application-layer, and for
+abusive use of the protocol itself.  Protection against application-layer MitM
+addresses potential attackers such as Content Distribution Networks (CDNs) and
+middleboxes with a TLS MitM function.  Preventing abusive use of ACME means
+ensuring that an attacker with access to the validation channel can't obtain
 illegitimate authorization by acting as an ACME client (legitimately, in terms
 of the protocol).
 
