@@ -1313,7 +1313,7 @@ certificate to be issued.  The CSR MUST indicate the requested identifiers,
 either in the commonName portion of the requested subject name, or in an
 extensionRequest attribute {{!RFC2985}} requesting a subjectAltName extension.
 
-The server MUST return an error if it cannot fulfil the request as specified,
+The server MUST return an error if it cannot fulfill the request as specified,
 and MUST NOT issue a certificate with contents other than those requested.  If
 the server requires the request to be modified in a certain way, it should
 indicate the required changes using an appropriate error code and description.
