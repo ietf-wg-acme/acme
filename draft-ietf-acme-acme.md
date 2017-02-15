@@ -736,7 +736,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 
 ### Order Objects
 
-An ACME order object represents a client's request for a certificate, and is
+An ACME order object represents a client's request for a certificate and is
 used to track the progress of that order through to issuance.  Thus, the object
 contains information about the requested certificate, the authorizations that
 the server requires the client to complete, and any certificates that have
