@@ -272,7 +272,7 @@ requests to the server, carrying JSON messages {{!RFC2818}}{{!RFC7159}}.  Use of
 HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning {{?RFC7469}},
 and servers SHOULD emit pinning headers.  Each subsection of
 {{certificate-management}} below describes the message formats used by the
-function, and the order in which messages are sent.
+function and the order in which messages are sent.
 
 In most HTTPS transactions used by ACME, the ACME client is the HTTPS client
 and the ACME server is the HTTPS server. The ACME server acts as an HTTP and
