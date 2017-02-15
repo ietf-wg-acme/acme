@@ -50,7 +50,7 @@ management functions, such as certificate revocation.
 DISCLAIMER: This is a work in progress draft of ACME and has not yet had a
 thorough security analysis.
 
-RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH: The source for this draft is
+RFC-EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH: The source for this draft is
 maintained in GitHub. Suggested changes should be submitted as pull requests at
 <https://github.com/ietf-wg-acme/acme>. Instructions are on that page as well.
 Editorial changes can be managed in GitHub, but any substantive change should be
@@ -2306,7 +2306,7 @@ updated with the following additional value:
 *  Specification Document(s): {{url-url-jws-header-parameter}} of
    RFC XXXX
 
-\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC-EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ## "nonce" JWS Header Parameter
@@ -2321,7 +2321,7 @@ updated with the following additional value:
 *  Specification Document(s): {{nonce-nonce-jws-header-parameter}} of
    RFC XXXX
 
-\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC-EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ## URN Sub-namespace for ACME (urn:ietf:params:acme)
@@ -2342,7 +2342,7 @@ Repository:
 Index value:
 : No transformation needed.
 
-\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC-EDITOR: Please replace XXXX above with the RFC number assigned to this
 document, and replace URL-TBD with the URL assigned by IANA for registries of
 ACME parameters. ]]
 
@@ -2449,7 +2449,7 @@ Initial contents:
 | revoke-cert    | Revoke certificate   | RFC XXXX  |
 | key-change     | Key change           | RFC XXXX  |
 
-\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC-EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ### Identifier Types {#iana-identifier}
@@ -2468,7 +2468,7 @@ Initial contents:
 |:------|:----------|
 | dns   | RFC XXXX  |
 
-\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC-EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 ### Challenge Types {#iana-challenge}
@@ -2492,7 +2492,7 @@ Initial Contents
 | tls-sni | dns             | RFC XXXX  |
 | dns     | dns             | RFC XXXX  |
 
-\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+\[\[ RFC-EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
 # Security Considerations
