@@ -2535,7 +2535,7 @@ connections to the ACME server and the validation channel outbound HTTP or DNS
 requests.
 
 Broadly speaking, ACME aims to be secure against active and passive attackers on
-any individual channel.  Some vulnerabilities arise (noted below), when an
+any individual channel.  Some vulnerabilities arise (noted below) when an
 attacker can exploit both the ACME channel and one of the others.
 
 On the ACME channel, in addition to network-layer attackers, we also need to
