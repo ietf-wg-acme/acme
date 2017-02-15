@@ -402,7 +402,7 @@ any signed request from the client to carry such a nonce.
 
 An ACME server provides nonces to clients using the Replay-Nonce header field,
 as specified below.  The server MUST include a Replay-Nonce header field in
-every successful response to a POST request, and SHOULD provide it in error
+every successful response to a POST request and SHOULD provide it in error
 responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
