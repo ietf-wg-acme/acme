@@ -311,10 +311,11 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have a MAC-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
-  * "jwk" (only for requests to new-account and revoke-cert resources)
-  * "kid" (for all other requests)
   * "nonce" (defined below)
   * "url" (defined below)
+  * a key:
+    * "jwk" (only for requests to new-account and revoke-cert resources)
+    * "kid" (for all other requests)
 
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
