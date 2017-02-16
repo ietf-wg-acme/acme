@@ -591,11 +591,11 @@ address {
   <li>The JWS MUST be encoded using UTF-8</li>
   <li>The JWS MUST NOT have the value &#8220;none&#8221; in its &#8220;alg&#8221; field</li>
   <li>The JWS MUST NOT have a MAC-based algorithm in its &#8220;alg&#8221; field</li>
-  <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221;</li><li>&#8220;jwk&#8221; (only for requests to new-reg and revoke-cert resources)</li><li>&#8220;kid&#8221; (for all other requests).</li><li>&#8220;nonce&#8221; (defined below)</li><li>&#8220;url&#8221; (defined below)</li></ul></li>
+  <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221;</li><li>&#8220;jwk&#8221; (only for requests to new-account and revoke-cert resources)</li><li>&#8220;kid&#8221; (for all other requests).</li><li>&#8220;nonce&#8221; (defined below)</li><li>&#8220;url&#8221; (defined below)</li></ul></li>
 </ul>
 <p id="rfc.section.5.2.p.4">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
-<p id="rfc.section.5.2.p.5">For new-reg requests, and for revoke-cert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field.</p>
-<p id="rfc.section.5.2.p.6">For all other requests, there MUST be a &#8220;kid&#8221; field. This field must contain the account URI received by POSTing to the new-reg resource.</p>
+<p id="rfc.section.5.2.p.5">For new-account requests, and for revoke-cert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field.</p>
+<p id="rfc.section.5.2.p.6">For all other requests, there MUST be a &#8220;kid&#8221; field. This field must contain the account URI received by POSTing to the new-account resource.</p>
 <p id="rfc.section.5.2.p.7">Note that authentication via signed JWS request bodies implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
 <p id="rfc.section.5.2.p.8">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221;.  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.</p>
 <pre>
@@ -685,7 +685,7 @@ Content-Language: en
     </tr>
     <tr>
       <td class="left">invalidContact</td>
-      <td class="left">The contact URI for a registration was invalid</td>
+      <td class="left">The contact URI for an account was invalid</td>
     </tr>
     <tr>
       <td class="left">malformed</td>
@@ -1083,7 +1083,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="directory"
   ]
 }
 </pre>
-<p id="rfc.section.6.3.p.8">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URI.  The server MUST ignore any updates to the &#8220;key&#8221;, or &#8220;order&#8221; fields or any other fields it does not recognize. The server MUST verify that the request is signed with the private key corresponding to the &#8220;key&#8221; field of the request before updating the registration.</p>
+<p id="rfc.section.6.3.p.8">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URI.  The server MUST ignore any updates to the &#8220;key&#8221;, or &#8220;order&#8221; fields or any other fields it does not recognize. The server MUST verify that the request is signed with the private key corresponding to the &#8220;key&#8221; field of the request before updating the account object.</p>
 <p id="rfc.section.6.3.p.9">For example, to update the contact information in the above account, the client could send the following request:</p>
 <pre>
 POST /acme/acct/1 HTTP/1.1
@@ -1137,7 +1137,7 @@ Content-Language: en
 </ul>
 <p id="rfc.section.6.3.2.p.5">The &#8220;signature&#8221; field of the JWS will contain the MAC value computed with the MAC key provided by the CA.</p>
 <pre>
-POST /acme/new-reg HTTP/1.1
+POST /acme/new-account HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1175,7 +1175,7 @@ Content-Type: application/jose+json
   <li>Verify that the MAC on the JWS verifies using that MAC key</li>
   <li>Verify that the payload of the JWS represents the same key as was used to verify the outer JWS (i.e., the &#8220;jwk&#8221; field of the outer JWS)</li>
 </ol>
-<p id="rfc.section.6.3.2.p.8">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key, and MUST reflect value of the &#8220;external-account-binding&#8221; field in the resulting account object.  If any of these checks fail, then the CA MUST reject the new-registration request.</p>
+<p id="rfc.section.6.3.2.p.8">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key, and MUST reflect value of the &#8220;external-account-binding&#8221; field in the resulting account object.  If any of these checks fail, then the CA MUST reject the new-account request.</p>
 <h1 id="rfc.section.6.3.3"><a href="#rfc.section.6.3.3">6.3.3.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a></h1>
 <p id="rfc.section.6.3.3.p.1">A client may wish to change the public key that is associated with a account in order to recover from a key compromise or proactively mitigate the impact of an unnoticed key compromise.</p>
 <p id="rfc.section.6.3.3.p.2">To change the key associated with an account, the client first constructs a key-change object describing the change that it would like the server to make:</p>
