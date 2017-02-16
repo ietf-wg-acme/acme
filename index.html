@@ -991,7 +991,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 <p/>
 
 <dl>
-  <dt>identifier (required, dictionary of string):</dt>
+  <dt>identifier (required, object):</dt>
   <dd style="margin-left: 8">The identifier that the account is authorized to represent <dl><dt>type (required, string):</dt><dd style="margin-left: 8">The type of identifier.</dd><dt>value (required, string):</dt><dd style="margin-left: 8">The identifier itself.</dd></dl><p> </p></dd>
   <dt>status (required, string):</dt>
   <dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;pending&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, &#8220;invalid&#8221; and &#8220;revoked&#8221;.  If this field is missing, then the default value is &#8220;pending&#8221;.</dd>
@@ -1332,7 +1332,7 @@ Location: https://example.com/acme/order/asdf
 <p/>
 
 <dl>
-  <dt>identifier (required, dictionary of string):</dt>
+  <dt>identifier (required, object):</dt>
   <dd style="margin-left: 8">The identifier that the account is authorized to represent: <dl><dt>type (required, string):</dt><dd style="margin-left: 8">The type of identifier.</dd><dt>value (required, string):</dt><dd style="margin-left: 8">The identifier itself.</dd></dl><p> </p></dd>
   <dt>existing (optional, string):</dt>
   <dd style="margin-left: 8">How an existing authorization should be handled. Possible values are &#8220;accept&#8221; and &#8220;require&#8221;.</dd>
