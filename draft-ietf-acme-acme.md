@@ -2102,9 +2102,6 @@ using these steps:
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
 
-It is RECOMMENDED that the server open multiple TLS connections from various
-network perspectives, in order to make MitM attacks harder.
-
 If all of the above verifications succeed, then the validation is successful.
 Otherwise, the validation fails.
 
@@ -2188,9 +2185,6 @@ To validate a DNS challenge, the server performs the following steps:
 1. Compute the SHA-256 digest [FIPS180-4] of the key authorization
 2. Query for TXT records under the validation domain name
 3. Verify that the contents of one of the TXT records matches the digest value
-
-It is RECOMMENDED that the server perform multiple DNS queries from various
-network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
@@ -2638,6 +2632,10 @@ own account key.  The risks due to hosting providers noted above are a
 particular case.  For identifiers where the server already has some public key
 associated with the domain this attack can be prevented by requiring the client
 to prove control of the corresponding private key.
+
+It is RECOMMENDED that the server perform DNS queries and make HTTP and TLS
+connections from various network perspectives, in order to make MitM attacks
+harder.
 
 ## Denial-of-Service Considerations
 
