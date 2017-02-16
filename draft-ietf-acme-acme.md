@@ -125,8 +125,8 @@ prompt to generate a self-signed certificate.  If the operator were instead
 deploying an ACME-compatible web server, the experience would be something like
 this:
 
-* The ACME client prompts the operator for the intended domain name(s) that the
-  web server is to stand for.
+* The ACME client prompts the operator for the domain name(s) that the
+  web server is intended to serve.
 * The ACME client presents the operator with a list of CAs from which it could
   get a certificate.  (This list will change over time based on the capabilities
   of CAs and updates to ACME configuration.) The ACME client might prompt the
