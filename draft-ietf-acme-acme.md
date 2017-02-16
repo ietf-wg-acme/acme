@@ -111,7 +111,7 @@ authentication for other protocols based on TLS {{!RFC5246}}.
 The guiding use case for ACME is obtaining certificates for Web sites
 (HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
-verify that this server actually speaks for the domain(s).
+verify that this server actually speaks for them.
 
 DV certificate validation commonly checks claims about properties related to
 control of a domain name -- properties that can be observed by the certificate
