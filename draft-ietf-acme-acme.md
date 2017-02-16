@@ -40,7 +40,7 @@ normative:
 Certificates in PKI using X.509 (PKIX) are used for a number of purposes,
 the most significant of which is the authentication of domain names.  Thus,
 certificate authorities in the Web PKI are trusted to verify that an applicant
-for a certificate legitimately represents the domain name(s) in the certificate.
+for a certificate legitimately represents the domain name(s) in a certificate.
 Today, this verification is done through a collection of ad hoc mechanisms.
 This document describes a protocol that a certification authority (CA) and an
 applicant can use to automate the process of verification and certificate
@@ -63,7 +63,7 @@ discussed on the ACME mailing list (acme@ietf.org).
 Certificates {{!RFC5280}} in the Web PKI are most commonly used to authenticate
 domain names.  Thus, certificate authorities in the Web PKI are trusted to
 verify that an applicant for a certificate legitimately represents the domain
-name(s) in the certificate.
+name(s) in a certificate.
 
 Different types of certificates reflect different kinds of CA verification of
 information about the certificate subject.  "Domain Validation" (DV)
