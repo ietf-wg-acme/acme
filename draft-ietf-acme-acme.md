@@ -310,7 +310,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have a MAC-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
-  * "jwk" (only for requests to new-reg and revoke-cert resources)
+  * "jwk" (only for requests to new-account and revoke-cert resources)
   * "kid" (for all other requests).
   * "nonce" (defined below)
   * "url" (defined below)
@@ -318,11 +318,11 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
 
-For new-reg requests, and for revoke-cert requests authenticated by certificate
+For new-account requests, and for revoke-cert requests authenticated by certificate
 key, there MUST be a "jwk" field.
 
 For all other requests, there MUST be a "kid" field. This field must
-contain the account URI received by POSTing to the new-reg resource.
+contain the account URI received by POSTing to the new-account resource.
 
 Note that authentication via signed JWS request bodies implies that GET
 requests are not authenticated.  Servers MUST NOT respond to GET requests
@@ -501,7 +501,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | caa                   | CAA records forbid the CA from issuing                             |
 | connection            | The server could not connect to validation target                  |
 | dnssec                | DNSSEC validation failed                                           |
-| invalidContact        | The contact URI for a registration was invalid                     |
+| invalidContact        | The contact URI for an account was invalid                         |
 | malformed             | The request message was malformed                                  |
 | rateLimited           | The request exceeds a rate limit                                   |
 | rejectedIdentifier    | The server will not issue for the identifier                       |
@@ -1009,7 +1009,7 @@ request with updated information to the account URI.  The server MUST ignore any
 updates to the "key", or "order" fields or any other fields it does not
 recognize. The server MUST verify that the request is signed with the private
 key corresponding to the "key" field of the request before updating the
-registration.
+account object.
 
 For example, to update the contact information in the above account, the client
 could send the following request:
@@ -1097,7 +1097,7 @@ The "signature" field of the JWS will contain the MAC value computed with the
 MAC key provided by the CA.
 
 ~~~~~
-POST /acme/new-reg HTTP/1.1
+POST /acme/new-account HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1143,7 +1143,7 @@ If all of these checks pass and the CA creates a new account, then the CA may
 consider the new account associated with the external account corresponding to
 the MAC key, and MUST reflect value of the "external-account-binding" field in
 the resulting account object.  If any of these checks fail, then the CA MUST
-reject the new-registration request.
+reject the new-account request.
 
 
 ### Account Key Roll-over
