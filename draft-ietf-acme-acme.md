@@ -654,7 +654,7 @@ The following metadata items are defined, all of which are OPTIONAL:
 information about the ACME server.
 
 "caa-identities" (optional, array of string):
-: Each string MUST be a lowercase hostname which the ACME server recognises as
+: Each string MUST be a lowercase hostname which the ACME server recognizes as
 referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
 use when configuring CAA records.
@@ -813,7 +813,7 @@ then it SHOULD consider the order invalid.
 The "authorizations" array in the challenge SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
 were fulfilled in earlier orders or in pre-authorization transactions.  For
-example, if a CA allows multiple orders to be fufilled based on a single
+example, if a CA allows multiple orders to be fulfilled based on a single
 authorization transaction, then it SHOULD reflect that authorization in all of
 the order.
 
@@ -1313,7 +1313,7 @@ certificate to be issued.  The CSR MUST indicate the requested identifiers,
 either in the commonName portion of the requested subject name, or in an
 extensionRequest attribute {{!RFC2985}} requesting a subjectAltName extension.
 
-The server MUST return an error if it cannot fulfil the request as specified,
+The server MUST return an error if it cannot fulfill the request as specified,
 and MUST NOT issue a certificate with contents other than those requested.  If
 the server requires the request to be modified in a certain way, it should
 indicate the required changes using an appropriate error code and description.
@@ -2240,7 +2240,7 @@ HTTP/1.1 200 OK
 ~~~~~~~~~~
 
 A client responds to this challenge by presenting the indicated URL for a human
-user to navigate to.  If the user choses to complete this challege (by vising
+user to navigate to.  If the user chooses to complete this challenge (by visiting
 the website and completing its instructions), the client indicates this by
 sending a simple acknowledgement response to the server.
 
@@ -2732,13 +2732,26 @@ There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
 
-## DNS over TCP
+## DNS security
 
 As noted above, DNS forgery attacks against the ACME server can result in the
 server making incorrect decisions about domain control and thus mis-issuing
-certificates.  Servers SHOULD verify DNSSEC when it is available for a domain.
-When DNSSEC is not available, servers SHOULD perform DNS queries over TCP, which
-provides better resistance to some forgery attacks than DNS over UDP.
+certificates. Servers SHOULD perform DNS queries over TCP, which provides better
+resistance to some forgery attacks than DNS over UDP.
+
+An ACME-based CA will often need to make DNS queries, e.g., to validate control
+of DNS names.  Because the security of such validations ultimately depends on
+the authenticity of DNS data, every possible precaution should be taken to
+secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based
+CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This
+provides additional protection to domains which choose to make use of DNSSEC.
+
+An ACME-based CA must use only a resolver if it trusts the resolver and every
+component of the network route by which it is accessed. It is therefore
+RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
+within their trusted network and use these resolvers both for both CAA record
+lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
+TXT, etc.).
 
 ## Default Virtual Hosts
 
@@ -2764,22 +2777,6 @@ allowing an authorization request for this host to use a TLS-based challenge.
 A default virtual host can be detected by initiating TLS connections to the host
 with random SNI values within the namespace used for the TLS-based challenge
 (the "acme.invalid" namespace for "tls-sni-02").
-
-## Use of DNSSEC Resolvers
-
-An ACME-based CA will often need to make DNS queries, e.g., to validate control
-of DNS names.  Because the security of such validations ultimately depends on
-the authenticity of DNS data, every possible precaution should be taken to
-secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based
-CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This
-provides additional protection to domains which choose to make use of DNSSEC.
-
-An ACME-based CA must use only a resolver if it trusts the resolver and every
-component of the network route by which it is accessed. It is therefore
-RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
-within their trusted network and use these resolvers both for both CAA record
-lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
-TXT, etc.).
 
 # Acknowledgements
 
