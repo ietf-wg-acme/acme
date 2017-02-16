@@ -312,7 +312,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS Protected Header MUST include the following fields:
   * "alg"
   * "jwk" (only for requests to new-account and revoke-cert resources)
-  * "kid" (for all other requests).
+  * "kid" (for all other requests)
   * "nonce" (defined below)
   * "url" (defined below)
 
