@@ -827,7 +827,7 @@ possession of the identifier.
 
 The structure of an ACME authorization resource is as follows:
 
-identifier (required, dictionary of string):
+identifier (required, object):
 : The identifier that the account is authorized to represent
 
   type (required, string):
@@ -1405,7 +1405,7 @@ the new-authorization resource specifying the identifier for which authorization
 is being requested and how the server should behave with respect to existing
 authorizations for this identifier.
 
-identifier (required, dictionary of string):
+identifier (required, object):
 : The identifier that the account is authorized to represent:
 
   type (required, string):
