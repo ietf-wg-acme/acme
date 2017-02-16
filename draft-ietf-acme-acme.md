@@ -87,7 +87,7 @@ certificates, a typical user experience is something like:
    * Receive CA challenge at a (hopefully) administrator-controlled e-mail
      address corresponding to the domain and then respond to it on the CA's web
      page.
-* Download the issued certificate and install it on their Web Server.
+* Download the issued certificate and install it on their web server.
 
 With the exception of the CSR itself and the certificates that are issued, these
 are all completely ad hoc procedures and are accomplished by getting the human
