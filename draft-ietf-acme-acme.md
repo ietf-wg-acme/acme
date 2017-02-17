@@ -465,7 +465,7 @@ it is the time when all rate limits would allow access for
 the current request with exactly the same parameters.
 
 In addition to the human readable "detail" field of the error response, the
-server MAY send one or multiple tokens in the "Link" header pointing to
+server MAY send one or more tokens in the "Link" header pointing to
 documentation about the specific hit rate limits using the "rate-limit"
 relation.
 
