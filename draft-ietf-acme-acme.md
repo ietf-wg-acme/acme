@@ -340,25 +340,6 @@ serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.
 
-## Equivalence of JWKs
-
-At some points in the protocol, it is necessary for the server to determine
-whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
-In performing these checks, the
-server MUST consider two JWKs to match if and only if they have the identical
-values in all fields included in the computation of a JWK thumbprint for that
-key. That is, the keys must have the same "kty" value and contain identical
-values in the fields used in the computation of a JWK thumbprint for that key
-type:
-
-* "RSA": "n", "e"
-* "EC": "crv", "x", "y"
-
-Note that this comparison is equivalent to computing the JWK thumbprints of the
-two keys and comparing thumbprints.  The only difference is that there is no
-requirement for a hash computation (and thus it is independent of the choice of
-hash function) and no risk of hash collision.
-
 ## Request URI Integrity
 
 It is common in deployment for the entity terminating TLS for HTTPS to be different
@@ -1209,8 +1190,8 @@ addition to the typical JWS validation:
 6. Check that the "url" parameters of the inner and outer JWSs are the same
 7. Check that the "account" field of the key-change object contains the URL for
    the account matching the old key
-8. Check that the "newKey" field of the key-change object contains the
-   key used to sign the inner JWS.
+8. Check that the "newKey" field of the key-change object also verifies the
+    inner JWS.
 
 If all of these checks pass, then the server updates the corresponding account
 by replacing the old account key with the new public key and returns status code
