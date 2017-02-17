@@ -500,7 +500,7 @@ Error types that may be commonly returned from ACME requests:
 Error types that may be commonly included in the "error" field of challenge
 resources:
 
-| Code                  | Description                                                        |
+| Type                  | Description                                                        |
 |:----------------------|:-------------------------------------------------------------------|
 | caa                   | CAA records forbid the CA from issuing                             |
 | connection            | The server could not connect to validation target                  |
