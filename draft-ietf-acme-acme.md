@@ -414,8 +414,8 @@ invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
-ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
-the "badNonce" error code MUST include a Replay-Nonce header with a fresh nonce.
+ACME error type "urn:ietf:params:acme:error:badNonce".  An error response with
+the "badNonce" error type MUST include a Replay-Nonce header with a fresh nonce.
 On receiving such a response, a client SHOULD retry the request using the new
 nonce.
 
@@ -481,7 +481,7 @@ information using problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Code                  | Description                                                        |
+| Type                  | Description                                                        |
 |:----------------------|:-------------------------------------------------------------------|
 | badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
 | badNonce              | The client sent an unacceptable anti-replay nonce                  |
@@ -1304,7 +1304,7 @@ extensionRequest attribute {{!RFC2985}} requesting a subjectAltName extension.
 The server MUST return an error if it cannot fulfill the request as specified,
 and MUST NOT issue a certificate with contents other than those requested.  If
 the server requires the request to be modified in a certain way, it should
-indicate the required changes using an appropriate error code and description.
+indicate the required changes using an appropriate error type and description.
 
 If the server is willing to issue the requested certificate, it responds with a
 201 (Created) response.  The body of this response is an order object reflecting
@@ -2340,7 +2340,7 @@ This document requests that IANA create the following new registries:
 
 1. ACME Account Object Fields ({{iana-account}})
 2. ACME Order Object Fields ({{iana-order}})
-3. ACME Error Codes ({{iana-error}})
+3. ACME Error Types ({{iana-error}})
 4. ACME Resource Types ({{iana-resource}})
 5. ACME Identifier Types ({{iana-identifier}})
 6. ACME Challenge Types ({{iana-challenge}})
@@ -2402,19 +2402,19 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | authorizations | array of string     | false        | RFC XXXX  |
 | certificate    | string              | false        | RFC XXXX  |
 
-### Error Codes {#iana-error}
+### Error Types {#iana-error}
 
 This registry lists values that are used within URN values that are provided in
 the "type" field of problem documents in ACME.
 
 Template:
 
-* Code: The label to be included in the URN for this error, following
+* Type: The label to be included in the URN for this error, following
   "urn:ietf:params:acme:"
 * Description: A human-readable description of the error
 * Reference: Where the error is defined
 
-Initial contents: The codes and descriptions in the table in {{errors}} above,
+Initial contents: The types and descriptions in the table in {{errors}} above,
 with the Reference field set to point to this specification.
 
 ### Resource Types {#iana-resource}
