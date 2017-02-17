@@ -523,7 +523,7 @@ enables:
 ACME is structured as a REST application with several types of resources:
 
 * Account resources, representing information about an account
-  ({{account-objects}}, {{account-creation}})
+  ({{account-objects}} and {{account-creation}})
 * Order resources, representing an account's requests to issue certificates
   ({{order-objects}})
 * Authorization resources, representing an account's authorization to act for an
