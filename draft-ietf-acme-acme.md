@@ -605,7 +605,7 @@ structured and how the ACME protocol makes use of them.
 
 In order to help clients configure themselves with the right URIs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
-needed to configure clients. It is a JSON dictionary, whose keys are drawn from
+needed to configure clients. It is a JSON object, whose keys are drawn from
 the following table and whose values are the corresponding URLs.
 
 | Key            | URL in value         |
@@ -628,8 +628,8 @@ should not clash with other services. For instance:
  * a host which only functions as an ACME server could place the directory
    under path "/".
 
-The dictionary MAY additionally contain a key "meta". If present, it MUST be a
-JSON dictionary; each item in the dictionary is an item of metadata relating to
+The object MAY additionally contain a key "meta". If present, it MUST be a
+JSON object; each field in the object is an item of metadata relating to
 the service provided by the ACME server.
 
 The following metadata items are defined, all of which are OPTIONAL:
@@ -673,7 +673,7 @@ Content-Type: application/json
 An ACME account resource represents a set of metadata associated with an account.
 Account resources have the following structure:
 
-key (required, dictionary):
+key (required, object):
 : The public key of the account's key pair, encoded as a JSON Web Key object
 {{!RFC7517}}. The client may not directly update this field, but must use the
 key-change resource instead.
@@ -843,7 +843,7 @@ the authorization expires.
 challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
 identifier (for pending authorizations).  For final authorizations, the
-challenges that were used.  Each array entry is a dictionary with parameters
+challenges that were used.  Each array entry is a object with parameters
 required to validate the challenge.  A client should attempt to fulfill at most
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
@@ -1597,7 +1597,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 To prove control of the identifier and receive authorization, the client needs to
 respond with information to complete the challenges.  To do this, the client
 updates the authorization object received from the server by filling in any
-required information in the elements of the "challenges" dictionary.  (This is
+required information in the elements of the "challenges" object.  (This is
 also the stage where the client should perform any actions required by the
 challenge.)
 
@@ -2357,7 +2357,7 @@ new-account request.
 
 Template:
 
-* Field name: The string to be used as a key in the JSON dictionary
+* Field name: The string to be used as a key in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
 * Client configurable: Boolean indicating whether the server should accept
@@ -2368,10 +2368,10 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 | Field Name               | Field Type      | Configurable | Reference |
 |:-------------------------|:----------------|:-------------|:----------|
-| key                      | dictionary      | false        | RFC XXXX  |
+| key                      | object          | false        | RFC XXXX  |
 | status                   | string          | false        | RFC XXXX  |
 | contact                  | array of string | true         | RFC XXXX  |
-| external-account-binding | dictionary      | true         | RFC XXXX  |
+| external-account-binding | object          | true         | RFC XXXX  |
 | terms-of-service-agreed  | boolean         | false        | RFC XXXX  |
 | orders                   | array of string | false        | RFC XXXX  |
 
@@ -2383,7 +2383,7 @@ new-order request.
 
 Template:
 
-* Field name: The string to be used as a key in the JSON dictionary
+* Field name: The string to be used as a key in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
 * Client configurable: Boolean indicating whether the server should accept
@@ -2424,7 +2424,7 @@ directory objects.
 
 Template:
 
-* Key: The value to be used as a dictionary key in the directory object
+* Key: The value to be used as a field name in the directory object
 * Resource type: The type of resource labeled by the key
 * Reference: Where the identifier type is defined
 
