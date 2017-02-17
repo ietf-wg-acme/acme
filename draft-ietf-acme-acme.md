@@ -460,7 +460,7 @@ Creation of resources can be rate limited to ensure fair usage and
 prevent abuse.  Once the rate limit is exceeded, the server MUST respond
 with an error with the type "urn:ietf:params:acme:error:rateLimited".
 Additionally, the server SHOULD send a "Retry-After" header indicating
-when the current request may succeed again.  If multiple rate limits are
+when the current request may succeed.  If multiple rate limits are
 in place, that is the time where all rate limits allow access again for
 the current request with exactly the same parameters.
 
