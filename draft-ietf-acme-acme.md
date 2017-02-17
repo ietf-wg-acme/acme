@@ -510,6 +510,14 @@ resources:
 | incorrectResponse     | Response received didn't match the challenge's requirements        |
 | tls                   | The server received a TLS error during validation                  |
 
+Error types that may be commonly included in the "error" field of order
+resources:
+
+| Type                  | Description                                                        |
+|:----------------------|:-------------------------------------------------------------------|
+| caa                   | CAA records forbid the CA from issuing                             |
+| serverInternal        | The server experienced an internal error                           |
+
 These lists are not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
 namespace for errors other than the standard types.  Clients SHOULD display the
