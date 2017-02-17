@@ -649,6 +649,7 @@ referring to itself for the purposes of CAA record validation as defined in
 use when configuring CAA records.
 
 Clients access the directory by sending a GET request to the directory URI.
+What follows is an example response for a request to the directory URI:
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
