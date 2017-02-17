@@ -255,6 +255,13 @@ The use of ACME for other identifiers will require further specification, in ord
 to describe how these identifiers are encoded in the protocol, and what types of
 validation challenges the server might require.
 
+# Character Encoding
+
+All requests and responses sent via HTTP by ACME clients, ACME servers, and
+validation servers as well as any inputs for digest computations MUST be encoded
+using the UTF-8 {{!RFC3629}} character set (or if applicable, such as in DNS
+messages, its ASCII subset).
+
 # Message Transport
 
 Communications between an ACME client and an ACME server are done over HTTPS,
@@ -305,7 +312,6 @@ authentication of requests.
 
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
-* The JWS MUST be encoded using UTF-8
 * The JWS MUST NOT have the value "none" in its "alg" field
 * The JWS MUST NOT have a MAC-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
@@ -848,8 +854,7 @@ sufficient to make the authorization valid.  For final authorizations it contain
 the challenges that were completed.
 
 The only type of identifier defined by this specification is a fully-qualified
-domain name (type: "dns"). The value of the identifier MUST be the ASCII
-representation of the domain name. If a domain name contains Unicode characters
+domain name (type: "dns"). If a domain name contains non-ASCII Unicode characters
 it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
 any identifier values that begin with the ASCII Compatible Encoding prefix
 "xn--" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
@@ -1065,9 +1070,8 @@ field.  This can be used to an ACME account with an existing account in a
 non-ACME system, such as a CA customer database.
 
 To enable ACME account binding, a CA needs to provision the ACME client with a
-MAC key and a key identifier.  The key identifier MUST be an ASCII string.  The
-MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility
-between provisioning systems and ACME clients.
+MAC key and a key identifier. The MAC key SHOULD be provided in base64url-encoded
+form, to maximize compatibility between provisioning systems and ACME clients.
 
 The ACME client then computes a binding JWS to indicate the external account's
 approval of the ACME account key.  The payload of this JWS is the account key
@@ -1886,10 +1890,6 @@ As specified in the individual challenges below, the token for a challenge is a
 string comprised entirely of characters in the URL-safe base64 alphabet.
 The "||" operator indicates concatenation of strings.
 
-In computations involving key authorizations, such as the digest computations
-required for the DNS and TLS SNI challenges, the key authorization string MUST
-be represented in UTF-8 form (or, equivalently, ASCII).
-
 ## HTTP
 
 With HTTP validation, the client in an ACME transaction proves its control over
@@ -1932,11 +1932,13 @@ for the domain in question.
 
 The path at which the resource is provisioned is comprised of the fixed prefix
 ".well-known/acme-challenge/", followed by the "token" value in the challenge.
-The value of the resource MUST be the ASCII representation of the key
-authorization.
 
 ~~~~~~~~~~
-.well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
+GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
+Host: example.com
+
+HTTP/1.1 200 OK
+LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
 ~~~~~~~~~~
 
 The client's response to this challenge indicates its agreement to this
@@ -2030,12 +2032,12 @@ MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be
 dNSNames.
 
 SAN A MUST be constructed as follows: compute the SHA-256 digest [FIPS180-4] of
-the UTF-8-encoded challenge token and encode it in lowercase hexadecimal form.
+the challenge token and encode it in lowercase hexadecimal form.
 The dNSName is "x.y.token.acme.invalid", where x is the first half of the
 hexadecimal representation and y is the second half.
 
 SAN B MUST be constructed as follows: compute the SHA-256 digest of
-the UTF-8 encoded key authorization and encode it in lowercase hexadecimal
+the key authorization and encode it in lowercase hexadecimal
 form. The dNSName is "x.y.ka.acme.invalid" where x is the first half of the
 hexadecimal representation and y is the second half.
 
