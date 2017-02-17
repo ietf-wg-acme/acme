@@ -326,7 +326,7 @@ address {
 <link href="#rfc.section.8.6" rel="Chapter" title="8.6 New Registries"/>
 <link href="#rfc.section.8.6.1" rel="Chapter" title="8.6.1 Fields in Account Objects"/>
 <link href="#rfc.section.8.6.2" rel="Chapter" title="8.6.2 Fields in Order Objects"/>
-<link href="#rfc.section.8.6.3" rel="Chapter" title="8.6.3 Error Codes"/>
+<link href="#rfc.section.8.6.3" rel="Chapter" title="8.6.3 Error Types"/>
 <link href="#rfc.section.8.6.4" rel="Chapter" title="8.6.4 Resource Types"/>
 <link href="#rfc.section.8.6.5" rel="Chapter" title="8.6.5 Identifier Types"/>
 <link href="#rfc.section.8.6.6" rel="Chapter" title="8.6.6 Challenge Types"/>
@@ -351,7 +351,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-2-16" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-2-17" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -375,7 +375,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: August 20, 2017</td>
+  <td class="left">Expires: August 21, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -388,7 +388,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">February 16, 2017</td>
+  <td class="right">February 17, 2017</td>
 </tr>
 
     	
@@ -410,7 +410,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on August 20, 2017.</p>
+<p>This Internet-Draft will expire on August 21, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -471,7 +471,7 @@ address {
 <li>8.6.   <a href="#rfc.section.8.6">New Registries</a></li>
 <ul><li>8.6.1.   <a href="#rfc.section.8.6.1">Fields in Account Objects</a></li>
 <li>8.6.2.   <a href="#rfc.section.8.6.2">Fields in Order Objects</a></li>
-<li>8.6.3.   <a href="#rfc.section.8.6.3">Error Codes</a></li>
+<li>8.6.3.   <a href="#rfc.section.8.6.3">Error Types</a></li>
 <li>8.6.4.   <a href="#rfc.section.8.6.4">Resource Types</a></li>
 <li>8.6.5.   <a href="#rfc.section.8.6.5">Identifier Types</a></li>
 <li>8.6.6.   <a href="#rfc.section.8.6.6">Challenge Types</a></li>
@@ -619,7 +619,7 @@ address {
 <p id="rfc.section.5.5.p.1">In order to protect ACME resources from any possible replay attacks, ACME requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
 <p id="rfc.section.5.5.p.2">An ACME server provides nonces to clients using the Replay-Nonce header field, as specified below.  The server MUST include a Replay-Nonce header field in every successful response to a POST request, and SHOULD provide it in error responses as well.</p>
 <p id="rfc.section.5.5.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
-<p id="rfc.section.5.5.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it MUST provide HTTP status code 400 (Bad Request), and indicate the ACME error code &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error code MUST include a Replay-Nonce header with a fresh nonce.  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
+<p id="rfc.section.5.5.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it MUST provide HTTP status code 400 (Bad Request), and indicate the ACME error type &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error type MUST include a Replay-Nonce header with a fresh nonce.  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
 <p id="rfc.section.5.5.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
 <h1 id="rfc.section.5.5.1"><a href="#rfc.section.5.5.1">5.5.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a></h1>
 <p id="rfc.section.5.5.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server should generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability.</p>
@@ -642,7 +642,7 @@ address {
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
-      <th class="left">Code</th>
+      <th class="left">Type</th>
       <th class="left">Description</th>
     </tr>
   </thead>
@@ -1280,7 +1280,7 @@ Content-Type: application/jose+json
 }
 </pre>
 <p id="rfc.section.6.4.p.3">The CSR encodes the client&#8217;s requests with regard to the content of the certificate to be issued.  The CSR MUST indicate the requested identifiers, either in the commonName portion of the requested subject name, or in an extensionRequest attribute <a href="#RFC2985">[RFC2985]</a> requesting a subjectAltName extension.</p>
-<p id="rfc.section.6.4.p.4">The server MUST return an error if it cannot fulfill the request as specified, and MUST NOT issue a certificate with contents other than those requested.  If the server requires the request to be modified in a certain way, it should indicate the required changes using an appropriate error code and description.</p>
+<p id="rfc.section.6.4.p.4">The server MUST return an error if it cannot fulfill the request as specified, and MUST NOT issue a certificate with contents other than those requested.  If the server requires the request to be modified in a certain way, it should indicate the required changes using an appropriate error type and description.</p>
 <p id="rfc.section.6.4.p.5">If the server is willing to issue the requested certificate, it responds with a 201 (Created) response.  The body of this response is an order object reflecting the client&#8217;s request and any authorizations the client must complete before the certificate will be issued.</p>
 <pre>
 HTTP/1.1 201 Created
@@ -1928,7 +1928,7 @@ Content-Type: application/jose+json
 <ol>
   <li>ACME Account Object Fields (<a href="#iana-account">Section 8.6.1</a>)</li>
   <li>ACME Order Object Fields (<a href="#iana-order">Section 8.6.2</a>)</li>
-  <li>ACME Error Codes (<a href="#iana-error">Section 8.6.3</a>)</li>
+  <li>ACME Error Types (<a href="#iana-error">Section 8.6.3</a>)</li>
   <li>ACME Resource Types (<a href="#iana-resource">Section 8.6.4</a>)</li>
   <li>ACME Identifier Types (<a href="#iana-identifier">Section 8.6.5</a>)</li>
   <li>ACME Challenge Types (<a href="#iana-challenge">Section 8.6.6</a>)</li>
@@ -2060,17 +2060,17 @@ Content-Type: application/jose+json
     </tr>
   </tbody>
 </table>
-<h1 id="rfc.section.8.6.3"><a href="#rfc.section.8.6.3">8.6.3.</a> <a href="#iana-error" id="iana-error">Error Codes</a></h1>
+<h1 id="rfc.section.8.6.3"><a href="#rfc.section.8.6.3">8.6.3.</a> <a href="#iana-error" id="iana-error">Error Types</a></h1>
 <p id="rfc.section.8.6.3.p.1">This registry lists values that are used within URN values that are provided in the &#8220;type&#8221; field of problem documents in ACME.</p>
 <p id="rfc.section.8.6.3.p.2">Template:</p>
 <p/>
 
 <ul>
-  <li>Code: The label to be included in the URN for this error, following &#8220;urn:ietf:params:acme:&#8221;</li>
+  <li>Type: The label to be included in the URN for this error, following &#8220;urn:ietf:params:acme:&#8221;</li>
   <li>Description: A human-readable description of the error</li>
   <li>Reference: Where the error is defined</li>
 </ul>
-<p id="rfc.section.8.6.3.p.4">Initial contents: The codes and descriptions in the table in <a href="#errors">Section 5.7</a> above, with the Reference field set to point to this specification.</p>
+<p id="rfc.section.8.6.3.p.4">Initial contents: The types and descriptions in the table in <a href="#errors">Section 5.7</a> above, with the Reference field set to point to this specification.</p>
 <h1 id="rfc.section.8.6.4"><a href="#rfc.section.8.6.4">8.6.4.</a> <a href="#iana-resource" id="iana-resource">Resource Types</a></h1>
 <p id="rfc.section.8.6.4.p.1">This registry lists the types of resources that ACME servers may list in their directory objects.</p>
 <p id="rfc.section.8.6.4.p.2">Template:</p>
