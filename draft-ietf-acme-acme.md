@@ -532,12 +532,12 @@ ACME is structured as a REST application with several types of resources:
   identifier ({{identifier-authorization}})
 * Certificate resources, representing issued certificates
   ({{downloading-the-certificate}})
-* A "directory" resource ({{directory}})
-* A "new-nonce" resource ({{getting-a-nonce}})
 * A "new-account" resource ({{account-creation}})
 * A "new-order" resource ({{applying-for-certificate-issuance}})
 * A "revoke-certificate" resource ({{certificate-revocation}})
 * A "key-change" resource ({{account-key-roll-over}})
+* A "directory" resource ({{directory}})
+* A "new-nonce" resource ({{getting-a-nonce}})
 
 The server MUST provide "directory" and "new-nonce" resources.
 
