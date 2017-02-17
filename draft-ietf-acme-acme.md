@@ -479,28 +479,38 @@ server MAY return status code 405 (Method Not Allowed).
 When the server responds with an error status, it SHOULD provide additional
 information using problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
-in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
+in the "type" field (within the "urn:ietf:params:acme:error:" namespace).
+
+Error types that may be commonly returned from ACME requests:
 
 | Type                  | Description                                                        |
 |:----------------------|:-------------------------------------------------------------------|
 | badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
 | badNonce              | The client sent an unacceptable anti-replay nonce                  |
 | badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support   |
-| caa                   | CAA records forbid the CA from issuing                             |
-| connection            | The server could not connect to validation target                  |
-| dnssec                | DNSSEC validation failed                                           |
 | invalidContact        | The contact URI for an account was invalid                         |
 | malformed             | The request message was malformed                                  |
 | rateLimited           | The request exceeds a rate limit                                   |
 | rejectedIdentifier    | The server will not issue for the identifier                       |
 | serverInternal        | The server experienced an internal error                           |
-| tls                   | The server received a TLS error during validation                  |
 | unauthorized          | The client lacks sufficient authorization                          |
-| unknownHost           | The server could not resolve a domain name                         |
 | unsupportedIdentifier | Identifier is not supported, but may be in future                  |
-| userActionRequired    | The user visit the "instance" URL and take actions specified there |
+| userActionRequired    | Visit the "instance" URL and take actions specified there          |
 
-This list is not exhaustive. The server MAY return errors whose "type" field is
+Error types that may be commonly included in the "error" field of challenge
+resources:
+
+| Code                  | Description                                                        |
+|:----------------------|:-------------------------------------------------------------------|
+| caa                   | CAA records forbid the CA from issuing                             |
+| connection            | The server could not connect to validation target                  |
+| dns                   | There was a problem with a DNS query during validation             |
+| rateLimited           | The request exceeds a rate limit                                   |
+| serverInternal        | The server experienced an internal error                           |
+| incorrectResponse     | Response received didn't match the challenge's requirements        |
+| tls                   | The server received a TLS error during validation                  |
+
+These lists are not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
@@ -764,6 +774,12 @@ format defined in {{!RFC3339}}.
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
 format defined in {{!RFC3339}}.
+
+error (optional, object):
+: The error that occurred while the server was issuing the certificate, if any.
+This field is structured as a problem document {{!RFC7807}}. Note that
+this field is only for errors occurring after authorizations have been
+validated.
 
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
