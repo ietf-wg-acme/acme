@@ -673,11 +673,6 @@ Content-Type: application/json
 An ACME account resource represents a set of metadata associated with an account.
 Account resources have the following structure:
 
-key (required, dictionary):
-: The public key of the account's key pair, encoded as a JSON Web Key object
-{{!RFC7517}}. The client may not directly update this field, but must use the
-key-change resource instead.
-
 status (required, string):
 : The status of this account. Possible values are: "valid", "deactivated", and
 "revoked".  The value "deactivated" should be used to indicate user initiated
@@ -938,7 +933,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", and "orders"
+The server MUST ignore any values provided in the "orders"
 fields in account bodies sent by the client, as well as any other fields
 that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they can be provided by the
@@ -956,8 +951,8 @@ invalid or unsupported contact URL, then the server MUST return an error of type
 contact URL the server considers acceptable.
 
 The server creates an account object with the included contact information.  The
-"key" element of the account is set to the public key used to verify the JWS
-(i.e., the "jwk" element of the JWS header).  The server returns this account
+server stores the public key used to verify the JWS (i.e., the "jwk" element of
+the JWS header) to authenticate future requests from the account.  The server returns this account
 object in a 201 (Created) response, with the account URI in a Location header
 field.
 
@@ -982,7 +977,6 @@ Location: https://example.com/acme/acct/1
 Link: <https://example.com/acme/some-directory>;rel="directory"
 
 {
-  "key": { /* JWK from JWS header */ },
   "status": "valid",
 
   "contact": [
@@ -994,10 +988,8 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URI.  The server MUST ignore any
-updates to the "key", or "order" fields or any other fields it does not
-recognize. The server MUST verify that the request is signed with the private
-key corresponding to the "key" field of the request before updating the
-account object.
+updates to "order" fields or any other fields it does not
+recognize.
 
 For example, to update the contact information in the above account, the client
 could send the following request:
