@@ -716,10 +716,10 @@ a GET request, as described in {{orders-list}}.
 Each account object includes an "orders" URI from which a list of orders created
 by the account can be fetched via GET request. The result of the GET request
 MUST be a JSON object whose "orders" field is an array of URIs, each identifying
-an order belonging to the account.  The server SHOULD include pending orders,
-and SHOULD NOT include orders that are invalid in the array of URIs. The server
-MAY return an incomplete list, along with a Link header with a "next" link
-relation indicating where further entries can be acquired.
+an order belonging to the account.  In the array of URIs, the server SHOULD
+include pending orders but it SHOULD exclude orders that are invalid. The
+server MAY return an incomplete list, along with a Link header with a "next"
+link relation indicating where further entries can be acquired.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
