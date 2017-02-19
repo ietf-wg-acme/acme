@@ -718,7 +718,7 @@ by the account can be fetched via GET request. The result of the GET request
 MUST be a JSON object whose "orders" field is an array of URIs, each identifying
 an order belonging to the account.  In the array of URIs, the server SHOULD
 include pending orders but it SHOULD exclude orders that are invalid. The
-server MAY return an incomplete list, along with a Link header with a "next"
+server MAY return an incomplete list along with a Link header with a "next"
 link relation indicating where further entries can be acquired.
 
 ~~~~~~~~~~
