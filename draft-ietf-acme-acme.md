@@ -996,7 +996,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URI.  The server MUST ignore any
-updates to the "key", "order", and any other fields it does not
+updates to the "key" and "order" fields. The server MUST ignore, and any other fields it does not
 recognize. The server MUST verify that the request is signed with the private
 key corresponding to the "key" field of the request before updating the
 account object.
