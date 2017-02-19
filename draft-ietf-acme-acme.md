@@ -818,7 +818,7 @@ possession of the identifier.
 The structure of an ACME authorization resource is as follows:
 
 identifier (required, object):
-: The identifier that the account is authorized to represent
+: The identifier that the account is authorized to represent.
 
   type (required, string):
   : The type of identifier.
