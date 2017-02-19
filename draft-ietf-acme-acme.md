@@ -940,7 +940,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", and "orders"
+The server MUST ignore any values provided in the "key" and "orders"
 fields in account bodies sent by the client, as well as any other fields
 that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they can be provided by the
