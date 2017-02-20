@@ -1763,7 +1763,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME request in that they can be
+Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
