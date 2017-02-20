@@ -1203,14 +1203,14 @@ addition to the typical JWS validation:
 1. Validate the POST request belongs to a currently active account, as described
    in Message Transport.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
-   JWS")
+   JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
-4. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the inner JWS verifies using the key in its "jwk" field.
 5. Check that the payload of the inner JWS is a well-formed key-change object
-   (as described above)
-6. Check that the "url" parameters of the inner and outer JWSs are the same
+   (as described above).
+6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
-   the account matching the old key
+   the account matching the old key.
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
