@@ -1754,7 +1754,7 @@ the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
 responses and CRLs. The server MAY disallow a subset of reasonCodes from being
 used by the user. If a request contains a disallowed reasonCode the server MUST
 reject it with the error type "urn:ietf:params:acme:error:badRevocationReason".
-The problem document returned with the error MUST include an "supportedReasons"
+The problem document returned with the error MUST include a "supportedReasons"
 field with an array of supported revocation reasonCode values.
 
 ~~~~~~~~~~
