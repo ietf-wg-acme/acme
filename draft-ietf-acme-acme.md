@@ -843,7 +843,7 @@ the authorization expires.
 challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
 identifier (for pending authorizations).  For final authorizations, the
-challenges that were used.  Each array entry is a object with parameters
+challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill at most
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
