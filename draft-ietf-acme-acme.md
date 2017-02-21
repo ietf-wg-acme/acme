@@ -1601,7 +1601,7 @@ required information in the elements of the "challenges" dictionary.
 The client sends these updates back to the server in the form of a JSON object
 with the response fields required by the challenge type, carried in a POST
 request to the challenge URI (not authorization URI) once it is ready for
-validation to be attempted.
+the server to attempt validation.
 
 For example, if the client were to respond to the "http-01" challenge in the
 above authorization, it would send the following request:
@@ -1762,14 +1762,15 @@ Revocation requests are different from other ACME request in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
-at least the following keys authorized to revoke a given certificate:
+at least the following accounts authorized for a given certificate:
 
-* the key associated with the account that issued the certificate.
+* the account that issued the certificate.
 
-* the key associated with an account that holds valid authorizations for all of
-  the identifiers in the certificate.
+* an account that holds authorizations for all of the identifiers in the
+  certificate.
 
-* optionally the private key corresponding to the public key in the certificate
+The server SHOULD also consider a revocation request valid if it is signed with
+the private key corresponding to the public key in the certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
 the revocation fails, the server returns an error.
