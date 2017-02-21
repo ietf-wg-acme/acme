@@ -493,24 +493,25 @@ information using problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Code                  | Description                                                        |
-|:----------------------|:-------------------------------------------------------------------|
-| badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
-| badNonce              | The client sent an unacceptable anti-replay nonce                  |
-| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support   |
-| caa                   | CAA records forbid the CA from issuing                             |
-| connection            | The server could not connect to validation target                  |
-| dnssec                | DNSSEC validation failed                                           |
-| invalidContact        | The contact URI for a registration was invalid                     |
-| malformed             | The request message was malformed                                  |
-| rateLimited           | The request exceeds a rate limit                                   |
-| rejectedIdentifier    | The server will not issue for the identifier                       |
-| serverInternal        | The server experienced an internal error                           |
-| tls                   | The server received a TLS error during validation                  |
-| unauthorized          | The client lacks sufficient authorization                          |
-| unknownHost           | The server could not resolve a domain name                         |
-| unsupportedIdentifier | Identifier is not supported, but may be in future                  |
-| userActionRequired    | The user visit the "instance" URL and take actions specified there |
+| Code                  | Description                                                         |
+|:----------------------|:--------------------------------------------------------------------|
+| badCSR                | The CSR is unacceptable (e.g., due to a short key)                  |
+| badNonce              | The client sent an unacceptable anti-replay nonce                   |
+| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support    |
+| caa                   | CAA records forbid the CA from issuing                              |
+| connection            | The server could not connect to validation target                   |
+| dnssec                | DNSSEC validation failed                                            |
+| invalidContact        | The contact URI for a registration was invalid                      |
+| malformed             | The request message was malformed                                   |
+| rateLimited           | The request exceeds a rate limit                                    |
+| rejectedIdentifier    | The server will not issue for the identifier                        |
+| serverInternal        | The server experienced an internal error                            |
+| tls                   | The server received a TLS error during validation                   |
+| unauthorized          | The client lacks sufficient authorization                           |
+| unknownHost           | The server could not resolve a domain name                          |
+| unsupportedIdentifier | Identifier is not supported, but may be in future                   |
+| userActionRequired    | The user visit the "instance" URL and take actions specified there  |
+| badRevocationReason   | The revocation reason provided is not allowed by the server         |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -1752,7 +1753,9 @@ to be used when generating OCSP responses and CRLs. If this field is not set
 the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
 responses and CRLs. The server MAY disallow a subset of reasonCodes from being
 used by the user. If a request contains a disallowed reasonCode the server MUST
-reject it.
+reject it with the error type "urn:ietf:params:acme:error:badRevocationReason".
+The problem document returned with the error MUST include an "supportedReasons"
+field with an array of supported revocation reasonCode values.
 
 ~~~~~~~~~~
 POST /acme/revoke-cert HTTP/1.1
