@@ -1817,7 +1817,7 @@ entity must both:
 
 {{security-considerations}} documents how the challenges defined in this
 document meet these requirements.  New challenges will need to document how they
-do.
+meet these requirements.
 
 ACME uses an extensible challenge/response framework for identifier validation.
 The server presents a set of challenges in the authorization object it sends to a
