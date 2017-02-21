@@ -846,9 +846,8 @@ challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
 identifier (for pending authorizations).  For final authorizations, the
 challenges that were used.  Each array entry is a dictionary with parameters
-required to validate the challenge.  A client should attempt to fulfill at most
-one of these challenges, and a server should consider any one of the challenges
-sufficient to make the authorization valid.
+required to validate the challenge.  A server SHOULD treat the challenges
+portion satisfied when a client fulfills one challenge.
 
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). The value of the identifier MUST be the ASCII
