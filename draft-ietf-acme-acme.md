@@ -111,7 +111,7 @@ authentication for other protocols based on TLS {{!RFC5246}}.
 The guiding use case for ACME is obtaining certificates for Web sites
 (HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
-verify that this server actually speaks for the domain(s).
+verify that this web server actually speaks for the domain(s).
 
 DV certificate validation commonly checks claims about properties related to
 control of a domain name -- properties that can be observed by the certificate
@@ -138,8 +138,8 @@ this:
   automatically downloads and installs it, potentially notifying the operator
   via e-mail, SMS, etc.
 * The ACME client periodically contacts the CA to get updated certificates,
-  stapled OCSP responses, or whatever else would be required to keep the server
-  functional and its credentials up-to-date.
+  stapled OCSP responses, or whatever else would be required to keep the web
+  server functional and its credentials up-to-date.
 
 In this way, it would be nearly as easy to deploy with a CA-issued certificate
 as with a self-signed certificate. Furthermore, the maintenance of that
@@ -1375,8 +1375,8 @@ created reactively, in response to a certificate order.  Some servers
 may also wish to enable clients to obtain authorization for an identifier
 proactively, outside of the context of a specific issuance.  For example, a
 client hosting virtual servers for a collection of names might wish to obtain
-authorization before any servers are created, and only create a certificate when
-a server starts up.
+authorization before any virtual servers are created, and only create
+a certificate when a virtual server starts up.
 
 In some cases, a CA running an ACME server might have a completely external,
 non-ACME process for authorizing a client to issue for an identifier.  In these
@@ -1992,11 +1992,11 @@ domain by verifying that the resource was provisioned as expected.
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
 3. Dereference the URI using an HTTP GET request.  This request MUST be sent to
-   TCP port 80 on the server.
+   TCP port 80 on the HTTP server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
-5. Verify that key authorization provided by the server matches the token for
-   this challenge and the client's account key.
+5. Verify that key authorization provided by the HTTP server matches the token
+   for this challenge and the client's account key.
 
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
@@ -2009,7 +2009,7 @@ proves control over a domain name by requiring the client to configure a TLS
 server referenced by the DNS A and AAAA resource records under the domain name to respond to
 specific connection attempts utilizing the Server Name Indication extension
 {{!RFC6066}}. The server verifies the client's challenge by accessing the
-reconfigured server and verifying a particular challenge certificate is
+reconfigured TLS server and verifying a particular challenge certificate is
 presented.
 
 type (required, string):
@@ -2092,7 +2092,7 @@ using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
 2. Open a TLS connection to the domain name being validated, presenting SAN A in
-   the SNI field. This connection MUST be sent to TCP port 443 on the server. In
+   the SNI field. This connection MUST be sent to TCP port 443 on the TLS server. In
    the ClientHello initiating the TLS handshake, the server MUST include
    a server\_name extension (i.e., SNI) containing SAN A. The server SHOULD
    ensure that it does not reveal SAN B in any way when making the TLS
@@ -2590,7 +2590,7 @@ identifier can perform.  For the challenges in this document, the actions are:
 There are several ways that these assumptions can be violated, both by
 misconfiguration and by attack.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
-server's hostname by responding to an HTTP challenge, and likewise for TLS
+web server's hostname by responding to an HTTP challenge, and likewise for TLS
 configuration and TLS SNI.
 
 The use of hosting providers is a particular risk for ACME validation.  If the
@@ -2610,7 +2610,7 @@ validation path will not be known to the primary server.
 The DNS is a common point of vulnerability for all of these challenges.  An
 entity that can provision false DNS records for a domain can attack the DNS
 challenge directly, and can provision false A/AAAA records to direct the ACME
-server to send its TLS SNI or HTTP validation query to a server of the
+server to send its TLS SNI or HTTP validation query to a remote server of the
 attacker's choosing.  There are a few different mitigations that ACME servers
 can apply:
 
@@ -2635,7 +2635,7 @@ response can only be used with the account key for which it was generated.
 An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
-particular case.  For identifiers where the server already has some public key
+particular case.  For identifiers where a web server already has some public key
 associated with the domain this attack can be prevented by requiring the client
 to prove control of the corresponding private key.
 
