@@ -819,7 +819,7 @@ address {
 </table>
 <p id="rfc.section.6.1.p.9">The remainder of this section provides the details of how these resources are structured and how the ACME protocol makes use of them.</p>
 <h1 id="rfc.section.6.1.1"><a href="#rfc.section.6.1.1">6.1.1.</a> <a href="#directory" id="directory">Directory</a></h1>
-<p id="rfc.section.6.1.1.p.1">In order to help clients configure themselves with the right URIs for each ACME operation, ACME servers provide a directory object. This should be the only URL needed to configure clients. It is a JSON dictionary, whose keys are drawn from the following table and whose values are the corresponding URLs.</p>
+<p id="rfc.section.6.1.1.p.1">In order to help clients configure themselves with the right URIs for each ACME operation, ACME servers provide a directory object. This should be the only URL needed to configure clients. It is a JSON object, whose keys are drawn from the following table and whose values are the corresponding URLs.</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
@@ -861,7 +861,7 @@ address {
   <li>a host which functions as both an ACME and Web server may want to keep the root path &#8220;/&#8221; for an HTML &#8220;front page&#8221;, and and place the ACME directory under path &#8220;/acme&#8221;.</li>
   <li>a host which only functions as an ACME server could place the directory under path &#8220;/&#8221;.</li>
 </ul>
-<p id="rfc.section.6.1.1.p.4">The dictionary MAY additionally contain a key &#8220;meta&#8221;. If present, it MUST be a JSON dictionary; each item in the dictionary is an item of metadata relating to the service provided by the ACME server.</p>
+<p id="rfc.section.6.1.1.p.4">The object MAY additionally contain a key &#8220;meta&#8221;. If present, it MUST be a JSON object; each field in the object is an item of metadata relating to the service provided by the ACME server.</p>
 <p id="rfc.section.6.1.1.p.5">The following metadata items are defined, all of which are OPTIONAL:</p>
 <p/>
 
@@ -897,7 +897,7 @@ Content-Type: application/json
 <p/>
 
 <dl>
-  <dt>key (required, dictionary):</dt>
+  <dt>key (required, object):</dt>
   <dd style="margin-left: 8">The public key of the account&#8217;s key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>. The client may not directly update this field, but must use the key-change resource instead.</dd>
   <dt>status (required, string):</dt>
   <dd style="margin-left: 8">The status of this account. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;.  The value &#8220;deactivated&#8221; should be used to indicate user initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate administratively initiated deactivation.</dd>
@@ -988,7 +988,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
   <dt>scope (optional, string):</dt>
   <dd style="margin-left: 8">If this field is present, then it MUST contain a URI for an order resource, such that this authorization is only valid for that resource.  If this field is absent, then the CA MUST consider this authorization valid for all orders until the authorization expires.</dd>
   <dt>challenges (required, array):</dt>
-  <dd style="margin-left: 8">The challenges that the client can fulfill in order to prove possession of the identifier (for pending authorizations).  For final authorizations, the challenges that were used.  Each array entry is a dictionary with parameters required to validate the challenge.  A client should attempt to fulfill at most one of these challenges, and a server should consider any one of the challenges sufficient to make the authorization valid.</dd>
+  <dd style="margin-left: 8">The challenges that the client can fulfill in order to prove possession of the identifier (for pending authorizations).  For final authorizations, the challenges that were used.  Each array entry is an object with parameters required to validate the challenge.  A client should attempt to fulfill at most one of these challenges, and a server should consider any one of the challenges sufficient to make the authorization valid.</dd>
 </dl>
 <p id="rfc.section.6.1.4.p.4">The only type of identifier defined by this specification is a fully-qualified domain name (type: &#8220;dns&#8221;). The value of the identifier MUST be the ASCII representation of the domain name. If a domain name contains Unicode characters it MUST be encoded using the rules defined in <a href="#RFC3492">[RFC3492]</a>. Servers MUST verify any identifier values that begin with the ASCII Compatible Encoding prefix &#8220;xn&#8211;&#8221; as defined in <a href="#RFC5890">[RFC5890]</a> are properly encoded. Wildcard domain names (with &#8220;*&#8221; as the first label) MUST NOT be included in authorization objects.</p>
 <p><a href="#identifier-validation-challenges">Section 7</a> describes a set of challenges for domain name validation.</p>
@@ -1432,7 +1432,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 }
 </pre>
 <h1 id="rfc.section.6.5.1"><a href="#rfc.section.6.5.1">6.5.1.</a> <a href="#responding-to-challenges" id="responding-to-challenges">Responding to Challenges</a></h1>
-<p id="rfc.section.6.5.1.p.1">To prove control of the identifier and receive authorization, the client needs to respond with information to complete the challenges.  To do this, the client updates the authorization object received from the server by filling in any required information in the elements of the &#8220;challenges&#8221; dictionary.  (This is also the stage where the client should perform any actions required by the challenge.)</p>
+<p id="rfc.section.6.5.1.p.1">To prove control of the identifier and receive authorization, the client needs to respond with information to complete the challenges.  To do this, the client updates the authorization object received from the server by filling in any required information in the elements of the &#8220;challenges&#8221; object.  (This is also the stage where the client should perform any actions required by the challenge.)</p>
 <p id="rfc.section.6.5.1.p.2">The client sends these updates back to the server in the form of a JSON object with the response fields required by the challenge type, carried in a POST request to the challenge URI (not authorization URI).  This allows the client to send information only for challenges it is responding to.</p>
 <p id="rfc.section.6.5.1.p.3">For example, if the client were to respond to the &#8220;http-01&#8221; challenge in the above authorization, it would send the following request:</p>
 <pre>
@@ -1935,7 +1935,7 @@ Content-Type: application/jose+json
 <p/>
 
 <ul>
-  <li>Field name: The string to be used as a key in the JSON dictionary</li>
+  <li>Field name: The string to be used as a key in the JSON object</li>
   <li>Field type: The type of value to be provided, e.g., string, boolean, array of string</li>
   <li>Client configurable: Boolean indicating whether the server should accept values provided by the client</li>
   <li>Reference: Where this field is defined</li>
@@ -1953,7 +1953,7 @@ Content-Type: application/jose+json
   <tbody>
     <tr>
       <td class="left">key</td>
-      <td class="left">dictionary</td>
+      <td class="left">object</td>
       <td class="left">false</td>
       <td class="left">RFC XXXX</td>
     </tr>
@@ -1971,7 +1971,7 @@ Content-Type: application/jose+json
     </tr>
     <tr>
       <td class="left">external-account-binding</td>
-      <td class="left">dictionary</td>
+      <td class="left">object</td>
       <td class="left">true</td>
       <td class="left">RFC XXXX</td>
     </tr>
@@ -1995,7 +1995,7 @@ Content-Type: application/jose+json
 <p/>
 
 <ul>
-  <li>Field name: The string to be used as a key in the JSON dictionary</li>
+  <li>Field name: The string to be used as a key in the JSON object</li>
   <li>Field type: The type of value to be provided, e.g., string, boolean, array of string</li>
   <li>Client configurable: Boolean indicating whether the server should accept values provided by the client</li>
   <li>Reference: Where this field is defined</li>
@@ -2072,7 +2072,7 @@ Content-Type: application/jose+json
 <p/>
 
 <ul>
-  <li>Key: The value to be used as a dictionary key in the directory object</li>
+  <li>Key: The value to be used as a field name in the directory object</li>
   <li>Resource type: The type of resource labeled by the key</li>
   <li>Reference: Where the identifier type is defined</li>
 </ul>

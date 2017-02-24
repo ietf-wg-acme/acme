@@ -930,7 +930,7 @@ Internet-Draft                    ACME                     February 2017
    In order to help clients configure themselves with the right URIs for
    each ACME operation, ACME servers provide a directory object.  This
    should be the only URL needed to configure clients.  It is a JSON
-   dictionary, whose keys are drawn from the following table and whose
+   object, whose keys are drawn from the following table and whose
    values are the corresponding URLs.
 
 
@@ -981,8 +981,8 @@ Internet-Draft                    ACME                     February 2017
    o  a host which only functions as an ACME server could place the
       directory under path "/".
 
-   The dictionary MAY additionally contain a key "meta".  If present, it
-   MUST be a JSON dictionary; each item in the dictionary is an item of
+   The object MAY additionally contain a key "meta".  If present, it
+   MUST be a JSON object; each field in the object is an item of
    metadata relating to the service provided by the ACME server.
 
    The following metadata items are defined, all of which are OPTIONAL:
@@ -1032,10 +1032,10 @@ Internet-Draft                    ACME                     February 2017
    An ACME account resource represents a set of metadata associated with
    an account.  Account resources have the following structure:
 
-   key (required, dictionary):  The public key of the account's key
-      pair, encoded as a JSON Web Key object [RFC7517].  The client may
-      not directly update this field, but must use the key-change
-      resource instead.
+   key (required, object):  The public key of the account's key pair,
+      encoded as a JSON Web Key object [RFC7517].  The client may not
+      directly update this field, but must use the key-change resource
+      instead.
 
    status (required, string):  The status of this account.  Possible
       values are: "valid", "deactivated", and "revoked".  The value
@@ -1218,7 +1218,7 @@ Internet-Draft                    ACME                     February 2017
    challenges (required, array):  The challenges that the client can
       fulfill in order to prove possession of the identifier (for
       pending authorizations).  For final authorizations, the challenges
-      that were used.  Each array entry is a dictionary with parameters
+      that were used.  Each array entry is an object with parameters
       required to validate the challenge.  A client should attempt to
       fulfill at most one of these challenges, and a server should
       consider any one of the challenges sufficient to make the
@@ -2136,8 +2136,8 @@ Internet-Draft                    ACME                     February 2017
    client needs to respond with information to complete the challenges.
    To do this, the client updates the authorization object received from
    the server by filling in any required information in the elements of
-   the "challenges" dictionary.  (This is also the stage where the
-   client should perform any actions required by the challenge.)
+   the "challenges" object.  (This is also the stage where the client
+   should perform any actions required by the challenge.)
 
    The client sends these updates back to the server in the form of a
    JSON object with the response fields required by the challenge type,
@@ -3116,7 +3116,7 @@ Internet-Draft                    ACME                     February 2017
 
    Template:
 
-   o  Field name: The string to be used as a key in the JSON dictionary
+   o  Field name: The string to be used as a key in the JSON object
 
    o  Field type: The type of value to be provided, e.g., string,
       boolean, array of string
@@ -3141,14 +3141,14 @@ Internet-Draft                    ACME                     February 2017
    +--------------------------+-------------+--------------+-----------+
    | Field Name               | Field Type  | Configurable | Reference |
    +--------------------------+-------------+--------------+-----------+
-   | key                      | dictionary  | false        | RFC XXXX  |
+   | key                      | object      | false        | RFC XXXX  |
    |                          |             |              |           |
    | status                   | string      | false        | RFC XXXX  |
    |                          |             |              |           |
    | contact                  | array of    | true         | RFC XXXX  |
    |                          | string      |              |           |
    |                          |             |              |           |
-   | external-account-binding | dictionary  | true         | RFC XXXX  |
+   | external-account-binding | object      | true         | RFC XXXX  |
    |                          |             |              |           |
    | terms-of-service-agreed  | boolean     | false        | RFC XXXX  |
    |                          |             |              |           |
@@ -3164,7 +3164,7 @@ Internet-Draft                    ACME                     February 2017
 
    Template:
 
-   o  Field name: The string to be used as a key in the JSON dictionary
+   o  Field name: The string to be used as a key in the JSON object
 
    o  Field type: The type of value to be provided, e.g., string,
       boolean, array of string
@@ -3237,11 +3237,11 @@ Internet-Draft                    ACME                     February 2017
 
    Template:
 
-   o  Key: The value to be used as a dictionary key in the directory
-      object
+   o  Key: The value to be used as a field name in the directory object
 
    o  Resource type: The type of resource labeled by the key
 
+   o  Reference: Where the identifier type is defined
 
 
 
@@ -3249,8 +3249,6 @@ Barnes, et al.           Expires August 28, 2017               [Page 58]
 
 Internet-Draft                    ACME                     February 2017
 
-
-   o  Reference: Where the identifier type is defined
 
    Initial contents:
 
@@ -3299,14 +3297,14 @@ Internet-Draft                    ACME                     February 2017
    must be contained in the Label column of the ACME Identifier Types
    registry.
 
+   Template:
+
 
 
 Barnes, et al.           Expires August 28, 2017               [Page 59]
 
 Internet-Draft                    ACME                     February 2017
 
-
-   Template:
 
    o  Label: The value to be put in the "type" field of challenge
       objects using this validation mechanism
@@ -3351,6 +3349,8 @@ Internet-Draft                    ACME                     February 2017
    the ways that ACME achieves these security goals within that threat
    model.  We also discuss the denial-of-service risks that ACME servers
    face, and a few other miscellaneous considerations.
+
+
 
 
 
