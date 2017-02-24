@@ -465,8 +465,8 @@ the current request with exactly the same parameters.
 
 In addition to the human readable "detail" field of the error response, the
 server MAY send one or multiple tokens in the "Link" header pointing to
-documentation about the specific hit rate limits using the "rate-limit"
-relation.
+documentation about the specific hit rate limits using the
+"urn:ietf:params:acme:documentation" relation.
 
 ## Errors
 
@@ -551,7 +551,7 @@ certificate resources to indicate a resource from which the client may fetch a
 chain of CA certificates that could be used to validate the certificate in the
 original resource.
 
-The "directory" link relation is present on all resources other than the
+The "index" link relation is present on all resources other than the
 directory and indicates the directory URL.
 
 The following diagram illustrates the relations between resources on an ACME
@@ -564,15 +564,15 @@ indicate HTTP link relations.
                                    |
                                    |--> new-nonce
                                    |
-       --------------------------------------------------+
-       |          |          |                           |
-       |          |          |                           |
-       V          V          V                           V
- new-account  new-authz  new-order                  revoke-cert
-       |          |          |                           ^
-       |          |          |    "author"               | "revoke"
-       V          |          V   <--------               |
-      acct        |        order --------> cert ---------+
+       ----------------------------------+
+       |          |          |           |
+       |          |          |           |
+       V          V          V           V
+ new-account  new-authz  new-order  revoke-cert
+       |          |          |
+       |          |          |
+       V          |          V
+      acct        |        order --------> cert
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
@@ -979,7 +979,7 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/acct/1
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "key": { /* JWK from JWS header */ },
@@ -1482,17 +1482,6 @@ chain starting with the same end-entity certificate. This can be used to express
 paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
 
-The server MUST also provide a link relation header field with relation "author"
-to indicate the order under which this certificate was issued.
-
-If the CA participates in Certificate Transparency (CT) {{?RFC6962}}, then they
-may want to provide the client with a Signed Certificate Timestamp (SCT) that
-can be used to prove that a certificate was submitted to a CT log.  An SCT can
-be included as an extension in the certificate or as an extension to OCSP
-responses for the certificate.  The server can also provide the client with
-direct access to an SCT for a certificate using a Link relation header field
-with relation "ct-sct".
-
 ~~~~~~~~~~
 GET /acme/cert/asdf HTTP/1.1
 Host: example.com
@@ -1501,10 +1490,7 @@ Accept: application/pkix-cert
 HTTP/1.1 200 OK
 Content-Type: application/pkix-cert
 Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
-Link: <https://example.com/acme/revoke-cert>;rel="revoke"
-Link: <https://example.com/acme/order/asdf>;rel="author"
-Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 -----BEGIN CERTIFICATE-----
 [End-entity certificate contents]
@@ -1561,7 +1547,7 @@ Host: example.com
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "status": "pending",
