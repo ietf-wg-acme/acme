@@ -37,12 +37,12 @@ normative:
 
 --- abstract
 
-Certificates in the Web's X.509 PKI (PKIX) are used for a number of purposes,
+Certificates in PKI using X.509 (PKIX) are used for a number of purposes,
 the most significant of which is the authentication of domain names.  Thus,
 certificate authorities in the Web PKI are trusted to verify that an applicant
 for a certificate legitimately represents the domain name(s) in the certificate.
 Today, this verification is done through a collection of ad hoc mechanisms.
-This document describes a protocol that a certificate authority (CA) and an
+This document describes a protocol that a certification authority (CA) and an
 applicant can use to automate the process of verification and certificate
 issuance.  The protocol also provides facilities for other certificate
 management functions, such as certificate revocation.
@@ -60,7 +60,7 @@ discussed on the ACME mailing list (acme@ietf.org).
 
 # Introduction
 
-Certificates in the Web PKI {{!RFC5280}} are most commonly used to authenticate
+Certificates {{!RFC5280}} in the Web PKI are most commonly used to authenticate
 domain names.  Thus, certificate authorities in the Web PKI are trusted to
 verify that an applicant for a certificate legitimately represents the domain
 name(s) in the certificate.
@@ -114,8 +114,8 @@ for one or more domains, and the process of certificate issuance is intended to
 verify that this server actually speaks for the domain(s).
 
 DV certificate validation commonly checks claims about properties related to
-control of a domain name -- properties that can be observed by the issuing
-authority in an interactive process that can be conducted purely online.  That
+control of a domain name -- properties that can be observed by the certificate
+issuer in an interactive process that can be conducted purely online.  That
 means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
@@ -159,7 +159,7 @@ The two main roles in ACME are “client” and “server”.  The ACME client u
 protocol to request certificate management actions, such as issuance or
 revocation.  An ACME client therefore typically runs on a web server, mail
 server, or some other server system which requires valid TLS certificates.  The
-ACME server runs at a certificate authority, and responds to client requests,
+ACME server runs at a certification authority, and responds to client requests,
 performing the requested actions if the client is authorized.
 
 An ACME client is represented by an "account key pair".  The client uses the
@@ -298,7 +298,8 @@ character set. Trailing '=' characters MUST be stripped.
 ## Request Authentication
 
 All ACME requests with a non-empty body MUST encapsulate their payload
-in a JWS object, signed (in most cases) using the account's private
+in a JSON Web Signature (JWS) {{!RFC7515}} object, signed (in most
+cases) using the account's private
 key.  The server MUST verify the JWS before processing the request.
 Encapsulating request bodies in JWS provides a simple authentication
 of requests.
@@ -310,7 +311,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have a MAC-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
-  * "jwk" (only for requests to new-reg and revoke-cert resources)
+  * "jwk" (only for requests to new-account and revoke-cert resources)
   * "kid" (for all other requests).
   * "nonce" (defined below)
   * "url" (defined below)
@@ -318,11 +319,11 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
 
-For new-reg requests, and for revoke-cert requests authenticated by certificate
+For new-account requests, and for revoke-cert requests authenticated by certificate
 key, there MUST be a "jwk" field.
 
 For all other requests, there MUST be a "kid" field. This field must
-contain the account URI received by POSTing to the new-reg resource.
+contain the account URI received by POSTing to the new-account resource.
 
 Note that authentication via signed JWS request bodies implies that GET
 requests are not authenticated.  Servers MUST NOT respond to GET requests
@@ -334,23 +335,10 @@ and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
 document returned with the error MUST include an "algorithms" field with an
 array of supported "alg" values.
 
-~~~~~
-HTTP/1.1 400 Bad Request
-Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
-Content-Type: application/problem+json
-Content-Language: en
-
-{
-  "type": "urn:ietf:params:acme:error:badSignatureAlgorithm",
-  "detail": "Algorithm 'ES384' is not supported",
-  "algorithms": ["RS256", "RS384", "ES256"]
-}
-~~~~~
-
 In the examples below, JWS objects are shown in the JSON or flattened JSON
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
-is readable.  Some fields are omitted for brevity, marked with "...".
+is readable.
 
 ## Equivalence of JWKs
 
@@ -426,8 +414,8 @@ invalid, in the same way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
-ACME error code "urn:ietf:params:acme:error:badNonce".  An error response with
-the "badNonce" error code MUST include a Replay-Nonce header with a fresh nonce.
+ACME error type "urn:ietf:params:acme:error:badNonce".  An error response with
+the "badNonce" error type MUST include a Replay-Nonce header with a fresh nonce.
 On receiving such a response, a client SHOULD retry the request using the new
 nonce.
 
@@ -482,17 +470,18 @@ documentation about the specific hit rate limits using the
 
 ## Errors
 
-Errors can be reported in ACME both at the HTTP layer and within ACME payloads.
-ACME servers can return responses with an HTTP error response code (4XX or 5XX).
-For example:  If the client submits a request using a method not allowed in this
-document, then the server MAY return status code 405 (Method Not Allowed).
+Errors can be reported in ACME both at the HTTP layer and within challenge objects
+as defined in {{identifier-validation-challenges}. ACME servers can return
+responses with an HTTP error response code (4XX or 5XX). For example:  If the
+client submits a request using a method not allowed in this document, then the
+server MAY return status code 405 (Method Not Allowed).
 
 When the server responds with an error status, it SHOULD provide additional
 information using problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Code                  | Description                                                        |
+| Type                  | Description                                                        |
 |:----------------------|:-------------------------------------------------------------------|
 | badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
 | badNonce              | The client sent an unacceptable anti-replay nonce                  |
@@ -500,7 +489,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | caa                   | CAA records forbid the CA from issuing                             |
 | connection            | The server could not connect to validation target                  |
 | dnssec                | DNSSEC validation failed                                           |
-| invalidContact        | The contact URI for a registration was invalid                     |
+| invalidContact        | The contact URI for an account was invalid                         |
 | malformed             | The request message was malformed                                  |
 | rateLimited           | The request exceeds a rate limit                                   |
 | rejectedIdentifier    | The server will not issue for the identifier                       |
@@ -515,9 +504,6 @@ This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
-
-Authorization and challenge objects can also contain error information to
-indicate why the server was unable to validate authorization.
 
 
 # Certificate Management
@@ -635,7 +621,7 @@ There is no constraint on the actual URI of the directory except that it
 should be different from the other ACME server resources' URIs, and that it
 should not clash with other services. For instance:
 
- * a host which function as both an ACME and Web server may want to keep
+ * a host which functions as both an ACME and Web server may want to keep
    the root path "/" for an HTML "front page", and and place the ACME
    directory under path "/acme".
 
@@ -656,7 +642,7 @@ The following metadata items are defined, all of which are OPTIONAL:
 information about the ACME server.
 
 "caa-identities" (optional, array of string):
-: Each string MUST be a lowercase hostname which the ACME server recognises as
+: Each string MUST be a lowercase hostname which the ACME server recognizes as
 referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
 use when configuring CAA records.
@@ -684,7 +670,7 @@ Content-Type: application/json
 
 ### Account Objects
 
-An ACME account resource represents a set of metadata associated to an account.
+An ACME account resource represents a set of metadata associated with an account.
 Account resources have the following structure:
 
 key (required, dictionary):
@@ -815,7 +801,7 @@ then it SHOULD consider the order invalid.
 The "authorizations" array in the challenge SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
 were fulfilled in earlier orders or in pre-authorization transactions.  For
-example, if a CA allows multiple orders to be fufilled based on a single
+example, if a CA allows multiple orders to be fulfilled based on a single
 authorization transaction, then it SHOULD reflect that authorization in all of
 the order.
 
@@ -829,7 +815,7 @@ possession of the identifier.
 
 The structure of an ACME authorization resource is as follows:
 
-identifier (required, dictionary of string):
+identifier (required, object):
 : The identifier that the account is authorized to represent
 
   type (required, string):
@@ -852,7 +838,7 @@ scope (optional, string):
 : If this field is present, then it MUST contain a URI for an order resource,
 such that this authorization is only valid for that resource.  If this field is
 absent, then the CA MUST consider this authorization valid for all orders until
-the authorization expires. \[\[ Open issue: More flexible scoping? ]]
+the authorization expires.
 
 challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
@@ -1011,7 +997,7 @@ request with updated information to the account URI.  The server MUST ignore any
 updates to the "key", or "order" fields or any other fields it does not
 recognize. The server MUST verify that the request is signed with the private
 key corresponding to the "key" field of the request before updating the
-registration.
+account object.
 
 For example, to update the contact information in the above account, the client
 could send the following request:
@@ -1099,7 +1085,7 @@ The "signature" field of the JWS will contain the MAC value computed with the
 MAC key provided by the CA.
 
 ~~~~~
-POST /acme/new-reg HTTP/1.1
+POST /acme/new-account HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1145,7 +1131,7 @@ If all of these checks pass and the CA creates a new account, then the CA may
 consider the new account associated with the external account corresponding to
 the MAC key, and MUST reflect value of the "external-account-binding" field in
 the resulting account object.  If any of these checks fail, then the CA MUST
-reject the new-registration request.
+reject the new-account request.
 
 
 ### Account Key Roll-over
@@ -1315,10 +1301,10 @@ certificate to be issued.  The CSR MUST indicate the requested identifiers,
 either in the commonName portion of the requested subject name, or in an
 extensionRequest attribute {{!RFC2985}} requesting a subjectAltName extension.
 
-The server MUST return an error if it cannot fulfil the request as specified,
+The server MUST return an error if it cannot fulfill the request as specified,
 and MUST NOT issue a certificate with contents other than those requested.  If
 the server requires the request to be modified in a certain way, it should
-indicate the required changes using an appropriate error code and description.
+indicate the required changes using an appropriate error type and description.
 
 If the server is willing to issue the requested certificate, it responds with a
 201 (Created) response.  The body of this response is an order object reflecting
@@ -1407,7 +1393,7 @@ the new-authorization resource specifying the identifier for which authorization
 is being requested and how the server should behave with respect to existing
 authorizations for this identifier.
 
-identifier (required, dictionary of string):
+identifier (required, object):
 : The identifier that the account is authorized to represent:
 
   type (required, string):
@@ -1487,8 +1473,8 @@ specified by {{!RFC7468}}. This format should contain the end-entity certificate
 first, followed by any intermediate certificates that are needed to build a path
 to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
 client may request other formats by including an Accept header in its request.
-For example, the client could use the media type `application/pkix-cert` to
-request the end-entity certificate in DER format.
+For example, the client could use the media type `application/pkix-cert`
+{{!RFC2585}} to request the end-entity certificate in DER format.
 
 The server MAY provide one or more link relation header fields {{RFC5988}} with
 relation "alternate". Each such field should express an alternative certificate
@@ -1534,7 +1520,7 @@ server of two things:
 
 1. That the client controls the private key of the account key pair, and
 
-2. that the client controls the identifier in question.
+2. That the client controls the identifier in question.
 
 This process may be repeated to associate multiple identifiers to a key pair
 (e.g., to request certificates with multiple identifiers), or to associate
@@ -1847,10 +1833,9 @@ validated (optional, string):
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
-error (optional, dictionary of string):
+error (optional, object):
 : The error that occurred while the server was validating the challenge, if any.
-This field is structured as a problem document
-{{!RFC7807}}.
+This field is structured as a problem document {{!RFC7807}}.
 
 All additional fields are specified by the challenge type.  If the server sets a
 challenge's "status" to "invalid", it SHOULD also include the "error" field to
@@ -1911,7 +1896,7 @@ responds for that domain name.  The ACME server challenges the client to
 provision a file at a specific path, with a specific string as its content.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
-connect to at least one of the hosts found in A and AAAA records, at its
+connect to at least one of the hosts found in the DNS A and AAAA records, at its
 discretion.  Because many webservers allocate a default HTTPS virtual host to a
 particular low-privilege tenant user in a subtle and non-intuitive manner, the
 challenge must be completed over HTTP, not HTTPS.
@@ -2007,7 +1992,7 @@ failed.
 
 The TLS with Server Name Indication (TLS SNI) validation method
 proves control over a domain name by requiring the client to configure a TLS
-server referenced by an A/AAAA record under the domain name to respond to
+server referenced by the DNS A and AAAA resource records under the domain name to respond to
 specific connection attempts utilizing the Server Name Indication extension
 {{!RFC6066}}. The server verifies the client's challenge by accessing the
 reconfigured server and verifying a particular challenge certificate is
@@ -2229,7 +2214,7 @@ HTTP/1.1 200 OK
 ~~~~~~~~~~
 
 A client responds to this challenge by presenting the indicated URL for a human
-user to navigate to.  If the user choses to complete this challege (by vising
+user to navigate to.  If the user chooses to complete this challenge (by visiting
 the website and completing its instructions), the client indicates this by
 sending a simple acknowledgement response to the server.
 
@@ -2341,7 +2326,7 @@ This document requests that IANA create the following new registries:
 
 1. ACME Account Object Fields ({{iana-account}})
 2. ACME Order Object Fields ({{iana-order}})
-3. ACME Error Codes ({{iana-error}})
+3. ACME Error Types ({{iana-error}})
 4. ACME Resource Types ({{iana-resource}})
 5. ACME Identifier Types ({{iana-identifier}})
 6. ACME Challenge Types ({{iana-challenge}})
@@ -2403,19 +2388,19 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | authorizations | array of string     | false        | RFC XXXX  |
 | certificate    | string              | false        | RFC XXXX  |
 
-### Error Codes {#iana-error}
+### Error Types {#iana-error}
 
 This registry lists values that are used within URN values that are provided in
 the "type" field of problem documents in ACME.
 
 Template:
 
-* Code: The label to be included in the URN for this error, following
+* Type: The label to be included in the URN for this error, following
   "urn:ietf:params:acme:"
 * Description: A human-readable description of the error
 * Reference: Where the error is defined
 
-Initial contents: The codes and descriptions in the table in {{errors}} above,
+Initial contents: The types and descriptions in the table in {{errors}} above,
 with the Reference field set to point to this specification.
 
 ### Resource Types {#iana-resource}
@@ -2540,7 +2525,7 @@ any individual channel.  Some vulnerabilities arise (noted below), when an
 attacker can exploit both the ACME channel and one of the others.
 
 On the ACME channel, in addition to network-layer attackers, we also need to
-account for application-layer man in the middle attacks, and for abusive use of
+account for application-layer man-in-the-middle (MitM) attacks, and for abusive use of
 the protocol itself.  Protection against application-layer MitM addresses
 potential attackers such as Content Distribution Networks (CDNs) and middleboxes
 with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an
@@ -2721,13 +2706,26 @@ There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
 
-## DNS over TCP
+## DNS security
 
 As noted above, DNS forgery attacks against the ACME server can result in the
 server making incorrect decisions about domain control and thus mis-issuing
-certificates.  Servers SHOULD verify DNSSEC when it is available for a domain.
-When DNSSEC is not available, servers SHOULD perform DNS queries over TCP, which
-provides better resistance to some forgery attacks than DNS over UDP.
+certificates. Servers SHOULD perform DNS queries over TCP, which provides better
+resistance to some forgery attacks than DNS over UDP.
+
+An ACME-based CA will often need to make DNS queries, e.g., to validate control
+of DNS names.  Because the security of such validations ultimately depends on
+the authenticity of DNS data, every possible precaution should be taken to
+secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based
+CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This
+provides additional protection to domains which choose to make use of DNSSEC.
+
+An ACME-based CA must use only a resolver if it trusts the resolver and every
+component of the network route by which it is accessed. It is therefore
+RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
+within their trusted network and use these resolvers both for both CAA record
+lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
+TXT, etc.).
 
 ## Default Virtual Hosts
 
@@ -2753,22 +2751,6 @@ allowing an authorization request for this host to use a TLS-based challenge.
 A default virtual host can be detected by initiating TLS connections to the host
 with random SNI values within the namespace used for the TLS-based challenge
 (the "acme.invalid" namespace for "tls-sni-02").
-
-## Use of DNSSEC Resolvers
-
-An ACME-based CA will often need to make DNS queries, e.g., to validate control
-of DNS names.  Because the security of such validations ultimately depends on
-the authenticity of DNS data, every possible precaution should be taken to
-secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based
-CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This
-provides additional protection to domains which choose to make use of DNSSEC.
-
-An ACME-based CA must use only a resolver if it trusts the resolver and every
-component of the network route by which it is accessed. It is therefore
-RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers
-within their trusted network and use these resolvers both for both CAA record
-lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
-TXT, etc.).
 
 # Acknowledgements
 
