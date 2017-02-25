@@ -784,10 +784,8 @@ notAfter (optional, string):
 format defined in {{!RFC3339}}.
 
 error (optional, object):
-: The error that occurred while the server was issuing the certificate, if any.
-This field is structured as a problem document {{!RFC7807}}. Note that
-this field is only for errors occurring after authorizations have been
-validated.
+: The error that occurred while processing the order, if any.
+This field is structured as a problem document {{!RFC7807}}.
 
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
