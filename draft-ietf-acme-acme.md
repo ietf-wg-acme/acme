@@ -960,9 +960,10 @@ invalid or unsupported contact URL, then the server MUST return an error of type
 "invalidContact", with a description describing the error and what types of
 contact URL the server considers acceptable.
 
-The server populates the account object with the "key" field with the JWK public key
-used to verify the JWS.  The server returns this account object in a response with
-a 201 (Created) status code, with the account URI in a Location header field.
+The server creates an account and populates the account object with the "key"
+field containing the JWK public key used to verify the JWS.  The server returns
+this account object in a response with a 201 (Created) status code, with the
+account URI in a Location header field.
 
 If the server already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URI of
