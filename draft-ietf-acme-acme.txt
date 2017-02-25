@@ -2524,7 +2524,7 @@ Internet-Draft                    ACME                     February 2017
 
    then there would be a challenge labeled "http-03" and one labeled
    "http-05" - but not one labeled "http-04", since challenge in version
-   -04 was compatible with one in version -04. ]]
+   -04 was compatible with one in version -03. ]]
 
 7.1.  Key Authorizations
 
