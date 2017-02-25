@@ -1069,8 +1069,9 @@ field.  This can be used to an ACME account with an existing account in a
 non-ACME system, such as a CA customer database.
 
 To enable ACME account binding, a CA needs to provision the ACME client with a
-MAC key and a key identifier. The MAC key SHOULD be provided in base64url-encoded
-form, to maximize compatibility between provisioning systems and ACME clients.
+MAC key and a key identifier. The key identifier MUST be an ASCII string. The
+MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility
+between provisioning systems and ACME clients.
 
 The ACME client then computes a binding JWS to indicate the external account's
 approval of the ACME account key.  The payload of this JWS is the account key
@@ -1932,6 +1933,8 @@ for the domain in question.
 
 The path at which the resource is provisioned is comprised of the fixed prefix
 ".well-known/acme-challenge/", followed by the "token" value in the challenge.
+The value of the resource MUST be the ASCII representation of the key
+authorization.
 
 ~~~~~~~~~~
 GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
@@ -2100,7 +2103,7 @@ Otherwise, the validation fails.
 ## DNS
 
 When the identifier being validated is a domain name, the client can prove
-control of that domain by provisioning a TXT record containing a designated
+control of that domain by provisioning a TXT resource record containing a designated
 value for a specific validation domain name.
 
 type (required, string):
