@@ -465,8 +465,8 @@ the current request with exactly the same parameters.
 
 In addition to the human readable "detail" field of the error response, the
 server MAY send one or multiple tokens in the "Link" header pointing to
-documentation about the specific hit rate limits using the "rate-limit"
-relation.
+documentation about the specific hit rate limits using the
+"urn:ietf:params:acme:documentation" relation.
 
 ## Errors
 
@@ -551,7 +551,7 @@ certificate resources to indicate a resource from which the client may fetch a
 chain of CA certificates that could be used to validate the certificate in the
 original resource.
 
-The "directory" link relation is present on all resources other than the
+The "index" link relation is present on all resources other than the
 directory and indicates the directory URL.
 
 The following diagram illustrates the relations between resources on an ACME
@@ -564,15 +564,15 @@ indicate HTTP link relations.
                                    |
                                    |--> new-nonce
                                    |
-       --------------------------------------------------+
-       |          |          |                           |
-       |          |          |                           |
-       V          V          V                           V
- new-account  new-authz  new-order                  revoke-cert
-       |          |          |                           ^
-       |          |          |    "author"               | "revoke"
-       V          |          V   <--------               |
-      acct        |        order --------> cert ---------+
+       ----------------------------------+
+       |          |          |           |
+       |          |          |           |
+       V          V          V           V
+ new-account  new-authz  new-order  revoke-cert
+       |          |          |
+       |          |          |
+       V          |          V
+      acct        |        order --------> cert
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
@@ -605,7 +605,7 @@ structured and how the ACME protocol makes use of them.
 
 In order to help clients configure themselves with the right URIs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
-needed to configure clients. It is a JSON dictionary, whose keys are drawn from
+needed to configure clients. It is a JSON object, whose keys are drawn from
 the following table and whose values are the corresponding URLs.
 
 | Key            | URL in value         |
@@ -628,8 +628,8 @@ should not clash with other services. For instance:
  * a host which only functions as an ACME server could place the directory
    under path "/".
 
-The dictionary MAY additionally contain a key "meta". If present, it MUST be a
-JSON dictionary; each item in the dictionary is an item of metadata relating to
+The object MAY additionally contain a key "meta". If present, it MUST be a
+JSON object; each field in the object is an item of metadata relating to
 the service provided by the ACME server.
 
 The following metadata items are defined, all of which are OPTIONAL:
@@ -673,7 +673,7 @@ Content-Type: application/json
 An ACME account resource represents a set of metadata associated with an account.
 Account resources have the following structure:
 
-key (required, dictionary):
+key (required, object):
 : The public key of the account's key pair, encoded as a JSON Web Key object
 {{!RFC7517}}. The client may not directly update this field, but must use the
 key-change resource instead.
@@ -843,7 +843,7 @@ the authorization expires.
 challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
 identifier (for pending authorizations).  For final authorizations, the
-challenges that were used.  Each array entry is a dictionary with parameters
+challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill at most
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
@@ -979,7 +979,7 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/acct/1
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "key": { /* JWK from JWS header */ },
@@ -1482,17 +1482,6 @@ chain starting with the same end-entity certificate. This can be used to express
 paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
 
-The server MUST also provide a link relation header field with relation "author"
-to indicate the order under which this certificate was issued.
-
-If the CA participates in Certificate Transparency (CT) {{?RFC6962}}, then they
-may want to provide the client with a Signed Certificate Timestamp (SCT) that
-can be used to prove that a certificate was submitted to a CT log.  An SCT can
-be included as an extension in the certificate or as an extension to OCSP
-responses for the certificate.  The server can also provide the client with
-direct access to an SCT for a certificate using a Link relation header field
-with relation "ct-sct".
-
 ~~~~~~~~~~
 GET /acme/cert/asdf HTTP/1.1
 Host: example.com
@@ -1501,10 +1490,7 @@ Accept: application/pkix-cert
 HTTP/1.1 200 OK
 Content-Type: application/pkix-cert
 Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
-Link: <https://example.com/acme/revoke-cert>;rel="revoke"
-Link: <https://example.com/acme/order/asdf>;rel="author"
-Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 -----BEGIN CERTIFICATE-----
 [End-entity certificate contents]
@@ -1561,7 +1547,7 @@ Host: example.com
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "status": "pending",
@@ -1597,7 +1583,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 To prove control of the identifier and receive authorization, the client needs to
 respond with information to complete the challenges.  To do this, the client
 updates the authorization object received from the server by filling in any
-required information in the elements of the "challenges" dictionary.  (This is
+required information in the elements of the "challenges" object.  (This is
 also the stage where the client should perform any actions required by the
 challenge.)
 
@@ -2357,7 +2343,7 @@ new-account request.
 
 Template:
 
-* Field name: The string to be used as a key in the JSON dictionary
+* Field name: The string to be used as a key in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
 * Client configurable: Boolean indicating whether the server should accept
@@ -2368,10 +2354,10 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 | Field Name               | Field Type      | Configurable | Reference |
 |:-------------------------|:----------------|:-------------|:----------|
-| key                      | dictionary      | false        | RFC XXXX  |
+| key                      | object          | false        | RFC XXXX  |
 | status                   | string          | false        | RFC XXXX  |
 | contact                  | array of string | true         | RFC XXXX  |
-| external-account-binding | dictionary      | true         | RFC XXXX  |
+| external-account-binding | object          | true         | RFC XXXX  |
 | terms-of-service-agreed  | boolean         | false        | RFC XXXX  |
 | orders                   | array of string | false        | RFC XXXX  |
 
@@ -2383,7 +2369,7 @@ new-order request.
 
 Template:
 
-* Field name: The string to be used as a key in the JSON dictionary
+* Field name: The string to be used as a key in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
 * Client configurable: Boolean indicating whether the server should accept
@@ -2424,7 +2410,7 @@ directory objects.
 
 Template:
 
-* Key: The value to be used as a dictionary key in the directory object
+* Key: The value to be used as a field name in the directory object
 * Resource type: The type of resource labeled by the key
 * Reference: Where the identifier type is defined
 
