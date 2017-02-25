@@ -351,7 +351,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-2-24" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-2-25" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -375,7 +375,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: August 28, 2017</td>
+  <td class="left">Expires: August 29, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -388,7 +388,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">February 24, 2017</td>
+  <td class="right">February 25, 2017</td>
 </tr>
 
     	
@@ -410,7 +410,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on August 28, 2017.</p>
+<p>This Internet-Draft will expire on August 29, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -508,7 +508,7 @@ address {
 <p id="rfc.section.1.p.5">With the exception of the CSR itself and the certificates that are issued, these are all completely ad hoc procedures and are accomplished by getting the human user to follow interactive natural-language instructions from the CA rather than by machine-implemented published protocols.  In many cases, the instructions are difficult to follow and cause significant confusion.  Informal usability tests by the authors indicate that webmasters often need 1-3 hours to obtain and install a certificate for a domain.  Even in the best case, the lack of published, standardized mechanisms presents an obstacle to the wide deployment of HTTPS and other PKIX-dependent systems because it inhibits mechanization of tasks related to certificate issuance, deployment, and revocation.</p>
 <p id="rfc.section.1.p.6">This document describes an extensible framework for automating the issuance and domain validation procedure, thereby allowing servers and infrastructural software to obtain certificates without user interaction.  Use of this protocol should radically simplify the deployment of HTTPS and the practicality of PKIX authentication for other protocols based on TLS <a href="#RFC5246">[RFC5246]</a>.</p>
 <h1 id="rfc.section.2"><a href="#rfc.section.2">2.</a> <a href="#deployment-model-and-operator-experience" id="deployment-model-and-operator-experience">Deployment Model and Operator Experience</a></h1>
-<p id="rfc.section.2.p.1">The guiding use case for ACME is obtaining certificates for Web sites (HTTPS <a href="#RFC2818">[RFC2818]</a>).  In this case, the user&#8217;s web server is intended to speak for one or more domains, and the process of certificate issuance is intended to verify that this server actually speaks for the domain(s).</p>
+<p id="rfc.section.2.p.1">The guiding use case for ACME is obtaining certificates for Web sites (HTTPS <a href="#RFC2818">[RFC2818]</a>).  In this case, the user&#8217;s web server is intended to speak for one or more domains, and the process of certificate issuance is intended to verify that this web server actually speaks for the domain(s).</p>
 <p id="rfc.section.2.p.2">DV certificate validation commonly checks claims about properties related to control of a domain name &#8211; properties that can be observed by the certificate issuer in an interactive process that can be conducted purely online.  That means that under typical circumstances, all steps in the request, verification, and issuance process can be represented and performed by Internet protocols with no out-of-band human intervention.</p>
 <p id="rfc.section.2.p.3">At time of writing, when deploying an HTTPS server, an operator typically gets a prompt to generate a self-signed certificate.  If the operator were instead deploying an ACME-compatible web server, the experience would be something like this:</p>
 <p/>
@@ -519,7 +519,7 @@ address {
   <li>The operator selects a CA.</li>
   <li>In the background, the ACME client contacts the CA and requests that a certificate be issued for the intended domain name(s).</li>
   <li>Once the CA is satisfied, the certificate is issued and the ACME client automatically downloads and installs it, potentially notifying the operator via e-mail, SMS, etc.</li>
-  <li>The ACME client periodically contacts the CA to get updated certificates, stapled OCSP responses, or whatever else would be required to keep the server functional and its credentials up-to-date.</li>
+  <li>The ACME client periodically contacts the CA to get updated certificates, stapled OCSP responses, or whatever else would be required to keep the web server functional and its credentials up-to-date.</li>
 </ul>
 <p id="rfc.section.2.p.5">In this way, it would be nearly as easy to deploy with a CA-issued certificate as with a self-signed certificate. Furthermore, the maintenance of that CA-issued certificate would require minimal manual intervention.  Such close integration of ACME with HTTPS servers would allow the immediate and automated deployment of certificates as they are issued, sparing the human administrator from much of the time-consuming work described in the previous section.</p>
 <h1 id="rfc.section.3"><a href="#rfc.section.3">3.</a> <a href="#terminology" id="terminology">Terminology</a></h1>
@@ -1313,7 +1313,7 @@ Location: https://example.com/acme/order/asdf
   <li>&#8220;valid&#8221;: The server has issued the certificate and provisioned its URL to the &#8220;certificate&#8221; field of the order.  Download the certificate.</li>
 </ul>
 <h1 id="rfc.section.6.4.1"><a href="#rfc.section.6.4.1">6.4.1.</a> <a href="#pre-authorization" id="pre-authorization">Pre-Authorization</a></h1>
-<p id="rfc.section.6.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to a certificate order.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any servers are created, and only create a certificate when a server starts up.</p>
+<p id="rfc.section.6.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to a certificate order.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any virtual servers are created, and only create a certificate when a virtual server starts up.</p>
 <p id="rfc.section.6.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue for an identifier.  In these case, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already valid in any orders submitted by the client.</p>
 <p id="rfc.section.6.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the key &#8220;new-authz&#8221; with a URL for the new authorization resource.</p>
 <p id="rfc.section.6.4.1.p.4">To request authorization for an identifier, the client sends a POST request to the new-authorization resource specifying the identifier for which authorization is being requested and how the server should behave with respect to existing authorizations for this identifier.</p>
@@ -1670,13 +1670,13 @@ Content-Type: application/jose+json
 <ol>
   <li>Form a URI by populating the URI template <a href="#RFC6570">[RFC6570]</a> &#8220;http://{domain}/.well-known/acme-challenge/{token}&#8221;, where: <ul><li>the domain field is set to the domain name being verified; and</li><li>the token field is set to the token in the challenge.</li></ul></li>
   <li>Verify that the resulting URI is well-formed.</li>
-  <li>Dereference the URI using an HTTP GET request.  This request MUST be sent to TCP port 80 on the server.</li>
+  <li>Dereference the URI using an HTTP GET request.  This request MUST be sent to TCP port 80 on the HTTP server.</li>
   <li>Verify that the body of the response is well-formed key authorization.  The server SHOULD ignore whitespace characters at the end of the body.</li>
-  <li>Verify that key authorization provided by the server matches the token for this challenge and the client&#8217;s account key.</li>
+  <li>Verify that key authorization provided by the HTTP server matches the token for this challenge and the client&#8217;s account key.</li>
 </ol>
 <p id="rfc.section.7.2.p.11">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
 <h1 id="rfc.section.7.3"><a href="#rfc.section.7.3">7.3.</a> <a href="#tls-with-server-name-indication-tls-sni" id="tls-with-server-name-indication-tls-sni">TLS with Server Name Indication (TLS SNI)</a></h1>
-<p id="rfc.section.7.3.p.1">The TLS with Server Name Indication (TLS SNI) validation method proves control over a domain name by requiring the client to configure a TLS server referenced by the DNS A and AAAA resource records under the domain name to respond to specific connection attempts utilizing the Server Name Indication extension <a href="#RFC6066">[RFC6066]</a>. The server verifies the client&#8217;s challenge by accessing the reconfigured server and verifying a particular challenge certificate is presented.</p>
+<p id="rfc.section.7.3.p.1">The TLS with Server Name Indication (TLS SNI) validation method proves control over a domain name by requiring the client to configure a TLS server referenced by the DNS A and AAAA resource records under the domain name to respond to specific connection attempts utilizing the Server Name Indication extension <a href="#RFC6066">[RFC6066]</a>. The server verifies the client&#8217;s challenge by accessing the reconfigured TLS server and verifying a particular challenge certificate is presented.</p>
 <p/>
 
 <dl>
@@ -1733,7 +1733,7 @@ Content-Type: application/jose+json
 
 <ol>
   <li>Compute SAN A and SAN B in the same way as the client.</li>
-  <li>Open a TLS connection to the domain name being validated, presenting SAN A in the SNI field. This connection MUST be sent to TCP port 443 on the server. In the ClientHello initiating the TLS handshake, the server MUST include a server_name extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does not reveal SAN B in any way when making the TLS connection, such that the presentation of SAN B in the returned certificate proves association with the client.</li>
+  <li>Open a TLS connection to the domain name being validated, presenting SAN A in the SNI field. This connection MUST be sent to TCP port 443 on the TLS server. In the ClientHello initiating the TLS handshake, the server MUST include a server_name extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does not reveal SAN B in any way when making the TLS connection, such that the presentation of SAN B in the returned certificate proves association with the client.</li>
   <li>Verify that the certificate contains a subjectAltName extension containing dNSName entries of SAN A and SAN B and no other entries.  The comparison MUST be insensitive to case and ordering of names.</li>
 </ol>
 <p id="rfc.section.7.3.p.13">It is RECOMMENDED that the server open multiple TLS connections from various network perspectives, in order to make MitM attacks harder.</p>
@@ -2231,10 +2231,10 @@ Content-Type: application/jose+json
   <li>TLS SNI: Configure a TLS server for the domain</li>
   <li>DNS: Provision DNS resource records for the domain</li>
 </ul>
-<p id="rfc.section.9.2.p.7">There are several ways that these assumptions can be violated, both by misconfiguration and by attack.  For example, on a web server that allows non-administrative users to write to .well-known, any user can claim to own the server&#8217;s hostname by responding to an HTTP challenge, and likewise for TLS configuration and TLS SNI.</p>
+<p id="rfc.section.9.2.p.7">There are several ways that these assumptions can be violated, both by misconfiguration and by attack.  For example, on a web server that allows non-administrative users to write to .well-known, any user can claim to own the web server&#8217;s hostname by responding to an HTTP challenge, and likewise for TLS configuration and TLS SNI.</p>
 <p id="rfc.section.9.2.p.8">The use of hosting providers is a particular risk for ACME validation.  If the owner of the domain has outsourced operation of DNS or web services to a hosting provider, there is nothing that can be done against tampering by the hosting provider.  As far as the outside world is concerned, the zone or web site provided by the hosting provider is the real thing.</p>
 <p id="rfc.section.9.2.p.9">More limited forms of delegation can also lead to an unintended party gaining the ability to successfully complete a validation transaction.  For example, suppose an ACME server follows HTTP redirects in HTTP validation and a web site operator provisions a catch-all redirect rule that redirects requests for unknown resources to a different domain.  Then the target of the redirect could use that to get a certificate through HTTP validation, since the validation path will not be known to the primary server.</p>
-<p id="rfc.section.9.2.p.10">The DNS is a common point of vulnerability for all of these challenges.  An entity that can provision false DNS records for a domain can attack the DNS challenge directly, and can provision false A/AAAA records to direct the ACME server to send its TLS SNI or HTTP validation query to a server of the attacker&#8217;s choosing.  There are a few different mitigations that ACME servers can apply:</p>
+<p id="rfc.section.9.2.p.10">The DNS is a common point of vulnerability for all of these challenges.  An entity that can provision false DNS records for a domain can attack the DNS challenge directly, and can provision false A/AAAA records to direct the ACME server to send its TLS SNI or HTTP validation query to a remote server of the attacker&#8217;s choosing.  There are a few different mitigations that ACME servers can apply:</p>
 <p/>
 
 <ul>
@@ -2244,7 +2244,7 @@ Content-Type: application/jose+json
 </ul>
 <p id="rfc.section.9.2.p.12">Given these considerations, the ACME validation process makes it impossible for any attacker on the ACME channel, or a passive attacker on the validation channel to hijack the authorization process to authorize a key of the attacker&#8217;s choice.</p>
 <p id="rfc.section.9.2.p.13">An attacker that can only see the ACME channel would need to convince the validation server to provide a response that would authorize the attacker&#8217;s account key, but this is prevented by binding the validation response to the account key used to request challenges.  A passive attacker on the validation channel can observe the correct validation response and even replay it, but that response can only be used with the account key for which it was generated.</p>
-<p id="rfc.section.9.2.p.14">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.  For identifiers where the server already has some public key associated with the domain this attack can be prevented by requiring the client to prove control of the corresponding private key.</p>
+<p id="rfc.section.9.2.p.14">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.  For identifiers where a web server already has some public key associated with the domain this attack can be prevented by requiring the client to prove control of the corresponding private key.</p>
 <h1 id="rfc.section.9.3"><a href="#rfc.section.9.3">9.3.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a></h1>
 <p id="rfc.section.9.3.p.1">As a protocol run over HTTPS, standard considerations for TCP-based and HTTP-based DoS mitigation also apply to ACME.</p>
 <p id="rfc.section.9.3.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
