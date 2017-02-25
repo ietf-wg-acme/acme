@@ -1025,7 +1025,7 @@ Cache-Control: no-store
 </pre>
 <p id="rfc.section.6.2.p.3">Proxy caching of responses from the new-nonce resource can cause clients receive the same nonce repeatedly, leading to badNonce errors.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the new-nonce resource, in order to prevent caching of this resource.</p>
 <h1 id="rfc.section.6.3"><a href="#rfc.section.6.3">6.3.</a> <a href="#account-creation" id="account-creation">Account Creation</a></h1>
-<p id="rfc.section.6.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URI.  The body of the request is a stub account object containing only the &#8220;contact&#8221; field.</p>
+<p id="rfc.section.6.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URI.  The body of the request is a stub account object containing only the &#8220;contact&#8221; and optionally the &#8220;terms-of-service-agreed&#8221; field.</p>
 <pre>
 POST /acme/new-account HTTP/1.1
 Host: example.com

@@ -1307,7 +1307,8 @@ Internet-Draft                    ACME                     February 2017
 
    A client creates a new account with the server by sending a POST
    request to the server's new-account URI.  The body of the request is
-   a stub account object containing only the "contact" field.
+   a stub account object containing only the "contact" and optionally
+   the "terms-of-service-agreed" field.
 
    POST /acme/new-account HTTP/1.1
    Host: example.com
@@ -1336,8 +1337,7 @@ Internet-Draft                    ACME                     February 2017
    the future, the specification of those fields MUST describe whether
    they can be provided by the client.
 
-   In general, the server MUST ignore any fields in the request object
-   that it does not recognize.  In particular, it MUST NOT reflect
+
 
 
 
@@ -1346,6 +1346,8 @@ Barnes, et al.           Expires August 29, 2017               [Page 24]
 Internet-Draft                    ACME                     February 2017
 
 
+   In general, the server MUST ignore any fields in the request object
+   that it does not recognize.  In particular, it MUST NOT reflect
    unrecognized fields in the resulting account object.  This allows
    clients to detect when servers do not support an extension field.
 
@@ -1392,8 +1394,6 @@ Internet-Draft                    ACME                     February 2017
        "tel:+12025551212"
      ]
    }
-
-
 
 
 
