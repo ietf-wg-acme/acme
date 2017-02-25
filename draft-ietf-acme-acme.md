@@ -111,7 +111,7 @@ authentication for other protocols based on TLS {{!RFC5246}}.
 The guiding use case for ACME is obtaining certificates for websites
 (HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
-verify that this server actually speaks for the domain(s).
+verify that this web server actually speaks for the domain(s).
 
 DV certificate validation commonly checks claims about properties related to
 control of a domain name -- properties that can be observed by the certificate
@@ -138,8 +138,8 @@ this:
   automatically downloads and installs it, potentially notifying the operator
   via e-mail, SMS, etc.
 * The ACME client periodically contacts the CA to get updated certificates,
-  stapled OCSP responses, or whatever else would be required to keep the server
-  functional and its credentials up-to-date.
+  stapled OCSP responses, or whatever else would be required to keep the web
+  server functional and its credentials up-to-date.
 
 In this way, it would be nearly as easy to deploy with a CA-issued certificate
 as with a self-signed certificate. Furthermore, the maintenance of that
@@ -465,8 +465,8 @@ the current request with exactly the same parameters.
 
 In addition to the human readable "detail" field of the error response, the
 server MAY send one or multiple tokens in the "Link" header pointing to
-documentation about the specific hit rate limits using the "rate-limit"
-relation.
+documentation about the specific hit rate limits using the
+"urn:ietf:params:acme:documentation" relation.
 
 ## Errors
 
@@ -551,7 +551,7 @@ certificate resources to indicate a resource from which the client may fetch a
 chain of CA certificates that could be used to validate the certificate in the
 original resource.
 
-The "directory" link relation is present on all resources other than the
+The "index" link relation is present on all resources other than the
 directory and indicates the directory URL.
 
 The following diagram illustrates the relations between resources on an ACME
@@ -564,15 +564,15 @@ indicate HTTP link relations.
                                    |
                                    |--> new-nonce
                                    |
-       --------------------------------------------------+
-       |          |          |                           |
-       |          |          |                           |
-       V          V          V                           V
- new-account  new-authz  new-order                  revoke-cert
-       |          |          |                           ^
-       |          |          |    "author"               | "revoke"
-       V          |          V   <--------               |
-      acct        |        order --------> cert ---------+
+       ----------------------------------+
+       |          |          |           |
+       |          |          |           |
+       V          V          V           V
+ new-account  new-authz  new-order  revoke-cert
+       |          |          |
+       |          |          |
+       V          |          V
+      acct        |        order --------> cert
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
@@ -605,7 +605,7 @@ structured and how the ACME protocol makes use of them.
 
 In order to help clients configure themselves with the right URIs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
-needed to configure clients. It is a JSON dictionary, whose keys are drawn from
+needed to configure clients. It is a JSON object, whose keys are drawn from
 the following table and whose values are the corresponding URLs.
 
 | Key            | URL in value         |
@@ -628,8 +628,8 @@ should not clash with other services. For instance:
  * a host which only functions as an ACME server could place the directory
    under the path "/".
 
-The dictionary MAY additionally contain a key "meta". If present, it MUST be a
-JSON dictionary; each item in the dictionary is an item of metadata relating to
+The object MAY additionally contain a key "meta". If present, it MUST be a
+JSON object; each field in the object is an item of metadata relating to
 the service provided by the ACME server.
 
 The following metadata items are defined, all of which are OPTIONAL:
@@ -673,7 +673,7 @@ Content-Type: application/json
 An ACME account resource represents a set of metadata associated with an account.
 Account resources have the following structure:
 
-key (required, dictionary):
+key (required, object):
 : The public key of the account's key pair, encoded as a JSON Web Key object
 {{!RFC7517}}. The client may not directly update this field, but must use the
 key-change resource instead.
@@ -843,7 +843,7 @@ the authorization expires.
 challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
 identifier (for pending authorizations).  For final authorizations, the
-challenges that were used.  Each array entry is a dictionary with parameters
+challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill at most
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
@@ -979,7 +979,7 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
 Location: https://example.com/acme/acct/1
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "key": { /* JWK from JWS header */ },
@@ -1375,8 +1375,8 @@ created reactively, in response to a certificate order.  Some servers
 may also wish to enable clients to obtain authorization for an identifier
 proactively, outside of the context of a specific issuance.  For example, a
 client hosting virtual servers for a collection of names might wish to obtain
-authorization before any servers are created and only create a certificate when
-a server starts up.
+authorization before any virtual servers are created and only create a certificate when
+a virtual server starts up.
 
 In some cases, a CA running an ACME server might have a completely external,
 non-ACME process for authorizing a client to issue for an identifier.  In these
@@ -1482,17 +1482,6 @@ chain starting with the same end-entity certificate. This can be used to express
 paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
 
-The server MUST also provide a link relation header field with relation "author"
-to indicate the order under which this certificate was issued.
-
-If the CA participates in Certificate Transparency (CT) {{?RFC6962}}, then they
-may want to provide the client with a Signed Certificate Timestamp (SCT) that
-can be used to prove that a certificate was submitted to a CT log.  An SCT can
-be included as an extension in the certificate or as an extension to OCSP
-responses for the certificate.  The server can also provide the client with
-direct access to an SCT for a certificate using a Link relation header field
-with relation "ct-sct".
-
 ~~~~~~~~~~
 GET /acme/cert/asdf HTTP/1.1
 Host: example.com
@@ -1501,10 +1490,7 @@ Accept: application/pkix-cert
 HTTP/1.1 200 OK
 Content-Type: application/pkix-cert
 Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
-Link: <https://example.com/acme/revoke-cert>;rel="revoke"
-Link: <https://example.com/acme/order/asdf>;rel="author"
-Link: <https://example.com/acme/sct/asdf>;rel="ct-sct"
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 -----BEGIN CERTIFICATE-----
 [End-entity certificate contents]
@@ -1561,7 +1547,7 @@ Host: example.com
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/some-directory>;rel="directory"
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "status": "pending",
@@ -1597,7 +1583,7 @@ Link: <https://example.com/acme/some-directory>;rel="directory"
 To prove control of the identifier and receive authorization, the client needs to
 respond with information to complete the challenges.  To do this, the client
 updates the authorization object received from the server by filling in any
-required information in the elements of the "challenges" dictionary.  (This is
+required information in the elements of the "challenges" object.  (This is
 also the stage where the client should perform any actions required by the
 challenge.)
 
@@ -1871,7 +1857,7 @@ labeled by type, and with the version of the draft in which they were
 introduced.  For example, if an HTTP challenge were introduced in version -03
 and a breaking change made in version -05, then there would be a challenge
 labeled "http-03" and one labeled "http-05" -- but not one labeled "http-04",
-since challenge in version -04 was compatible with one in version -04. ]]
+since challenge in version -04 was compatible with one in version -03. ]]
 
 ## Key Authorizations
 
@@ -1992,11 +1978,11 @@ domain by verifying that the resource was provisioned as expected.
   * the token field is set to the token in the challenge.
 2. Verify that the resulting URI is well-formed.
 3. Dereference the URI using an HTTP GET request.  This request MUST be sent to
-   TCP port 80 on the server.
+   TCP port 80 on the HTTP server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
-5. Verify that key authorization provided by the server matches the token for
-   this challenge and the client's account key.
+5. Verify that key authorization provided by the HTTP server matches the token
+   for this challenge and the client's account key.
 
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
@@ -2009,7 +1995,7 @@ proves control over a domain name by requiring the client to configure a TLS
 server referenced by the DNS A and AAAA resource records under the domain name to respond to
 specific connection attempts utilizing the Server Name Indication extension
 {{!RFC6066}}. The server verifies the client's challenge by accessing the
-reconfigured server and verifying a particular challenge certificate is
+reconfigured TLS server and verifying a particular challenge certificate is
 presented.
 
 type (required, string):
@@ -2092,7 +2078,7 @@ using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
 2. Open a TLS connection to the domain name being validated, presenting SAN A in
-   the SNI field. This connection MUST be sent to TCP port 443 on the server. In
+   the SNI field. This connection MUST be sent to TCP port 443 on the TLS server. In
    the ClientHello initiating the TLS handshake, the server MUST include
    a server\_name extension (i.e., SNI) containing SAN A. The server SHOULD
    ensure that it does not reveal SAN B in any way when making the TLS
@@ -2357,7 +2343,7 @@ new-account request.
 
 Template:
 
-* Field name: The string to be used as a key in the JSON dictionary
+* Field name: The string to be used as a key in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
 * Client configurable: Boolean indicating whether the server should accept
@@ -2368,10 +2354,10 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 | Field Name               | Field Type      | Configurable | Reference |
 |:-------------------------|:----------------|:-------------|:----------|
-| key                      | dictionary      | false        | RFC XXXX  |
+| key                      | object          | false        | RFC XXXX  |
 | status                   | string          | false        | RFC XXXX  |
 | contact                  | array of string | true         | RFC XXXX  |
-| external-account-binding | dictionary      | true         | RFC XXXX  |
+| external-account-binding | object          | true         | RFC XXXX  |
 | terms-of-service-agreed  | boolean         | false        | RFC XXXX  |
 | orders                   | array of string | false        | RFC XXXX  |
 
@@ -2383,7 +2369,7 @@ new-order request.
 
 Template:
 
-* Field name: The string to be used as a key in the JSON dictionary
+* Field name: The string to be used as a key in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
 * Client configurable: Boolean indicating whether the server should accept
@@ -2424,7 +2410,7 @@ directory objects.
 
 Template:
 
-* Key: The value to be used as a dictionary key in the directory object
+* Key: The value to be used as a field name in the directory object
 * Resource type: The type of resource labeled by the key
 * Reference: Where the identifier type is defined
 
@@ -2590,7 +2576,7 @@ identifier can perform.  For the challenges in this document, the actions are:
 There are several ways that these assumptions can be violated, both by
 misconfiguration and by attacks.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
-server's hostname by responding to an HTTP challenge, and likewise for TLS
+web server's hostname by responding to an HTTP challenge, and likewise for TLS
 configuration and TLS SNI.
 
 The use of hosting providers is a particular risk for ACME validation.  If the
@@ -2610,7 +2596,7 @@ validation path will not be known to the primary server.
 The DNS is a common point of vulnerability for all of these challenges.  An
 entity that can provision false DNS records for a domain can attack the DNS
 challenge directly and can provision false A/AAAA records to direct the ACME
-server to send its TLS SNI or HTTP validation query to a server of the
+server to send its TLS SNI or HTTP validation query to a remote server of the
 attacker's choosing.  There are a few different mitigations that ACME servers
 can apply:
 
@@ -2635,8 +2621,8 @@ response can only be used with the account key for which it was generated.
 An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
-particular case.  For identifiers where the server already has some public key
-associated with the domain, this attack can be prevented by requiring the client
+particular case.  For identifiers where the web server already has some public key
+associated with the domain this attack can be prevented by requiring the client
 to prove control of the corresponding private key.
 
 ## Denial-of-Service Considerations
