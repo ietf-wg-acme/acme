@@ -108,7 +108,7 @@ authentication for other protocols based on TLS {{!RFC5246}}.
 
 # Deployment Model and Operator Experience
 
-The guiding use case for ACME is obtaining certificates for Web sites
+The guiding use case for ACME is obtaining certificates for websites
 (HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
 verify that this web server actually speaks for the domain(s).
@@ -120,7 +120,7 @@ means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
 
-At time of writing, when deploying an HTTPS server, an operator typically gets a
+Prior to ACME, when deploying an HTTPS server, an operator typically gets a
 prompt to generate a self-signed certificate.  If the operator were instead
 deploying an ACME-compatible web server, the experience would be something like
 this:
@@ -132,8 +132,8 @@ this:
   of CAs and updates to ACME configuration.) The ACME client might prompt the
   operator for payment information at this point.
 * The operator selects a CA.
-* In the background, the ACME client contacts the CA and requests that a
-  certificate be issued for the intended domain name(s).
+* In the background, the ACME client contacts the CA and requests that it
+  issue a certificate for the intended domain name(s).
 * Once the CA is satisfied, the certificate is issued and the ACME client
   automatically downloads and installs it, potentially notifying the operator
   via e-mail, SMS, etc.
@@ -272,7 +272,7 @@ requests to the server, carrying JSON messages {{!RFC2818}}{{!RFC7159}}.  Use of
 HTTPS is REQUIRED.  Clients SHOULD support HTTP public key pinning {{?RFC7469}},
 and servers SHOULD emit pinning headers.  Each subsection of
 {{certificate-management}} below describes the message formats used by the
-function, and the order in which messages are sent.
+function and the order in which messages are sent.
 
 In most HTTPS transactions used by ACME, the ACME client is the HTTPS client
 and the ACME server is the HTTPS server. The ACME server acts as an HTTP and
@@ -402,7 +402,7 @@ any signed request from the client to carry such a nonce.
 
 An ACME server provides nonces to clients using the Replay-Nonce header field,
 as specified below.  The server MUST include a Replay-Nonce header field in
-every successful response to a POST request, and SHOULD provide it in error
+every successful response to a POST request and SHOULD provide it in error
 responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
@@ -497,7 +497,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | tls                   | The server received a TLS error during validation                  |
 | unauthorized          | The client lacks sufficient authorization                          |
 | unknownHost           | The server could not resolve a domain name                         |
-| unsupportedIdentifier | Identifier is not supported, but may be in future                  |
+| unsupportedIdentifier | Identifier is not supported but may be in the future               |
 | userActionRequired    | The user visit the "instance" URL and take actions specified there |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
@@ -621,12 +621,12 @@ There is no constraint on the actual URI of the directory except that it
 should be different from the other ACME server resources' URIs, and that it
 should not clash with other services. For instance:
 
- * a host which functions as both an ACME and Web server may want to keep
-   the root path "/" for an HTML "front page", and and place the ACME
-   directory under path "/acme".
+ * a host which functions as both an ACME and a Web server may want to keep
+   the root path "/" for an HTML "front page", and place the ACME
+   directory under the path "/acme".
 
  * a host which only functions as an ACME server could place the directory
-   under path "/".
+   under the path "/".
 
 The object MAY additionally contain a key "meta". If present, it MUST be a
 JSON object; each field in the object is an item of metadata relating to
@@ -736,7 +736,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 
 ### Order Objects
 
-An ACME order object represents a client's request for a certificate, and is
+An ACME order object represents a client's request for a certificate and is
 used to track the progress of that order through to issuance.  Thus, the object
 contains information about the requested certificate, the authorizations that
 the server requires the client to complete, and any certificates that have
@@ -962,7 +962,7 @@ object in a 201 (Created) response, with the account URI in a Location header
 field.
 
 If the server already has an account registered with the provided account key,
-then it MUST return a 200 (OK) response and provide the URI of that account in a
+then it MUST return a 200 (OK) response and provide the URI of that account in the
 Content-Location header field.  This allows a client that has an account key but
 not the corresponding account URI to recover the account URI.
 
@@ -1129,7 +1129,7 @@ verify the account binding, the CA MUST take the following steps:
 
 If all of these checks pass and the CA creates a new account, then the CA may
 consider the new account associated with the external account corresponding to
-the MAC key, and MUST reflect value of the "external-account-binding" field in
+the MAC key and MUST reflect value of the "external-account-binding" field in
 the resulting account object.  If any of these checks fail, then the CA MUST
 reject the new-account request.
 
@@ -1375,8 +1375,8 @@ created reactively, in response to a certificate order.  Some servers
 may also wish to enable clients to obtain authorization for an identifier
 proactively, outside of the context of a specific issuance.  For example, a
 client hosting virtual servers for a collection of names might wish to obtain
-authorization before any virtual servers are created, and only create
-a certificate when a virtual server starts up.
+authorization before any virtual servers are created and only create a certificate when
+a virtual server starts up.
 
 In some cases, a CA running an ACME server might have a completely external,
 non-ACME process for authorizing a client to issue for an identifier.  In these
@@ -1458,7 +1458,7 @@ from the inputs submitted by the client.
   identifier
 
 The server allocates a new URI for this authorization, and returns a 201
-(Created) response, with the authorization URI in a Location header field, and
+(Created) response, with the authorization URI in the Location header field, and
 the JSON authorization object in the body.  The client then follows the process
 described in {{identifier-authorization}} to complete the authorization process.
 
@@ -1621,7 +1621,7 @@ ignore any fields in the response object that are not specified as response
 fields for this type of challenge.  The server provides a 200 (OK) response
 with the updated challenge object as its body.
 
-If the client's response is invalid for any reason, or does not provide the
+If the client's response is invalid for any reason or does not provide the
 server with appropriate information to validate the challenge, then the server
 MUST return an HTTP error.  On receiving such an error, the client SHOULD undo
 any actions that have been taken to fulfill the challenge, e.g., removing files
@@ -1644,7 +1644,7 @@ polling until it has seen the validation request from the server.
 To check on the status of an authorization, the client sends a GET request to
 the authorization URI, and the server responds with the current  authorization
 object. In responding to poll requests while the validation is still in
-progress, the server MUST return a 202 (Accepted) response, and MAY include a
+progress, the server MUST return a 202 (Accepted) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
@@ -1678,7 +1678,7 @@ HTTP/1.1 200 OK
 ### Deactivating an Authorization
 
 If a client wishes to relinquish its authorization to issue certificates for an
-identifier, then it may request that the server deactivate each authorization
+identifier, then it may request that the server deactivates each authorization
 associated with that identifier by sending a POST request with the static object
 {"status": "deactivated"}.
 
@@ -1849,7 +1849,7 @@ circumstances is a matter of server policy.
 
 The identifier validation challenges described in this section all relate to
 validation of domain names.  If ACME is extended in the future to support other
-types of identifier, there will need to be new challenge types, and they will
+types of identifiers, there will need to be new challenge types, and they will
 need to specify which types of identifier they apply to.
 
 \[\[ Editor's Note: In pre-RFC versions of this specification, challenges are
@@ -1861,7 +1861,7 @@ since challenge in version -04 was compatible with one in version -03. ]]
 
 ## Key Authorizations
 
-Several of the challenges in this document makes use of a key authorization
+Several of the challenges in this document make use of a key authorization
 string.  A key authorization is a string that expresses a domain holder's
 authorization for a specified key to satisfy a specified challenge, by
 concatenating the token for the challenge with a key fingerprint, separated by a
@@ -1891,13 +1891,13 @@ MUST be stripped before the values are base64url-encoded.
 ## HTTP
 
 With HTTP validation, the client in an ACME transaction proves its control over
-a domain name by proving that it can provision resources on an HTTP server that
-responds for that domain name.  The ACME server challenges the client to
+a domain name by proving that for that domain name it can provision resources
+to be returned by an HTTP server. The ACME server challenges the client to
 provision a file at a specific path, with a specific string as its content.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
 connect to at least one of the hosts found in the DNS A and AAAA records, at its
-discretion.  Because many webservers allocate a default HTTPS virtual host to a
+discretion.  Because many web servers allocate a default HTTPS virtual host to a
 particular low-privilege tenant user in a subtle and non-intuitive manner, the
 challenge must be completed over HTTP, not HTTPS.
 
@@ -1972,7 +1972,7 @@ response to the POST request in which the client sent the challenge.
 Given a challenge/response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
 
-1. Form a URI by populating the URI template {{!RFC6570}}
+1. Construct a URI by populating the URI template {{!RFC6570}}
    "http://{domain}/.well-known/acme-challenge/{token}", where:
   * the domain field is set to the domain name being verified; and
   * the token field is set to the token in the challenge.
@@ -2088,7 +2088,7 @@ using these steps:
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
 
-It is RECOMMENDED that the server open multiple TLS connections from various
+It is RECOMMENDED that the server opens multiple TLS connections from various
 network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
@@ -2185,7 +2185,7 @@ checks, then the validation fails.
 ## Out-of-Band
 
 There may be cases where a server cannot perform automated validation of an
-identifier, for example if validation requires some manual steps.  In such
+identifier, for example, if validation requires some manual steps.  In such
 cases, the server may provide an "out of band" (OOB) challenge to request that
 the client perform some action outside of ACME in order to validate possession
 of the identifier.
@@ -2428,8 +2428,8 @@ document ]]
 
 ### Identifier Types {#iana-identifier}
 
-This registry lists the types of identifiers that ACME clients may request
-authorization to issue in certificates.
+This registry lists the types of identifiers in certificates that ACME clients
+may request authorization to issue.
 
 Template:
 
@@ -2448,8 +2448,8 @@ document ]]
 ### Challenge Types {#iana-challenge}
 
 This registry lists the ways that ACME servers can offer to validate control of
-an identifier.  The "Identifier Type" field in template must be contained in the
-Label column of the ACME Identifier Types registry.
+an identifier.  The "Identifier Type" field in the template must be contained
+in the Label column of the ACME Identifier Types registry.
 
 Template:
 
@@ -2474,7 +2474,7 @@ document ]]
 ACME is a protocol for managing certificates that attest to identifier/key
 bindings.  Thus the foremost security goal of ACME is to ensure the integrity of
 this process, i.e., to ensure that the bindings attested by certificates are
-correct, and that only authorized entities can manage certificates.  ACME
+correct and that only authorized entities can manage certificates.  ACME
 identifies clients by their account keys, so this overall goal breaks down into
 two more precise goals:
 
@@ -2521,15 +2521,15 @@ connections to the ACME server and the validation channel outbound HTTP or DNS
 requests.
 
 Broadly speaking, ACME aims to be secure against active and passive attackers on
-any individual channel.  Some vulnerabilities arise (noted below), when an
+any individual channel.  Some vulnerabilities arise (noted below) when an
 attacker can exploit both the ACME channel and one of the others.
 
-On the ACME channel, in addition to network-layer attackers, we also need to
-account for application-layer man-in-the-middle (MitM) attacks, and for abusive use of
-the protocol itself.  Protection against application-layer MitM addresses
-potential attackers such as Content Distribution Networks (CDNs) and middleboxes
-with a TLS MitM function.  Preventing abusive use of ACME means ensuring that an
-attacker with access to the validation channel can't obtain
+On the ACME channel, in addition to network layer attackers, we also need to
+account for man-in-the-middle (MitM) attacks at the application layer, and for
+abusive use of the protocol itself.  Protection against application layer MitM
+addresses potential attackers such as Content Distribution Networks (CDNs) and
+middleboxes with a TLS MitM function.  Preventing abusive use of ACME means
+ensuring that an attacker with access to the validation channel can't obtain
 illegitimate authorization by acting as an ACME client (legitimately, in terms
 of the protocol).
 
@@ -2549,7 +2549,7 @@ account key for one of his choosing, e.g.:
 * Legitimate domain holder registers account key pair A
 * MitM registers account key pair B
 * Legitimate domain holder sends a new-order request signed under account key A
-* MitM suppresses the legitimate request, but sends the same request signed
+* MitM suppresses the legitimate request but sends the same request signed
   under account key B
 * ACME server issues challenges and MitM forwards them to the legitimate domain
   holder
@@ -2574,7 +2574,7 @@ identifier can perform.  For the challenges in this document, the actions are:
 * DNS: Provision DNS resource records for the domain
 
 There are several ways that these assumptions can be violated, both by
-misconfiguration and by attack.  For example, on a web server that allows
+misconfiguration and by attacks.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
 web server's hostname by responding to an HTTP challenge, and likewise for TLS
 configuration and TLS SNI.
@@ -2582,20 +2582,20 @@ configuration and TLS SNI.
 The use of hosting providers is a particular risk for ACME validation.  If the
 owner of the domain has outsourced operation of DNS or web services to a hosting
 provider, there is nothing that can be done against tampering by the hosting
-provider.  As far as the outside world is concerned, the zone or web site
+provider.  As far as the outside world is concerned, the zone or website
 provided by the hosting provider is the real thing.
 
 More limited forms of delegation can also lead to an unintended party gaining
 the ability to successfully complete a validation transaction.  For example,
 suppose an ACME server follows HTTP redirects in HTTP validation and a
-web site operator provisions a catch-all redirect rule that redirects requests
+website operator provisions a catch-all redirect rule that redirects requests
 for unknown resources to a different domain.  Then the target of the redirect
-could use that to get a certificate through HTTP validation, since the
+could use that to get a certificate through HTTP validation since the
 validation path will not be known to the primary server.
 
 The DNS is a common point of vulnerability for all of these challenges.  An
 entity that can provision false DNS records for a domain can attack the DNS
-challenge directly, and can provision false A/AAAA records to direct the ACME
+challenge directly and can provision false A/AAAA records to direct the ACME
 server to send its TLS SNI or HTTP validation query to a remote server of the
 attacker's choosing.  There are a few different mitigations that ACME servers
 can apply:
@@ -2607,7 +2607,7 @@ can apply:
   requests {{?I-D.vixie-dnsext-dns0x20}} or only using TCP
 
 Given these considerations, the ACME validation process makes it impossible for
-any attacker on the ACME channel, or a passive attacker on the validation
+any attacker on the ACME channel or a passive attacker on the validation
 channel to hijack the authorization process to authorize a key of the attacker's
 choice.
 
@@ -2621,7 +2621,7 @@ response can only be used with the account key for which it was generated.
 An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
-particular case.  For identifiers where a web server already has some public key
+particular case.  For identifiers where the web server already has some public key
 associated with the domain this attack can be prevented by requiring the client
 to prove control of the corresponding private key.
 
@@ -2644,7 +2644,7 @@ limits.  Issues closer to the front end, like POST body validation, can be
 addressed using HTTP request limiting.  For validation and certificate requests,
 there are other identifiers on which rate limits can be keyed.  For example, the
 server might limit the rate at which any individual account key can issue
-certificates, or the rate at which validation can be requested within a given
+certificates or the rate at which validation can be requested within a given
 subtree of the DNS.
 
 ## Server-Side Request Forgery
