@@ -913,7 +913,7 @@ caching of this resource.
 
 A client creates a new account with the server by sending a POST request to the
 server's new-account URI.  The body of the request is a stub account object
-containing only the "contact" field.
+containing only the "contact" and optionally the "terms-of-service-agreed" field.
 
 ~~~~~~~~~~
 POST /acme/new-account HTTP/1.1
