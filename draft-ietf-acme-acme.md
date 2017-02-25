@@ -40,7 +40,7 @@ normative:
 Certificates in PKI using X.509 (PKIX) are used for a number of purposes,
 the most significant of which is the authentication of domain names.  Thus,
 certificate authorities in the Web PKI are trusted to verify that an applicant
-for a certificate legitimately represents the domain name(s) in the certificate.
+for a certificate legitimately represents the domain name(s) in a certificate.
 Today, this verification is done through a collection of ad hoc mechanisms.
 This document describes a protocol that a certification authority (CA) and an
 applicant can use to automate the process of verification and certificate
@@ -63,7 +63,7 @@ discussed on the ACME mailing list (acme@ietf.org).
 Certificates {{!RFC5280}} in the Web PKI are most commonly used to authenticate
 domain names.  Thus, certificate authorities in the Web PKI are trusted to
 verify that an applicant for a certificate legitimately represents the domain
-name(s) in the certificate.
+name(s) in a certificate.
 
 Different types of certificates reflect different kinds of CA verification of
 information about the certificate subject.  "Domain Validation" (DV)
@@ -87,7 +87,7 @@ certificates, a typical user experience is something like:
    * Receive CA challenge at a (hopefully) administrator-controlled e-mail
      address corresponding to the domain and then respond to it on the CA's web
      page.
-* Download the issued certificate and install it on their Web Server.
+* Download the issued certificate and install it on their web server.
 
 With the exception of the CSR itself and the certificates that are issued, these
 are all completely ad hoc procedures and are accomplished by getting the human
@@ -111,7 +111,7 @@ authentication for other protocols based on TLS {{!RFC5246}}.
 The guiding use case for ACME is obtaining certificates for websites
 (HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
-verify that this web server actually speaks for the domain(s).
+verify that this web server actually speaks for them.
 
 DV certificate validation commonly checks claims about properties related to
 control of a domain name -- properties that can be observed by the certificate
@@ -125,8 +125,8 @@ prompt to generate a self-signed certificate.  If the operator were instead
 deploying an ACME-compatible web server, the experience would be something like
 this:
 
-* The ACME client prompts the operator for the intended domain name(s) that the
-  web server is to stand for.
+* The ACME client prompts the operator for the domain name(s) that the
+  web server is intended to serve.
 * The ACME client presents the operator with a list of CAs from which it could
   get a certificate.  (This list will change over time based on the capabilities
   of CAs and updates to ACME configuration.) The ACME client might prompt the
@@ -311,10 +311,11 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have a MAC-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
-  * "jwk" (only for requests to new-account and revoke-cert resources)
-  * "kid" (for all other requests).
   * "nonce" (defined below)
   * "url" (defined below)
+  * a key:
+    * "jwk" (only for requests to new-account and revoke-cert resources)
+    * "kid" (for all other requests)
 
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
@@ -459,8 +460,8 @@ Creation of resources can be rate limited to ensure fair usage and
 prevent abuse.  Once the rate limit is exceeded, the server MUST respond
 with an error with the type "urn:ietf:params:acme:error:rateLimited".
 Additionally, the server SHOULD send a "Retry-After" header indicating
-when the current request may succeed again.  If multiple rate limits are
-in place, that is the time where all rate limits allow access again for
+when the current request may succeed.  If multiple rate limits apply,
+it is the time when all rate limits would allow access for
 the current request with exactly the same parameters.
 
 In addition to the human readable "detail" field of the error response, the
@@ -519,10 +520,10 @@ enables:
 
 ## Resources
 
-ACME is structured as a REST application with a few types of resources:
+ACME is structured as a REST application with several types of resources:
 
 * Account resources, representing information about an account
-  ({{account-objects}}, {{account-creation}})
+  ({{account-objects}} and {{account-creation}})
 * Order resources, representing an account's requests to issue certificates
   ({{order-objects}})
 * Authorization resources, representing an account's authorization to act for an
@@ -531,12 +532,12 @@ ACME is structured as a REST application with a few types of resources:
   identifier ({{identifier-authorization}})
 * Certificate resources, representing issued certificates
   ({{downloading-the-certificate}})
-* A "directory" resource ({{directory}})
-* A "new-nonce" resource ({{getting-a-nonce}})
 * A "new-account" resource ({{account-creation}})
 * A "new-order" resource ({{applying-for-certificate-issuance}})
 * A "revoke-certificate" resource ({{certificate-revocation}})
 * A "key-change" resource ({{account-key-roll-over}})
+* A "directory" resource ({{directory}})
+* A "new-nonce" resource ({{getting-a-nonce}})
 
 The server MUST provide "directory" and "new-nonce" resources.
 
@@ -648,6 +649,7 @@ referring to itself for the purposes of CAA record validation as defined in
 use when configuring CAA records.
 
 Clients access the directory by sending a GET request to the directory URI.
+What follows is an example response for a request to the directory URI:
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
@@ -714,10 +716,10 @@ a GET request, as described in {{orders-list}}.
 Each account object includes an "orders" URI from which a list of orders created
 by the account can be fetched via GET request. The result of the GET request
 MUST be a JSON object whose "orders" field is an array of URIs, each identifying
-an order belonging to the account.  The server SHOULD include pending orders,
-and SHOULD NOT include orders that are invalid in the array of URIs. The server
-MAY return an incomplete list, along with a Link header with a "next" link
-relation indicating where further entries can be acquired.
+an order belonging to the account.  In the array of URIs, the server SHOULD
+include pending orders but it SHOULD exclude orders that are invalid. The
+server MAY return an incomplete list along with a Link header with a "next"
+link relation indicating where further entries can be acquired.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
@@ -803,7 +805,7 @@ that the CA takes into account in deciding to issue, even if some authorizations
 were fulfilled in earlier orders or in pre-authorization transactions.  For
 example, if a CA allows multiple orders to be fulfilled based on a single
 authorization transaction, then it SHOULD reflect that authorization in all of
-the order.
+the orders.
 
 ### Authorization Objects
 
@@ -816,7 +818,7 @@ possession of the identifier.
 The structure of an ACME authorization resource is as follows:
 
 identifier (required, object):
-: The identifier that the account is authorized to represent
+: The identifier that the account is authorized to represent.
 
   type (required, string):
   : The type of identifier.
@@ -826,7 +828,7 @@ identifier (required, object):
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "processing",
-"valid", "invalid" and "revoked".  If this field is missing, then the default
+"valid", "invalid", and "revoked".  If this field is missing, then the default
 value is "pending".
 
 expires (optional, string):
@@ -844,9 +846,8 @@ challenges (required, array):
 : The challenges that the client can fulfill in order to prove possession of the
 identifier (for pending authorizations).  For final authorizations, the
 challenges that were used.  Each array entry is an object with parameters
-required to validate the challenge.  A client should attempt to fulfill at most
-one of these challenges, and a server should consider any one of the challenges
-sufficient to make the authorization valid.
+required to validate the challenge.  A server SHOULD treat the challenges
+portion satisfied when a client fulfills one challenge.
 
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). The value of the identifier MUST be the ASCII
@@ -938,7 +939,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "key", and "orders"
+The server MUST ignore any values provided in the "key" and "orders"
 fields in account bodies sent by the client, as well as any other fields
 that it does not recognize.  If new fields are specified in the future, the
 specification of those fields MUST describe whether they can be provided by the
@@ -994,7 +995,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URI.  The server MUST ignore any
-updates to the "key", or "order" fields or any other fields it does not
+updates to the "key" and "order" fields. The server MUST ignore, and any other fields it does not
 recognize. The server MUST verify that the request is signed with the private
 key corresponding to the "key" field of the request before updating the
 account object.
@@ -1136,7 +1137,7 @@ reject the new-account request.
 
 ### Account Key Roll-over
 
-A client may wish to change the public key that is associated with a account in
+A client may wish to change the public key that is associated with an account in
 order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
@@ -1201,14 +1202,14 @@ addition to the typical JWS validation:
 1. Validate the POST request belongs to a currently active account, as described
    in Message Transport.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
-   JWS")
+   JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
-4. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the inner JWS verifies using the key in its "jwk" field.
 5. Check that the payload of the inner JWS is a well-formed key-change object
-   (as described above)
-6. Check that the "url" parameters of the inner and outer JWSs are the same
+   (as described above).
+6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
-   the account matching the old key
+   the account matching the old key.
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
@@ -1747,7 +1748,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME request in that they can be
+Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
@@ -1801,7 +1802,7 @@ entity must both:
 
 {{security-considerations}} documents how the challenges defined in this
 document meet these requirements.  New challenges will need to document how they
-do.
+meet these requirements.
 
 ACME uses an extensible challenge/response framework for identifier validation.
 The server presents a set of challenges in the authorization object it sends to a
