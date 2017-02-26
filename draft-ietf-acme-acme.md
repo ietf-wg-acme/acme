@@ -503,6 +503,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | unknownHost           | The server could not resolve a domain name                         |
 | unsupportedIdentifier | Identifier is not supported but may be in the future               |
 | userActionRequired    | The user visit the "instance" URL and take actions specified there |
+| badRevocationReason   | The revocation reason provided is not allowed by the server        |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -1725,7 +1726,9 @@ reason (optional, int):
 to be used when generating OCSP responses and CRLs. If this field is not set
 the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
 responses and CRLs. The server MAY disallow a subset of reasonCodes from being
-used by the user.
+used by the user. If a request contains a disallowed reasonCode the server MUST
+reject it with the error type "urn:ietf:params:acme:error:badRevocationReason".
+The problem document detail SHOULD indicate which reasonCodes are allowed.
 
 ~~~~~~~~~~
 POST /acme/revoke-cert HTTP/1.1
