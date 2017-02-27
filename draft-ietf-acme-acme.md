@@ -3,6 +3,7 @@ title: "Automatic Certificate Management Environment (ACME)"
 abbrev: ACME
 docname: draft-ietf-acme-acme-latest
 category: std
+workgroup: ACME Working Group
 ipr: trust200902
 
 stand_alone: yes
