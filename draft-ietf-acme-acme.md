@@ -2486,11 +2486,11 @@ Template:
 
 Initial Contents
 
-| Label   | Identifier Type | Reference |
-|:--------|:----------------|:----------|
-| http    | dns             | RFC XXXX  |
-| tls-sni | dns             | RFC XXXX  |
-| dns     | dns             | RFC XXXX  |
+| Label      | Identifier Type | Reference |
+|:-----------|:----------------|:----------|
+| http-01    | dns             | RFC XXXX  |
+| tls-sni-02 | dns             | RFC XXXX  |
+| dns-01     | dns             | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
