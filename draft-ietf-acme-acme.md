@@ -509,7 +509,7 @@ resources:
 |:----------------------|:-------------------------------------------------------------------|
 | caa                   | CAA records forbid the CA from issuing                             |
 | connection            | The server could not connect to validation target                  |
-| dns                   | There was a problem with a DNS query during validation             |
+| dns                   | There was a problem with a DNS query                               |
 | rateLimited           | The request exceeds a rate limit                                   |
 | serverInternal        | The server experienced an internal error                           |
 | incorrectResponse     | Response received didn't match the challenge's requirements        |
@@ -517,13 +517,12 @@ resources:
 
 Error types that may be commonly included in the "error" field of order
 resources:
-| unknownHost           | The server could not resolve a domain name                         |
-| unsupportedIdentifier | Identifier is not supported but may be in the future               |
-| userActionRequired    | The user visit the "instance" URL and take actions specified there |
 
 | Type                  | Description                                                        |
 |:----------------------|:-------------------------------------------------------------------|
 | caa                   | CAA records forbid the CA from issuing                             |
+| dns                   | There was a problem with a DNS query                               |
+| unsupportedIdentifier | Identifier is not supported but may be in the future               |
 | serverInternal        | The server experienced an internal error                           |
 
 These lists are not exhaustive. The server MAY return errors whose "type" field is
