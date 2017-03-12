@@ -352,7 +352,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-3-01" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-3-12" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -376,7 +376,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: September 2, 2017</td>
+  <td class="left">Expires: September 13, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -389,7 +389,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">March 01, 2017</td>
+  <td class="right">March 12, 2017</td>
 </tr>
 
     	
@@ -411,7 +411,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on September 2, 2017.</p>
+<p>This Internet-Draft will expire on September 13, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -599,7 +599,7 @@ address {
 <p id="rfc.section.6.2.p.4">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
 <p id="rfc.section.6.2.p.5">For new-account requests, and for revoke-cert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field.</p>
 <p id="rfc.section.6.2.p.6">For all other requests, there MUST be a &#8220;kid&#8221; field. This field must contain the account URI received by POSTing to the new-account resource.</p>
-<p id="rfc.section.6.2.p.7">Note that authentication via signed JWS request bodies implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.</p>
+<p id="rfc.section.6.2.p.7">Note that authentication via signed JWS request bodies implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.  Account resources are the only sensitive resources defined in this specification.</p>
 <p id="rfc.section.6.2.p.8">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221;.  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.</p>
 <p id="rfc.section.6.2.p.9">In the examples below, JWS objects are shown in the JSON or flattened JSON serialization, with the protected header and payload expressed as base64url(content) instead of the actual base64-encoded value, so that the content is readable.</p>
 <h1 id="rfc.section.6.3"><a href="#rfc.section.6.3">6.3.</a> <a href="#equivalence-of-jwks" id="equivalence-of-jwks">Equivalence of JWKs</a></h1>
@@ -1253,7 +1253,7 @@ Content-Type: application/jose+json
 }
 </pre>
 <p id="rfc.section.7.3.4.p.2">The server MUST verify that the request is signed by the account key. If the server accepts the deactivation request, it replies with a 200 (OK) status code and the current contents of the account object.</p>
-<p id="rfc.section.7.3.4.p.3">Once an account is deactivated, the server MUST NOT accept further requests authorized by that account&#8217;s key. It is up to server policy how long to retain data related to that account, whether to revoke certificates issued by that account, and whether to send email to that account&#8217;s contacts. ACME does not provide a way to reactivate a deactivated account.</p>
+<p id="rfc.section.7.3.4.p.3">Once an account is deactivated, the server MUST NOT accept further requests authorized by that account&#8217;s key. A server may take a variety of actions in response to an account deactivation, e.g., deleting data related to that account or sending mail to the account&#8217;s contacts.  Servers SHOULD NOT revoke certificates issued by the deactivated account, since this could cause operational disruption for servers using these certificates. ACME does not provide a way to reactivate a deactivated account.</p>
 <h1 id="rfc.section.7.4"><a href="#rfc.section.7.4">7.4.</a> <a href="#applying-for-certificate-issuance" id="applying-for-certificate-issuance">Applying for Certificate Issuance</a></h1>
 <p id="rfc.section.7.4.p.1">The client requests certificate issuance by sending a POST request to the server&#8217;s new-order resource.  The body of the POST is a JWS object whose JSON payload is a subset of the order object defined in <a href="#order-objects">Section 7.1.3</a>, containing the fields that describe the certificate to be issued:</p>
 <p/>
@@ -1465,7 +1465,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.7.5.1.p.5">If the client&#8217;s response is invalid for any reason or does not provide the server with appropriate information to validate the challenge, then the server MUST return an HTTP error.  On receiving such an error, the client SHOULD undo any actions that have been taken to fulfill the challenge, e.g., removing files that have been provisioned to a web server.</p>
 <p id="rfc.section.7.5.1.p.6">The server is said to &#8220;finalize&#8221; the authorization when it has completed one of the validations, by assigning the authorization a status of &#8220;valid&#8221; or &#8220;invalid&#8221;, corresponding to whether it considers the account authorized for the identifier. If the final state is &#8220;valid&#8221;, then the server MUST include an &#8220;expires&#8221; field. When finalizing an authorization, the server MAY remove challenges other than the one that was completed, and may modify the &#8220;expires&#8221; field. The server SHOULD NOT remove challenges with status &#8220;invalid&#8221;.</p>
 <p id="rfc.section.7.5.1.p.7">Usually, the validation process will take some time, so the client will need to poll the authorization resource to see when it is finalized.  For challenges where the client can tell when the server has validated the challenge (e.g., by seeing an HTTP or DNS request from the server), the client SHOULD NOT begin polling until it has seen the validation request from the server.</p>
-<p id="rfc.section.7.5.1.p.8">To check on the status of an authorization, the client sends a GET request to the authorization URI, and the server responds with the current  authorization object. In responding to poll requests while the validation is still in progress, the server MUST return a 202 (Accepted) response and MAY include a Retry-After header field to suggest a polling interval to the client.</p>
+<p id="rfc.section.7.5.1.p.8">To check on the status of an authorization, the client sends a GET request to the authorization URI, and the server responds with the current  authorization object. In responding to poll requests while the validation is still in progress, the server MUST return a 200 (OK) response and MAY include a Retry-After header field to suggest a polling interval to the client.</p>
 <pre>
 GET /acme/authz/asdf HTTP/1.1
 Host: example.com
@@ -2254,12 +2254,12 @@ Content-Type: application/jose+json
 </ul>
 <p id="rfc.section.10.2.p.12">Given these considerations, the ACME validation process makes it impossible for any attacker on the ACME channel or a passive attacker on the validation channel to hijack the authorization process to authorize a key of the attacker&#8217;s choice.</p>
 <p id="rfc.section.10.2.p.13">An attacker that can only see the ACME channel would need to convince the validation server to provide a response that would authorize the attacker&#8217;s account key, but this is prevented by binding the validation response to the account key used to request challenges.  A passive attacker on the validation channel can observe the correct validation response and even replay it, but that response can only be used with the account key for which it was generated.</p>
-<p id="rfc.section.10.2.p.14">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.  For identifiers where the web server already has some public key associated with the domain this attack can be prevented by requiring the client to prove control of the corresponding private key.</p>
+<p id="rfc.section.10.2.p.14">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.</p>
 <h1 id="rfc.section.10.3"><a href="#rfc.section.10.3">10.3.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a></h1>
 <p id="rfc.section.10.3.p.1">As a protocol run over HTTPS, standard considerations for TCP-based and HTTP-based DoS mitigation also apply to ACME.</p>
 <p id="rfc.section.10.3.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
 <p id="rfc.section.10.3.p.3">In addition, an attacker can also cause the ACME server to send validation requests to a domain of its choosing by submitting authorization requests for the victim domain.</p>
-<p id="rfc.section.10.3.p.4">All of these attacks can be mitigated by the application of appropriate rate limits.  Issues closer to the front end, like POST body validation, can be addressed using HTTP request limiting.  For validation and certificate requests, there are other identifiers on which rate limits can be keyed.  For example, the server might limit the rate at which any individual account key can issue certificates or the rate at which validation can be requested within a given subtree of the DNS.</p>
+<p id="rfc.section.10.3.p.4">All of these attacks can be mitigated by the application of appropriate rate limits.  Issues closer to the front end, like POST body validation, can be addressed using HTTP request limiting.  For validation and certificate requests, there are other identifiers on which rate limits can be keyed.  For example, the server might limit the rate at which any individual account key can issue certificates or the rate at which validation can be requested within a given subtree of the DNS.  And in order to prevent attackers from circumventing these limits simply by minting new accounts, servers would need to limit the rate at which accounts can be registered.</p>
 <h1 id="rfc.section.10.4"><a href="#rfc.section.10.4">10.4.</a> <a href="#server-side-request-forgery" id="server-side-request-forgery">Server-Side Request Forgery</a></h1>
 <p id="rfc.section.10.4.p.1">Server-Side Request Forgery (SSRF) attacks can arise when an attacker can cause a server to perform HTTP requests to an attacker-chosen URL.  In the ACME HTTP challenge validation process, the ACME server performs an HTTP GET request to a URL in which the attacker can choose the domain.  This request is made before the server has verified that the client controls the domain, so any client can cause a query to any domain.</p>
 <p id="rfc.section.10.4.p.2">Some server implementations include information from the validation server&#8217;s response (in order to facilitate debugging).  Such implementations enable an attacker to extract this information from any web server that is accessible to the ACME server, even if it is not accessible to the ACME client.</p>
@@ -2288,7 +2288,8 @@ Content-Type: application/jose+json
 <p id="rfc.section.11.2.p.1">In many cases, TLS-based services are deployed on hosted platforms that use the Server Name Indication (SNI) TLS extension to distinguish between different hosted services or &#8220;virtual hosts&#8221;.  When a client initiates a TLS connection with an SNI value indicating a provisioned host, the hosting platform routes the connection to that host.</p>
 <p id="rfc.section.11.2.p.2">When a connection comes in with an unknown SNI value, one might expect the hosting platform to terminate the TLS connection.  However, some hosting platforms will choose a virtual host to be the &#8220;default&#8221;, and route connections with unknown SNI values to that host.</p>
 <p id="rfc.section.11.2.p.3">In such cases, the owner of the default virtual host can complete a TLS-based challenge (e.g., &#8220;tls-sni-02&#8221;) for any domain with an A record that points to the hosting platform.  This could result in mis-issuance in cases where there are multiple hosts with different owners resident on the hosting platform.</p>
-<p id="rfc.section.11.2.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  A default virtual host can be detected by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).</p>
+<p id="rfc.section.11.2.p.4">A CA that accepts TLS-based proof of domain control should attempt to check whether a domain is hosted on a domain with a default virtual host before allowing an authorization request for this host to use a TLS-based challenge.  Typically, systems with default virtual hosts do not allow the holder of the default virtual host to control what certificates are presented on a request-by-request basis.  Rather, the default virtual host can configure which certificate is presented in TLS on a fairly static basis, so that the certificate presented should be stable over small intervals.</p>
+<p id="rfc.section.11.2.p.5">A CA can detect such a bounded default vhost by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).  If it receives the same certificate on two different connections, then it is very likely that the server is in a default virtual host configuration.  Conversely, if the TLS server returns an unrecognized_name alert, then this is an indication that the server is not in a default virtual host configuration.</p>
 <h1 id="rfc.section.12"><a href="#rfc.section.12">12.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a></h1>
 <p id="rfc.section.12.p.1">In addition to the editors listed on the front page, this document has benefited from contributions from a broad set of contributors, all the way back to its inception.</p>
 <p/>
