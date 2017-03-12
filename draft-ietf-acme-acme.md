@@ -832,8 +832,7 @@ identifier (required, object):
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "processing",
-"valid", "invalid" and "revoked".  If this field is missing, then the default
-value is "pending".
+"valid", "invalid" and "revoked".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
