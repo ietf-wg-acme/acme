@@ -2756,7 +2756,7 @@ certificate presented should be stable over small intervals.
 A CA can detect such a bounded default vhost by initiating TLS connections to
 the host with random SNI values within the namespace used for the TLS-based
 challenge (the "acme.invalid" namespace for "tls-sni-02").  If it receives the
-same certificate on two different connections, then it is very likely that athe
+same certificate on two different connections, then it is very likely that the
 server is in a default virtual host configuration.  Conversely, if the TLS
 server returns an unrecognized_name alert, then this is an indication that the
 server is not in a default virtual host configuration.
