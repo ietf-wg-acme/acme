@@ -1408,10 +1408,6 @@ identifier (required, object):
   value (required, string):
   : The identifier itself.
 
-existing (optional, string):
-: How an existing authorization should be handled. Possible values are "accept"
-  and "require".
-
 ~~~~~~~~~~
 POST /acme/new-authz HTTP/1.1
 Host: example.com
@@ -1428,8 +1424,7 @@ Content-Type: application/jose+json
     "identifier": {
       "type": "dns",
       "value": "example.net"
-    },
-    "existing": "accept"
+    }
   }),
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
@@ -1441,18 +1436,6 @@ should check that the identifier is of a supported type.  Servers might also
 check names against a blacklist of known high-value identifiers.  If the server
 is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
 error, with a problem document describing the reason for the rejection.
-
-If the authorization request specifies "existing" with a value of "accept" or
-"require", before proceeding, the server SHOULD determine whether there are any
-existing, valid authorization resources for the account and given identifier. If
-one or more such authorizations exists, a response SHOULD be returned with
-status code 303 (See Other) and a Location header pointing to the existing
-resource URL; processing of the request then stops. If there are multiple such
-authorizations, the authorization with the latest expiry date SHOULD be
-returned. If no existing authorizations were found and the value for "existing"
-was "require", then the server MUST return status code 404 (Not Found); if it
-was "accept" or was any other value or was absent, processing continues as
-follows.
 
 If the server is willing to proceed, it builds a pending authorization object
 from the inputs submitted by the client.
