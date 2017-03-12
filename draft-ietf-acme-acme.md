@@ -329,9 +329,10 @@ key, there MUST be a "jwk" field.
 For all other requests, there MUST be a "kid" field. This field must
 contain the account URI received by POSTing to the new-account resource.
 
-Note that authentication via signed JWS request bodies implies that GET
-requests are not authenticated.  Servers MUST NOT respond to GET requests
-for resources that might be considered sensitive.
+Note that authentication via signed JWS request bodies implies that GET requests
+are not authenticated.  Servers MUST NOT respond to GET requests for resources
+that might be considered sensitive.  Account resources are the only sensitive
+resources defined in this specification.
 
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
@@ -1244,9 +1245,11 @@ server accepts the deactivation request, it replies with a 200 (OK) status code
 and the current contents of the account object.
 
 Once an account is deactivated, the server MUST NOT accept further requests
-authorized by that account's key. It is up to server policy how long to retain
-data related to that account, whether to revoke certificates issued by that
-account, and whether to send email to that account's contacts. ACME does not
+authorized by that account's key. A server may take a variety of actions in
+response to an account deactivation, e.g., deleting data related to that account
+or sending mail to the account's contacts.  Servers SHOULD NOT revoke
+certificates issued by the deactivated account, since this could cause
+operational disruption for servers using these certificates. ACME does not
 provide a way to reactivate a deactivated account.
 
 ## Applying for Certificate Issuance
@@ -1637,7 +1640,7 @@ polling until it has seen the validation request from the server.
 To check on the status of an authorization, the client sends a GET request to
 the authorization URI, and the server responds with the current  authorization
 object. In responding to poll requests while the validation is still in
-progress, the server MUST return a 202 (Accepted) response and MAY include a
+progress, the server MUST return a 200 (OK) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
@@ -2609,9 +2612,7 @@ response can only be used with the account key for which it was generated.
 An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
-particular case.  For identifiers where the web server already has some public key
-associated with the domain this attack can be prevented by requiring the client
-to prove control of the corresponding private key.
+particular case.
 
 ## Denial-of-Service Considerations
 
@@ -2633,7 +2634,9 @@ addressed using HTTP request limiting.  For validation and certificate requests,
 there are other identifiers on which rate limits can be keyed.  For example, the
 server might limit the rate at which any individual account key can issue
 certificates or the rate at which validation can be requested within a given
-subtree of the DNS.
+subtree of the DNS.  And in order to prevent attackers from circumventing these
+limits simply by minting new accounts, servers would need to limit the rate at
+which accounts can be registered.
 
 ## Server-Side Request Forgery
 
@@ -2736,9 +2739,20 @@ are multiple hosts with different owners resident on the hosting platform.
 A CA that accepts TLS-based proof of domain control should attempt to check
 whether a domain is hosted on a domain with a default virtual host before
 allowing an authorization request for this host to use a TLS-based challenge.
-A default virtual host can be detected by initiating TLS connections to the host
-with random SNI values within the namespace used for the TLS-based challenge
-(the "acme.invalid" namespace for "tls-sni-02").
+Typically, systems with default virtual hosts do not allow the holder of the
+default virtual host to control what certificates are presented on a
+request-by-request basis.  Rather, the default virtual host can configure which
+certificate is presented in TLS on a fairly static basis, so that the
+certificate presented should be stable over small intervals.
+
+A CA can detect such a bounded default vhost by initiating TLS connections to
+the host with random SNI values within the namespace used for the TLS-based
+challenge (the "acme.invalid" namespace for "tls-sni-02").  If it receives the
+same certificate on two different connections, then it is very likely that the
+server is in a default virtual host configuration.  Conversely, if the TLS
+server returns an unrecognized_name alert, then this is an indication that the
+server is not in a default virtual host configuration.
+
 
 # Acknowledgements
 
