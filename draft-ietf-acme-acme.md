@@ -1142,7 +1142,7 @@ reject the new-account request.
 
 ### Account Key Roll-over
 
-A client may wish to change the public key that is associated with a account in
+A client may wish to change the public key that is associated with an account in
 order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
@@ -1207,14 +1207,14 @@ addition to the typical JWS validation:
 1. Validate the POST request belongs to a currently active account, as described
    in Message Transport.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
-   JWS")
+   JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
-4. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the inner JWS verifies using the key in its "jwk" field.
 5. Check that the payload of the inner JWS is a well-formed key-change object
-   (as described above)
-6. Check that the "url" parameters of the inner and outer JWSs are the same
+   (as described above).
+6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
-   the account matching the old key
+   the account matching the old key.
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
@@ -1753,7 +1753,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME request in that they can be
+Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
