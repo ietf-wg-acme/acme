@@ -329,9 +329,10 @@ key, there MUST be a "jwk" field.
 For all other requests, there MUST be a "kid" field. This field must
 contain the account URI received by POSTing to the new-account resource.
 
-Note that authentication via signed JWS request bodies implies that GET
-requests are not authenticated.  Servers MUST NOT respond to GET requests
-for resources that might be considered sensitive.
+Note that authentication via signed JWS request bodies implies that GET requests
+are not authenticated.  Servers MUST NOT respond to GET requests for resources
+that might be considered sensitive.  Account resources are the only sensitive
+resources defined in this specification.
 
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
@@ -835,8 +836,7 @@ identifier (required, object):
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "processing",
-"valid", "invalid" and "revoked".  If this field is missing, then the default
-value is "pending".
+"valid", "invalid" and "revoked".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -972,7 +972,7 @@ account URI in a Location header field.
 
 If the server already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URI of
-that account in the Content-Location header field.  This allows a client that has
+that account in the Location header field.  This allows a client that has
 an account key but not the corresponding account URI to recover the account URI.
 
 If the server wishes to present the client with terms under which the ACME
@@ -1145,7 +1145,7 @@ reject the new-account request.
 
 ### Account Key Roll-over
 
-A client may wish to change the public key that is associated with a account in
+A client may wish to change the public key that is associated with an account in
 order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
@@ -1210,14 +1210,14 @@ addition to the typical JWS validation:
 1. Validate the POST request belongs to a currently active account, as described
    in Message Transport.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
-   JWS")
+   JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
-4. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the inner JWS verifies using the key in its "jwk" field.
 5. Check that the payload of the inner JWS is a well-formed key-change object
-   (as described above)
-6. Check that the "url" parameters of the inner and outer JWSs are the same
+   (as described above).
+6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
-   the account matching the old key
+   the account matching the old key.
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
@@ -1256,9 +1256,11 @@ server accepts the deactivation request, it replies with a 200 (OK) status code
 and the current contents of the account object.
 
 Once an account is deactivated, the server MUST NOT accept further requests
-authorized by that account's key. It is up to server policy how long to retain
-data related to that account, whether to revoke certificates issued by that
-account, and whether to send email to that account's contacts. ACME does not
+authorized by that account's key. A server may take a variety of actions in
+response to an account deactivation, e.g., deleting data related to that account
+or sending mail to the account's contacts.  Servers SHOULD NOT revoke
+certificates issued by the deactivated account, since this could cause
+operational disruption for servers using these certificates. ACME does not
 provide a way to reactivate a deactivated account.
 
 ## Applying for Certificate Issuance
@@ -1409,10 +1411,6 @@ identifier (required, object):
   value (required, string):
   : The identifier itself.
 
-existing (optional, string):
-: How an existing authorization should be handled. Possible values are "accept"
-  and "require".
-
 ~~~~~~~~~~
 POST /acme/new-authz HTTP/1.1
 Host: example.com
@@ -1429,8 +1427,7 @@ Content-Type: application/jose+json
     "identifier": {
       "type": "dns",
       "value": "example.net"
-    },
-    "existing": "accept"
+    }
   }),
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
@@ -1442,18 +1439,6 @@ should check that the identifier is of a supported type.  Servers might also
 check names against a blacklist of known high-value identifiers.  If the server
 is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
 error, with a problem document describing the reason for the rejection.
-
-If the authorization request specifies "existing" with a value of "accept" or
-"require", before proceeding, the server SHOULD determine whether there are any
-existing, valid authorization resources for the account and given identifier. If
-one or more such authorizations exists, a response SHOULD be returned with
-status code 303 (See Other) and a Location header pointing to the existing
-resource URL; processing of the request then stops. If there are multiple such
-authorizations, the authorization with the latest expiry date SHOULD be
-returned. If no existing authorizations were found and the value for "existing"
-was "require", then the server MUST return status code 404 (Not Found); if it
-was "accept" or was any other value or was absent, processing continues as
-follows.
 
 If the server is willing to proceed, it builds a pending authorization object
 from the inputs submitted by the client.
@@ -1649,7 +1634,7 @@ polling until it has seen the validation request from the server.
 To check on the status of an authorization, the client sends a GET request to
 the authorization URI, and the server responds with the current  authorization
 object. In responding to poll requests while the validation is still in
-progress, the server MUST return a 202 (Accepted) response and MAY include a
+progress, the server MUST return a 200 (OK) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
@@ -1754,7 +1739,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME request in that they can be
+Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
@@ -2621,9 +2606,7 @@ response can only be used with the account key for which it was generated.
 An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
-particular case.  For identifiers where the web server already has some public key
-associated with the domain this attack can be prevented by requiring the client
-to prove control of the corresponding private key.
+particular case.
 
 ## Denial-of-Service Considerations
 
@@ -2645,7 +2628,9 @@ addressed using HTTP request limiting.  For validation and certificate requests,
 there are other identifiers on which rate limits can be keyed.  For example, the
 server might limit the rate at which any individual account key can issue
 certificates or the rate at which validation can be requested within a given
-subtree of the DNS.
+subtree of the DNS.  And in order to prevent attackers from circumventing these
+limits simply by minting new accounts, servers would need to limit the rate at
+which accounts can be registered.
 
 ## Server-Side Request Forgery
 
@@ -2748,9 +2733,20 @@ are multiple hosts with different owners resident on the hosting platform.
 A CA that accepts TLS-based proof of domain control should attempt to check
 whether a domain is hosted on a domain with a default virtual host before
 allowing an authorization request for this host to use a TLS-based challenge.
-A default virtual host can be detected by initiating TLS connections to the host
-with random SNI values within the namespace used for the TLS-based challenge
-(the "acme.invalid" namespace for "tls-sni-02").
+Typically, systems with default virtual hosts do not allow the holder of the
+default virtual host to control what certificates are presented on a
+request-by-request basis.  Rather, the default virtual host can configure which
+certificate is presented in TLS on a fairly static basis, so that the
+certificate presented should be stable over small intervals.
+
+A CA can detect such a bounded default vhost by initiating TLS connections to
+the host with random SNI values within the namespace used for the TLS-based
+challenge (the "acme.invalid" namespace for "tls-sni-02").  If it receives the
+same certificate on two different connections, then it is very likely that the
+server is in a default virtual host configuration.  Conversely, if the TLS
+server returns an unrecognized_name alert, then this is an indication that the
+server is not in a default virtual host configuration.
+
 
 # Acknowledgements
 
