@@ -1794,8 +1794,7 @@ Content-Type: application/jose+json
   <li>Query for TXT records for the validation domain name</li>
   <li>Verify that the contents of one of the TXT records matches the digest value</li>
 </ol>
-<p id="rfc.section.8.4.p.10">It is RECOMMENDED that the server perform multiple DNS queries from various network perspectives, in order to make MitM attacks harder.</p>
-<p id="rfc.section.8.4.p.11">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
+<p id="rfc.section.8.4.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
 <h1 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5.</a> <a href="#out-of-band" id="out-of-band">Out-of-Band</a></h1>
 <p id="rfc.section.8.5.p.1">There may be cases where a server cannot perform automated validation of an identifier, for example, if validation requires some manual steps.  In such cases, the server may provide an &#8220;out of band&#8221; (OOB) challenge to request that the client perform some action outside of ACME in order to validate possession of the identifier.</p>
 <p id="rfc.section.8.5.p.2">The OOB challenge requests that the client have a human user visit a web page to receive instructions on how to validate possession of the identifier, by providing a URL for that web page.</p>
@@ -2240,6 +2239,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.10.2.p.12">Given these considerations, the ACME validation process makes it impossible for any attacker on the ACME channel or a passive attacker on the validation channel to hijack the authorization process to authorize a key of the attacker&#8217;s choice.</p>
 <p id="rfc.section.10.2.p.13">An attacker that can only see the ACME channel would need to convince the validation server to provide a response that would authorize the attacker&#8217;s account key, but this is prevented by binding the validation response to the account key used to request challenges.  A passive attacker on the validation channel can observe the correct validation response and even replay it, but that response can only be used with the account key for which it was generated.</p>
 <p id="rfc.section.10.2.p.14">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.</p>
+<p id="rfc.section.10.2.p.15">It is RECOMMENDED that the server perform DNS queries and make HTTP and TLS connections from various network perspectives, in order to make MitM attacks harder.</p>
 <h1 id="rfc.section.10.3"><a href="#rfc.section.10.3">10.3.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a></h1>
 <p id="rfc.section.10.3.p.1">As a protocol run over HTTPS, standard considerations for TCP-based and HTTP-based DoS mitigation also apply to ACME.</p>
 <p id="rfc.section.10.3.p.2">At the application layer, ACME requires the server to perform a few potentially expensive operations.  Identifier validation transactions require the ACME server to make outbound connections to potentially attacker-controlled servers, and certificate issuance can require interactions with cryptographic hardware.</p>
