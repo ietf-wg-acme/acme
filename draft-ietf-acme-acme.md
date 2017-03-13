@@ -472,20 +472,20 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
 | badNonce              | The client sent an unacceptable anti-replay nonce                  |
 | badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support   |
-| caa                   | CAA records forbid the CA from issuing                             |
-| connection            | The server could not connect to validation target                  |
-| dnssec                | DNSSEC validation failed                                           |
 | invalidContact        | The contact URI for an account was invalid                         |
 | malformed             | The request message was malformed                                  |
 | rateLimited           | The request exceeds a rate limit                                   |
 | rejectedIdentifier    | The server will not issue for the identifier                       |
 | serverInternal        | The server experienced an internal error                           |
-| tls                   | The server received a TLS error during validation                  |
 | unauthorized          | The client lacks sufficient authorization                          |
-| unknownHost           | The server could not resolve a domain name                         |
-| unsupportedIdentifier | Identifier is not supported but may be in the future               |
-| userActionRequired    | The user visit the "instance" URL and take actions specified there |
+| unsupportedIdentifier | Identifier is not supported, but may be in future                  |
+| userActionRequired    | Visit the "instance" URL and take actions specified there          |
 | badRevocationReason   | The revocation reason provided is not allowed by the server        |
+| caa                   | CAA records forbid the CA from issuing                             |
+| dns                   | There was a problem with a DNS query                               |
+| connection            | The server could not connect to validation target                  |
+| tls                   | The server received a TLS error during validation                  |
+| incorrectResponse     | Response received didn't match the challenge's requirements        |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -746,6 +746,10 @@ format defined in {{!RFC3339}}.
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
 format defined in {{!RFC3339}}.
+
+error (optional, object):
+: The error that occurred while processing the order, if any.
+This field is structured as a problem document {{!RFC7807}}.
 
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
