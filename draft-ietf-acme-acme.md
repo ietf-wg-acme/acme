@@ -1950,6 +1950,8 @@ domain by verifying that the resource was provisioned as expected.
 5. Verify that key authorization provided by the HTTP server matches the token
    for this challenge and the client's account key.
 
+The server SHOULD follow redirects when dereferencing the URI.
+
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
 failed.
