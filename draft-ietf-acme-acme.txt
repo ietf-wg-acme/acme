@@ -2624,7 +2624,7 @@ Internet-Draft                    ACME                        March 2017
    5.  Verify that key authorization provided by the HTTP server matches
        the token for this challenge and the client's account key.
 
-
+   The server SHOULD follow redirects when dereferencing the URI.
 
 
 

@@ -1669,7 +1669,8 @@ Content-Type: application/jose+json
   <li>Verify that the body of the response is well-formed key authorization.  The server SHOULD ignore whitespace characters at the end of the body.</li>
   <li>Verify that key authorization provided by the HTTP server matches the token for this challenge and the client&#8217;s account key.</li>
 </ol>
-<p id="rfc.section.8.2.p.11">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
+<p id="rfc.section.8.2.p.11">The server SHOULD follow redirects when dereferencing the URI.</p>
+<p id="rfc.section.8.2.p.12">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
 <h1 id="rfc.section.8.3"><a href="#rfc.section.8.3">8.3.</a> <a href="#tls-with-server-name-indication-tls-sni" id="tls-with-server-name-indication-tls-sni">TLS with Server Name Indication (TLS SNI)</a></h1>
 <p id="rfc.section.8.3.p.1">The TLS with Server Name Indication (TLS SNI) validation method proves control over a domain name by requiring the client to configure a TLS server referenced by the DNS A and AAAA resource records for the domain name to respond to specific connection attempts utilizing the Server Name Indication extension <a href="#RFC6066">[RFC6066]</a>. The server verifies the client&#8217;s challenge by accessing the TLS server and verifying a particular certificate is presented.</p>
 <p/>
