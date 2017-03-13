@@ -345,25 +345,6 @@ serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.
 
-## Equivalence of JWKs
-
-At some points in the protocol, it is necessary for the server to determine
-whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
-In performing these checks, the
-server MUST consider two JWKs to match if and only if they have the identical
-values in all fields included in the computation of a JWK thumbprint for that
-key. That is, the keys must have the same "kty" value and contain identical
-values in the fields used in the computation of a JWK thumbprint for that key
-type:
-
-* "RSA": "n", "e"
-* "EC": "crv", "x", "y"
-
-Note that this comparison is equivalent to computing the JWK thumbprints of the
-two keys and comparing thumbprints.  The only difference is that there is no
-requirement for a hash computation (and thus it is independent of the choice of
-hash function) and no risk of hash collision.
-
 ## Request URI Integrity
 
 It is common in deployment for the entity terminating TLS for HTTPS to be different
@@ -832,8 +813,7 @@ identifier (required, object):
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "processing",
-"valid", "invalid" and "revoked".  If this field is missing, then the default
-value is "pending".
+"valid", "invalid" and "revoked".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -969,7 +949,7 @@ account URI in a Location header field.
 
 If the server already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URI of
-that account in the Content-Location header field.  This allows a client that has
+that account in the Location header field.  This allows a client that has
 an account key but not the corresponding account URI to recover the account URI.
 
 If the server wishes to present the client with terms under which the ACME
@@ -1142,7 +1122,7 @@ reject the new-account request.
 
 ### Account Key Roll-over
 
-A client may wish to change the public key that is associated with a account in
+A client may wish to change the public key that is associated with an account in
 order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
@@ -1207,16 +1187,16 @@ addition to the typical JWS validation:
 1. Validate the POST request belongs to a currently active account, as described
    in Message Transport.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
-   JWS")
+   JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
-4. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the inner JWS verifies using the key in its "jwk" field.
 5. Check that the payload of the inner JWS is a well-formed key-change object
-   (as described above)
-6. Check that the "url" parameters of the inner and outer JWSs are the same
+   (as described above).
+6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
    the account matching the old key
-8. Check that the "newKey" field of the key-change object contains the
-   key used to sign the inner JWS.
+8. Check that the "newKey" field of the key-change object also verifies the
+    inner JWS.
 
 If all of these checks pass, then the server updates the corresponding account
 by replacing the old account key with the new public key and returns status code
@@ -1408,10 +1388,6 @@ identifier (required, object):
   value (required, string):
   : The identifier itself.
 
-existing (optional, string):
-: How an existing authorization should be handled. Possible values are "accept"
-  and "require".
-
 ~~~~~~~~~~
 POST /acme/new-authz HTTP/1.1
 Host: example.com
@@ -1428,8 +1404,7 @@ Content-Type: application/jose+json
     "identifier": {
       "type": "dns",
       "value": "example.net"
-    },
-    "existing": "accept"
+    }
   }),
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
@@ -1441,18 +1416,6 @@ should check that the identifier is of a supported type.  Servers might also
 check names against a blacklist of known high-value identifiers.  If the server
 is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
 error, with a problem document describing the reason for the rejection.
-
-If the authorization request specifies "existing" with a value of "accept" or
-"require", before proceeding, the server SHOULD determine whether there are any
-existing, valid authorization resources for the account and given identifier. If
-one or more such authorizations exists, a response SHOULD be returned with
-status code 303 (See Other) and a Location header pointing to the existing
-resource URL; processing of the request then stops. If there are multiple such
-authorizations, the authorization with the latest expiry date SHOULD be
-returned. If no existing authorizations were found and the value for "existing"
-was "require", then the server MUST return status code 404 (Not Found); if it
-was "accept" or was any other value or was absent, processing continues as
-follows.
 
 If the server is willing to proceed, it builds a pending authorization object
 from the inputs submitted by the client.
@@ -1755,7 +1718,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME request in that they can be
+Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
@@ -2175,9 +2138,6 @@ To validate a DNS challenge, the server performs the following steps:
 1. Compute the SHA-256 digest [FIPS180-4] of the key authorization
 2. Query for TXT records for the validation domain name
 3. Verify that the contents of one of the TXT records matches the digest value
-
-It is RECOMMENDED that the server perform multiple DNS queries from various
-network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
@@ -2657,6 +2617,10 @@ An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
 particular case.
+
+It is RECOMMENDED that the server perform DNS queries and make HTTP and TLS
+connections from various network perspectives, in order to make MitM attacks
+harder.
 
 ## Denial-of-Service Considerations
 
