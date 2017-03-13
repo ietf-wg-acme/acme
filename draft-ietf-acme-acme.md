@@ -2137,9 +2137,6 @@ To validate a DNS challenge, the server performs the following steps:
 2. Query for TXT records for the validation domain name
 3. Verify that the contents of one of the TXT records matches the digest value
 
-It is RECOMMENDED that the server perform multiple DNS queries from various
-network perspectives, in order to make MitM attacks harder.
-
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
@@ -2584,6 +2581,10 @@ An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
 particular case.
+
+It is RECOMMENDED that the server perform DNS queries and make HTTP and TLS
+connections from various network perspectives, in order to make MitM attacks
+harder.
 
 ## Denial-of-Service Considerations
 
