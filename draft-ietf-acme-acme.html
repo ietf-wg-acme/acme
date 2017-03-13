@@ -1329,8 +1329,6 @@ Location: https://example.com/acme/order/asdf
 <dl>
   <dt>identifier (required, object):</dt>
   <dd style="margin-left: 8">The identifier that the account is authorized to represent: <dl><dt>type (required, string):</dt><dd style="margin-left: 8">The type of identifier.</dd><dt>value (required, string):</dt><dd style="margin-left: 8">The identifier itself.</dd></dl><p> </p></dd>
-  <dt>existing (optional, string):</dt>
-  <dd style="margin-left: 8">How an existing authorization should be handled. Possible values are &#8220;accept&#8221; and &#8220;require&#8221;.</dd>
 </dl>
 <pre>
 POST /acme/new-authz HTTP/1.1
@@ -1348,15 +1346,13 @@ Content-Type: application/jose+json
     "identifier": {
       "type": "dns",
       "value": "example.net"
-    },
-    "existing": "accept"
+    }
   }),
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
 </pre>
 <p id="rfc.section.7.4.1.p.6">Before processing the authorization request, the server SHOULD determine whether it is willing to issue certificates for the identifier.  For example, the server should check that the identifier is of a supported type.  Servers might also check names against a blacklist of known high-value identifiers.  If the server is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden) error, with a problem document describing the reason for the rejection.</p>
-<p id="rfc.section.7.4.1.p.7">If the authorization request specifies &#8220;existing&#8221; with a value of &#8220;accept&#8221; or &#8220;require&#8221;, before proceeding, the server SHOULD determine whether there are any existing, valid authorization resources for the account and given identifier. If one or more such authorizations exists, a response SHOULD be returned with status code 303 (See Other) and a Location header pointing to the existing resource URL; processing of the request then stops. If there are multiple such authorizations, the authorization with the latest expiry date SHOULD be returned. If no existing authorizations were found and the value for &#8220;existing&#8221; was &#8220;require&#8221;, then the server MUST return status code 404 (Not Found); if it was &#8220;accept&#8221; or was any other value or was absent, processing continues as follows.</p>
-<p id="rfc.section.7.4.1.p.8">If the server is willing to proceed, it builds a pending authorization object from the inputs submitted by the client.</p>
+<p id="rfc.section.7.4.1.p.7">If the server is willing to proceed, it builds a pending authorization object from the inputs submitted by the client.</p>
 <p/>
 
 <ul>
@@ -1364,7 +1360,7 @@ Content-Type: application/jose+json
   <li>&#8220;status&#8221; MUST be &#8220;pending&#8221; unless the server has out-of-band information about the client&#8217;s authorization status</li>
   <li>&#8220;challenges&#8221; and &#8220;combinations&#8221; as selected by the server&#8217;s policy for this identifier</li>
 </ul>
-<p id="rfc.section.7.4.1.p.10">The server allocates a new URI for this authorization, and returns a 201 (Created) response, with the authorization URI in the Location header field, and the JSON authorization object in the body.  The client then follows the process described in <a href="#identifier-authorization">Section 7.5</a> to complete the authorization process.</p>
+<p id="rfc.section.7.4.1.p.9">The server allocates a new URI for this authorization, and returns a 201 (Created) response, with the authorization URI in the Location header field, and the JSON authorization object in the body.  The client then follows the process described in <a href="#identifier-authorization">Section 7.5</a> to complete the authorization process.</p>
 <h1 id="rfc.section.7.4.2"><a href="#rfc.section.7.4.2">7.4.2.</a> <a href="#downloading-the-certificate" id="downloading-the-certificate">Downloading the Certificate</a></h1>
 <p id="rfc.section.7.4.2.p.1">To download the issued certificate, the client simply sends a GET request to the certificate URL.</p>
 <p id="rfc.section.7.4.2.p.2">The default format of the certificate is PEM (application/x-pem-file) as specified by <a href="#RFC7468">[RFC7468]</a>. This format should contain the end-entity certificate first, followed by any intermediate certificates that are needed to build a path to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The client may request other formats by including an Accept header in its request.  For example, the client could use the media type <samp>application/pkix-cert</samp> <a href="#RFC2585">[RFC2585]</a> to request the end-entity certificate in DER format.</p>

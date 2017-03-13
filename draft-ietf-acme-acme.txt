@@ -120,8 +120,8 @@ Internet-Draft                    ACME                        March 2017
        7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  35
        7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  37
      7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  38
-       7.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  40
-       7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  42
+       7.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  39
+       7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  41
      7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  42
    8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  44
      8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  46
@@ -1966,9 +1966,6 @@ Internet-Draft                    ACME                        March 2017
 
       value (required, string):  The identifier itself.
 
-   existing (optional, string):  How an existing authorization should be
-      handled.  Possible values are "accept" and "require".
-
    POST /acme/new-authz HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
@@ -1984,8 +1981,7 @@ Internet-Draft                    ACME                        March 2017
        "identifier": {
          "type": "dns",
          "value": "example.net"
-       },
-       "existing": "accept"
+       }
      }),
      "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
    }
@@ -1998,28 +1994,6 @@ Internet-Draft                    ACME                        March 2017
    unwilling to issue for the identifier, it SHOULD return a 403
    (Forbidden) error, with a problem document describing the reason for
    the rejection.
-
-   If the authorization request specifies "existing" with a value of
-   "accept" or "require", before proceeding, the server SHOULD determine
-   whether there are any existing, valid authorization resources for the
-   account and given identifier.  If one or more such authorizations
-   exists, a response SHOULD be returned with status code 303 (See
-   Other) and a Location header pointing to the existing resource URL;
-   processing of the request then stops.  If there are multiple such
-   authorizations, the authorization with the latest expiry date SHOULD
-   be returned.  If no existing authorizations were found and the value
-   for "existing" was "require", then the server MUST return status code
-
-
-
-
-Barnes, et al.         Expires September 14, 2017              [Page 36]
-
-Internet-Draft                    ACME                        March 2017
-
-
-   404 (Not Found); if it was "accept" or was any other value or was
-   absent, processing continues as follows.
 
    If the server is willing to proceed, it builds a pending
    authorization object from the inputs submitted by the client.
@@ -2035,6 +2009,15 @@ Internet-Draft                    ACME                        March 2017
    The server allocates a new URI for this authorization, and returns a
    201 (Created) response, with the authorization URI in the Location
    header field, and the JSON authorization object in the body.  The
+
+
+
+
+Barnes, et al.         Expires September 14, 2017              [Page 36]
+
+Internet-Draft                    ACME                        March 2017
+
+
    client then follows the process described in Section 7.5 to complete
    the authorization process.
 
@@ -2059,21 +2042,6 @@ Internet-Draft                    ACME                        March 2017
    anchors.  Clients can fetch these alternates and use their own
    heuristics to decide which is optimal.
 
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.         Expires September 14, 2017              [Page 37]
-
-Internet-Draft                    ACME                        March 2017
-
-
    GET /acme/cert/asdf HTTP/1.1
    Host: example.com
    Accept: application/pkix-cert
@@ -2096,6 +2064,15 @@ Internet-Draft                    ACME                        March 2017
    A certificate resource represents a single, immutable certificate.
    If the client wishes to obtain a renewed certificate, the client
    initiates a new order process to request one.
+
+
+
+
+
+Barnes, et al.         Expires September 14, 2017              [Page 37]
+
+Internet-Draft                    ACME                        March 2017
+
 
    Because certificate resources are immutable once issuance is
    complete, the server MAY enable the caching of the resource by adding
@@ -2121,15 +2098,6 @@ Internet-Draft                    ACME                        March 2017
    that an authorization is only valid for a specific order by setting
    the "scope" field of the authorization to the URI for that order.
 
-
-
-
-
-Barnes, et al.         Expires September 14, 2017              [Page 38]
-
-Internet-Draft                    ACME                        March 2017
-
-
    Authorization resources are created by the server in response to
    certificate orders or authorization requests submitted by an account
    key holder; their URLs are provided to the client in the responses to
@@ -2141,6 +2109,26 @@ Internet-Draft                    ACME                        March 2017
    URLs.  If the client initiates authorization using a request to the
    new authorization resource, it will have already received the pending
    authorization object in the response to that request.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.         Expires September 14, 2017              [Page 38]
+
+Internet-Draft                    ACME                        March 2017
+
 
    GET /acme/authz/1234 HTTP/1.1
    Host: example.com
@@ -2177,15 +2165,6 @@ Internet-Draft                    ACME                        March 2017
      ]
    }
 
-
-
-
-
-Barnes, et al.         Expires September 14, 2017              [Page 39]
-
-Internet-Draft                    ACME                        March 2017
-
-
 7.5.1.  Responding to Challenges
 
    To prove control of the identifier and receive authorization, the
@@ -2198,6 +2177,14 @@ Internet-Draft                    ACME                        March 2017
    JSON object with the response fields required by the challenge type,
    carried in a POST request to the challenge URI (not authorization
    URI) once it is ready for the server to attempt validation.
+
+
+
+
+Barnes, et al.         Expires September 14, 2017              [Page 39]
+
+Internet-Draft                    ACME                        March 2017
+
 
    For example, if the client were to respond to the "http-01" challenge
    in the above authorization, it would send the following request:
@@ -2234,14 +2221,6 @@ Internet-Draft                    ACME                        March 2017
    taken to fulfill the challenge, e.g., removing files that have been
    provisioned to a web server.
 
-
-
-
-Barnes, et al.         Expires September 14, 2017              [Page 40]
-
-Internet-Draft                    ACME                        March 2017
-
-
    The server is said to "finalize" the authorization when it has
    completed one of the validations, by assigning the authorization a
    status of "valid" or "invalid", corresponding to whether it considers
@@ -2255,6 +2234,14 @@ Internet-Draft                    ACME                        March 2017
    will need to poll the authorization resource to see when it is
    finalized.  For challenges where the client can tell when the server
    has validated the challenge (e.g., by seeing an HTTP or DNS request
+
+
+
+Barnes, et al.         Expires September 14, 2017              [Page 40]
+
+Internet-Draft                    ACME                        March 2017
+
+
    from the server), the client SHOULD NOT begin polling until it has
    seen the validation request from the server.
 
@@ -2291,13 +2278,6 @@ Internet-Draft                    ACME                        March 2017
      ]
    }
 
-
-
-Barnes, et al.         Expires September 14, 2017              [Page 41]
-
-Internet-Draft                    ACME                        March 2017
-
-
 7.5.2.  Deactivating an Authorization
 
    If a client wishes to relinquish its authorization to issue
@@ -2305,6 +2285,18 @@ Internet-Draft                    ACME                        March 2017
    deactivates each authorization associated with it by sending POST
    requests with the static object {"status": "deactivated"} to each
    authorization URI.
+
+
+
+
+
+
+
+
+Barnes, et al.         Expires September 14, 2017              [Page 41]
+
+Internet-Draft                    ACME                        March 2017
+
 
    POST /acme/authz/asdf HTTP/1.1
    Host: example.com
@@ -2346,14 +2338,6 @@ Internet-Draft                    ACME                        March 2017
    reason (optional, int):  One of the revocation reasonCodes defined in
       Section 5.3.1 of [RFC5280] to be used when generating OCSP
       responses and CRLs.  If this field is not set the server SHOULD
-
-
-
-Barnes, et al.         Expires September 14, 2017              [Page 42]
-
-Internet-Draft                    ACME                        March 2017
-
-
       use the unspecified (0) reasonCode value when generating OCSP
       responses and CRLs.  The server MAY disallow a subset of
       reasonCodes from being used by the user.  If a request contains a
@@ -2361,6 +2345,14 @@ Internet-Draft                    ACME                        March 2017
       type "urn:ietf:params:acme:error:badRevocationReason".  The
       problem document detail SHOULD indicate which reasonCodes are
       allowed.
+
+
+
+
+Barnes, et al.         Expires September 14, 2017              [Page 42]
+
+Internet-Draft                    ACME                        March 2017
+
 
    POST /acme/revoke-cert HTTP/1.1
    Host: example.com
@@ -2398,6 +2390,14 @@ Internet-Draft                    ACME                        March 2017
 
    If the revocation succeeds, the server responds with status code 200
    (OK).  If the revocation fails, the server returns an error.
+
+
+
+
+
+
+
+
 
 
 
