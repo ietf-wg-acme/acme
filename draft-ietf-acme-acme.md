@@ -345,25 +345,6 @@ serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.
 
-## Equivalence of JWKs
-
-At some points in the protocol, it is necessary for the server to determine
-whether two JSON Web Key (JWK) {{!RFC7517}} objects represent the same key.
-In performing these checks, the
-server MUST consider two JWKs to match if and only if they have the identical
-values in all fields included in the computation of a JWK thumbprint for that
-key. That is, the keys must have the same "kty" value and contain identical
-values in the fields used in the computation of a JWK thumbprint for that key
-type:
-
-* "RSA": "n", "e"
-* "EC": "crv", "x", "y"
-
-Note that this comparison is equivalent to computing the JWK thumbprints of the
-two keys and comparing thumbprints.  The only difference is that there is no
-requirement for a hash computation (and thus it is independent of the choice of
-hash function) and no risk of hash collision.
-
 ## Request URI Integrity
 
 It is common in deployment for the entity terminating TLS for HTTPS to be different
@@ -827,8 +808,7 @@ identifier (required, object):
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "processing",
-"valid", "invalid" and "revoked".  If this field is missing, then the default
-value is "pending".
+"valid", "invalid" and "revoked".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -964,7 +944,7 @@ response, with the account URI in a Location header field.
 
 If the server already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URI of
-that account in the Content-Location header field.  This allows a client that has
+that account in the Location header field.  This allows a client that has
 an account key but not the corresponding account URI to recover the account URI.
 
 If the server wishes to present the client with terms under which the ACME
@@ -1134,7 +1114,7 @@ reject the new-account request.
 
 ### Account Key Roll-over
 
-A client may wish to change the public key that is associated with a account in
+A client may wish to change the public key that is associated with an account in
 order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
@@ -1199,16 +1179,16 @@ addition to the typical JWS validation:
 1. Validate the POST request belongs to a currently active account, as described
    in Message Transport.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
-   JWS")
+   JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
-4. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the inner JWS verifies using the key in its "jwk" field.
 5. Check that the payload of the inner JWS is a well-formed key-change object
-   (as described above)
-6. Check that the "url" parameters of the inner and outer JWSs are the same
+   (as described above).
+6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
    the account matching the old key
-8. Check that the "newKey" field of the key-change object contains the
-   key used to sign the inner JWS.
+8. Check that the "newKey" field of the key-change object also verifies the
+    inner JWS.
 
 If all of these checks pass, then the server updates the corresponding account
 by replacing the old account key with the new public key and returns status code
@@ -1400,10 +1380,6 @@ identifier (required, object):
   value (required, string):
   : The identifier itself.
 
-existing (optional, string):
-: How an existing authorization should be handled. Possible values are "accept"
-  and "require".
-
 ~~~~~~~~~~
 POST /acme/new-authz HTTP/1.1
 Host: example.com
@@ -1420,8 +1396,7 @@ Content-Type: application/jose+json
     "identifier": {
       "type": "dns",
       "value": "example.net"
-    },
-    "existing": "accept"
+    }
   }),
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
@@ -1433,18 +1408,6 @@ should check that the identifier is of a supported type.  Servers might also
 check names against a blacklist of known high-value identifiers.  If the server
 is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
 error, with a problem document describing the reason for the rejection.
-
-If the authorization request specifies "existing" with a value of "accept" or
-"require", before proceeding, the server SHOULD determine whether there are any
-existing, valid authorization resources for the account and given identifier. If
-one or more such authorizations exists, a response SHOULD be returned with
-status code 303 (See Other) and a Location header pointing to the existing
-resource URL; processing of the request then stops. If there are multiple such
-authorizations, the authorization with the latest expiry date SHOULD be
-returned. If no existing authorizations were found and the value for "existing"
-was "require", then the server MUST return status code 404 (Not Found); if it
-was "accept" or was any other value or was absent, processing continues as
-follows.
 
 If the server is willing to proceed, it builds a pending authorization object
 from the inputs submitted by the client.
@@ -1466,16 +1429,10 @@ described in {{identifier-authorization}} to complete the authorization process.
 To download the issued certificate, the client simply sends a GET request to the
 certificate URL.
 
-The default format of the certificate is PEM (application/x-pem-file) as
-specified by {{!RFC7468}}. This format should contain the end-entity certificate
-first, followed by any intermediate certificates that are needed to build a path
-to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
-client may request other formats by including an Accept header in its request.
-For example, the client could use the media type `application/pkix-cert`
-{{!RFC2585}} to request the end-entity certificate in DER format.
+The default format of the certificate is application/pem-certificate-chain (see IANA Considerations).
 
 The server MAY provide one or more link relation header fields {{RFC5988}} with
-relation "alternate". Each such field should express an alternative certificate
+relation "alternate". Each such field SHOULD express an alternative certificate
 chain starting with the same end-entity certificate. This can be used to express
 paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
@@ -1486,8 +1443,7 @@ Host: example.com
 Accept: application/pkix-cert
 
 HTTP/1.1 200 OK
-Content-Type: application/pkix-cert
-Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
+Content-Type: application/pem-certificate-chain
 Link: <https://example.com/acme/some-directory>;rel="index"
 
 -----BEGIN CERTIFICATE-----
@@ -1509,6 +1465,15 @@ Because certificate resources are immutable once issuance is complete, the
 server MAY enable the caching of the resource by adding Expires and
 Cache-Control headers specifying a point in time in the distant future. These
 headers have no relation to the certificate's period of validity.
+
+The ACME client MAY request other formats by including an Accept
+header in its request.  For example, the client could use the media type
+`application/pkix-cert` {{!RFC2585}} to request the end-entity certificate
+in DER format. Server support for alternate formats is OPTIONAL. For
+formats that can only express a single certificate, the server SHOULD
+provide one or more `Link: rel="up"` headers pointing to an issuer or
+issuers so that ACME clients can build a certificate chain as defined
+in TLS.
 
 ## Identifier Authorization
 
@@ -1745,7 +1710,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME request in that they can be
+Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
@@ -1977,6 +1942,8 @@ domain by verifying that the resource was provisioned as expected.
 5. Verify that key authorization provided by the HTTP server matches the token
    for this challenge and the client's account key.
 
+The server SHOULD follow redirects when dereferencing the URI.
+
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
 failed.
@@ -2166,9 +2133,6 @@ To validate a DNS challenge, the server performs the following steps:
 2. Query for TXT records for the validation domain name
 3. Verify that the contents of one of the TXT records matches the digest value
 
-It is RECOMMENDED that the server perform multiple DNS queries from various
-network perspectives, in order to make MitM attacks harder.
-
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
@@ -2236,6 +2200,40 @@ field is "oob-01".  Otherwise, the steps the server takes to validate
 identifier possession are determined by the server's local policy.
 
 # IANA Considerations
+
+## MIME Type: application/pem-certificate-chain
+
+The "Media Types" registry should be updated with the following additional
+value:
+
+MIME media type name: application
+
+MIME subtype name: pem-certificate-chain
+
+Required parameters: None
+
+Optional parameters: None
+
+Encoding considerations: None
+
+Security considerations: Carries a cryptographic certificate
+
+Interoperability considerations: None
+
+Published specification: draft-ietf-acme-acme
+\[\[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]
+
+Applications which use this media type: Any MIME-complaint transport
+
+Additional information:
+
+File should contain one or more certificates encoded as PEM according to
+RFC 7468.  In order to provide easy interoperation with TLS, the first
+certificate MUST be an end-entity certificate. Each following certificate
+SHOULD directly certify one preceding it. Because certificate validation
+requires that trust anchors be distributed independently, a certificate
+that specifies a trust anchor MAY be omitted from the chain, provided
+that supported peers are known to possess any omitted certificates.
 
 ## Well-Known URI for the HTTP Challenge
 
@@ -2613,6 +2611,10 @@ An active attacker on the validation channel can subvert the ACME process, by
 performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
 particular case.
+
+It is RECOMMENDED that the server perform DNS queries and make HTTP and TLS
+connections from various network perspectives, in order to make MitM attacks
+harder.
 
 ## Denial-of-Service Considerations
 
