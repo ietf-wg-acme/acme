@@ -856,8 +856,7 @@ identifier (required, object):
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending", "processing",
-"valid", "invalid" and "revoked".  If this field is missing, then the default
-value is "pending".
+"valid", "invalid" and "revoked".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -993,7 +992,7 @@ account URI in a Location header field.
 
 If the server already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URI of
-that account in the Content-Location header field.  This allows a client that has
+that account in the Location header field.  This allows a client that has
 an account key but not the corresponding account URI to recover the account URI.
 
 If the server wishes to present the client with terms under which the ACME
@@ -1166,7 +1165,7 @@ reject the new-account request.
 
 ### Account Key Roll-over
 
-A client may wish to change the public key that is associated with a account in
+A client may wish to change the public key that is associated with an account in
 order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
@@ -1231,14 +1230,14 @@ addition to the typical JWS validation:
 1. Validate the POST request belongs to a currently active account, as described
    in Message Transport.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
-   JWS")
+   JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
-4. Check that the inner JWS verifies using the key in its "jwk" field
+4. Check that the inner JWS verifies using the key in its "jwk" field.
 5. Check that the payload of the inner JWS is a well-formed key-change object
-   (as described above)
-6. Check that the "url" parameters of the inner and outer JWSs are the same
+   (as described above).
+6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
-   the account matching the old key
+   the account matching the old key.
 8. Check that the "newKey" field of the key-change object contains the
    key used to sign the inner JWS.
 
@@ -1432,10 +1431,6 @@ identifier (required, object):
   value (required, string):
   : The identifier itself.
 
-existing (optional, string):
-: How an existing authorization should be handled. Possible values are "accept"
-  and "require".
-
 ~~~~~~~~~~
 POST /acme/new-authz HTTP/1.1
 Host: example.com
@@ -1452,8 +1447,7 @@ Content-Type: application/jose+json
     "identifier": {
       "type": "dns",
       "value": "example.net"
-    },
-    "existing": "accept"
+    }
   }),
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
@@ -1465,18 +1459,6 @@ should check that the identifier is of a supported type.  Servers might also
 check names against a blacklist of known high-value identifiers.  If the server
 is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
 error, with a problem document describing the reason for the rejection.
-
-If the authorization request specifies "existing" with a value of "accept" or
-"require", before proceeding, the server SHOULD determine whether there are any
-existing, valid authorization resources for the account and given identifier. If
-one or more such authorizations exists, a response SHOULD be returned with
-status code 303 (See Other) and a Location header pointing to the existing
-resource URL; processing of the request then stops. If there are multiple such
-authorizations, the authorization with the latest expiry date SHOULD be
-returned. If no existing authorizations were found and the value for "existing"
-was "require", then the server MUST return status code 404 (Not Found); if it
-was "accept" or was any other value or was absent, processing continues as
-follows.
 
 If the server is willing to proceed, it builds a pending authorization object
 from the inputs submitted by the client.
@@ -1777,7 +1759,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME request in that they can be
+Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server SHOULD consider
