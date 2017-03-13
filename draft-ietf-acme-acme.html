@@ -895,8 +895,6 @@ Content-Type: application/json
 <p/>
 
 <dl>
-  <dt>key (required, object):</dt>
-  <dd style="margin-left: 8">The public key of the account&#8217;s key pair, encoded as a JSON Web Key object <a href="#RFC7517">[RFC7517]</a>. The client may not directly update this field, but must use the key-change resource instead.</dd>
   <dt>status (required, string):</dt>
   <dd style="margin-left: 8">The status of this account. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;.  The value &#8220;deactivated&#8221; should be used to indicate user initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate administratively initiated deactivation.</dd>
   <dt>contact (optional, array of string):</dt>
@@ -1046,10 +1044,10 @@ Content-Type: application/jose+json
   "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
 }
 </pre>
-<p id="rfc.section.7.3.p.2">The server MUST ignore any values provided in the &#8220;key&#8221;, and &#8220;orders&#8221; fields in account bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they can be provided by the client.</p>
+<p id="rfc.section.7.3.p.2">The server MUST ignore any values provided in the &#8220;orders&#8221; fields in account bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they can be provided by the client.</p>
 <p id="rfc.section.7.3.p.3">In general, the server MUST ignore any fields in the request object that it does not recognize.  In particular, it MUST NOT reflect unrecognized fields in the resulting account object.  This allows clients to detect when servers do not support an extension field.</p>
 <p id="rfc.section.7.3.p.4">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server.  If the client provides the server with an invalid or unsupported contact URL, then the server MUST return an error of type &#8220;invalidContact&#8221;, with a description describing the error and what types of contact URL the server considers acceptable.</p>
-<p id="rfc.section.7.3.p.5">The server creates an account and populates the account object with the &#8220;key&#8221; field containing the JWK public key used to verify the JWS.  The server returns this account object in a response with a 201 (Created) status code, with the account URI in a Location header field.</p>
+<p id="rfc.section.7.3.p.5">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URI in a Location header field.</p>
 <p id="rfc.section.7.3.p.6">If the server already has an account registered with the provided account key, then it MUST return a response with a 200 (OK) status code and provide the URI of that account in the Location header field.  This allows a client that has an account key but not the corresponding account URI to recover the account URI.</p>
 <p id="rfc.section.7.3.p.7">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URI where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
 <pre>
@@ -1060,7 +1058,6 @@ Location: https://example.com/acme/acct/1
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 
 {
-  "key": { /* JWK from JWS header */ },
   "status": "valid",
 
   "contact": [
@@ -1069,7 +1066,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
   ]
 }
 </pre>
-<p id="rfc.section.7.3.p.8">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URI.  The server MUST ignore any updates to the &#8220;key&#8221;, or &#8220;order&#8221; fields or any other fields it does not recognize. The server MUST verify that the request is signed with the private key corresponding to the &#8220;key&#8221; field of the request before updating the account object.</p>
+<p id="rfc.section.7.3.p.8">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URI.  The server MUST ignore any updates to &#8220;order&#8221; fields or any other fields it does not recognize.</p>
 <p id="rfc.section.7.3.p.9">For example, to update the contact information in the above account, the client could send the following request:</p>
 <pre>
 POST /acme/acct/1 HTTP/1.1
@@ -2439,12 +2436,6 @@ Content-Type: application/jose+json
         <b id="RFC7515">[RFC7515]</b>
       </td>
       <td class="top"><a>Jones, M.</a>, <a>Bradley, J.</a> and <a>N. Sakimura</a>, "<a href="http://tools.ietf.org/html/rfc7515">JSON Web Signature (JWS)</a>", RFC 7515, DOI 10.17487/RFC7515, May 2015.</td>
-    </tr>
-    <tr>
-      <td class="reference">
-        <b id="RFC7517">[RFC7517]</b>
-      </td>
-      <td class="top"><a>Jones, M.</a>, "<a href="http://tools.ietf.org/html/rfc7517">JSON Web Key (JWK)</a>", RFC 7517, DOI 10.17487/RFC7517, May 2015.</td>
     </tr>
     <tr>
       <td class="reference">
