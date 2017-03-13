@@ -654,18 +654,6 @@ address {
       <td class="left">The JWS was signed with an algorithm the server does not support</td>
     </tr>
     <tr>
-      <td class="left">caa</td>
-      <td class="left">CAA records forbid the CA from issuing</td>
-    </tr>
-    <tr>
-      <td class="left">connection</td>
-      <td class="left">The server could not connect to validation target</td>
-    </tr>
-    <tr>
-      <td class="left">dnssec</td>
-      <td class="left">DNSSEC validation failed</td>
-    </tr>
-    <tr>
       <td class="left">invalidContact</td>
       <td class="left">The contact URI for an account was invalid</td>
     </tr>
@@ -686,28 +674,40 @@ address {
       <td class="left">The server experienced an internal error</td>
     </tr>
     <tr>
-      <td class="left">tls</td>
-      <td class="left">The server received a TLS error during validation</td>
-    </tr>
-    <tr>
       <td class="left">unauthorized</td>
       <td class="left">The client lacks sufficient authorization</td>
     </tr>
     <tr>
-      <td class="left">unknownHost</td>
-      <td class="left">The server could not resolve a domain name</td>
-    </tr>
-    <tr>
       <td class="left">unsupportedIdentifier</td>
-      <td class="left">Identifier is not supported but may be in the future</td>
+      <td class="left">Identifier is not supported, but may be in future</td>
     </tr>
     <tr>
       <td class="left">userActionRequired</td>
-      <td class="left">The user visit the &#8220;instance&#8221; URL and take actions specified there</td>
+      <td class="left">Visit the &#8220;instance&#8221; URL and take actions specified there</td>
     </tr>
     <tr>
       <td class="left">badRevocationReason</td>
       <td class="left">The revocation reason provided is not allowed by the server</td>
+    </tr>
+    <tr>
+      <td class="left">caa</td>
+      <td class="left">CAA records forbid the CA from issuing</td>
+    </tr>
+    <tr>
+      <td class="left">dns</td>
+      <td class="left">There was a problem with a DNS query</td>
+    </tr>
+    <tr>
+      <td class="left">connection</td>
+      <td class="left">The server could not connect to validation target</td>
+    </tr>
+    <tr>
+      <td class="left">tls</td>
+      <td class="left">The server received a TLS error during validation</td>
+    </tr>
+    <tr>
+      <td class="left">incorrectResponse</td>
+      <td class="left">Response received didn&#8217;t match the challenge&#8217;s requirements</td>
     </tr>
   </tbody>
 </table>
@@ -945,6 +945,8 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
   <dd style="margin-left: 8">The requested value of the notBefore field in the certificate, in the date format defined in <a href="#RFC3339">[RFC3339]</a>.</dd>
   <dt>notAfter (optional, string):</dt>
   <dd style="margin-left: 8">The requested value of the notAfter field in the certificate, in the date format defined in <a href="#RFC3339">[RFC3339]</a>.</dd>
+  <dt>error (optional, object):</dt>
+  <dd style="margin-left: 8">The error that occurred while processing the order, if any.  This field is structured as a problem document <a href="#RFC7807">[RFC7807]</a>.</dd>
   <dt>authorizations (required, array of string):</dt>
   <dd style="margin-left: 8">For pending orders, the authorizations that the client needs to complete before the requested certificate can be issued (see <a href="#identifier-authorization">Section 7.5</a>).  For final orders, the authorizations that were completed.  Each entry is a URL from which an authorization can be fetched with a GET request.</dd>
   <dt>certificate (optional, string):</dt>

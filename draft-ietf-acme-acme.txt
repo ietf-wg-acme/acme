@@ -742,13 +742,6 @@ Internet-Draft                    ACME                        March 2017
    | badSignatureAlgorithm | The JWS was signed with an algorithm the  |
    |                       | server does not support                   |
    |                       |                                           |
-   | caa                   | CAA records forbid the CA from issuing    |
-   |                       |                                           |
-   | connection            | The server could not connect to           |
-   |                       | validation target                         |
-   |                       |                                           |
-   | dnssec                | DNSSEC validation failed                  |
-   |                       |                                           |
    | invalidContact        | The contact URI for an account was        |
    |                       | invalid                                   |
    |                       |                                           |
@@ -761,22 +754,29 @@ Internet-Draft                    ACME                        March 2017
    |                       |                                           |
    | serverInternal        | The server experienced an internal error  |
    |                       |                                           |
-   | tls                   | The server received a TLS error during    |
-   |                       | validation                                |
-   |                       |                                           |
    | unauthorized          | The client lacks sufficient authorization |
    |                       |                                           |
-   | unknownHost           | The server could not resolve a domain     |
-   |                       | name                                      |
+   | unsupportedIdentifier | Identifier is not supported, but may be   |
+   |                       | in future                                 |
    |                       |                                           |
-   | unsupportedIdentifier | Identifier is not supported but may be in |
-   |                       | the future                                |
-   |                       |                                           |
-   | userActionRequired    | The user visit the "instance" URL and     |
-   |                       | take actions specified there              |
+   | userActionRequired    | Visit the "instance" URL and take actions |
+   |                       | specified there                           |
    |                       |                                           |
    | badRevocationReason   | The revocation reason provided is not     |
    |                       | allowed by the server                     |
+   |                       |                                           |
+   | caa                   | CAA records forbid the CA from issuing    |
+   |                       |                                           |
+   | dns                   | There was a problem with a DNS query      |
+   |                       |                                           |
+   | connection            | The server could not connect to           |
+   |                       | validation target                         |
+   |                       |                                           |
+   | tls                   | The server received a TLS error during    |
+   |                       | validation                                |
+   |                       |                                           |
+   | incorrectResponse     | Response received didn't match the        |
+   |                       | challenge's requirements                  |
    +-----------------------+-------------------------------------------+
 
 
@@ -1134,6 +1134,10 @@ Internet-Draft                    ACME                        March 2017
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339].
 
+   error (optional, object):  The error that occurred while processing
+      the order, if any.  This field is structured as a problem document
+      [RFC7807].
+
    authorizations (required, array of string):  For pending orders, the
       authorizations that the client needs to complete before the
       requested certificate can be issued (see Section 7.5).  For final
@@ -1165,10 +1169,6 @@ Internet-Draft                    ACME                        March 2017
    of the "authorizations" array, then it SHOULD consider the order
    invalid.
 
-   The "authorizations" array in the challenge SHOULD reflect all
-   authorizations that the CA takes into account in deciding to issue,
-   even if some authorizations were fulfilled in earlier orders or in
-   pre-authorization transactions.  For example, if a CA allows multiple
 
 
 
@@ -1178,6 +1178,10 @@ Barnes, et al.         Expires September 14, 2017              [Page 21]
 Internet-Draft                    ACME                        March 2017
 
 
+   The "authorizations" array in the challenge SHOULD reflect all
+   authorizations that the CA takes into account in deciding to issue,
+   even if some authorizations were fulfilled in earlier orders or in
+   pre-authorization transactions.  For example, if a CA allows multiple
    orders to be fulfilled based on a single authorization transaction,
    then it SHOULD reflect that authorization in all of the order.
 
@@ -1221,11 +1225,7 @@ Internet-Draft                    ACME                        March 2017
       parameters required to validate the challenge.  A client should
       attempt to fulfill one of these challenges, and a server should
       consider any one of the challenges sufficient to make the
-      authorization valid.  For final authorizations it contains the
-      challenges that were completed.
 
-   The only type of identifier defined by this specification is a fully-
-   qualified domain name (type: "dns").  If a domain name contains non-
 
 
 
@@ -1234,6 +1234,11 @@ Barnes, et al.         Expires September 14, 2017              [Page 22]
 Internet-Draft                    ACME                        March 2017
 
 
+      authorization valid.  For final authorizations it contains the
+      challenges that were completed.
+
+   The only type of identifier defined by this specification is a fully-
+   qualified domain name (type: "dns").  If a domain name contains non-
    ASCII Unicode characters it MUST be encoded using the rules defined
    in [RFC3492].  Servers MUST verify any identifier values that begin
    with the ASCII Compatible Encoding prefix "xn-" as defined in
@@ -1276,11 +1281,6 @@ Internet-Draft                    ACME                        March 2017
    status code 204 (No Content).  The server SHOULD also respond to GET
    requests for this resource, returning an empty body (while still
    providing a Replay-Nonce header) with a 204 (No Content) status.
-
-
-
-
-
 
 
 
