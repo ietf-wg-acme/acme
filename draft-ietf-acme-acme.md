@@ -1437,16 +1437,10 @@ described in {{identifier-authorization}} to complete the authorization process.
 To download the issued certificate, the client simply sends a GET request to the
 certificate URL.
 
-The default format of the certificate is PEM (application/x-pem-file) as
-specified by {{!RFC7468}}. This format should contain the end-entity certificate
-first, followed by any intermediate certificates that are needed to build a path
-to a trusted root. Servers SHOULD NOT include self-signed trust anchors. The
-client may request other formats by including an Accept header in its request.
-For example, the client could use the media type `application/pkix-cert`
-{{!RFC2585}} to request the end-entity certificate in DER format.
+The default format of the certificate is application/pem-certificate-chain (see IANA Considerations).
 
 The server MAY provide one or more link relation header fields {{RFC5988}} with
-relation "alternate". Each such field should express an alternative certificate
+relation "alternate". Each such field SHOULD express an alternative certificate
 chain starting with the same end-entity certificate. This can be used to express
 paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
@@ -1457,8 +1451,7 @@ Host: example.com
 Accept: application/pkix-cert
 
 HTTP/1.1 200 OK
-Content-Type: application/pkix-cert
-Link: <https://example.com/acme/ca-cert>;rel="up";title="issuer"
+Content-Type: application/pem-certificate-chain
 Link: <https://example.com/acme/some-directory>;rel="index"
 
 -----BEGIN CERTIFICATE-----
@@ -1480,6 +1473,15 @@ Because certificate resources are immutable once issuance is complete, the
 server MAY enable the caching of the resource by adding Expires and
 Cache-Control headers specifying a point in time in the distant future. These
 headers have no relation to the certificate's period of validity.
+
+The ACME client MAY request other formats by including an Accept
+header in its request.  For example, the client could use the media type
+`application/pkix-cert` {{!RFC2585}} to request the end-entity certificate
+in DER format. Server support for alternate formats is OPTIONAL. For
+formats that can only express a single certificate, the server SHOULD
+provide one or more `Link: rel="up"` headers pointing to an issuer or
+issuers so that ACME clients can build a certificate chain as defined
+in TLS.
 
 ## Identifier Authorization
 
@@ -2206,6 +2208,40 @@ field is "oob-01".  Otherwise, the steps the server takes to validate
 identifier possession are determined by the server's local policy.
 
 # IANA Considerations
+
+## MIME Type: application/pem-certificate-chain
+
+The "Media Types" registry should be updated with the following additional
+value:
+
+MIME media type name: application
+
+MIME subtype name: pem-certificate-chain
+
+Required parameters: None
+
+Optional parameters: None
+
+Encoding considerations: None
+
+Security considerations: Carries a cryptographic certificate
+
+Interoperability considerations: None
+
+Published specification: draft-ietf-acme-acme
+\[\[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]
+
+Applications which use this media type: Any MIME-complaint transport
+
+Additional information:
+
+File should contain one or more certificates encoded as PEM according to
+RFC 7468.  In order to provide easy interoperation with TLS, the first
+certificate MUST be an end-entity certificate. Each following certificate
+SHOULD directly certify one preceding it. Because certificate validation
+requires that trust anchors be distributed independently, a certificate
+that specifies a trust anchor MAY be omitted from the chain, provided
+that supported peers are known to possess any omitted certificates.
 
 ## Well-Known URI for the HTTP Challenge
 
