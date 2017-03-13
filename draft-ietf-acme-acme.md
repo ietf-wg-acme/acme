@@ -968,7 +968,7 @@ account URI in a Location header field.
 
 If the server already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URI of
-that account in the Content-Location header field.  This allows a client that has
+that account in the Location header field.  This allows a client that has
 an account key but not the corresponding account URI to recover the account URI.
 
 If the server wishes to present the client with terms under which the ACME
