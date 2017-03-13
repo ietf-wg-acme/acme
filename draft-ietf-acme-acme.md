@@ -483,9 +483,7 @@ server MAY return status code 405 (Method Not Allowed).
 When the server responds with an error status, it SHOULD provide additional
 information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
-in the "type" field (within the "urn:ietf:params:acme:error:" namespace).
-
-Error types that may be commonly returned from ACME requests:
+in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
 | Type                  | Description                                                        |
 |:----------------------|:-------------------------------------------------------------------|
@@ -501,31 +499,13 @@ Error types that may be commonly returned from ACME requests:
 | unsupportedIdentifier | Identifier is not supported, but may be in future                  |
 | userActionRequired    | Visit the "instance" URL and take actions specified there          |
 | badRevocationReason   | The revocation reason provided is not allowed by the server        |
-
-Error types that may be commonly included in the "error" field of challenge
-resources:
-
-| Type                  | Description                                                        |
-|:----------------------|:-------------------------------------------------------------------|
 | caa                   | CAA records forbid the CA from issuing                             |
+| dns                   | There was a problem with a DNS query                               |
 | connection            | The server could not connect to validation target                  |
-| dns                   | There was a problem with a DNS query                               |
-| rateLimited           | The request exceeds a rate limit                                   |
-| serverInternal        | The server experienced an internal error                           |
-| incorrectResponse     | Response received didn't match the challenge's requirements        |
 | tls                   | The server received a TLS error during validation                  |
+| incorrectResponse     | Response received didn't match the challenge's requirements        |
 
-Error types that may be commonly included in the "error" field of order
-resources:
-
-| Type                  | Description                                                        |
-|:----------------------|:-------------------------------------------------------------------|
-| caa                   | CAA records forbid the CA from issuing                             |
-| dns                   | There was a problem with a DNS query                               |
-| unsupportedIdentifier | Identifier is not supported but may be in the future               |
-| serverInternal        | The server experienced an internal error                           |
-
-These lists are not exhaustive. The server MAY return errors whose "type" field is
+This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
