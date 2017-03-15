@@ -1889,7 +1889,9 @@ for the domain in question.
 The path at which the resource is provisioned is comprised of the fixed prefix
 ".well-known/acme-challenge/", followed by the "token" value in the challenge.
 The value of the resource MUST be the ASCII representation of the key
-authorization.
+authorization. The resource should remain provisioned until the client
+observes that the authorization resource has a status of either "valid" or
+"invalid."
 
 ~~~~~~~~~~
 GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
@@ -1947,6 +1949,9 @@ domain by verifying that the resource was provisioned as expected.
    for this challenge and the client's account key.
 
 The server SHOULD follow redirects when dereferencing the URI.
+
+It is RECOMMENDED that the server dereference the URI multiple times from
+various network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
@@ -2694,9 +2699,6 @@ perform all necessary checks before issuing.
 
 CAs using ACME to allow clients to agree to terms of service should keep in mind
 that ACME clients can automate this agreement, possibly not involving a human
-user.  If a CA wishes to have stronger evidence of user consent, it may present
-an out-of-band requirement or challenge to require human involvement.
-
 # Operational Considerations
 
 There are certain factors that arise in operational reality that operators of
