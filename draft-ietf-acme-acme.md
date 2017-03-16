@@ -216,7 +216,7 @@ identifiers, the server will choose from an extensible set of challenges that
 are appropriate for the identifier being claimed.  The client responds with a
 set of responses that tell the server which challenges the client has completed.
 The server then validates the challenges to check that the client has
-accomplished the challenge.
+accomplished them.
 
 Once the validation process is complete and the server is satisfied that the
 client has met its requirements, the server will issue the requested certificate
