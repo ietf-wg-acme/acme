@@ -507,7 +507,7 @@ enables:
 
 ## Resources
 
-ACME is structured as a REST application with a few types of resources:
+ACME is structured as a REST application with the following types of resources:
 
 * Account resources, representing information about an account
   ({{account-objects}}, {{account-creation}})
