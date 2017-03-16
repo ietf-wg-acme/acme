@@ -1182,7 +1182,7 @@ On receiving key-change request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
 1. Validate the POST request belongs to a currently active account, as described
-   in Message Transport.
+   in {{message-transport}}.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
    JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
