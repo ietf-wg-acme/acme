@@ -318,8 +318,8 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
   * "alg"
   * "jwk" (only for requests to new-account and revoke-cert resources)
   * "kid" (for all other requests)
-  * "nonce" (defined below)
-  * "url" (defined below)
+  * "nonce" (defined in {{replay-protection}} below)
+  * "url" (defined in {{request-uri-integrity}} below)
 
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
@@ -359,11 +359,11 @@ in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to
 provide an integrity mechanism, which protects against an intermediary
 changing the request URI to another ACME URI.
 
-As noted above, all ACME request objects carry a "url" parameter in their
-protected header.  This header parameter encodes the URL to which the client is
-directing the request.  On receiving such an object in an HTTP request, the server
-MUST compare the "url" parameter to the request URI.  If the two do not match,
-then the server MUST reject the request as unauthorized.
+As noted in {{request-authentication}} above, all ACME request objects carry a
+"url" parameter in their protected header.  This header parameter encodes the URL
+to which the client is directing the request.  On receiving such an object in an
+HTTP request, the server MUST compare the "url" parameter to the request URI.  If
+the two do not match, then the server MUST reject the request as unauthorized.
 
 Except for the directory resource, all ACME resources are addressed with URLs
 provided to the client by the server.  For these resources, the client MUST set the
@@ -388,16 +388,17 @@ server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
 An ACME server provides nonces to clients using the Replay-Nonce header field,
-as specified below.  The server MUST include a Replay-Nonce header field in
-every successful response to a POST request and SHOULD provide it in error
-responses as well.
+as specified in {{replay-nonce}} below.  The server MUST include a Replay-Nonce
+header field in every successful response to a POST request and SHOULD provide
+it in error responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
-"nonce" header parameter, with contents as defined below.  As part of JWS
-verification, the ACME server MUST verify that the value of the "nonce" header
-is a value that the server previously provided in a Replay-Nonce header field.
-Once a nonce value has appeared in an ACME request, the server MUST consider it
-invalid, in the same way as a value it had never issued.
+"nonce" header parameter, with contents as defined in
+{{nonce-nonce-jws-header-parameter}} below.  As part of JWS verification, the
+ACME server MUST verify that the value of the "nonce" header is a value that the
+server previously provided in a Replay-Nonce header field.  Once a nonce value
+has appeared in an ACME request, the server MUST consider it invalid, in the same
+way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
