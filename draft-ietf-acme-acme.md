@@ -790,7 +790,7 @@ that the CA takes into account in deciding to issue, even if some authorizations
 were fulfilled in earlier orders or in pre-authorization transactions.  For
 example, if a CA allows multiple orders to be fulfilled based on a single
 authorization transaction, then it SHOULD reflect that authorization in all of
-the order.
+the orders.
 
 ### Authorization Objects
 
