@@ -105,7 +105,8 @@ This document describes an extensible framework for automating the issuance and
 domain validation procedure, thereby allowing servers and infrastructural
 software to obtain certificates without user interaction.  Use of this protocol
 should radically simplify the deployment of HTTPS and the practicality of PKIX
-authentication for other protocols based on TLS {{!RFC5246}}.
+authentication for other protocols based on Transport Layer Security (TLS)
+{{!RFC5246}}.
 
 # Deployment Model and Operator Experience
 
@@ -171,10 +172,10 @@ from the client.
 # Protocol Overview
 
 ACME allows a client to request certificate management actions using a set of
-JSON messages carried over HTTPS.   In many ways, ACME functions much like a
-traditional CA, in which a user creates an account, requests a certificate,
-and proves control of the domains in that certificate in order for the CA to
-sign the requested certificate.
+JavaScript Object Notation (JSON) messages carried over HTTPS.  In many ways,
+ACME functions much like a traditional CA, in which a user creates an account,
+requests a certificate, and proves control of the domains in that certificate in
+order for the CA to sign the requested certificate.
 
 The first phase of ACME is for the client to request an account with the
 ACME server.  The client generates an asymmetric key pair and requests a
@@ -312,7 +313,7 @@ authentication of requests.
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST NOT have the value "none" in its "alg" field
-* The JWS MUST NOT have a MAC-based algorithm in its "alg" field
+* The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
   * "jwk" (only for requests to new-account and revoke-cert resources)
@@ -467,25 +468,25 @@ information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Type                  | Description                                                        |
-|:----------------------|:-------------------------------------------------------------------|
-| badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
-| badNonce              | The client sent an unacceptable anti-replay nonce                  |
-| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support   |
-| invalidContact        | The contact URI for an account was invalid                         |
-| malformed             | The request message was malformed                                  |
-| rateLimited           | The request exceeds a rate limit                                   |
-| rejectedIdentifier    | The server will not issue for the identifier                       |
-| serverInternal        | The server experienced an internal error                           |
-| unauthorized          | The client lacks sufficient authorization                          |
-| unsupportedIdentifier | Identifier is not supported, but may be in future                  |
-| userActionRequired    | Visit the "instance" URL and take actions specified there          |
-| badRevocationReason   | The revocation reason provided is not allowed by the server        |
-| caa                   | CAA records forbid the CA from issuing                             |
-| dns                   | There was a problem with a DNS query                               |
-| connection            | The server could not connect to validation target                  |
-| tls                   | The server received a TLS error during validation                  |
-| incorrectResponse     | Response received didn't match the challenge's requirements        |
+| Type                  | Description                                                                    |
+|:----------------------|:-------------------------------------------------------------------------------|
+| badCSR                | The CSR is unacceptable (e.g., due to a short key)                             |
+| badNonce              | The client sent an unacceptable anti-replay nonce                              |
+| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support               |
+| invalidContact        | The contact URI for an account was invalid                                     |
+| malformed             | The request message was malformed                                              |
+| rateLimited           | The request exceeds a rate limit                                               |
+| rejectedIdentifier    | The server will not issue for the identifier                                   |
+| serverInternal        | The server experienced an internal error                                       |
+| unauthorized          | The client lacks sufficient authorization                                      |
+| unsupportedIdentifier | Identifier is not supported, but may be in future                              |
+| userActionRequired    | Visit the "instance" URL and take actions specified there                      |
+| badRevocationReason   | The revocation reason provided is not allowed by the server	                 |
+| caa                   | Certification Authority Authorization (CAA) records forbid the CA from issuing |
+| dns                   | There was a problem with a DNS query                                           |
+| connection            | The server could not connect to validation target                              |
+| tls                   | The server received a TLS error during validation                              |
+| incorrectResponse     | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
