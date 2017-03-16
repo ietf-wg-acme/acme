@@ -85,7 +85,7 @@ certificates, a typical user experience is something like:
    * Put a CA-provided challenge at a specific place on the web server.
    * Put a CA-provided challenge at a DNS location corresponding to the target
      domain.
-   * Receive CA challenge at a (hopefully) administrator-controlled e-mail
+   * Receive CA challenge at a (hopefully) administrator-controlled email
      address corresponding to the domain and then respond to it on the CA's web
      page.
 * Download the issued certificate and install it on their Web Server.
@@ -137,7 +137,7 @@ this:
   issue a certificate for the intended domain name(s).
 * Once the CA is satisfied, the certificate is issued and the ACME client
   automatically downloads and installs it, potentially notifying the operator
-  via e-mail, SMS, etc.
+  via email, SMS, etc.
 * The ACME client periodically contacts the CA to get updated certificates,
   stapled OCSP responses, or whatever else would be required to keep the web
   server functional and its credentials up-to-date.
