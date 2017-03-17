@@ -352,7 +352,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-3-13" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-3-17" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -376,7 +376,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: September 14, 2017</td>
+  <td class="left">Expires: September 18, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -389,7 +389,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">March 13, 2017</td>
+  <td class="right">March 17, 2017</td>
 </tr>
 
     	
@@ -411,7 +411,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on September 14, 2017.</p>
+<p>This Internet-Draft will expire on September 18, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -504,11 +504,11 @@ address {
 <ul>
   <li>Generate a PKCS#10 <a href="#RFC2986">[RFC2986]</a> Certificate Signing Request (CSR).</li>
   <li>Cut-and-paste the CSR into a CA web page.</li>
-  <li>Prove ownership of the domain by one of the following methods: <ul><li>Put a CA-provided challenge at a specific place on the web server.</li><li>Put a CA-provided challenge at a DNS location corresponding to the target domain.</li><li>Receive CA challenge at a (hopefully) administrator-controlled e-mail address corresponding to the domain and then respond to it on the CA&#8217;s web page.</li></ul></li>
+  <li>Prove ownership of the domain by one of the following methods: <ul><li>Put a CA-provided challenge at a specific place on the web server.</li><li>Put a CA-provided challenge at a DNS location corresponding to the target domain.</li><li>Receive CA challenge at a (hopefully) administrator-controlled email address corresponding to the domain and then respond to it on the CA&#8217;s web page.</li></ul></li>
   <li>Download the issued certificate and install it on their Web Server.</li>
 </ul>
 <p id="rfc.section.1.p.5">With the exception of the CSR itself and the certificates that are issued, these are all completely ad hoc procedures and are accomplished by getting the human user to follow interactive natural-language instructions from the CA rather than by machine-implemented published protocols.  In many cases, the instructions are difficult to follow and cause significant confusion.  Informal usability tests by the authors indicate that webmasters often need 1-3 hours to obtain and install a certificate for a domain.  Even in the best case, the lack of published, standardized mechanisms presents an obstacle to the wide deployment of HTTPS and other PKIX-dependent systems because it inhibits mechanization of tasks related to certificate issuance, deployment, and revocation.</p>
-<p id="rfc.section.1.p.6">This document describes an extensible framework for automating the issuance and domain validation procedure, thereby allowing servers and infrastructural software to obtain certificates without user interaction.  Use of this protocol should radically simplify the deployment of HTTPS and the practicality of PKIX authentication for other protocols based on TLS <a href="#RFC5246">[RFC5246]</a>.</p>
+<p id="rfc.section.1.p.6">This document describes an extensible framework for automating the issuance and domain validation procedure, thereby allowing servers and infrastructural software to obtain certificates without user interaction.  Use of this protocol should radically simplify the deployment of HTTPS and the practicality of PKIX authentication for other protocols based on Transport Layer Security (TLS) <a href="#RFC5246">[RFC5246]</a>.</p>
 <h1 id="rfc.section.2"><a href="#rfc.section.2">2.</a> <a href="#deployment-model-and-operator-experience" id="deployment-model-and-operator-experience">Deployment Model and Operator Experience</a></h1>
 <p id="rfc.section.2.p.1">The guiding use case for ACME is obtaining certificates for websites (HTTPS <a href="#RFC2818">[RFC2818]</a>).  In this case, the user&#8217;s web server is intended to speak for one or more domains, and the process of certificate issuance is intended to verify that this web server actually speaks for the domain(s).</p>
 <p id="rfc.section.2.p.2">DV certificate validation commonly checks claims about properties related to control of a domain name &#8211; properties that can be observed by the certificate issuer in an interactive process that can be conducted purely online.  That means that under typical circumstances, all steps in the request, verification, and issuance process can be represented and performed by Internet protocols with no out-of-band human intervention.</p>
@@ -520,7 +520,7 @@ address {
   <li>The ACME client presents the operator with a list of CAs from which it could get a certificate.  (This list will change over time based on the capabilities of CAs and updates to ACME configuration.) The ACME client might prompt the operator for payment information at this point.</li>
   <li>The operator selects a CA.</li>
   <li>In the background, the ACME client contacts the CA and requests that it issue a certificate for the intended domain name(s).</li>
-  <li>Once the CA is satisfied, the certificate is issued and the ACME client automatically downloads and installs it, potentially notifying the operator via e-mail, SMS, etc.</li>
+  <li>Once the CA is satisfied, the certificate is issued and the ACME client automatically downloads and installs it, potentially notifying the operator via email, SMS, etc.</li>
   <li>The ACME client periodically contacts the CA to get updated certificates, stapled OCSP responses, or whatever else would be required to keep the web server functional and its credentials up-to-date.</li>
 </ul>
 <p id="rfc.section.2.p.5">In this way, it would be nearly as easy to deploy with a CA-issued certificate as with a self-signed certificate. Furthermore, the maintenance of that CA-issued certificate would require minimal manual intervention.  Such close integration of ACME with HTTPS servers would allow the immediate and automated deployment of certificates as they are issued, sparing the human administrator from much of the time-consuming work described in the previous section.</p>
@@ -529,7 +529,7 @@ address {
 <p id="rfc.section.3.p.2">The two main roles in ACME are &#8220;client&#8221; and &#8220;server&#8221;.  The ACME client uses the protocol to request certificate management actions, such as issuance or revocation.  An ACME client therefore typically runs on a web server, mail server, or some other server system which requires valid TLS certificates.  The ACME server runs at a certification authority, and responds to client requests, performing the requested actions if the client is authorized.</p>
 <p id="rfc.section.3.p.3">An ACME client is represented by an &#8220;account key pair&#8221;.  The client uses the private key of this key pair to sign all messages sent to the server.  The server uses the public key to verify the authenticity and integrity of messages from the client.</p>
 <h1 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#protocol-overview" id="protocol-overview">Protocol Overview</a></h1>
-<p id="rfc.section.4.p.1">ACME allows a client to request certificate management actions using a set of JSON messages carried over HTTPS.   In many ways, ACME functions much like a traditional CA, in which a user creates an account, requests a certificate, and proves control of the domains in that certificate in order for the CA to sign the requested certificate.</p>
+<p id="rfc.section.4.p.1">ACME allows a client to request certificate management actions using a set of JavaScript Object Notation (JSON) messages carried over HTTPS.  In many ways, ACME functions much like a traditional CA, in which a user creates an account, requests a certificate, and proves control of the domains in that certificate in order for the CA to sign the requested certificate.</p>
 <p id="rfc.section.4.p.2">The first phase of ACME is for the client to request an account with the ACME server.  The client generates an asymmetric key pair and requests a new account, optionally providing contact information, agreeing to terms of service, and/or associating the account with an existing account in another system. The creation request is signed with the generated private key to prove that the client controls it.</p>
 <pre>
       Client                                                  Server
@@ -550,7 +550,7 @@ address {
   <li>Await issuance and download the issued certificate</li>
 </ol>
 <p id="rfc.section.4.p.5">The client&#8217;s order for a certificate describes the desired certificate using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that capture semantics that are not supported in the CSR format.  If the server is willing to consider issuing such a certificate, it responds with a list of requirements that the client must satisfy before the certificate will be issued.</p>
-<p id="rfc.section.4.p.6">For example, in most cases, the server will require the client to demonstrate that it controls the identifiers in the requested certificate.  Because there are many different ways to validate possession of different types of identifiers, the server will choose from an extensible set of challenges that are appropriate for the identifier being claimed.  The client responds with a set of responses that tell the server which challenges the client has completed.  The server then validates the challenges to check that the client has accomplished the challenge.</p>
+<p id="rfc.section.4.p.6">For example, in most cases, the server will require the client to demonstrate that it controls the identifiers in the requested certificate.  Because there are many different ways to validate possession of different types of identifiers, the server will choose from an extensible set of challenges that are appropriate for the identifier being claimed.  The client responds with a set of responses that tell the server which challenges the client has completed.  The server then validates the challenges to check that the client has accomplished them.</p>
 <p id="rfc.section.4.p.7">Once the validation process is complete and the server is satisfied that the client has met its requirements, the server will issue the requested certificate and make it available to the client.</p>
 <pre>
       Order
@@ -574,7 +574,7 @@ address {
 
                                    &lt;--------                 Result
 </pre>
-<p id="rfc.section.4.p.9">Note that while ACME is defined with enough flexibility to handle different types of identifiers in principle, the primary use case addressed by this document is the case where domain names are used as identifiers.  For example, all of the identifier validation challenges described in <a href="#identifier-validation-challenges">Section 8</a> below address validation of domain names.  The use of ACME for other identifiers will require further specification, in order to describe how these identifiers are encoded in the protocol, and what types of validation challenges the server might require.</p>
+<p id="rfc.section.4.p.9">Note that while ACME is defined with enough flexibility to handle different types of identifiers in principle, the primary use case addressed by this document is the case where domain names are used as identifiers.  For example, all of the identifier validation challenges described in <a href="#identifier-validation-challenges">Section 8</a> below address validation of domain names.  The use of ACME for other identifiers will require further specification in order to describe how these identifiers are encoded in the protocol and what types of validation challenges the server might require.</p>
 <h1 id="rfc.section.5"><a href="#rfc.section.5">5.</a> <a href="#character-encoding" id="character-encoding">Character Encoding</a></h1>
 <p id="rfc.section.5.p.1">All requests and responses sent via HTTP by ACME clients, ACME servers, and validation servers as well as any inputs for digest computations MUST be encoded using the UTF-8 <a href="#RFC3629">[RFC3629]</a> character set.</p>
 <h1 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#message-transport" id="message-transport">Message Transport</a></h1>
@@ -593,8 +593,8 @@ address {
 
 <ul>
   <li>The JWS MUST NOT have the value &#8220;none&#8221; in its &#8220;alg&#8221; field</li>
-  <li>The JWS MUST NOT have a MAC-based algorithm in its &#8220;alg&#8221; field</li>
-  <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221;</li><li>&#8220;jwk&#8221; (only for requests to new-account and revoke-cert resources)</li><li>&#8220;kid&#8221; (for all other requests).</li><li>&#8220;nonce&#8221; (defined below)</li><li>&#8220;url&#8221; (defined below)</li></ul></li>
+  <li>The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its &#8220;alg&#8221; field</li>
+  <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221;</li><li>&#8220;jwk&#8221; (only for requests to new-account and revoke-cert resources)</li><li>&#8220;kid&#8221; (for all other requests)</li><li>&#8220;nonce&#8221; (defined in <a href="#replay-protection">Section 6.4</a> below)</li><li>&#8220;url&#8221; (defined in <a href="#request-uri-integrity">Section 6.3</a> below)</li></ul></li>
 </ul>
 <p id="rfc.section.6.2.p.4">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
 <p id="rfc.section.6.2.p.5">For new-account requests, and for revoke-cert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field.</p>
@@ -605,14 +605,14 @@ address {
 <h1 id="rfc.section.6.3"><a href="#rfc.section.6.3">6.3.</a> <a href="#request-uri-integrity" id="request-uri-integrity">Request URI Integrity</a></h1>
 <p id="rfc.section.6.3.p.1">It is common in deployment for the entity terminating TLS for HTTPS to be different from the entity operating the logical HTTPS server, with a &#8220;request routing&#8221; layer in the middle.  For example, an ACME CA might have a content delivery network terminate TLS connections from clients so that it can inspect client requests for denial-of-service protection.</p>
 <p id="rfc.section.6.3.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to provide an integrity mechanism, which protects against an intermediary changing the request URI to another ACME URI.</p>
-<p id="rfc.section.6.3.p.3">As noted above, all ACME request objects carry a &#8220;url&#8221; parameter in their protected header.  This header parameter encodes the URL to which the client is directing the request.  On receiving such an object in an HTTP request, the server MUST compare the &#8220;url&#8221; parameter to the request URI.  If the two do not match, then the server MUST reject the request as unauthorized.</p>
+<p id="rfc.section.6.3.p.3">As noted in <a href="#request-authentication">Section 6.2</a> above, all ACME request objects carry a &#8220;url&#8221; parameter in their protected header.  This header parameter encodes the URL to which the client is directing the request.  On receiving such an object in an HTTP request, the server MUST compare the &#8220;url&#8221; parameter to the request URI.  If the two do not match, then the server MUST reject the request as unauthorized.</p>
 <p id="rfc.section.6.3.p.4">Except for the directory resource, all ACME resources are addressed with URLs provided to the client by the server.  For these resources, the client MUST set the &#8220;url&#8221; field to the exact string provided by the server (rather than performing any re-encoding on the URL).  The server SHOULD perform the corresponding string equality check, configuring each resource with the URL string provided to clients and having the resource check that requests have the same string in their &#8220;url&#8221; fields.</p>
 <h1 id="rfc.section.6.3.1"><a href="#rfc.section.6.3.1">6.3.1.</a> <a href="#url-url-jws-header-parameter" id="url-url-jws-header-parameter">&#8220;url&#8221; (URL) JWS header parameter</a></h1>
 <p id="rfc.section.6.3.1.p.1">The &#8220;url&#8221; header parameter specifies the URL <a href="#RFC3986">[RFC3986]</a> to which this JWS object is directed.  The &#8220;url&#8221; parameter MUST be carried in the protected header of the JWS.  The value of the &#8220;url&#8221; header MUST be a string representing the URL.</p>
 <h1 id="rfc.section.6.4"><a href="#rfc.section.6.4">6.4.</a> <a href="#replay-protection" id="replay-protection">Replay protection</a></h1>
 <p id="rfc.section.6.4.p.1">In order to protect ACME resources from any possible replay attacks, ACME requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
-<p id="rfc.section.6.4.p.2">An ACME server provides nonces to clients using the Replay-Nonce header field, as specified below.  The server MUST include a Replay-Nonce header field in every successful response to a POST request and SHOULD provide it in error responses as well.</p>
-<p id="rfc.section.6.4.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
+<p id="rfc.section.6.4.p.2">An ACME server provides nonces to clients using the Replay-Nonce header field, as specified in <a href="#replay-nonce">Section 6.4.1</a> below.  The server MUST include a Replay-Nonce header field in every successful response to a POST request and SHOULD provide it in error responses as well.</p>
+<p id="rfc.section.6.4.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined in <a href="#nonce-nonce-jws-header-parameter">Section 6.4.2</a> below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
 <p id="rfc.section.6.4.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it MUST provide HTTP status code 400 (Bad Request), and indicate the ACME error type &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error type MUST include a Replay-Nonce header with a fresh nonce.  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
 <p id="rfc.section.6.4.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
 <h1 id="rfc.section.6.4.1"><a href="#rfc.section.6.4.1">6.4.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a></h1>
@@ -691,7 +691,7 @@ address {
     </tr>
     <tr>
       <td class="left">caa</td>
-      <td class="left">CAA records forbid the CA from issuing</td>
+      <td class="left">Certification Authority Authorization (CAA) records forbid the CA from issuing</td>
     </tr>
     <tr>
       <td class="left">dns</td>
@@ -724,7 +724,7 @@ address {
   <li>Certificate Revocation</li>
 </ul>
 <h1 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1.</a> <a href="#resources" id="resources">Resources</a></h1>
-<p id="rfc.section.7.1.p.1">ACME is structured as a REST application with a few types of resources:</p>
+<p id="rfc.section.7.1.p.1">ACME is structured as a REST application with the following types of resources:</p>
 <p/>
 
 <ul>
@@ -970,7 +970,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 }
 </pre>
 <p id="rfc.section.7.1.3.p.3">The elements of the &#8220;authorizations&#8221; array are immutable once set.  The server MUST NOT change the contents of the &#8220;authorizations&#8221; array after it is created.  If a client observes a change in the contents of the &#8220;authorizations&#8221; array, then it SHOULD consider the order invalid.</p>
-<p id="rfc.section.7.1.3.p.4">The &#8220;authorizations&#8221; array in the challenge SHOULD reflect all authorizations that the CA takes into account in deciding to issue, even if some authorizations were fulfilled in earlier orders or in pre-authorization transactions.  For example, if a CA allows multiple orders to be fulfilled based on a single authorization transaction, then it SHOULD reflect that authorization in all of the order.</p>
+<p id="rfc.section.7.1.3.p.4">The &#8220;authorizations&#8221; array in the challenge SHOULD reflect all authorizations that the CA takes into account in deciding to issue, even if some authorizations were fulfilled in earlier orders or in pre-authorization transactions.  For example, if a CA allows multiple orders to be fulfilled based on a single authorization transaction, then it SHOULD reflect that authorization in all of the orders.</p>
 <h1 id="rfc.section.7.1.4"><a href="#rfc.section.7.1.4">7.1.4.</a> <a href="#authorization-objects" id="authorization-objects">Authorization Objects</a></h1>
 <p id="rfc.section.7.1.4.p.1">An ACME authorization object represents a server&#8217;s authorization for an account to represent an identifier.  In addition to the identifier, an authorization includes several metadata fields, such as the status of the authorization (e.g., &#8220;pending&#8221;, &#8220;valid&#8221;, or &#8220;revoked&#8221;) and which challenges were used to validate possession of the identifier.</p>
 <p id="rfc.section.7.1.4.p.2">The structure of an ACME authorization resource is as follows:</p>
@@ -1212,7 +1212,7 @@ Content-Type: application/jose+json
 <p/>
 
 <ol>
-  <li>Validate the POST request belongs to a currently active account, as described in Message Transport.</li>
+  <li>Validate the POST request belongs to a currently active account, as described in <a href="#message-transport">Section 6</a>.</li>
   <li>Check that the payload of the JWS is a well-formed JWS object (the &#8220;inner JWS&#8221;).</li>
   <li>Check that the JWS protected header of the inner JWS has a &#8220;jwk&#8221; field.</li>
   <li>Check that the inner JWS verifies using the key in its &#8220;jwk&#8221; field.</li>
@@ -1664,7 +1664,7 @@ Content-Type: application/jose+json
 <p/>
 
 <ol>
-  <li>Construct a URI by populating the URI template <a href="#RFC6570">[RFC6570]</a> &#8220;http://{domain}/.well-known/acme-challenge/{token}&#8221;, where: <ul><li>the domain field is set to the domain name being verified; and</li><li>the token field is set to the token in the challenge.</li></ul></li>
+  <li>Construct a URI by populating the URI template <a href="#RFC6570">[RFC6570]</a> &#8220;http://{domain}/.well-known/acme-challenge/{token}&#8221;, where: * the domain field is set to the domain name being verified; and * the token field is set to the token in the challenge.</li>
   <li>Verify that the resulting URI is well-formed.</li>
   <li>Dereference the URI using an HTTP GET request.  This request MUST be sent to TCP port 80 on the HTTP server.</li>
   <li>Verify that the body of the response is well-formed key authorization.  The server SHOULD ignore whitespace characters at the end of the body.</li>
