@@ -85,7 +85,7 @@ certificates, a typical user experience is something like:
    * Put a CA-provided challenge at a specific place on the web server.
    * Put a CA-provided challenge at a DNS location corresponding to the target
      domain.
-   * Receive CA challenge at a (hopefully) administrator-controlled e-mail
+   * Receive CA challenge at a (hopefully) administrator-controlled email
      address corresponding to the domain and then respond to it on the CA's web
      page.
 * Download the issued certificate and install it on their Web Server.
@@ -105,7 +105,8 @@ This document describes an extensible framework for automating the issuance and
 domain validation procedure, thereby allowing servers and infrastructural
 software to obtain certificates without user interaction.  Use of this protocol
 should radically simplify the deployment of HTTPS and the practicality of PKIX
-authentication for other protocols based on TLS {{!RFC5246}}.
+authentication for other protocols based on Transport Layer Security (TLS)
+{{!RFC5246}}.
 
 # Deployment Model and Operator Experience
 
@@ -137,7 +138,7 @@ this:
   issue a certificate for the intended domain name(s).
 * Once the CA is satisfied, the certificate is issued and the ACME client
   automatically downloads and installs it, potentially notifying the operator
-  via e-mail, SMS, etc.
+  via email, SMS, etc.
 * The ACME client periodically contacts the CA to get updated certificates,
   stapled OCSP responses, or whatever else would be required to keep the web
   server functional and its credentials up-to-date.
@@ -171,10 +172,10 @@ from the client.
 # Protocol Overview
 
 ACME allows a client to request certificate management actions using a set of
-JSON messages carried over HTTPS.   In many ways, ACME functions much like a
-traditional CA, in which a user creates an account, requests a certificate,
-and proves control of the domains in that certificate in order for the CA to
-sign the requested certificate.
+JavaScript Object Notation (JSON) messages carried over HTTPS.  In many ways,
+ACME functions much like a traditional CA, in which a user creates an account,
+requests a certificate, and proves control of the domains in that certificate in
+order for the CA to sign the requested certificate.
 
 The first phase of ACME is for the client to request an account with the
 ACME server.  The client generates an asymmetric key pair and requests a
@@ -215,7 +216,7 @@ identifiers, the server will choose from an extensible set of challenges that
 are appropriate for the identifier being claimed.  The client responds with a
 set of responses that tell the server which challenges the client has completed.
 The server then validates the challenges to check that the client has
-accomplished the challenge.
+accomplished them.
 
 Once the validation process is complete and the server is satisfied that the
 client has met its requirements, the server will issue the requested certificate
@@ -252,8 +253,8 @@ types of identifiers in principle, the primary use case addressed by this
 document is the case where domain names are used as identifiers.  For example,
 all of the identifier validation challenges described in
 {{identifier-validation-challenges}} below address validation of domain names.
-The use of ACME for other identifiers will require further specification, in order
-to describe how these identifiers are encoded in the protocol, and what types of
+The use of ACME for other identifiers will require further specification in order
+to describe how these identifiers are encoded in the protocol and what types of
 validation challenges the server might require.
 
 # Character Encoding
@@ -312,13 +313,13 @@ authentication of requests.
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST NOT have the value "none" in its "alg" field
-* The JWS MUST NOT have a MAC-based algorithm in its "alg" field
+* The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg"
   * "jwk" (only for requests to new-account and revoke-cert resources)
-  * "kid" (for all other requests).
-  * "nonce" (defined below)
-  * "url" (defined below)
+  * "kid" (for all other requests)
+  * "nonce" (defined in {{replay-protection}} below)
+  * "url" (defined in {{request-uri-integrity}} below)
 
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
@@ -358,11 +359,11 @@ in the HTTPS request, e.g., the request URI and headers.  ACME uses JWS to
 provide an integrity mechanism, which protects against an intermediary
 changing the request URI to another ACME URI.
 
-As noted above, all ACME request objects carry a "url" parameter in their
-protected header.  This header parameter encodes the URL to which the client is
-directing the request.  On receiving such an object in an HTTP request, the server
-MUST compare the "url" parameter to the request URI.  If the two do not match,
-then the server MUST reject the request as unauthorized.
+As noted in {{request-authentication}} above, all ACME request objects carry a
+"url" parameter in their protected header.  This header parameter encodes the URL
+to which the client is directing the request.  On receiving such an object in an
+HTTP request, the server MUST compare the "url" parameter to the request URI.  If
+the two do not match, then the server MUST reject the request as unauthorized.
 
 Except for the directory resource, all ACME resources are addressed with URLs
 provided to the client by the server.  For these resources, the client MUST set the
@@ -387,16 +388,17 @@ server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
 An ACME server provides nonces to clients using the Replay-Nonce header field,
-as specified below.  The server MUST include a Replay-Nonce header field in
-every successful response to a POST request and SHOULD provide it in error
-responses as well.
+as specified in {{replay-nonce}} below.  The server MUST include a Replay-Nonce
+header field in every successful response to a POST request and SHOULD provide
+it in error responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
-"nonce" header parameter, with contents as defined below.  As part of JWS
-verification, the ACME server MUST verify that the value of the "nonce" header
-is a value that the server previously provided in a Replay-Nonce header field.
-Once a nonce value has appeared in an ACME request, the server MUST consider it
-invalid, in the same way as a value it had never issued.
+"nonce" header parameter, with contents as defined in
+{{nonce-nonce-jws-header-parameter}} below.  As part of JWS verification, the
+ACME server MUST verify that the value of the "nonce" header is a value that the
+server previously provided in a Replay-Nonce header field.  Once a nonce value
+has appeared in an ACME request, the server MUST consider it invalid, in the same
+way as a value it had never issued.
 
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
@@ -467,25 +469,25 @@ information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Type                  | Description                                                        |
-|:----------------------|:-------------------------------------------------------------------|
-| badCSR                | The CSR is unacceptable (e.g., due to a short key)                 |
-| badNonce              | The client sent an unacceptable anti-replay nonce                  |
-| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support   |
-| invalidContact        | The contact URI for an account was invalid                         |
-| malformed             | The request message was malformed                                  |
-| rateLimited           | The request exceeds a rate limit                                   |
-| rejectedIdentifier    | The server will not issue for the identifier                       |
-| serverInternal        | The server experienced an internal error                           |
-| unauthorized          | The client lacks sufficient authorization                          |
-| unsupportedIdentifier | Identifier is not supported, but may be in future                  |
-| userActionRequired    | Visit the "instance" URL and take actions specified there          |
-| badRevocationReason   | The revocation reason provided is not allowed by the server        |
-| caa                   | CAA records forbid the CA from issuing                             |
-| dns                   | There was a problem with a DNS query                               |
-| connection            | The server could not connect to validation target                  |
-| tls                   | The server received a TLS error during validation                  |
-| incorrectResponse     | Response received didn't match the challenge's requirements        |
+| Type                  | Description                                                                    |
+|:----------------------|:-------------------------------------------------------------------------------|
+| badCSR                | The CSR is unacceptable (e.g., due to a short key)                             |
+| badNonce              | The client sent an unacceptable anti-replay nonce                              |
+| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support               |
+| invalidContact        | The contact URI for an account was invalid                                     |
+| malformed             | The request message was malformed                                              |
+| rateLimited           | The request exceeds a rate limit                                               |
+| rejectedIdentifier    | The server will not issue for the identifier                                   |
+| serverInternal        | The server experienced an internal error                                       |
+| unauthorized          | The client lacks sufficient authorization                                      |
+| unsupportedIdentifier | Identifier is not supported, but may be in future                              |
+| userActionRequired    | Visit the "instance" URL and take actions specified there                      |
+| badRevocationReason   | The revocation reason provided is not allowed by the server	                 |
+| caa                   | Certification Authority Authorization (CAA) records forbid the CA from issuing |
+| dns                   | There was a problem with a DNS query                                           |
+| connection            | The server could not connect to validation target                              |
+| tls                   | The server received a TLS error during validation                              |
+| incorrectResponse     | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
@@ -506,7 +508,7 @@ enables:
 
 ## Resources
 
-ACME is structured as a REST application with a few types of resources:
+ACME is structured as a REST application with the following types of resources:
 
 * Account resources, representing information about an account
   ({{account-objects}}, {{account-creation}})
@@ -789,7 +791,7 @@ that the CA takes into account in deciding to issue, even if some authorizations
 were fulfilled in earlier orders or in pre-authorization transactions.  For
 example, if a CA allows multiple orders to be fulfilled based on a single
 authorization transaction, then it SHOULD reflect that authorization in all of
-the order.
+the orders.
 
 ### Authorization Objects
 
@@ -1181,7 +1183,7 @@ On receiving key-change request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
 1. Validate the POST request belongs to a currently active account, as described
-   in Message Transport.
+   in {{message-transport}}.
 2. Check that the payload of the JWS is a well-formed JWS object (the "inner
    JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
