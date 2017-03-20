@@ -357,7 +357,7 @@ requests for denial-of-service protection.
 These intermediaries can also change values in the request that are not signed
 in the HTTPS request, e.g., the request URL and headers.  ACME uses JWS to
 provide an integrity mechanism, which protects against an intermediary
-changing the request URL to another ACME (--TODO ???--) URL.
+changing the request URL to another ACME URL.
 
 As noted in {{request-authentication}} above, all ACME request objects carry a
 "url" parameter in their protected header.  This header parameter encodes the URL
