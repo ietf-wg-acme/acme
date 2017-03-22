@@ -1866,7 +1866,7 @@ type (required, string):
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
-at least 128 bits of entropy, in order to prevent an attacker from guessing it.
+at least 128 bits of entropy in order to prevent fully automatic challenge response without knowing the token from challenge creation.
 It MUST NOT contain any characters outside the base64url alphabet, including
 padding characters ("=").
 
