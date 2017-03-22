@@ -665,9 +665,9 @@ Account resources have the following structure:
 
 status (required, string):
 : The status of this account. Possible values are: "valid", "deactivated", and
-"revoked".  The value "deactivated" should be used to indicate user initiated
-deactivation whereas "revoked" should be used to indicate administratively
-initiated deactivation.
+"revoked".  The value "deactivated" should be used to indicate client-initiated
+deactivation whereas "revoked" should be used to indicate server-initiated
+deactivation.
 
 contact (optional, array of string):
 : An array of URIs that the server can use to contact the client for issues
