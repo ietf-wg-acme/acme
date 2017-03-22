@@ -524,7 +524,7 @@ ACME is structured as a REST application with the following types of resources:
 * A "new-nonce" resource ({{getting-a-nonce}})
 * A "new-account" resource ({{account-creation}})
 * A "new-order" resource ({{applying-for-certificate-issuance}})
-* A "revoke-certificate" resource ({{certificate-revocation}})
+* A "revoke-cert" resource ({{certificate-revocation}})
 * A "key-change" resource ({{account-key-roll-over}})
 
 The server MUST provide "directory" and "new-nonce" resources.
@@ -561,7 +561,7 @@ indicate HTTP link relations.
        |          |          |
        |          |          |
        V          |          V
-      acct        |        order --------> cert
+    account       |        order --------> cert
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
