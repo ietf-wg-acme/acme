@@ -829,8 +829,8 @@ absent, then the CA MUST consider this authorization valid for all orders until
 the authorization expires.
 
 challenges (required, array of objects):
-: The challenges that the client can fulfill in order to prove possession of the
-identifier (for pending authorizations).  For final authorizations, the
+: For pending authorizations, the challenges that the client can fulfill in
+order to prove possession of the identifier.  For final authorizations, the
 challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill
 one of these challenges, and a server should consider any one of the challenges
