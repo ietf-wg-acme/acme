@@ -360,25 +360,26 @@ provide an integrity mechanism, which protects against an intermediary
 changing the request URI to another ACME URI.
 
 As noted in {{request-authentication}} above, all ACME request objects carry a
-"url" parameter in their protected header.  This header parameter encodes the URL
-to which the client is directing the request.  On receiving such an object in an
-HTTP request, the server MUST compare the "url" parameter to the request URI.  If
-the two do not match, then the server MUST reject the request as unauthorized.
+"url" header parameter in their protected header.  This header parameter encodes
+the URL to which the client is directing the request.  On receiving such an
+object in an HTTP request, the server MUST compare the "url" header parameter to
+the request URI.  If the two do not match, then the server MUST reject the
+request as unauthorized.
 
 Except for the directory resource, all ACME resources are addressed with URLs
-provided to the client by the server.  For these resources, the client MUST set the
-"url" field to the exact string provided by the server (rather than performing
-any re-encoding on the URL).  The server SHOULD perform the corresponding string
-equality check, configuring each resource with the URL string provided to
-clients and having the resource check that requests have the same string in
-their "url" fields.
+provided to the client by the server.  For these resources, the client MUST set
+the "url" header parameter to the exact string provided by the server (rather
+than performing any re-encoding on the URL).  The server SHOULD perform the
+corresponding string equality check, configuring each resource with the URL
+string provided to clients and having the resource check that requests have the
+same string in their "url" header parameter.
 
 ### "url" (URL) JWS header parameter
 
-The "url" header parameter specifies the URL {{!RFC3986}} to which this JWS object is
-directed.  The "url" parameter MUST be carried in the protected
-header of the JWS.  The value of the "url" header MUST be a string representing
-the URL.
+The "url" header parameter specifies the URL {{!RFC3986}} to which this JWS
+object is directed.  The "url" header parameter MUST be carried in the protected
+header of the JWS.  The value of the "url" header parameter MUST be a string
+representing the URL.
 
 ## Replay protection
 
@@ -1142,9 +1143,9 @@ The outer JWS MUST meet the normal requirements for an ACME JWS (see
 {{request-authentication}}).  The inner JWS MUST meet the normal requirements,
 with the following exceptions:
 
-* The inner JWS MUST have the same "url" parameter as the outer JWS.
-* The inner JWS is NOT REQUIRED to have a "nonce" parameter.  The server MUST
-  ignore any value provided for the "nonce" header parameter.
+* The inner JWS MUST have the same "url" header parameter as the outer JWS.
+* The inner JWS is NOT REQUIRED to have a "nonce" header parameter.  The server
+  MUST ignore any value provided for the "nonce" header parameter.
 
 This transaction has signatures from both the old and new keys so that the
 server can verify that the holders of the two keys both agree to the change.
