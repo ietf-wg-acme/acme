@@ -317,9 +317,9 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have the value "none" in its "alg" field
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
-  * "alg"
-  * "jwk" (only for requests to new-account and revoke-cert resources)
-  * "kid" (for all other requests)
+  * "alg" (Algorithm)
+  * "jwk" (JSON Web Key, only for requests to new-account and revoke-cert resources)
+  * "kid" (Key ID, for all other requests)
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-uri-integrity}} below)
 
