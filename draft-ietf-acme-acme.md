@@ -459,7 +459,7 @@ documentation about the specific hit rate limits using the
 ## Errors
 
 Errors can be reported in ACME both at the HTTP layer and within challenge objects
-as defined in {{identifier-validation-challenges}. ACME servers can return
+as defined in {{identifier-validation-challenges}}. ACME servers can return
 responses with an HTTP error response code (4XX or 5XX). For example:  If the
 client submits a request using a method not allowed in this document, then the
 server MAY return status code 405 (Method Not Allowed).
