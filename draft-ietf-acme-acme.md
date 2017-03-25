@@ -159,10 +159,12 @@ document are to be interpreted as described in RFC 2119 {{!RFC2119}}.
 
 The two main roles in ACME are “client” and “server”.  The ACME client uses the
 protocol to request certificate management actions, such as issuance or
-revocation.  An ACME client therefore typically runs on a web server, mail
-server, or some other server system which requires valid TLS certificates.  The
-ACME server runs at a certification authority, and responds to client requests,
-performing the requested actions if the client is authorized.
+revocation.  An ACME client may run on a web server, mail server, or some other
+server system which requires valid TLS certificates.  Or, it may run on a separate
+server that does not consume the certificate, but is authorized to respond to the
+identifier validation challenge.  The ACME server runs at a certification authority,
+and responds to client requests, performing the requested actions if the client is
+authorized.
 
 An ACME client is represented by an "account key pair".  The client uses the
 private key of this key pair to sign all messages sent to the server.  The
