@@ -490,7 +490,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | incorrectResponse     | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
-set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
+set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
 
