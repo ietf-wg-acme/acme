@@ -1992,7 +1992,7 @@ the challenge.
 
 The certificate may be constructed arbitrarily, except that each certificate
 MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be
-dNSNames.
+dNSNames {{!RFC2585}}.
 
 SAN A MUST be constructed as follows: compute the SHA-256 digest [FIPS180-4] of
 the challenge token and encode it in lowercase hexadecimal form.
