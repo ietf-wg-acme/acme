@@ -5,10 +5,10 @@
 ACME Working Group                                             R. Barnes
 Internet-Draft                                                   Mozilla
 Intended status: Standards Track                      J. Hoffman-Andrews
-Expires: September 25, 2017                                          EFF
+Expires: September 28, 2017                                          EFF
                                                                J. Kasten
                                                   University of Michigan
-                                                          March 24, 2017
+                                                          March 27, 2017
 
 
           Automatic Certificate Management Environment (ACME)
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 1]
+Barnes, et al.         Expires September 28, 2017               [Page 1]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -61,7 +61,7 @@ Internet-Draft                    ACME                        March 2017
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 25, 2017.
+   This Internet-Draft will expire on September 28, 2017.
 
 Copyright Notice
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 2]
+Barnes, et al.         Expires September 28, 2017               [Page 2]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -138,24 +138,24 @@ Internet-Draft                    ACME                        March 2017
      9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  55
        9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  56
        9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  57
-       9.7.3.  Error Types . . . . . . . . . . . . . . . . . . . . .  58
+       9.7.3.  Error Types . . . . . . . . . . . . . . . . . . . . .  57
        9.7.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  58
-       9.7.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  59
+       9.7.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  58
        9.7.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  59
    10. Security Considerations . . . . . . . . . . . . . . . . . . .  60
-     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  61
-     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  62
-     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  64
-     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  65
+     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  60
+     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  61
+     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  63
+     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  64
      10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  65
-   11. Operational Considerations  . . . . . . . . . . . . . . . . .  66
-     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  66
-     11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  67
+   11. Operational Considerations  . . . . . . . . . . . . . . . . .  65
+     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  65
+     11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  66
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  67
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  68
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  68
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  67
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  67
      13.2.  Informative References . . . . . . . . . . . . . . . . .  70
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  71
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  70
 
 1.  Introduction
 
@@ -165,7 +165,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 3]
+Barnes, et al.         Expires September 28, 2017               [Page 3]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -221,7 +221,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 4]
+Barnes, et al.         Expires September 28, 2017               [Page 4]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -277,7 +277,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 5]
+Barnes, et al.         Expires September 28, 2017               [Page 5]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -333,7 +333,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 6]
+Barnes, et al.         Expires September 28, 2017               [Page 6]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -389,7 +389,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 7]
+Barnes, et al.         Expires September 28, 2017               [Page 7]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -445,7 +445,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 8]
+Barnes, et al.         Expires September 28, 2017               [Page 8]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -501,7 +501,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017               [Page 9]
+Barnes, et al.         Expires September 28, 2017               [Page 9]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -557,7 +557,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 10]
+Barnes, et al.         Expires September 28, 2017              [Page 10]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -613,7 +613,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 11]
+Barnes, et al.         Expires September 28, 2017              [Page 11]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -669,7 +669,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 12]
+Barnes, et al.         Expires September 28, 2017              [Page 12]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -725,7 +725,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 13]
+Barnes, et al.         Expires September 28, 2017              [Page 13]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -781,7 +781,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 14]
+Barnes, et al.         Expires September 28, 2017              [Page 14]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -837,7 +837,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 15]
+Barnes, et al.         Expires September 28, 2017              [Page 15]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -893,7 +893,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 16]
+Barnes, et al.         Expires September 28, 2017              [Page 16]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -949,7 +949,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 17]
+Barnes, et al.         Expires September 28, 2017              [Page 17]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1005,7 +1005,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 18]
+Barnes, et al.         Expires September 28, 2017              [Page 18]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1061,7 +1061,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 19]
+Barnes, et al.         Expires September 28, 2017              [Page 19]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1117,7 +1117,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 20]
+Barnes, et al.         Expires September 28, 2017              [Page 20]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1173,7 +1173,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 21]
+Barnes, et al.         Expires September 28, 2017              [Page 21]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 22]
+Barnes, et al.         Expires September 28, 2017              [Page 22]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1285,7 +1285,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 23]
+Barnes, et al.         Expires September 28, 2017              [Page 23]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1341,7 +1341,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 24]
+Barnes, et al.         Expires September 28, 2017              [Page 24]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1397,7 +1397,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 25]
+Barnes, et al.         Expires September 28, 2017              [Page 25]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1453,7 +1453,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 26]
+Barnes, et al.         Expires September 28, 2017              [Page 26]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1509,7 +1509,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 27]
+Barnes, et al.         Expires September 28, 2017              [Page 27]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1565,7 +1565,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 28]
+Barnes, et al.         Expires September 28, 2017              [Page 28]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1621,7 +1621,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 29]
+Barnes, et al.         Expires September 28, 2017              [Page 29]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1677,7 +1677,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 30]
+Barnes, et al.         Expires September 28, 2017              [Page 30]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1733,7 +1733,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 31]
+Barnes, et al.         Expires September 28, 2017              [Page 31]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1789,7 +1789,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 32]
+Barnes, et al.         Expires September 28, 2017              [Page 32]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1845,7 +1845,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 33]
+Barnes, et al.         Expires September 28, 2017              [Page 33]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1901,7 +1901,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 34]
+Barnes, et al.         Expires September 28, 2017              [Page 34]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -1957,7 +1957,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 35]
+Barnes, et al.         Expires September 28, 2017              [Page 35]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2013,7 +2013,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 36]
+Barnes, et al.         Expires September 28, 2017              [Page 36]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2069,7 +2069,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 37]
+Barnes, et al.         Expires September 28, 2017              [Page 37]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2125,7 +2125,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 38]
+Barnes, et al.         Expires September 28, 2017              [Page 38]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2181,7 +2181,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 39]
+Barnes, et al.         Expires September 28, 2017              [Page 39]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2237,7 +2237,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 40]
+Barnes, et al.         Expires September 28, 2017              [Page 40]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2293,7 +2293,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 41]
+Barnes, et al.         Expires September 28, 2017              [Page 41]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2349,7 +2349,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 42]
+Barnes, et al.         Expires September 28, 2017              [Page 42]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2405,7 +2405,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 43]
+Barnes, et al.         Expires September 28, 2017              [Page 43]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2461,7 +2461,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 44]
+Barnes, et al.         Expires September 28, 2017              [Page 44]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2517,7 +2517,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 45]
+Barnes, et al.         Expires September 28, 2017              [Page 45]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2573,7 +2573,7 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 46]
+Barnes, et al.         Expires September 28, 2017              [Page 46]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2629,7 +2629,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 47]
+Barnes, et al.         Expires September 28, 2017              [Page 47]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2685,7 +2685,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 48]
+Barnes, et al.         Expires September 28, 2017              [Page 48]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2741,7 +2741,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 49]
+Barnes, et al.         Expires September 28, 2017              [Page 49]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2797,7 +2797,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 50]
+Barnes, et al.         Expires September 28, 2017              [Page 50]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2853,7 +2853,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 51]
+Barnes, et al.         Expires September 28, 2017              [Page 51]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2909,7 +2909,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 52]
+Barnes, et al.         Expires September 28, 2017              [Page 52]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -2965,7 +2965,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 53]
+Barnes, et al.         Expires September 28, 2017              [Page 53]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -3021,7 +3021,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 54]
+Barnes, et al.         Expires September 28, 2017              [Page 54]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -3077,7 +3077,7 @@ Internet-Draft                    ACME                        March 2017
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 55]
+Barnes, et al.         Expires September 28, 2017              [Page 55]
 
 Internet-Draft                    ACME                        March 2017
 
@@ -3115,34 +3115,9 @@ Internet-Draft                    ACME                        March 2017
    Initial contents: The fields and descriptions defined in
    Section 7.1.2.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 56]
-
-Internet-Draft                    ACME                        March 2017
-
-
    +--------------------------+-------------+--------------+-----------+
    | Field Name               | Field Type  | Configurable | Reference |
    +--------------------------+-------------+--------------+-----------+
-   | key                      | object      | false        | RFC XXXX  |
-   |                          |             |              |           |
    | status                   | string      | false        | RFC XXXX  |
    |                          |             |              |           |
    | contact                  | array of    | true         | RFC XXXX  |
@@ -3155,6 +3130,13 @@ Internet-Draft                    ACME                        March 2017
    | orders                   | array of    | false        | RFC XXXX  |
    |                          | string      |              |           |
    +--------------------------+-------------+--------------+-----------+
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 56]
+
+Internet-Draft                    ACME                        March 2017
+
 
 9.7.2.  Fields in Order Objects
 
@@ -3176,23 +3158,6 @@ Internet-Draft                    ACME                        March 2017
 
    Initial contents: The fields and descriptions defined in
    Section 7.1.3.
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 57]
-
-Internet-Draft                    ACME                        March 2017
-
 
       +----------------+-----------------+--------------+-----------+
       | Field Name     | Field Type      | Configurable | Reference |
@@ -3222,6 +3187,13 @@ Internet-Draft                    ACME                        March 2017
    o  Type: The label to be included in the URN for this error,
       following "urn:ietf:params:acme:error:"
 
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 57]
+
+Internet-Draft                    ACME                        March 2017
+
+
    o  Description: A human-readable description of the error
 
    o  Reference: Where the error is defined
@@ -3242,13 +3214,6 @@ Internet-Draft                    ACME                        March 2017
    o  Resource type: The type of resource labeled by the key
 
    o  Reference: Where the resource type is defined
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 58]
-
-Internet-Draft                    ACME                        March 2017
-
 
    Initial contents:
 
@@ -3277,6 +3242,14 @@ Internet-Draft                    ACME                        March 2017
    o  Label: The value to be put in the "type" field of the identifier
       object
 
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 58]
+
+Internet-Draft                    ACME                        March 2017
+
+
    o  Reference: Where the identifier type is defined
 
    Initial contents:
@@ -3298,13 +3271,6 @@ Internet-Draft                    ACME                        March 2017
    Types registry.
 
    Template:
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 59]
-
-Internet-Draft                    ACME                        March 2017
-
 
    o  Label: The value to be put in the "type" field of challenge
       objects using this validation mechanism
@@ -3329,6 +3295,17 @@ Internet-Draft                    ACME                        March 2017
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
+
+
+
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 59]
+
+Internet-Draft                    ACME                        March 2017
+
+
 10.  Security Considerations
 
    ACME is a protocol for managing certificates that attest to
@@ -3349,18 +3326,6 @@ Internet-Draft                    ACME                        March 2017
    the ways that ACME achieves these security goals within that threat
    model.  We also discuss the denial-of-service risks that ACME servers
    face, and a few other miscellaneous considerations.
-
-
-
-
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 60]
-
-Internet-Draft                    ACME                        March 2017
-
 
 10.1.  Threat model
 
@@ -3389,6 +3354,14 @@ Internet-Draft                    ACME                        March 2017
    |   Server   |  Validation Channel
    +------------+
 
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 60]
+
+Internet-Draft                    ACME                        March 2017
+
+
    In practice, the risks to these channels are not entirely separate,
    but they are different in most cases.  Each channel, for example,
    uses a different communications pattern: the ACME channel will
@@ -3409,14 +3382,6 @@ Internet-Draft                    ACME                        March 2017
    means ensuring that an attacker with access to the validation channel
    can't obtain illegitimate authorization by acting as an ACME client
    (legitimately, in terms of the protocol).
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 61]
-
-Internet-Draft                    ACME                        March 2017
-
 
 10.2.  Integrity of Authorizations
 
@@ -3446,6 +3411,13 @@ Internet-Draft                    ACME                        March 2017
 
    o  Legitimate domain holder provisions the validation response
 
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 61]
+
+Internet-Draft                    ACME                        March 2017
+
+
    o  ACME server performs validation query and sees the response
       provisioned by the legitimate domain holder
 
@@ -3464,15 +3436,6 @@ Internet-Draft                    ACME                        March 2017
    requiring the client to perform some action that only someone who
    effectively controls the identifier can perform.  For the challenges
    in this document, the actions are:
-
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 62]
-
-Internet-Draft                    ACME                        March 2017
-
 
    o  HTTP: Provision files under .well-known on a web server for the
       domain
@@ -3503,6 +3466,14 @@ Internet-Draft                    ACME                        March 2017
    that to get a certificate through HTTP validation since the
    validation path will not be known to the primary server.
 
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 62]
+
+Internet-Draft                    ACME                        March 2017
+
+
    The DNS is a common point of vulnerability for all of these
    challenges.  An entity that can provision false DNS records for a
    domain can attack the DNS challenge directly and can provision false
@@ -3521,15 +3492,6 @@ Internet-Draft                    ACME                        March 2017
 
    Given these considerations, the ACME validation process makes it
    impossible for any attacker on the ACME channel or a passive attacker
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 63]
-
-Internet-Draft                    ACME                        March 2017
-
-
    on the validation channel to hijack the authorization process to
    authorize a key of the attacker's choice.
 
@@ -3561,6 +3523,13 @@ Internet-Draft                    ACME                        March 2017
    attacker-controlled servers, and certificate issuance can require
    interactions with cryptographic hardware.
 
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 63]
+
+Internet-Draft                    ACME                        March 2017
+
+
    In addition, an attacker can also cause the ACME server to send
    validation requests to a domain of its choosing by submitting
    authorization requests for the victim domain.
@@ -3575,16 +3544,6 @@ Internet-Draft                    ACME                        March 2017
    subtree of the DNS.  And in order to prevent attackers from
    circumventing these limits simply by minting new accounts, servers
    would need to limit the rate at which accounts can be registered.
-
-
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 64]
-
-Internet-Draft                    ACME                        March 2017
-
 
 10.4.  Server-Side Request Forgery
 
@@ -3615,6 +3574,18 @@ Internet-Draft                    ACME                        March 2017
    to these public servers himself, he can't gain anything extra through
    an SSRF attack on ACME aside from a layer of anonymization.
 
+
+
+
+
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 64]
+
+Internet-Draft                    ACME                        March 2017
+
+
 10.5.  CA Policy Considerations
 
    The controls on issuance enabled by ACME are focused on validating
@@ -3634,13 +3605,6 @@ Internet-Draft                    ACME                        March 2017
       *  Is the name on the Public Suffix List?
 
       *  Is the name a high-value name?
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 65]
-
-Internet-Draft                    ACME                        March 2017
-
 
       *  Is the name a known phishing domain?
 
@@ -3671,6 +3635,13 @@ Internet-Draft                    ACME                        March 2017
    queries over TCP, which provides better resistance to some forgery
    attacks than DNS over UDP.
 
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 65]
+
+Internet-Draft                    ACME                        March 2017
+
+
    An ACME-based CA will often need to make DNS queries, e.g., to
    validate control of DNS names.  Because the security of such
    validations ultimately depends on the authenticity of DNS data, every
@@ -3686,17 +3657,6 @@ Internet-Draft                    ACME                        March 2017
    DNSSEC-validating resolvers within their trusted network and use
    these resolvers both for both CAA record lookups and all record
    lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).
-
-
-
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 66]
-
-Internet-Draft                    ACME                        March 2017
-
 
 11.2.  Default Virtual Hosts
 
@@ -3729,6 +3689,15 @@ Internet-Draft                    ACME                        March 2017
    in TLS on a fairly static basis, so that the certificate presented
    should be stable over small intervals.
 
+
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 66]
+
+Internet-Draft                    ACME                        March 2017
+
+
    A CA can detect such a bounded default vhost by initiating TLS
    connections to the host with random SNI values within the namespace
    used for the TLS-based challenge (the "acme.invalid" namespace for
@@ -3745,14 +3714,6 @@ Internet-Draft                    ACME                        March 2017
    all the way back to its inception.
 
    o  Peter Eckersley, EFF
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 67]
-
-Internet-Draft                    ACME                        March 2017
-
 
    o  Eric Rescorla, Mozilla
 
@@ -3783,6 +3744,16 @@ Internet-Draft                    ACME                        March 2017
               DOI 10.17487/RFC2119, March 1997,
               <http://www.rfc-editor.org/info/rfc2119>.
 
+
+
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 67]
+
+Internet-Draft                    ACME                        March 2017
+
+
    [RFC2585]  Housley, R. and P. Hoffman, "Internet X.509 Public Key
               Infrastructure Operational Protocols: FTP and HTTP",
               RFC 2585, DOI 10.17487/RFC2585, May 1999,
@@ -3801,14 +3772,6 @@ Internet-Draft                    ACME                        March 2017
               Request Syntax Specification Version 1.7", RFC 2986,
               DOI 10.17487/RFC2986, November 2000,
               <http://www.rfc-editor.org/info/rfc2986>.
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 68]
-
-Internet-Draft                    ACME                        March 2017
-
 
    [RFC3339]  Klyne, G. and C. Newman, "Date and Time on the Internet:
               Timestamps", RFC 3339, DOI 10.17487/RFC3339, July 2002,
@@ -3837,6 +3800,16 @@ Internet-Draft                    ACME                        March 2017
               DOI 10.17487/RFC5226, May 2008,
               <http://www.rfc-editor.org/info/rfc5226>.
 
+
+
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 68]
+
+Internet-Draft                    ACME                        March 2017
+
+
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
               DOI 10.17487/RFC5246, August 2008,
@@ -3856,15 +3829,6 @@ Internet-Draft                    ACME                        March 2017
    [RFC5988]  Nottingham, M., "Web Linking", RFC 5988,
               DOI 10.17487/RFC5988, October 2010,
               <http://www.rfc-editor.org/info/rfc5988>.
-
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 69]
-
-Internet-Draft                    ACME                        March 2017
-
 
    [RFC6066]  Eastlake 3rd, D., "Transport Layer Security (TLS)
               Extensions: Extension Definitions", RFC 6066,
@@ -3894,6 +3858,14 @@ Internet-Draft                    ACME                        March 2017
               Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
               2015, <http://www.rfc-editor.org/info/rfc7515>.
 
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 69]
+
+Internet-Draft                    ACME                        March 2017
+
+
    [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
               DOI 10.17487/RFC7518, May 2015,
               <http://www.rfc-editor.org/info/rfc7518>.
@@ -3912,15 +3884,6 @@ Internet-Draft                    ACME                        March 2017
               Vixie, P. and D. Dagon, "Use of Bit 0x20 in DNS Labels to
               Improve Transaction Identity", draft-vixie-dnsext-
               dns0x20-00 (work in progress), March 2008.
-
-
-
-
-
-Barnes, et al.         Expires September 25, 2017              [Page 70]
-
-Internet-Draft                    ACME                        March 2017
-
 
    [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
               Text on Security Considerations", BCP 72, RFC 3552,
@@ -3950,6 +3913,15 @@ Authors' Addresses
    Email: rlb@ipv.sx
 
 
+
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 70]
+
+Internet-Draft                    ACME                        March 2017
+
+
    Jacob Hoffman-Andrews
    EFF
 
@@ -3973,4 +3945,32 @@ Authors' Addresses
 
 
 
-Barnes, et al.         Expires September 25, 2017              [Page 71]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.         Expires September 28, 2017              [Page 71]
