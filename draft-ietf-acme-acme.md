@@ -161,8 +161,8 @@ The two main roles in ACME are “client” and “server”.  The ACME client u
 protocol to request certificate management actions, such as issuance or
 revocation.  An ACME client may run on a web server, mail server, or some other
 server system which requires valid TLS certificates.  Or, it may run on a separate
-server that does not consume the certificate, but is authorized to respond to the
-identifier validation challenge.  The ACME server runs at a certification authority,
+server that does not consume the certificate, but is authorized to respond to a
+CA-provided challenge.  The ACME server runs at a certification authority,
 and responds to client requests, performing the requested actions if the client is
 authorized.
 
@@ -1994,7 +1994,7 @@ the challenge.
 
 The certificate may be constructed arbitrarily, except that each certificate
 MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be
-dNSNames {{!RFC2585}}.
+dNSNames {{!RFC5280}}.
 
 SAN A MUST be constructed as follows: compute the SHA-256 digest [FIPS180-4] of
 the challenge token and encode it in lowercase hexadecimal form.
