@@ -525,7 +525,7 @@ ACME is structured as a REST application with the following types of resources:
 * A "new-nonce" resource ({{getting-a-nonce}})
 * A "new-account" resource ({{account-creation}})
 * A "new-order" resource ({{applying-for-certificate-issuance}})
-* A "revoke-certificate" resource ({{certificate-revocation}})
+* A "revoke-cert" resource ({{certificate-revocation}})
 * A "key-change" resource ({{account-key-roll-over}})
 
 The server MUST provide "directory" and "new-nonce" resources.
@@ -562,7 +562,7 @@ indicate HTTP link relations.
        |          |          |
        |          |          |
        V          |          V
-      acct        |        order --------> cert
+    account       |        order --------> cert
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
@@ -1326,14 +1326,15 @@ client fails to complete the required actions before the "expires" time, then
 the server SHOULD change the status of the order to "invalid" and MAY
 delete the order resource.
 
-The server MUST issue the requested certificate and update the order resource
-with a URL for the certificate shortly after the client has fulfilled the server's
-requirements.   If the client has already satisfied the server's requirements at
-the time of this request (e.g., by obtaining authorization for all of the
-identifiers in the certificate in previous transactions), then the server MUST
-proactively issue the requested certificate and provide a URL for it in the
-"certificate" field of the order.  The server MUST, however, still list the
-completed authorizations in the "authorizations" array.
+The server MUST begin the issuance process for the requested certificate and
+update the order resource with a URL for the certificate once the client has
+fulfilled the server's requirements.   If the client has already satisfied the
+server's requirements at the time of this request (e.g., by obtaining
+authorization for all of the identifiers in the certificate in previous
+transactions), then the server MUST proactively issue the requested certificate
+and provide a URL for it in the "certificate" field of the order.  The server
+MUST, however, still list the completed authorizations in the "authorizations"
+array.
 
 Once the client believes it has fulfilled the server's requirements, it should
 send a GET request to the order resource to obtain its current state.  The
@@ -2350,7 +2351,6 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 | Field Name               | Field Type      | Configurable | Reference |
 |:-------------------------|:----------------|:-------------|:----------|
-| key                      | object          | false        | RFC XXXX  |
 | status                   | string          | false        | RFC XXXX  |
 | contact                  | array of string | true         | RFC XXXX  |
 | external-account-binding | object          | true         | RFC XXXX  |
