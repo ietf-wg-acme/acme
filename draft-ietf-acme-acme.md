@@ -2761,6 +2761,17 @@ server is in a default virtual host configuration.  Conversely, if the TLS
 server returns an unrecognized_name alert, then this is an indication that the
 server is not in a default virtual host configuration.
 
+## Token Entropy
+
+The http-01, tls-sni-02 and dns-01 validation methods mandate the usage of
+a random token value to uniquely identify the challenge. The value of the token
+is required to contain at least 182 bits of entropy for the following security
+properties. First, the ACME client should not be able to influence the ACME
+server's choice of token as this may allow an attacker to reuse a domain owner's
+previous challenge responses for a new validation request. Secondly, the entropy
+requirement prevents ACME clients from implementing a "naive" validation server
+that automatically replies to challenges without participating in the creation
+of the intial authorization request.
 
 # Acknowledgements
 
