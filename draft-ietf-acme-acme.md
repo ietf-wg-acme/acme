@@ -475,6 +475,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | badNonce              | The client sent an unacceptable anti-replay nonce                              |
 | badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support               |
 | invalidContact        | The contact URI for an account was invalid                                     |
+| unsupportedContact    | The contact URI for an account used an unsupported protocol scheme             |
 | malformed             | The request message was malformed                                              |
 | rateLimited           | The request exceeds a rate limit                                               |
 | rejectedIdentifier    | The server will not issue for the identifier                                   |
@@ -938,10 +939,12 @@ resulting account object.  This allows clients to detect when servers do not
 support an extension field.
 
 The server SHOULD validate that the contact URLs in the "contact" field are
-valid and supported by the server.  If the client provides the server with an
-invalid or unsupported contact URL, then the server MUST return an error of type
-"invalidContact", with a description describing the error and what types of
-contact URL the server considers acceptable.
+valid and supported by the server. If the client provides the server with
+a contact URL using an unsupported protocol it MUST return an error of type
+"unsupportedContact". The server MUST support the "mailto:" protocol. If the
+client provides the server with an invalid contact URL, then the server MUST
+return an error of type "invalidContact", with a description describing the
+error and what types of contact URL the server considers acceptable.
 
 The server creates an account and stores the public key used to verify the
 JWS (i.e., the "jwk" element of the JWS header) to authenticate future requests
