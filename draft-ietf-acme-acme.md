@@ -474,8 +474,8 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | badCSR                | The CSR is unacceptable (e.g., due to a short key)                             |
 | badNonce              | The client sent an unacceptable anti-replay nonce                              |
 | badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support               |
-| invalidContact        | The contact URI for an account was invalid                                     |
-| unsupportedContact    | The contact URI for an account used an unsupported protocol scheme             |
+| invalidContact        | A contact URI for an account was invalid                                       |
+| unsupportedContact    | A contact URI for an account used an unsupported protocol scheme               |
 | malformed             | The request message was malformed                                              |
 | rateLimited           | The request exceeds a rate limit                                               |
 | rejectedIdentifier    | The server will not issue for the identifier                                   |
