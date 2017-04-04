@@ -938,13 +938,13 @@ not recognize.  In particular, it MUST NOT reflect unrecognized fields in the
 resulting account object.  This allows clients to detect when servers do not
 support an extension field.
 
-The server SHOULD validate that the contact URLs in the "contact" field are
+The server SHOULD validate that the contact URIs in the "contact" field are
 valid and supported by the server. If the client provides the server with
-a contact URL using an unsupported protocol it MUST return an error of type
-"unsupportedContact". The server MUST support the "mailto:" protocol. If the
-client provides the server with an invalid contact URL, then the server MUST
-return an error of type "invalidContact", with a description describing the
-error and what types of contact URL the server considers acceptable.
+a contact URI using an unsupported protocol it MUST return an error of type
+"unsupportedContact", with a description describing the error and what types of
+contact URIs the server considers acceptable. The server MUST support the mailto
+scheme for contact URIs. If the client provides the server with an invalid
+contact URI, then the server MUST return an error of type "invalidContact".
 
 The server creates an account and stores the public key used to verify the
 JWS (i.e., the "jwk" element of the JWS header) to authenticate future requests
