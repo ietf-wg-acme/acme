@@ -2726,8 +2726,9 @@ within their trusted network and use these resolvers both for both CAA record
 lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
 TXT, etc.).
 
-Further, an ACME-based CA can use the Certification Authority Authorization
-record {{!RFC6844}} to prevent it from being misdirected and generate
+Further, it is RECOMMENDED that ACME-based CA use the
+Certification Authority Authorization
+record {{!RFC6844}} to prevent it from being misdirected and thereby generate
 an unauthorized issuance.
 
 ## Default Virtual Hosts
