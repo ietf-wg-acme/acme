@@ -2728,7 +2728,7 @@ TXT, etc.).
 
 Further, it is RECOMMENDED that ACME-based CA use the
 Certification Authority Authorization
-record {{!RFC6844}} to prevent it from being misdirected and thereby generate
+record {{!RFC6844}} to prevent it from being misdirected and thereby generating
 an unauthorized issuance.
 
 ## Default Virtual Hosts
