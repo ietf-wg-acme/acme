@@ -1969,9 +1969,8 @@ type (required, string):
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
-at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the base64url alphabet, including
-padding characters ("=").
+at least 128 bits of entropy. It MUST NOT contain any characters outside the
+base64url alphabet, including padding characters ("=").
 
 ~~~~~~~~~~
 GET /acme/authz/1234/1 HTTP/1.1
@@ -2071,9 +2070,8 @@ type (required, string):
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
-at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the base64url alphabet, including
-padding characters ("=").
+at least 128 bits of entropy. It MUST NOT contain any characters outside the
+base64url alphabet, including padding characters ("=").
 
 ~~~~~~~~~~
 GET /acme/authz/1234/2 HTTP/1.1
