@@ -21,16 +21,16 @@ meaning of the specification), you can either:
   a) Fork this repository and submit a pull request; this is the lowest
   friction way to get editorial changes in.
 
-  b) Submit a new issue to Github, and mention that you believe it is editorial
+  b) Submit a new issue to GitHub, and mention that you believe it is editorial
   in the issue body. It is not necessary to notify the mailing list for
   editorial issues.
 
-  c) Make comments on individual commits in Github. Note that this feedback is
+  c) Make comments on individual commits in GitHub. Note that this feedback is
   processed only with best effort by the editors, so it should only be used for
   quick editorial suggestions or questions.
 
 3. For non-editorial (i.e., **design**) issues, you can also create an issue on
-Github. However, you **must notify the mailing list** when creating such issues,
+GitHub. However, you **must notify the mailing list** when creating such issues,
 providing a link to the issue in the message body.
 
   Note that **github issues are not for substantial discussions**; the only
@@ -54,7 +54,8 @@ are addressed to:
  * Any Birds of a Feather (BOF) session
  * The IAB or any member thereof on behalf of the IAB
  * The RFC Editor or the Internet-Drafts function
- * All IETF Contributions are subject to the rules of
+
+All IETF Contributions are subject to the rules of
    [RFC 5378](https://tools.ietf.org/html/rfc5378) and
    [RFC 3979](https://tools.ietf.org/html/rfc3979)
    (updated by [RFC 4879](https://tools.ietf.org/html/rfc4879)).
