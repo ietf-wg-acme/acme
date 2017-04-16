@@ -1856,6 +1856,20 @@ a domain name by proving that for that domain name it can provision resources
 to be returned by an HTTP server. The ACME server challenges the client to
 provision a file at a specific path, with a specific string as its content.
 
+The server will first check if there exists an SRV-Record
+"_acme-challenge-http._tcp." followed by the domain name being validated.
+If such a record is pressent, the domain/port in this record will be used as
+"domain" for this validation.
+
+If there are multiple SRV records, the server will contact the domain/port of
+at least one of this records - priority and weight are respected. Example
+SRV-Record for the domain "example.com":
+
+~~~~~~~~~~
+_acme-challenge-http._tcp.example.com 3600 IN SRV 10 0 81 example.com.
+~~~~~~~~~~
+
+
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
 connect to at least one of the hosts found in the DNS A and AAAA records, at its
 discretion.  Because many web servers allocate a default HTTPS virtual host to a
