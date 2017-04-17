@@ -2681,6 +2681,8 @@ perform, for example:
   * Is the name a known phishing domain?
 * Is the key in the CSR sufficiently strong?
 * Is the CSR signed with an acceptable algorithm?
+* Has issuance been authorized or forbidden by a Certficate Authority
+  Authorization (CAA) record?  {{?RFC6844}}
 
 CAs that use ACME to automate issuance will need to ensure that their servers
 perform all necessary checks before issuing.
