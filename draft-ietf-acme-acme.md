@@ -954,7 +954,7 @@ agreement to terms.
 The server creates an account and stores the public key used to verify the
 JWS (i.e., the "jwk" element of the JWS header) to authenticate future requests
 from the account.  The server returns this account object in a 201 (Created)
-response, with the account URI in a Location header field.
+response, with the account URL in a Location header field.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
