@@ -300,10 +300,13 @@ address {
 <link href="#rfc.section.7.1.4" rel="Chapter" title="7.1.4 Authorization Objects"/>
 <link href="#rfc.section.7.2" rel="Chapter" title="7.2 Getting a Nonce"/>
 <link href="#rfc.section.7.3" rel="Chapter" title="7.3 Account Creation"/>
-<link href="#rfc.section.7.3.1" rel="Chapter" title="7.3.1 Changes of Terms of Service"/>
-<link href="#rfc.section.7.3.2" rel="Chapter" title="7.3.2 External Account Binding"/>
-<link href="#rfc.section.7.3.3" rel="Chapter" title="7.3.3 Account Key Roll-over"/>
-<link href="#rfc.section.7.3.4" rel="Chapter" title="7.3.4 Account deactivation"/>
+<link href="#rfc.section.7.3.1" rel="Chapter" title="7.3.1 Finding an Account URL Given a Key"/>
+<link href="#rfc.section.7.3.2" rel="Chapter" title="7.3.2 Account Update"/>
+<link href="#rfc.section.7.3.3" rel="Chapter" title="7.3.3 Account Information"/>
+<link href="#rfc.section.7.3.4" rel="Chapter" title="7.3.4 Changes of Terms of Service"/>
+<link href="#rfc.section.7.3.5" rel="Chapter" title="7.3.5 External Account Binding"/>
+<link href="#rfc.section.7.3.6" rel="Chapter" title="7.3.6 Account Key Roll-over"/>
+<link href="#rfc.section.7.3.7" rel="Chapter" title="7.3.7 Account Deactivation"/>
 <link href="#rfc.section.7.4" rel="Chapter" title="7.4 Applying for Certificate Issuance"/>
 <link href="#rfc.section.7.4.1" rel="Chapter" title="7.4.1 Pre-Authorization"/>
 <link href="#rfc.section.7.4.2" rel="Chapter" title="7.4.2 Downloading the Certificate"/>
@@ -447,10 +450,13 @@ address {
 <li>7.1.4.   <a href="#rfc.section.7.1.4">Authorization Objects</a></li>
 </ul><li>7.2.   <a href="#rfc.section.7.2">Getting a Nonce</a></li>
 <li>7.3.   <a href="#rfc.section.7.3">Account Creation</a></li>
-<ul><li>7.3.1.   <a href="#rfc.section.7.3.1">Changes of Terms of Service</a></li>
-<li>7.3.2.   <a href="#rfc.section.7.3.2">External Account Binding</a></li>
-<li>7.3.3.   <a href="#rfc.section.7.3.3">Account Key Roll-over</a></li>
-<li>7.3.4.   <a href="#rfc.section.7.3.4">Account deactivation</a></li>
+<ul><li>7.3.1.   <a href="#rfc.section.7.3.1">Finding an Account URL Given a Key</a></li>
+<li>7.3.2.   <a href="#rfc.section.7.3.2">Account Update</a></li>
+<li>7.3.3.   <a href="#rfc.section.7.3.3">Account Information</a></li>
+<li>7.3.4.   <a href="#rfc.section.7.3.4">Changes of Terms of Service</a></li>
+<li>7.3.5.   <a href="#rfc.section.7.3.5">External Account Binding</a></li>
+<li>7.3.6.   <a href="#rfc.section.7.3.6">Account Key Roll-over</a></li>
+<li>7.3.7.   <a href="#rfc.section.7.3.7">Account Deactivation</a></li>
 </ul><li>7.4.   <a href="#rfc.section.7.4">Applying for Certificate Issuance</a></li>
 <ul><li>7.4.1.   <a href="#rfc.section.7.4.1">Pre-Authorization</a></li>
 <li>7.4.2.   <a href="#rfc.section.7.4.2">Downloading the Certificate</a></li>
@@ -744,7 +750,7 @@ address {
   <li>A &#8220;new-account&#8221; resource (<a href="#account-creation">Section 7.3</a>)</li>
   <li>A &#8220;new-order&#8221; resource (<a href="#applying-for-certificate-issuance">Section 7.4</a>)</li>
   <li>A &#8220;revoke-cert&#8221; resource (<a href="#certificate-revocation">Section 7.6</a>)</li>
-  <li>A &#8220;key-change&#8221; resource (<a href="#account-key-roll-over">Section 7.3.3</a>)</li>
+  <li>A &#8220;key-change&#8221; resource (<a href="#account-key-roll-over">Section 7.3.6</a>)</li>
 </ul>
 <p id="rfc.section.7.1.p.3">The server MUST provide &#8220;directory&#8221; and &#8220;new-nonce&#8221; resources.</p>
 <p id="rfc.section.7.1.p.4">ACME uses different URLs for different management functions. Each function is listed in a directory along with its corresponding URL, so clients only need to be configured with the directory URL.  These URLs are connected by a few different link relations <a href="#RFC5988">[RFC5988]</a>.</p>
@@ -1055,9 +1061,8 @@ Content-Type: application/jose+json
 <p id="rfc.section.7.3.p.2">The server MUST ignore any values provided in the &#8220;orders&#8221; fields in account bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they can be provided by the client.</p>
 <p id="rfc.section.7.3.p.3">In general, the server MUST ignore any fields in the request object that it does not recognize.  In particular, it MUST NOT reflect unrecognized fields in the resulting account object.  This allows clients to detect when servers do not support an extension field.</p>
 <p id="rfc.section.7.3.p.4">The server SHOULD validate that the contact URIs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URIs it MUST support the &#8220;mailto&#8221; scheme. If the server rejects a contact URI for using an unsupported scheme it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description describing the error and what types of contact URIs the server considers acceptable. If the server rejects a contact URI for using a supported scheme but an invalid value then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
-<p id="rfc.section.7.3.p.5">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field.</p>
-<p id="rfc.section.7.3.p.6">If the server already has an account registered with the provided account key, then it MUST return a response with a 200 (OK) status code and provide the URL of that account in the Location header field.  This allows a client that has an account key but not the corresponding account URI to recover the account URL.</p>
-<p id="rfc.section.7.3.p.7">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
+<p id="rfc.section.7.3.p.5">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
+<p id="rfc.section.7.3.p.6">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field.</p>
 <pre>
 HTTP/1.1 201 Created
 Content-Type: application/json
@@ -1074,8 +1079,12 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
   ]
 }
 </pre>
-<p id="rfc.section.7.3.p.8">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URL.  The server MUST ignore any updates to &#8220;order&#8221; fields or any other fields it does not recognize.</p>
-<p id="rfc.section.7.3.p.9">For example, to update the contact information in the above account, the client could send the following request:</p>
+<h1 id="rfc.section.7.3.1"><a href="#rfc.section.7.3.1">7.3.1.</a> <a href="#finding-an-account-url-given-a-key" id="finding-an-account-url-given-a-key">Finding an Account URL Given a Key</a></h1>
+<p id="rfc.section.7.3.1.p.1">If the server already has an account registered with the provided account key, then it MUST return a response with a 200 (OK) status code and provide the URL of that account in the Location header field.  This allows a client that has an account key but not the corresponding account URL to recover the account URL.</p>
+<p id="rfc.section.7.3.1.p.2">If a client wishes to recover an existing account and does not want a non existing account to be created, then it SHOULD do so by sending a POST request with an empty update. That is, it should send a JWS whose payload is an empty object ({}).</p>
+<h1 id="rfc.section.7.3.2"><a href="#rfc.section.7.3.2">7.3.2.</a> <a href="#account-update" id="account-update">Account Update</a></h1>
+<p id="rfc.section.7.3.2.p.1">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URL.  The server MUST ignore any updates to &#8220;order&#8221; fields or any other fields it does not recognize. If the server accepts the update, it MUST return a response with a 200 (OK) status code and the resulting account object.</p>
+<p id="rfc.section.7.3.2.p.2">For example, to update the contact information in the above account, the client could send the following request:</p>
 <pre>
 POST /acme/acct/1 HTTP/1.1
 Host: example.com
@@ -1097,11 +1106,12 @@ Content-Type: application/jose+json
   "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
 }
 </pre>
-<p id="rfc.section.7.3.p.10">Servers SHOULD NOT respond to GET requests for account resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is an empty object ({}).</p>
-<h1 id="rfc.section.7.3.1"><a href="#rfc.section.7.3.1">7.3.1.</a> <a href="#changes-of-terms-of-service" id="changes-of-terms-of-service">Changes of Terms of Service</a></h1>
-<p id="rfc.section.7.3.1.p.1">As described above, a client can indicate its agreement with the CA&#8217;s terms of service by setting the &#8220;terms-of-service-agreed&#8221; field in its account object to &#8220;true&#8221;.</p>
-<p id="rfc.section.7.3.1.p.2">If the server has changed its terms of service since a client initially agreed, and the server is unwilling to process a request without explicit agreement to the new terms, then it MUST return an error response with status code 403 (Forbidden) and type &#8220;urn:ietf:params:acme:error:userActionRequired&#8221;.  This response MUST include a Link header with link relation &#8220;terms-of-service&#8221; and the latest terms-of-service URL.</p>
-<p id="rfc.section.7.3.1.p.3">The problem document returned with the error MUST also include an &#8220;instance&#8221; field, indicating a URL that the client should direct a human user to visit in order for instructions on how to agree to the terms.</p>
+<h1 id="rfc.section.7.3.3"><a href="#rfc.section.7.3.3">7.3.3.</a> <a href="#account-information" id="account-information">Account Information</a></h1>
+<p id="rfc.section.7.3.3.p.1">Servers SHOULD NOT respond to GET requests for account resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;certificates&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is an empty object ({}).</p>
+<h1 id="rfc.section.7.3.4"><a href="#rfc.section.7.3.4">7.3.4.</a> <a href="#changes-of-terms-of-service" id="changes-of-terms-of-service">Changes of Terms of Service</a></h1>
+<p id="rfc.section.7.3.4.p.1">As described above, a client can indicate its agreement with the CA&#8217;s terms of service by setting the &#8220;terms-of-service-agreed&#8221; field in its account object to &#8220;true&#8221;.</p>
+<p id="rfc.section.7.3.4.p.2">If the server has changed its terms of service since a client initially agreed, and the server is unwilling to process a request without explicit agreement to the new terms, then it MUST return an error response with status code 403 (Forbidden) and type &#8220;urn:ietf:params:acme:error:userActionRequired&#8221;.  This response MUST include a Link header with link relation &#8220;terms-of-service&#8221; and the latest terms-of-service URL.</p>
+<p id="rfc.section.7.3.4.p.3">The problem document returned with the error MUST also include an &#8220;instance&#8221; field, indicating a URL that the client should direct a human user to visit in order for instructions on how to agree to the terms.</p>
 <pre>
 HTTP/1.1 403 Forbidden
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
@@ -1114,10 +1124,10 @@ Content-Language: en
   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
 }
 </pre>
-<h1 id="rfc.section.7.3.2"><a href="#rfc.section.7.3.2">7.3.2.</a> <a href="#external-account-binding" id="external-account-binding">External Account Binding</a></h1>
-<p id="rfc.section.7.3.2.p.1">The server MAY require a value to be present for the &#8220;external-account-binding&#8221; field.  This can be used to an ACME account with an existing account in a non-ACME system, such as a CA customer database.</p>
-<p id="rfc.section.7.3.2.p.2">To enable ACME account binding, a CA needs to provision the ACME client with a MAC key and a key identifier. The key identifier MUST be an ASCII string. The MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility between provisioning systems and ACME clients.</p>
-<p id="rfc.section.7.3.2.p.3">The ACME client then computes a binding JWS to indicate the external account&#8217;s approval of the ACME account key.  The payload of this JWS is the account key being registered, in JWK form.  The protected header of the JWS MUST meet the following criteria:</p>
+<h1 id="rfc.section.7.3.5"><a href="#rfc.section.7.3.5">7.3.5.</a> <a href="#external-account-binding" id="external-account-binding">External Account Binding</a></h1>
+<p id="rfc.section.7.3.5.p.1">The server MAY require a value to be present for the &#8220;external-account-binding&#8221; field.  This can be used to an ACME account with an existing account in a non-ACME system, such as a CA customer database.</p>
+<p id="rfc.section.7.3.5.p.2">To enable ACME account binding, a CA needs to provision the ACME client with a MAC key and a key identifier. The key identifier MUST be an ASCII string. The MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility between provisioning systems and ACME clients.</p>
+<p id="rfc.section.7.3.5.p.3">The ACME client then computes a binding JWS to indicate the external account&#8217;s approval of the ACME account key.  The payload of this JWS is the account key being registered, in JWK form.  The protected header of the JWS MUST meet the following criteria:</p>
 <p/>
 
 <ul>
@@ -1126,7 +1136,7 @@ Content-Language: en
   <li>The &#8220;nonce&#8221; field MUST NOT be present</li>
   <li>The &#8220;url&#8221; field MUST be set to the same value as the outer JWS</li>
 </ul>
-<p id="rfc.section.7.3.2.p.5">The &#8220;signature&#8221; field of the JWS will contain the MAC value computed with the MAC key provided by the CA.</p>
+<p id="rfc.section.7.3.5.p.5">The &#8220;signature&#8221; field of the JWS will contain the MAC value computed with the MAC key provided by the CA.</p>
 <pre>
 POST /acme/new-account HTTP/1.1
 Host: example.com
@@ -1156,7 +1166,7 @@ Content-Type: application/jose+json
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 </pre>
-<p id="rfc.section.7.3.2.p.6">When a CA receives a new-account request containing an &#8220;external-account-binding&#8221; field, it decides whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;external-account-binding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
+<p id="rfc.section.7.3.5.p.6">When a CA receives a new-account request containing an &#8220;external-account-binding&#8221; field, it decides whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;external-account-binding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
 <p/>
 
 <ol>
@@ -1166,10 +1176,10 @@ Content-Type: application/jose+json
   <li>Verify that the MAC on the JWS verifies using that MAC key</li>
   <li>Verify that the payload of the JWS represents the same key as was used to verify the outer JWS (i.e., the &#8220;jwk&#8221; field of the outer JWS)</li>
 </ol>
-<p id="rfc.section.7.3.2.p.8">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key and MUST reflect value of the &#8220;external-account-binding&#8221; field in the resulting account object.  If any of these checks fail, then the CA MUST reject the new-account request.</p>
-<h1 id="rfc.section.7.3.3"><a href="#rfc.section.7.3.3">7.3.3.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a></h1>
-<p id="rfc.section.7.3.3.p.1">A client may wish to change the public key that is associated with an account in order to recover from a key compromise or proactively mitigate the impact of an unnoticed key compromise.</p>
-<p id="rfc.section.7.3.3.p.2">To change the key associated with an account, the client first constructs a key-change object describing the change that it would like the server to make:</p>
+<p id="rfc.section.7.3.5.p.8">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key and MUST reflect value of the &#8220;external-account-binding&#8221; field in the resulting account object.  If any of these checks fail, then the CA MUST reject the new-account request.</p>
+<h1 id="rfc.section.7.3.6"><a href="#rfc.section.7.3.6">7.3.6.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a></h1>
+<p id="rfc.section.7.3.6.p.1">A client may wish to change the public key that is associated with an account in order to recover from a key compromise or proactively mitigate the impact of an unnoticed key compromise.</p>
+<p id="rfc.section.7.3.6.p.2">To change the key associated with an account, the client first constructs a key-change object describing the change that it would like the server to make:</p>
 <p/>
 
 <dl>
@@ -1178,15 +1188,15 @@ Content-Type: application/jose+json
   <dt>newKey (required, JWK):</dt>
   <dd style="margin-left: 8">The JWK representation of the new key</dd>
 </dl>
-<p id="rfc.section.7.3.3.p.4">The client then encapsulates the key-change object in a JWS, signed with the requested new account key (i.e., the key matching the &#8220;newKey&#8221; value).</p>
-<p id="rfc.section.7.3.3.p.5">The outer JWS MUST meet the normal requirements for an ACME JWS (see <a href="#request-authentication">Section 6.2</a>).  The inner JWS MUST meet the normal requirements, with the following exceptions:</p>
+<p id="rfc.section.7.3.6.p.4">The client then encapsulates the key-change object in a JWS, signed with the requested new account key (i.e., the key matching the &#8220;newKey&#8221; value).</p>
+<p id="rfc.section.7.3.6.p.5">The outer JWS MUST meet the normal requirements for an ACME JWS (see <a href="#request-authentication">Section 6.2</a>).  The inner JWS MUST meet the normal requirements, with the following exceptions:</p>
 <p/>
 
 <ul>
   <li>The inner JWS MUST have the same &#8220;url&#8221; header parameter as the outer JWS.</li>
   <li>The inner JWS is NOT REQUIRED to have a &#8220;nonce&#8221; header parameter.  The server MUST ignore any value provided for the &#8220;nonce&#8221; header parameter.</li>
 </ul>
-<p id="rfc.section.7.3.3.p.7">This transaction has signatures from both the old and new keys so that the server can verify that the holders of the two keys both agree to the change.  The signatures are nested to preserve the property that all signatures on POST messages are signed by exactly one key.</p>
+<p id="rfc.section.7.3.6.p.7">This transaction has signatures from both the old and new keys so that the server can verify that the holders of the two keys both agree to the change.  The signatures are nested to preserve the property that all signatures on POST messages are signed by exactly one key.</p>
 <pre>
 POST /acme/key-change HTTP/1.1
 Host: example.com
@@ -1214,7 +1224,7 @@ Content-Type: application/jose+json
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 </pre>
-<p id="rfc.section.7.3.3.p.8">On receiving key-change request, the server MUST perform the following steps in addition to the typical JWS validation:</p>
+<p id="rfc.section.7.3.6.p.8">On receiving key-change request, the server MUST perform the following steps in addition to the typical JWS validation:</p>
 <p/>
 
 <ol>
@@ -1227,9 +1237,9 @@ Content-Type: application/jose+json
   <li>Check that the &#8220;account&#8221; field of the key-change object contains the URL for the account matching the old key</li>
   <li>Check that the &#8220;newKey&#8221; field of the key-change object also verifies the inner JWS.</li>
 </ol>
-<p id="rfc.section.7.3.3.p.10">If all of these checks pass, then the server updates the corresponding account by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>
-<h1 id="rfc.section.7.3.4"><a href="#rfc.section.7.3.4">7.3.4.</a> <a href="#account-deactivation" id="account-deactivation">Account deactivation</a></h1>
-<p id="rfc.section.7.3.4.p.1">A client can deactivate an account by posting a signed update to the server with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised or decommissioned.</p>
+<p id="rfc.section.7.3.6.p.10">If all of these checks pass, then the server updates the corresponding account by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>
+<h1 id="rfc.section.7.3.7"><a href="#rfc.section.7.3.7">7.3.7.</a> <a href="#account-deactivation" id="account-deactivation">Account Deactivation</a></h1>
+<p id="rfc.section.7.3.7.p.1">A client can deactivate an account by posting a signed update to the server with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised or decommissioned.</p>
 <pre>
 POST /acme/acct/1 HTTP/1.1
 Host: example.com
@@ -1248,8 +1258,8 @@ Content-Type: application/jose+json
   "signature": "earzVLd3m5M4xJzR...bVTqn7R08AKOVf3Y"
 }
 </pre>
-<p id="rfc.section.7.3.4.p.2">The server MUST verify that the request is signed by the account key. If the server accepts the deactivation request, it replies with a 200 (OK) status code and the current contents of the account object.</p>
-<p id="rfc.section.7.3.4.p.3">Once an account is deactivated, the server MUST NOT accept further requests authorized by that account&#8217;s key. A server may take a variety of actions in response to an account deactivation, e.g., deleting data related to that account or sending mail to the account&#8217;s contacts.  Servers SHOULD NOT revoke certificates issued by the deactivated account, since this could cause operational disruption for servers using these certificates. ACME does not provide a way to reactivate a deactivated account.</p>
+<p id="rfc.section.7.3.7.p.2">The server MUST verify that the request is signed by the account key. If the server accepts the deactivation request, it replies with a 200 (OK) status code and the current contents of the account object.</p>
+<p id="rfc.section.7.3.7.p.3">Once an account is deactivated, the server MUST NOT accept further requests authorized by that account&#8217;s key. A server may take a variety of actions in response to an account deactivation, e.g., deleting data related to that account or sending mail to the account&#8217;s contacts.  Servers SHOULD NOT revoke certificates issued by the deactivated account, since this could cause operational disruption for servers using these certificates. ACME does not provide a way to reactivate a deactivated account.</p>
 <h1 id="rfc.section.7.4"><a href="#rfc.section.7.4">7.4.</a> <a href="#applying-for-certificate-issuance" id="applying-for-certificate-issuance">Applying for Certificate Issuance</a></h1>
 <p id="rfc.section.7.4.p.1">The client requests certificate issuance by sending a POST request to the server&#8217;s new-order resource.  The body of the POST is a JWS object whose JSON payload is a subset of the order object defined in <a href="#order-objects">Section 7.1.3</a>, containing the fields that describe the certificate to be issued:</p>
 <p/>

@@ -103,9 +103,9 @@ Table of Contents
        7.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  21
      7.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  23
      7.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  24
-       7.3.1.  Changes of Terms of Service . . . . . . . . . . . . .  26
-       7.3.2.  External Account Binding  . . . . . . . . . . . . . .  27
-       7.3.3.  Account Key Roll-over . . . . . . . . . . . . . . . .  29
+       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  25
+       7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  25
+       7.3.3.  Account Information . . . . . . . . . . . . . . . . .  26
 
 
 
@@ -114,7 +114,10 @@ Barnes, et al.          Expires October 19, 2017                [Page 2]
 Internet-Draft                    ACME                        April 2017
 
 
-       7.3.4.  Account deactivation  . . . . . . . . . . . . . . . .  31
+       7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  26
+       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  27
+       7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  29
+       7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  31
      7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  32
        7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  34
        7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  36
@@ -157,9 +160,6 @@ Internet-Draft                    ACME                        April 2017
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  68
      13.2.  Informative References . . . . . . . . . . . . . . . . .  70
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  71
-
-
-
 
 
 
@@ -824,7 +824,7 @@ Internet-Draft                    ACME                        April 2017
 
    o  A "revoke-cert" resource (Section 7.6)
 
-   o  A "key-change" resource (Section 7.3.3)
+   o  A "key-change" resource (Section 7.3.6)
 
    The server MUST provide "directory" and "new-nonce" resources.
 
@@ -1346,18 +1346,6 @@ Barnes, et al.          Expires October 19, 2017               [Page 24]
 Internet-Draft                    ACME                        April 2017
 
 
-   The server creates an account and stores the public key used to
-   verify the JWS (i.e., the "jwk" element of the JWS header) to
-   authenticate future requests from the account.  The server returns
-   this account object in a 201 (Created) response, with the account URL
-   in a Location header field.
-
-   If the server already has an account registered with the provided
-   account key, then it MUST return a response with a 200 (OK) status
-   code and provide the URL of that account in the Location header
-   field.  This allows a client that has an account key but not the
-   corresponding account URI to recover the account URL.
-
    If the server wishes to present the client with terms under which the
    ACME service is to be used, it MUST indicate the URL where such terms
    can be accessed in the "terms-of-service" subfield of the "meta"
@@ -1366,6 +1354,12 @@ Internet-Draft                    ACME                        April 2017
    "true".  Clients SHOULD NOT automatically agree to terms by default.
    Rather, they SHOULD require some user interaction for agreement to
    terms.
+
+   The server creates an account and stores the public key used to
+   verify the JWS (i.e., the "jwk" element of the JWS header) to
+   authenticate future requests from the account.  The server returns
+   this account object in a 201 (Created) response, with the account URL
+   in a Location header field.
 
    HTTP/1.1 201 Created
    Content-Type: application/json
@@ -1382,18 +1376,24 @@ Internet-Draft                    ACME                        April 2017
      ]
    }
 
+7.3.1.  Finding an Account URL Given a Key
+
+   If the server already has an account registered with the provided
+   account key, then it MUST return a response with a 200 (OK) status
+   code and provide the URL of that account in the Location header
+   field.  This allows a client that has an account key but not the
+   corresponding account URL to recover the account URL.
+
+   If a client wishes to recover an existing account and does not want a
+   non existing account to be created, then it SHOULD do so by sending a
+   POST request with an empty update.  That is, it should send a JWS
+   whose payload is an empty object ({}).
+
+7.3.2.  Account Update
+
    If the client wishes to update this information in the future, it
    sends a POST request with updated information to the account URL.
    The server MUST ignore any updates to "order" fields or any other
-   fields it does not recognize.
-
-   For example, to update the contact information in the above account,
-   the client could send the following request:
-
-
-
-
-
 
 
 
@@ -1401,6 +1401,13 @@ Barnes, et al.          Expires October 19, 2017               [Page 25]
 
 Internet-Draft                    ACME                        April 2017
 
+
+   fields it does not recognize.  If the server accepts the update, it
+   MUST return a response with a 200 (OK) status code and the resulting
+   account object.
+
+   For example, to update the contact information in the above account,
+   the client could send the following request:
 
    POST /acme/acct/1 HTTP/1.1
    Host: example.com
@@ -1422,6 +1429,8 @@ Internet-Draft                    ACME                        April 2017
      "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
    }
 
+7.3.3.  Account Information
+
    Servers SHOULD NOT respond to GET requests for account resources as
    these requests are not authenticated.  If a client wishes to query
    the server for information about its account (e.g., to examine the
@@ -1429,7 +1438,7 @@ Internet-Draft                    ACME                        April 2017
    a POST request with an empty update.  That is, it should send a JWS
    whose payload is an empty object ({}).
 
-7.3.1.  Changes of Terms of Service
+7.3.4.  Changes of Terms of Service
 
    As described above, a client can indicate its agreement with the CA's
    terms of service by setting the "terms-of-service-agreed" field in
@@ -1440,15 +1449,6 @@ Internet-Draft                    ACME                        April 2017
    without explicit agreement to the new terms, then it MUST return an
    error response with status code 403 (Forbidden) and type
    "urn:ietf:params:acme:error:userActionRequired".  This response MUST
-   include a Link header with link relation "terms-of-service" and the
-   latest terms-of-service URL.
-
-   The problem document returned with the error MUST also include an
-   "instance" field, indicating a URL that the client should direct a
-   human user to visit in order for instructions on how to agree to the
-   terms.
-
-
 
 
 
@@ -1457,6 +1457,14 @@ Barnes, et al.          Expires October 19, 2017               [Page 26]
 
 Internet-Draft                    ACME                        April 2017
 
+
+   include a Link header with link relation "terms-of-service" and the
+   latest terms-of-service URL.
+
+   The problem document returned with the error MUST also include an
+   "instance" field, indicating a URL that the client should direct a
+   human user to visit in order for instructions on how to agree to the
+   terms.
 
    HTTP/1.1 403 Forbidden
    Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
@@ -1469,7 +1477,7 @@ Internet-Draft                    ACME                        April 2017
      "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
    }
 
-7.3.2.  External Account Binding
+7.3.5.  External Account Binding
 
    The server MAY require a value to be present for the "external-
    account-binding" field.  This can be used to an ACME account with an
@@ -1497,14 +1505,6 @@ Internet-Draft                    ACME                        April 2017
 
    The "signature" field of the JWS will contain the MAC value computed
    with the MAC key provided by the CA.
-
-
-
-
-
-
-
-
 
 
 
@@ -1577,7 +1577,7 @@ Internet-Draft                    ACME                        April 2017
    any of these checks fail, then the CA MUST reject the new-account
    request.
 
-7.3.3.  Account Key Roll-over
+7.3.6.  Account Key Roll-over
 
    A client may wish to change the public key that is associated with an
    account in order to recover from a key compromise or proactively
@@ -1694,7 +1694,7 @@ Internet-Draft                    ACME                        April 2017
    responds with an error status code and a problem document describing
    the error.
 
-7.3.4.  Account deactivation
+7.3.7.  Account Deactivation
 
    A client can deactivate an account by posting a signed update to the
    server with a status field of "deactivated."  Clients may wish to do
