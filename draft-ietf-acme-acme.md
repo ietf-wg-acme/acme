@@ -124,8 +124,7 @@ no out-of-band human intervention.
 
 Prior to ACME, when deploying an HTTPS server, an operator typically gets a
 prompt to generate a self-signed certificate.  If the operator were instead
-deploying an ACME-compatible web server, the experience would be something like
-this:
+deploying an HTTPS server using ACME, the experience would be something like this:
 
 * The ACME client prompts the operator for the intended domain name(s) that the
   web server is to stand for.
@@ -159,10 +158,12 @@ document are to be interpreted as described in RFC 2119 {{!RFC2119}}.
 
 The two main roles in ACME are “client” and “server”.  The ACME client uses the
 protocol to request certificate management actions, such as issuance or
-revocation.  An ACME client therefore typically runs on a web server, mail
-server, or some other server system which requires valid TLS certificates.  The
-ACME server runs at a certification authority, and responds to client requests,
-performing the requested actions if the client is authorized.
+revocation.  An ACME client may run on a web server, mail server, or some other
+server system which requires valid TLS certificates.  Or, it may run on a separate
+server that does not consume the certificate, but is authorized to respond to a
+CA-provided challenge.  The ACME server runs at a certification authority,
+and responds to client requests, performing the requested actions if the client is
+authorized.
 
 An ACME client is represented by an "account key pair".  The client uses the
 private key of this key pair to sign all messages sent to the server.  The
@@ -315,9 +316,9 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have the value "none" in its "alg" field
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
-  * "alg"
-  * "jwk" (only for requests to new-account and revoke-cert resources)
-  * "kid" (for all other requests)
+  * "alg" (Algorithm)
+  * "jwk" (JSON Web Key, only for requests to new-account and revoke-cert resources)
+  * "kid" (Key ID, for all other requests)
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-url-integrity}} below)
 
@@ -492,7 +493,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | incorrectResponse     | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
-set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
+set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
 
@@ -1986,7 +1987,7 @@ the challenge.
 
 The certificate may be constructed arbitrarily, except that each certificate
 MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be
-dNSNames.
+dNSNames {{!RFC5280}}.
 
 SAN A MUST be constructed as follows: compute the SHA-256 digest [FIPS180-4] of
 the challenge token and encode it in lowercase hexadecimal form.
@@ -2047,9 +2048,6 @@ using these steps:
 3. Verify that the certificate contains a subjectAltName extension containing
    dNSName entries of SAN A and SAN B and no other entries.
    The comparison MUST be insensitive to case and ordering of names.
-
-It is RECOMMENDED that the server opens multiple TLS connections from various
-network perspectives, in order to make MitM attacks harder.
 
 If all of the above verifications succeed, then the validation is successful.
 Otherwise, the validation fails.
