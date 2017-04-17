@@ -514,7 +514,7 @@ address {
 <h1 id="rfc.section.2"><a href="#rfc.section.2">2.</a> <a href="#deployment-model-and-operator-experience" id="deployment-model-and-operator-experience">Deployment Model and Operator Experience</a></h1>
 <p id="rfc.section.2.p.1">The guiding use case for ACME is obtaining certificates for websites (HTTPS <a href="#RFC2818">[RFC2818]</a>).  In this case, the user&#8217;s web server is intended to speak for one or more domains, and the process of certificate issuance is intended to verify that this web server actually speaks for the domain(s).</p>
 <p id="rfc.section.2.p.2">DV certificate validation commonly checks claims about properties related to control of a domain name &#8211; properties that can be observed by the certificate issuer in an interactive process that can be conducted purely online.  That means that under typical circumstances, all steps in the request, verification, and issuance process can be represented and performed by Internet protocols with no out-of-band human intervention.</p>
-<p id="rfc.section.2.p.3">Prior to ACME, when deploying an HTTPS server, an operator typically gets a prompt to generate a self-signed certificate.  If the operator were instead deploying an ACME-compatible web server, the experience would be something like this:</p>
+<p id="rfc.section.2.p.3">Prior to ACME, when deploying an HTTPS server, an operator typically gets a prompt to generate a self-signed certificate.  If the operator were instead deploying an HTTPS server using ACME, the experience would be something like this:</p>
 <p/>
 
 <ul>
@@ -528,7 +528,7 @@ address {
 <p id="rfc.section.2.p.5">In this way, it would be nearly as easy to deploy with a CA-issued certificate as with a self-signed certificate. Furthermore, the maintenance of that CA-issued certificate would require minimal manual intervention.  Such close integration of ACME with HTTPS servers would allow the immediate and automated deployment of certificates as they are issued, sparing the human administrator from much of the time-consuming work described in the previous section.</p>
 <h1 id="rfc.section.3"><a href="#rfc.section.3">3.</a> <a href="#terminology" id="terminology">Terminology</a></h1>
 <p id="rfc.section.3.p.1">The key words &#8220;MUST&#8221;, &#8220;MUST NOT&#8221;, &#8220;REQUIRED&#8221;, &#8220;SHALL&#8221;, &#8220;SHALL NOT&#8221;, &#8220;SHOULD&#8221;, &#8220;SHOULD NOT&#8221;, &#8220;RECOMMENDED&#8221;, &#8220;MAY&#8221;, and &#8220;OPTIONAL&#8221; in this document are to be interpreted as described in RFC 2119 <a href="#RFC2119">[RFC2119]</a>.</p>
-<p id="rfc.section.3.p.2">The two main roles in ACME are &#8220;client&#8221; and &#8220;server&#8221;.  The ACME client uses the protocol to request certificate management actions, such as issuance or revocation.  An ACME client therefore typically runs on a web server, mail server, or some other server system which requires valid TLS certificates.  The ACME server runs at a certification authority, and responds to client requests, performing the requested actions if the client is authorized.</p>
+<p id="rfc.section.3.p.2">The two main roles in ACME are &#8220;client&#8221; and &#8220;server&#8221;.  The ACME client uses the protocol to request certificate management actions, such as issuance or revocation.  An ACME client may run on a web server, mail server, or some other server system which requires valid TLS certificates.  Or, it may run on a separate server that does not consume the certificate, but is authorized to respond to a CA-provided challenge.  The ACME server runs at a certification authority, and responds to client requests, performing the requested actions if the client is authorized.</p>
 <p id="rfc.section.3.p.3">An ACME client is represented by an &#8220;account key pair&#8221;.  The client uses the private key of this key pair to sign all messages sent to the server.  The server uses the public key to verify the authenticity and integrity of messages from the client.</p>
 <h1 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#protocol-overview" id="protocol-overview">Protocol Overview</a></h1>
 <p id="rfc.section.4.p.1">ACME allows a client to request certificate management actions using a set of JavaScript Object Notation (JSON) messages carried over HTTPS.  In many ways, ACME functions much like a traditional CA, in which a user creates an account, requests a certificate, and proves control of the domains in that certificate in order for the CA to sign the requested certificate.</p>
@@ -596,7 +596,7 @@ address {
 <ul>
   <li>The JWS MUST NOT have the value &#8220;none&#8221; in its &#8220;alg&#8221; field</li>
   <li>The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its &#8220;alg&#8221; field</li>
-  <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221;</li><li>&#8220;jwk&#8221; (only for requests to new-account and revoke-cert resources)</li><li>&#8220;kid&#8221; (for all other requests)</li><li>&#8220;nonce&#8221; (defined in <a href="#replay-protection">Section 6.4</a> below)</li><li>&#8220;url&#8221; (defined in <a href="#request-url-integrity">Section 6.3</a> below)</li></ul></li>
+  <li>The JWS Protected Header MUST include the following fields: <ul><li>&#8220;alg&#8221; (Algorithm)</li><li>&#8220;jwk&#8221; (JSON Web Key, only for requests to new-account and revoke-cert resources)</li><li>&#8220;kid&#8221; (Key ID, for all other requests)</li><li>&#8220;nonce&#8221; (defined in <a href="#replay-protection">Section 6.4</a> below)</li><li>&#8220;url&#8221; (defined in <a href="#request-url-integrity">Section 6.3</a> below)</li></ul></li>
 </ul>
 <p id="rfc.section.6.2.p.4">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
 <p id="rfc.section.6.2.p.5">For new-account requests, and for revoke-cert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field.</p>
@@ -618,7 +618,7 @@ address {
 <p id="rfc.section.6.4.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it MUST provide HTTP status code 400 (Bad Request), and indicate the ACME error type &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error type MUST include a Replay-Nonce header with a fresh nonce.  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
 <p id="rfc.section.6.4.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
 <h1 id="rfc.section.6.4.1"><a href="#rfc.section.6.4.1">6.4.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a></h1>
-<p id="rfc.section.6.4.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server should generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability.</p>
+<p id="rfc.section.6.4.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server MUST generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability. For instance, it is acceptable to generate Replay-Nonces randomly.</p>
 <p id="rfc.section.6.4.1.p.2">The value of the Replay-Nonce field MUST be an octet string encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515">[RFC7515]</a>.  Clients MUST ignore invalid Replay-Nonce values.</p>
 <pre>
   base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
@@ -713,7 +713,7 @@ address {
     </tr>
   </tbody>
 </table>
-<p id="rfc.section.6.6.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of all errors.</p>
+<p id="rfc.section.6.6.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN <a href="#RFC3553">[RFC3553]</a> namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of all errors.</p>
 <h1 id="rfc.section.7"><a href="#rfc.section.7">7.</a> <a href="#certificate-management" id="certificate-management">Certificate Management</a></h1>
 <p id="rfc.section.7.p.1">In this section, we describe the certificate management functions that ACME enables:</p>
 <p/>
@@ -1696,7 +1696,7 @@ HTTP/1.1 200 OK
 }
 </pre>
 <p id="rfc.section.8.3.p.3">A client responds to this challenge by constructing a self-signed certificate which the client MUST provision at the domain name concerned in order to pass the challenge.</p>
-<p id="rfc.section.8.3.p.4">The certificate may be constructed arbitrarily, except that each certificate MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be dNSNames.</p>
+<p id="rfc.section.8.3.p.4">The certificate may be constructed arbitrarily, except that each certificate MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be dNSNames <a href="#RFC5280">[RFC5280]</a>.</p>
 <p id="rfc.section.8.3.p.5">SAN A MUST be constructed as follows: compute the SHA-256 digest <a href="#FIPS180-4">[FIPS180-4]</a> of the challenge token and encode it in lowercase hexadecimal form.  The dNSName is &#8220;x.y.token.acme.invalid&#8221;, where x is the first half of the hexadecimal representation and y is the second half.</p>
 <p id="rfc.section.8.3.p.6">SAN B MUST be constructed as follows: compute the SHA-256 digest of the key authorization and encode it in lowercase hexadecimal form. The dNSName is &#8220;x.y.ka.acme.invalid&#8221; where x is the first half of the hexadecimal representation and y is the second half.</p>
 <p id="rfc.section.8.3.p.7">The client MUST ensure that the certificate is served to TLS connections specifying a Server Name Indication (SNI) value of SAN A.</p>
@@ -1734,8 +1734,7 @@ Content-Type: application/jose+json
   <li>Open a TLS connection to the domain name being validated, presenting SAN A in the SNI field. This connection MUST be sent to TCP port 443 on the TLS server. In the ClientHello initiating the TLS handshake, the server MUST include a server_name extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does not reveal SAN B in any way when making the TLS connection, such that the presentation of SAN B in the returned certificate proves association with the client.</li>
   <li>Verify that the certificate contains a subjectAltName extension containing dNSName entries of SAN A and SAN B and no other entries.  The comparison MUST be insensitive to case and ordering of names.</li>
 </ol>
-<p id="rfc.section.8.3.p.13">It is RECOMMENDED that the server opens multiple TLS connections from various network perspectives, in order to make MitM attacks harder.</p>
-<p id="rfc.section.8.3.p.14">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
+<p id="rfc.section.8.3.p.13">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
 <h1 id="rfc.section.8.4"><a href="#rfc.section.8.4">8.4.</a> <a href="#dns" id="dns">DNS</a></h1>
 <p id="rfc.section.8.4.p.1">When the identifier being validated is a domain name, the client can prove control of that domain by provisioning a TXT resource record containing a designated value for a specific validation domain name.</p>
 <p/>
