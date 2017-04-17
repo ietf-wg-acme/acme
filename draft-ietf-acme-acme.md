@@ -1860,7 +1860,7 @@ type (required, string):
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
-at least 128 bits of entropy, in order to prevent an attacker from guessing it.
+at least 128 bits of entropy.
 It MUST NOT contain any characters outside the base64url alphabet, including
 padding characters ("=").
 
@@ -1962,9 +1962,8 @@ type (required, string):
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
-at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the base64url alphabet, including
-padding characters ("=").
+at least 128 bits of entropy. It MUST NOT contain any characters outside the
+base64url alphabet, including padding characters ("=").
 
 ~~~~~~~~~~
 GET /acme/authz/1234/1 HTTP/1.1
@@ -2064,9 +2063,8 @@ type (required, string):
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
-at least 128 bits of entropy, in order to prevent an attacker from guessing it.
-It MUST NOT contain any characters outside the base64url alphabet, including
-padding characters ("=").
+at least 128 bits of entropy. It MUST NOT contain any characters outside the
+base64url alphabet, including padding characters ("=").
 
 ~~~~~~~~~~
 GET /acme/authz/1234/2 HTTP/1.1
@@ -2754,6 +2752,17 @@ server is in a default virtual host configuration.  Conversely, if the TLS
 server returns an unrecognized_name alert, then this is an indication that the
 server is not in a default virtual host configuration.
 
+## Token Entropy
+
+The http-01, tls-sni-02 and dns-01 validation methods mandate the usage of
+a random token value to uniquely identify the challenge. The value of the token
+is required to contain at least 128 bits of entropy for the following security
+properties. First, the ACME client should not be able to influence the ACME
+server's choice of token as this may allow an attacker to reuse a domain owner's
+previous challenge responses for a new validation request. Secondly, the entropy
+requirement prevents ACME clients from implementing a "naive" validation server
+that automatically replies to challenges without participating in the creation
+of the intial authorization request.
 
 # Acknowledgements
 
