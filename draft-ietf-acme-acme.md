@@ -940,7 +940,7 @@ support an extension field.
 
 The server SHOULD validate that the contact URIs in the "contact" field are
 valid and supported by the server. If the server validates contact URIs it MUST
-support the mailto scheme. If the server rejects a contact URI for using an
+support the "mailto" scheme. If the server rejects a contact URI for using an
 unsupported scheme it MUST return an error of type "unsupportedContact", with
 a description describing the error and what types of contact URIs the server
 considers acceptable. If the server rejects a contact URI for using a supported
