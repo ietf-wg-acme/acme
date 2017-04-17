@@ -1001,8 +1001,8 @@ an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to recover an existing account and does not want an account
 to be created if one does not already exist, then it SHOULD do so by sending a
-POST request with an empty update. That is, it should send a JWS whose payload
-has a "recovery" field set to "true" ({"recovery": true}).
+POST request to the new-account URL with a JWS whose payload has a "recovery"
+field set to "true" ({"recovery": true}).
 
 ### Account Update
 
