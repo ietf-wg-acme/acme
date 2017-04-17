@@ -1822,13 +1822,6 @@ validation of domain names.  If ACME is extended in the future to support other
 types of identifiers, there will need to be new challenge types, and they will
 need to specify which types of identifier they apply to.
 
-\[\[ Editor's Note: In pre-RFC versions of this specification, challenges are
-labeled by type, and with the version of the draft in which they were
-introduced.  For example, if an HTTP challenge were introduced in version -03
-and a breaking change made in version -05, then there would be a challenge
-labeled "http-03" and one labeled "http-05" -- but not one labeled "http-04",
-since challenge in version -04 was compatible with one in version -03. ]]
-
 ## Key Authorizations
 
 Several of the challenges in this document make use of a key authorization
@@ -2455,11 +2448,11 @@ Template:
 
 Initial Contents
 
-| Label   | Identifier Type | Reference |
-|:--------|:----------------|:----------|
-| http    | dns             | RFC XXXX  |
-| tls-sni | dns             | RFC XXXX  |
-| dns     | dns             | RFC XXXX  |
+| Label      | Identifier Type | Reference |
+|:-----------|:----------------|:----------|
+| http-01    | dns             | RFC XXXX  |
+| tls-sni-02 | dns             | RFC XXXX  |
+| dns-01     | dns             | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
