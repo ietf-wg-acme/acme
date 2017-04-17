@@ -2269,6 +2269,7 @@ Content-Type: application/jose+json
   <li>For domain names: <ul><li>If the leftmost label is a &#8216;*&#8217;, then have the appropriate checks been applied?</li><li>Is the name on the Public Suffix List?</li><li>Is the name a high-value name?</li><li>Is the name a known phishing domain?</li></ul></li>
   <li>Is the key in the CSR sufficiently strong?</li>
   <li>Is the CSR signed with an acceptable algorithm?</li>
+  <li>Has issuance been authorized or forbidden by a Certficate Authority Authorization (CAA) record?  <a href="#RFC6844">[RFC6844]</a></li>
 </ul>
 <p id="rfc.section.10.5.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
 <p id="rfc.section.10.5.p.4">CAs using ACME to allow clients to agree to terms of service should keep in mind that ACME clients can automate this agreement, possibly not involving a human user.  If a CA wishes to have stronger evidence of user consent, it may present an out-of-band requirement or challenge to require human involvement.</p>
