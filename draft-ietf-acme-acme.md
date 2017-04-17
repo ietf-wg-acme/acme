@@ -416,8 +416,9 @@ keep a list of issued nonces, and strike nonces from this list as they are used.
 
 The "Replay-Nonce" header field includes a server-generated value that the
 server can use to detect unauthorized replay in future client requests.  The
-server should generate the value provided in Replay-Nonce in such a way that
-they are unique to each message, with high probability.
+server MUST generate the value provided in Replay-Nonce in such a way that
+they are unique to each message, with high probability. For instance, it is
+acceptable to generate Replay-Nonces randomly.
 
 The value of the Replay-Nonce field MUST be an octet string encoded according to
 the base64url encoding described in Section 2 of {{!RFC7515}}.  Clients MUST
