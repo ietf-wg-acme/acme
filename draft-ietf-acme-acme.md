@@ -913,6 +913,12 @@ contact (optional, array of string):
 terms-of-service-agreed (optional, boolean):
 : Same meaning as the corresponding server field defined in {{account-objects}}
 
+recovery (optional, boolean):
+: If this field is present with the value "true", then the server MUST NOT
+  create a new account if one does not already exist.  This allows a client to
+  look up an account URL based on an account key (see
+  {{finding-an-account-url-given-a-key}}).
+
 ~~~~~~~~~~
 POST /acme/new-account HTTP/1.1
 Host: example.com
@@ -993,10 +999,10 @@ then it MUST return a response with a 200 (OK) status code and provide the URL o
 that account in the Location header field.  This allows a client that has
 an account key but not the corresponding account URL to recover the account URL.
 
-If a client wishes to recover an existing account and does not want a non
-existing account to be created, then it SHOULD do so by sending a POST
-request with an empty update. That is, it should send a JWS whose payload is an
-empty object ({}).
+If a client wishes to recover an existing account and does not want an account
+to be created if one does not already exist, then it SHOULD do so by sending a
+POST request with an empty update. That is, it should send a JWS whose payload
+has a "recovery" field set to "true" ({"recovery": true}).
 
 ### Account Update
 
