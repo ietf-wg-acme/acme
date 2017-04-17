@@ -717,10 +717,10 @@ Internet-Draft                    ACME                        April 2017
    | badSignatureAlgorithm | The JWS was signed with an algorithm the  |
    |                       | server does not support                   |
    |                       |                                           |
-   | invalidContact        | The contact URL for an account was        |
-   |                       | invalid                                   |
+   | invalidContact        | A contact URL for an account was invalid  |
    |                       |                                           |
-   | malformed             | The request message was malformed         |
+   | unsupportedContact    | A contact URL for an account used an      |
+   |                       | unsupported protocol scheme               |
    |                       |                                           |
 
 
@@ -730,6 +730,8 @@ Barnes, et al.          Expires October 19, 2017               [Page 13]
 Internet-Draft                    ACME                        April 2017
 
 
+   | malformed             | The request message was malformed         |
+   |                       |                                           |
    | rateLimited           | The request exceeds a rate limit          |
    |                       |                                           |
    | rejectedIdentifier    | The server will not issue for the         |
@@ -776,8 +778,6 @@ Internet-Draft                    ACME                        April 2017
 
    o  Account Creation
 
-   o  Ordering a Certificate
-
 
 
 
@@ -785,6 +785,8 @@ Barnes, et al.          Expires October 19, 2017               [Page 14]
 
 Internet-Draft                    ACME                        April 2017
 
+
+   o  Ordering a Certificate
 
    o  Identifier Authorization
 
@@ -831,9 +833,7 @@ Internet-Draft                    ACME                        April 2017
    so clients only need to be configured with the directory URL.  These
    URLs are connected by a few different link relations [RFC5988].
 
-   The "up" link relation is used with challenge resources to indicate
-   the authorization resource to which a challenge belongs.  It is also
-   used from certificate resources to indicate a resource from which the
+
 
 
 
@@ -842,6 +842,9 @@ Barnes, et al.          Expires October 19, 2017               [Page 15]
 Internet-Draft                    ACME                        April 2017
 
 
+   The "up" link relation is used with challenge resources to indicate
+   the authorization resource to which a challenge belongs.  It is also
+   used from certificate resources to indicate a resource from which the
    client may fetch a chain of CA certificates that could be used to
    validate the certificate in the original resource.
 
@@ -880,9 +883,6 @@ Internet-Draft                    ACME                        April 2017
    an identifier, issue a certificate, and fetch an updated certificate
    some time after issuance.  The "->" is a mnemonic for a Location
    header pointing to a created resource.
-
-
-
 
 
 
@@ -1329,15 +1329,15 @@ Internet-Draft                    ACME                        April 2017
    unrecognized fields in the resulting account object.  This allows
    clients to detect when servers do not support an extension field.
 
-   The server SHOULD validate that the contact URLs in the "contact"
-   field are valid and supported by the server.  If the client provides
-   the server with an invalid or unsupported contact URL, then the
-   server MUST return an error of type "invalidContact", with a
-   description describing the error and what types of contact URL the
-   server considers acceptable.
-
-   The server creates an account and stores the public key used to
-   verify the JWS (i.e., the "jwk" element of the JWS header) to
+   The server SHOULD validate that the contact URIs in the "contact"
+   field are valid and supported by the server.  If the server validates
+   contact URIs it MUST support the "mailto" scheme.  If the server
+   rejects a contact URI for using an unsupported scheme it MUST return
+   an error of type "unsupportedContact", with a description describing
+   the error and what types of contact URIs the server considers
+   acceptable.  If the server rejects a contact URI for using a
+   supported scheme but an invalid value then the server MUST return an
+   error of type "invalidContact".
 
 
 
@@ -1346,6 +1346,8 @@ Barnes, et al.          Expires October 19, 2017               [Page 24]
 Internet-Draft                    ACME                        April 2017
 
 
+   The server creates an account and stores the public key used to
+   verify the JWS (i.e., the "jwk" element of the JWS header) to
    authenticate future requests from the account.  The server returns
    this account object in a 201 (Created) response, with the account URL
    in a Location header field.
@@ -1387,8 +1389,6 @@ Internet-Draft                    ACME                        April 2017
 
    For example, to update the contact information in the above account,
    the client could send the following request:
-
-
 
 
 

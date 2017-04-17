@@ -657,7 +657,11 @@ address {
     </tr>
     <tr>
       <td class="left">invalidContact</td>
-      <td class="left">The contact URL for an account was invalid</td>
+      <td class="left">A contact URL for an account was invalid</td>
+    </tr>
+    <tr>
+      <td class="left">unsupportedContact</td>
+      <td class="left">A contact URL for an account used an unsupported protocol scheme</td>
     </tr>
     <tr>
       <td class="left">malformed</td>
@@ -1050,7 +1054,7 @@ Content-Type: application/jose+json
 </pre>
 <p id="rfc.section.7.3.p.2">The server MUST ignore any values provided in the &#8220;orders&#8221; fields in account bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they can be provided by the client.</p>
 <p id="rfc.section.7.3.p.3">In general, the server MUST ignore any fields in the request object that it does not recognize.  In particular, it MUST NOT reflect unrecognized fields in the resulting account object.  This allows clients to detect when servers do not support an extension field.</p>
-<p id="rfc.section.7.3.p.4">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server.  If the client provides the server with an invalid or unsupported contact URL, then the server MUST return an error of type &#8220;invalidContact&#8221;, with a description describing the error and what types of contact URL the server considers acceptable.</p>
+<p id="rfc.section.7.3.p.4">The server SHOULD validate that the contact URIs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URIs it MUST support the &#8220;mailto&#8221; scheme. If the server rejects a contact URI for using an unsupported scheme it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description describing the error and what types of contact URIs the server considers acceptable. If the server rejects a contact URI for using a supported scheme but an invalid value then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
 <p id="rfc.section.7.3.p.5">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field.</p>
 <p id="rfc.section.7.3.p.6">If the server already has an account registered with the provided account key, then it MUST return a response with a 200 (OK) status code and provide the URL of that account in the Location header field.  This allows a client that has an account key but not the corresponding account URI to recover the account URL.</p>
 <p id="rfc.section.7.3.p.7">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
