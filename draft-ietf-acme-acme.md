@@ -524,7 +524,7 @@ ACME is structured as a REST application with the following types of resources:
 * A "new-nonce" resource ({{getting-a-nonce}})
 * A "new-account" resource ({{account-creation}})
 * A "new-order" resource ({{applying-for-certificate-issuance}})
-* A "revoke-certificate" resource ({{certificate-revocation}})
+* A "revoke-cert" resource ({{certificate-revocation}})
 * A "key-change" resource ({{account-key-roll-over}})
 
 The server MUST provide "directory" and "new-nonce" resources.
@@ -561,7 +561,7 @@ indicate HTTP link relations.
        |          |          |
        |          |          |
        V          |          V
-      acct        |        order --------> cert
+    account       |        order --------> cert
                   |         | ^              |
                   |         | | "up"         | "up"
                   |         V |              V
@@ -1325,14 +1325,15 @@ client fails to complete the required actions before the "expires" time, then
 the server SHOULD change the status of the order to "invalid" and MAY
 delete the order resource.
 
-The server MUST issue the requested certificate and update the order resource
-with a URL for the certificate shortly after the client has fulfilled the server's
-requirements.   If the client has already satisfied the server's requirements at
-the time of this request (e.g., by obtaining authorization for all of the
-identifiers in the certificate in previous transactions), then the server MUST
-proactively issue the requested certificate and provide a URL for it in the
-"certificate" field of the order.  The server MUST, however, still list the
-completed authorizations in the "authorizations" array.
+The server MUST begin the issuance process for the requested certificate and
+update the order resource with a URL for the certificate once the client has
+fulfilled the server's requirements.   If the client has already satisfied the
+server's requirements at the time of this request (e.g., by obtaining
+authorization for all of the identifiers in the certificate in previous
+transactions), then the server MUST proactively issue the requested certificate
+and provide a URL for it in the "certificate" field of the order.  The server
+MUST, however, still list the completed authorizations in the "authorizations"
+array.
 
 Once the client believes it has fulfilled the server's requirements, it should
 send a GET request to the order resource to obtain its current state.  The
@@ -1820,13 +1821,6 @@ The identifier validation challenges described in this section all relate to
 validation of domain names.  If ACME is extended in the future to support other
 types of identifiers, there will need to be new challenge types, and they will
 need to specify which types of identifier they apply to.
-
-\[\[ Editor's Note: In pre-RFC versions of this specification, challenges are
-labeled by type, and with the version of the draft in which they were
-introduced.  For example, if an HTTP challenge were introduced in version -03
-and a breaking change made in version -05, then there would be a challenge
-labeled "http-03" and one labeled "http-05" -- but not one labeled "http-04",
-since challenge in version -04 was compatible with one in version -03. ]]
 
 ## Key Authorizations
 
@@ -2349,7 +2343,6 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 | Field Name               | Field Type      | Configurable | Reference |
 |:-------------------------|:----------------|:-------------|:----------|
-| key                      | object          | false        | RFC XXXX  |
 | status                   | string          | false        | RFC XXXX  |
 | contact                  | array of string | true         | RFC XXXX  |
 | external-account-binding | object          | true         | RFC XXXX  |
@@ -2455,11 +2448,11 @@ Template:
 
 Initial Contents
 
-| Label   | Identifier Type | Reference |
-|:--------|:----------------|:----------|
-| http    | dns             | RFC XXXX  |
-| tls-sni | dns             | RFC XXXX  |
-| dns     | dns             | RFC XXXX  |
+| Label      | Identifier Type | Reference |
+|:-----------|:----------------|:----------|
+| http-01    | dns             | RFC XXXX  |
+| tls-sni-02 | dns             | RFC XXXX  |
+| dns-01     | dns             | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
