@@ -973,12 +973,12 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 }
 ~~~~~~~~~~
 
-### Account URI Recovery
+### Finding an Account URL Given a Key
 
 If the server already has an account registered with the provided account key,
-then it MUST return a response with a 200 (OK) status code and provide the URI of
+then it MUST return a response with a 200 (OK) status code and provide the URL of
 that account in the Location header field.  This allows a client that has
-an account key but not the corresponding account URI to recover the account URI.
+an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to recover an existing account and does not want a non
 existing account to be created, then it SHOULD do so by sending a POST
