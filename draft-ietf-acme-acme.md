@@ -956,16 +956,6 @@ considers acceptable. If the server rejects a contact URI for using a supported
 scheme but an invalid value then the server MUST return an error of type
 "invalidContact".
 
-The server creates an account and stores the public key used to verify the
-JWS (i.e., the "jwk" element of the JWS header) to authenticate future requests
-from the account.  The server returns this account object in a 201 (Created)
-response, with the account URL in a Location header field.
-
-If the server already has an account registered with the provided account key,
-then it MUST return a response with a 200 (OK) status code and provide the URL of
-that account in the Location header field.  This allows a client that has
-an account key but not the corresponding account URI to recover the account URL.
-
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URL where such terms can be accessed
 in the "terms-of-service" subfield of the "meta" field in the directory object,
@@ -973,6 +963,11 @@ and the server MUST reject new-account requests that do not have the
 "terms-of-service-agreed" set to "true".  Clients SHOULD NOT automatically agree
 to terms by default.  Rather, they SHOULD require some user interaction for
 agreement to terms.
+
+The server creates an account and stores the public key used to verify the
+JWS (i.e., the "jwk" element of the JWS header) to authenticate future requests
+from the account.  The server returns this account object in a 201 (Created)
+response, with the account URL in a Location header field.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
@@ -991,10 +986,26 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 }
 ~~~~~~~~~~
 
+### Finding an Account URL Given a Key
+
+If the server already has an account registered with the provided account key,
+then it MUST return a response with a 200 (OK) status code and provide the URL of
+that account in the Location header field.  This allows a client that has
+an account key but not the corresponding account URL to recover the account URL.
+
+If a client wishes to recover an existing account and does not want a non
+existing account to be created, then it SHOULD do so by sending a POST
+request with an empty update. That is, it should send a JWS whose payload is an
+empty object ({}).
+
+### Account Update
+
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URL.  The server MUST ignore any
-updates to "order" fields or any other fields it does not
-recognize.
+updates to "order" fields or any other fields it does not recognize. If the server
+accepts the update, it MUST return a response with a 200 (OK) status code and the
+resulting account object.
+
 
 For example, to update the contact information in the above account, the client
 could send the following request:
@@ -1020,6 +1031,8 @@ Content-Type: application/jose+json
   "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
 }
 ~~~~~~~~~~
+
+### Account Information
 
 Servers SHOULD NOT respond to GET requests for account resources as these
 requests are not authenticated.  If a client wishes to query the server for
@@ -1214,7 +1227,7 @@ by replacing the old account key with the new public key and returns status code
 200. Otherwise, the server responds with an error status code and a problem
 document describing the error.
 
-### Account deactivation
+### Account Deactivation
 
 A client can deactivate an account by posting a signed update to the server with
 a status field of "deactivated." Clients may wish to do this when the account
