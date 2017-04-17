@@ -80,7 +80,7 @@ Copyright Notice
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
    2.  Deployment Model and Operator Experience  . . . . . . . . . .   5
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   6
    4.  Protocol Overview . . . . . . . . . . . . . . . . . . . . . .   6
@@ -151,16 +151,16 @@ Internet-Draft                    ACME                        April 2017
    11. Operational Considerations  . . . . . . . . . . . . . . . . .  65
      11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  65
      11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  66
+     11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  67
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  67
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  67
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  67
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  68
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  68
      13.2.  Informative References . . . . . . . . . . . . . . . . .  70
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  70
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  71
 
-1.  Introduction
 
-   Certificates [RFC5280] in the Web PKI are most commonly used to
-   authenticate domain names.  Thus, certificate authorities in the Web
+
+
 
 
 
@@ -170,6 +170,10 @@ Barnes, et al.          Expires October 19, 2017                [Page 3]
 Internet-Draft                    ACME                        April 2017
 
 
+1.  Introduction
+
+   Certificates [RFC5280] in the Web PKI are most commonly used to
+   authenticate domain names.  Thus, certificate authorities in the Web
    PKI are trusted to verify that an applicant for a certificate
    legitimately represents the domain name(s) in the certificate.
 
@@ -214,10 +218,6 @@ Internet-Draft                    ACME                        April 2017
    published protocols.  In many cases, the instructions are difficult
    to follow and cause significant confusion.  Informal usability tests
    by the authors indicate that webmasters often need 1-3 hours to
-   obtain and install a certificate for a domain.  Even in the best
-   case, the lack of published, standardized mechanisms presents an
-   obstacle to the wide deployment of HTTPS and other PKIX-dependent
-
 
 
 
@@ -226,6 +226,9 @@ Barnes, et al.          Expires October 19, 2017                [Page 4]
 Internet-Draft                    ACME                        April 2017
 
 
+   obtain and install a certificate for a domain.  Even in the best
+   case, the lack of published, standardized mechanisms presents an
+   obstacle to the wide deployment of HTTPS and other PKIX-dependent
    systems because it inhibits mechanization of tasks related to
    certificate issuance, deployment, and revocation.
 
@@ -271,9 +274,6 @@ Internet-Draft                    ACME                        April 2017
    o  In the background, the ACME client contacts the CA and requests
       that it issue a certificate for the intended domain name(s).
 
-   o  Once the CA is satisfied, the certificate is issued and the ACME
-      client automatically downloads and installs it, potentially
-      notifying the operator via email, SMS, etc.
 
 
 
@@ -281,6 +281,10 @@ Barnes, et al.          Expires October 19, 2017                [Page 5]
 
 Internet-Draft                    ACME                        April 2017
 
+
+   o  Once the CA is satisfied, the certificate is issued and the ACME
+      client automatically downloads and installs it, potentially
+      notifying the operator via email, SMS, etc.
 
    o  The ACME client periodically contacts the CA to get updated
       certificates, stapled OCSP responses, or whatever else would be
@@ -326,10 +330,6 @@ Internet-Draft                    ACME                        April 2017
    The first phase of ACME is for the client to request an account with
    the ACME server.  The client generates an asymmetric key pair and
    requests a new account, optionally providing contact information,
-   agreeing to terms of service, and/or associating the account with an
-   existing account in another system.  The creation request is signed
-   with the generated private key to prove that the client controls it.
-
 
 
 
@@ -337,6 +337,10 @@ Barnes, et al.          Expires October 19, 2017                [Page 6]
 
 Internet-Draft                    ACME                        April 2017
 
+
+   agreeing to terms of service, and/or associating the account with an
+   existing account in another system.  The creation request is signed
+   with the generated private key to prove that the client controls it.
 
          Client                                                  Server
 
@@ -376,10 +380,6 @@ Internet-Draft                    ACME                        April 2017
    Once the validation process is complete and the server is satisfied
    that the client has met its requirements, the server will issue the
    requested certificate and make it available to the client.
-
-
-
-
 
 
 
@@ -2504,10 +2504,10 @@ Internet-Draft                    ACME                        April 2017
    type (required, string):  The string "http-01"
 
    token (required, string):  A random value that uniquely identifies
-      the challenge.  This value MUST have at least 128 bits of entropy,
-      in order to prevent an attacker from guessing it.  It MUST NOT
-      contain any characters outside the base64url alphabet, including
-      padding characters ("=").
+      the challenge.  This value MUST have at least 128 bits of entropy.
+      It MUST NOT contain any characters outside the base64url alphabet,
+      including padding characters ("=").
+
 
 
 
@@ -2651,10 +2651,9 @@ Internet-Draft                    ACME                        April 2017
    type (required, string):  The string "tls-sni-02"
 
    token (required, string):  A random value that uniquely identifies
-      the challenge.  This value MUST have at least 128 bits of entropy,
-      in order to prevent an attacker from guessing it.  It MUST NOT
-      contain any characters outside the base64url alphabet, including
-      padding characters ("=").
+      the challenge.  This value MUST have at least 128 bits of entropy.
+      It MUST NOT contain any characters outside the base64url alphabet,
+      including padding characters ("=").
 
    GET /acme/authz/1234/1 HTTP/1.1
    Host: example.com
@@ -2681,7 +2680,8 @@ Internet-Draft                    ACME                        April 2017
    is the first half of the hexadecimal representation and y is the
    second half.
 
-
+   SAN B MUST be constructed as follows: compute the SHA-256 digest of
+   the key authorization and encode it in lowercase hexadecimal form.
 
 
 
@@ -2690,8 +2690,6 @@ Barnes, et al.          Expires October 19, 2017               [Page 48]
 Internet-Draft                    ACME                        April 2017
 
 
-   SAN B MUST be constructed as follows: compute the SHA-256 digest of
-   the key authorization and encode it in lowercase hexadecimal form.
    The dNSName is "x.y.ka.acme.invalid" where x is the first half of the
    hexadecimal representation and y is the second half.
 
@@ -2738,6 +2736,8 @@ Internet-Draft                    ACME                        April 2017
        presenting SAN A in the SNI field.  This connection MUST be sent
        to TCP port 443 on the TLS server.  In the ClientHello initiating
        the TLS handshake, the server MUST include a server_name
+       extension (i.e., SNI) containing SAN A.  The server SHOULD ensure
+       that it does not reveal SAN B in any way when making the TLS
 
 
 
@@ -2746,8 +2746,6 @@ Barnes, et al.          Expires October 19, 2017               [Page 49]
 Internet-Draft                    ACME                        April 2017
 
 
-       extension (i.e., SNI) containing SAN A.  The server SHOULD ensure
-       that it does not reveal SAN B in any way when making the TLS
        connection, such that the presentation of SAN B in the returned
        certificate proves association with the client.
 
@@ -2771,10 +2769,9 @@ Internet-Draft                    ACME                        April 2017
    type (required, string):  The string "dns-01"
 
    token (required, string):  A random value that uniquely identifies
-      the challenge.  This value MUST have at least 128 bits of entropy,
-      in order to prevent an attacker from guessing it.  It MUST NOT
-      contain any characters outside the base64url alphabet, including
-      padding characters ("=").
+      the challenge.  This value MUST have at least 128 bits of entropy.
+      It MUST NOT contain any characters outside the base64url alphabet,
+      including padding characters ("=").
 
    GET /acme/authz/1234/2 HTTP/1.1
    Host: example.com
@@ -2794,6 +2791,9 @@ Internet-Draft                    ACME                        April 2017
 
    The record provisioned to the DNS is the base64url encoding of this
    digest.  The client constructs the validation domain name by
+   prepending the label "_acme-challenge" to the domain name being
+   validated, then provisions a TXT record with the digest value under
+   that name.  For example, if the domain name being validated is
 
 
 
@@ -2802,9 +2802,6 @@ Barnes, et al.          Expires October 19, 2017               [Page 50]
 Internet-Draft                    ACME                        April 2017
 
 
-   prepending the label "_acme-challenge" to the domain name being
-   validated, then provisions a TXT record with the digest value under
-   that name.  For example, if the domain name being validated is
    "example.com", then the client would provision the following DNS
    record:
 
@@ -2850,6 +2847,9 @@ Internet-Draft                    ACME                        April 2017
    3.  Verify that the contents of one of the TXT records matches the
        digest value
 
+   If all of the above verifications succeed, then the validation is
+   successful.  If no DNS record is found, or DNS record and response
+   payload do not pass these checks, then the validation fails.
 
 
 
@@ -2857,10 +2857,6 @@ Barnes, et al.          Expires October 19, 2017               [Page 51]
 
 Internet-Draft                    ACME                        April 2017
 
-
-   If all of the above verifications succeed, then the validation is
-   successful.  If no DNS record is found, or DNS record and response
-   payload do not pass these checks, then the validation fails.
 
 8.5.  Out-of-Band
 
@@ -2897,6 +2893,10 @@ Internet-Draft                    ACME                        April 2017
    acknowledgement response to the server.
 
    type (required, string):  The string "oob-01"
+
+
+
+
 
 
 
@@ -3707,6 +3707,20 @@ Internet-Draft                    ACME                        April 2017
    unrecognized_name alert, then this is an indication that the server
    is not in a default virtual host configuration.
 
+11.3.  Token Entropy
+
+   The http-01, tls-sni-02 and dns-01 validation methods mandate the
+   usage of a random token value to uniquely identify the challenge.
+   The value of the token is required to contain at least 128 bits of
+   entropy for the following security properties.  First, the ACME
+   client should not be able to influence the ACME server's choice of
+   token as this may allow an attacker to reuse a domain owner's
+   previous challenge responses for a new validation request.  Secondly,
+   the entropy requirement prevents ACME clients from implementing a
+   "naive" validation server that automatically replies to challenges
+   without participating in the creation of the intial authorization
+   request.
+
 12.  Acknowledgements
 
    In addition to the editors listed on the front page, this document
@@ -3729,6 +3743,17 @@ Internet-Draft                    ACME                        April 2017
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
 
+
+
+
+
+
+
+Barnes, et al.          Expires October 19, 2017               [Page 67]
+
+Internet-Draft                    ACME                        April 2017
+
+
 13.  References
 
 13.1.  Normative References
@@ -3743,16 +3768,6 @@ Internet-Draft                    ACME                        April 2017
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <http://www.rfc-editor.org/info/rfc2119>.
-
-
-
-
-
-
-Barnes, et al.          Expires October 19, 2017               [Page 67]
-
-Internet-Draft                    ACME                        April 2017
-
 
    [RFC2585]  Housley, R. and P. Hoffman, "Internet X.509 Public Key
               Infrastructure Operational Protocols: FTP and HTTP",
@@ -3786,6 +3801,15 @@ Internet-Draft                    ACME                        April 2017
               10646", STD 63, RFC 3629, DOI 10.17487/RFC3629, November
               2003, <http://www.rfc-editor.org/info/rfc3629>.
 
+
+
+
+
+Barnes, et al.          Expires October 19, 2017               [Page 68]
+
+Internet-Draft                    ACME                        April 2017
+
+
    [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
               Resource Identifier (URI): Generic Syntax", STD 66,
               RFC 3986, DOI 10.17487/RFC3986, January 2005,
@@ -3799,16 +3823,6 @@ Internet-Draft                    ACME                        April 2017
               IANA Considerations Section in RFCs", BCP 26, RFC 5226,
               DOI 10.17487/RFC5226, May 2008,
               <http://www.rfc-editor.org/info/rfc5226>.
-
-
-
-
-
-
-Barnes, et al.          Expires October 19, 2017               [Page 68]
-
-Internet-Draft                    ACME                        April 2017
-
 
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
@@ -3845,6 +3859,13 @@ Internet-Draft                    ACME                        April 2017
               DOI 10.17487/RFC6844, January 2013,
               <http://www.rfc-editor.org/info/rfc6844>.
 
+
+
+Barnes, et al.          Expires October 19, 2017               [Page 69]
+
+Internet-Draft                    ACME                        April 2017
+
+
    [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
               Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
               2014, <http://www.rfc-editor.org/info/rfc7159>.
@@ -3857,14 +3878,6 @@ Internet-Draft                    ACME                        April 2017
    [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
               Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
               2015, <http://www.rfc-editor.org/info/rfc7515>.
-
-
-
-
-Barnes, et al.          Expires October 19, 2017               [Page 69]
-
-Internet-Draft                    ACME                        April 2017
-
 
    [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
               DOI 10.17487/RFC7518, May 2015,
@@ -3900,6 +3913,15 @@ Internet-Draft                    ACME                        April 2017
               DOI 10.17487/RFC5785, April 2010,
               <http://www.rfc-editor.org/info/rfc5785>.
 
+
+
+
+
+Barnes, et al.          Expires October 19, 2017               [Page 70]
+
+Internet-Draft                    ACME                        April 2017
+
+
    [W3C.CR-cors-20130129]
               Kesteren, A., "Cross-Origin Resource Sharing", World Wide
               Web Consortium CR CR-cors-20130129, January 2013,
@@ -3913,15 +3935,6 @@ Authors' Addresses
    Email: rlb@ipv.sx
 
 
-
-
-
-
-Barnes, et al.          Expires October 19, 2017               [Page 70]
-
-Internet-Draft                    ACME                        April 2017
-
-
    Jacob Hoffman-Andrews
    EFF
 
@@ -3932,19 +3945,6 @@ Internet-Draft                    ACME                        April 2017
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
