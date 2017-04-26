@@ -1880,9 +1880,11 @@ server has given up.
 
 The server MUST provide information about its retry state to the client via the
 "errors" field in the challenge and the Retry-After HTTP header field in
-response to requests to the challenge resource.  The server should set the
-Retry-After header field to a time after the server's next validation query,
-since the status of the challenge will not change until that time.
+response to requests to the challenge resource. The server MUST add an entry to
+the "errors" field in the challenge after each failed validation query. The
+server SHOULD set the Retry-After header field to a time after the server's
+next validation query, since the status of the challenge will not change until
+that time.
 
 Clients can explicitly request a retry by re-sending their response to a
 challenge in a new POST request (with a new nonce, etc.). This allows clients
