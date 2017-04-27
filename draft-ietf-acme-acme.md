@@ -862,6 +862,7 @@ name validation.
 
   "challenges": [
     {
+      "url": "https://example.com/authz/1234/0",
       "type": "http-01",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
