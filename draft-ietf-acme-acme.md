@@ -999,9 +999,9 @@ then it MUST return a response with a 200 (OK) status code and provide the URL o
 that account in the Location header field.  This allows a client that has
 an account key but not the corresponding account URL to recover the account URL.
 
-If a client wishes to recover an existing account and does not want an account
-to be created if one does not already exist, then it SHOULD do so by sending a
-POST request to the new-account URL with a JWS whose payload has an
+If a client wishes to find the URL for an existing account and does not want an
+account to be created if one does not already exist, then it SHOULD do so by
+sending a POST request to the new-account URL with a JWS whose payload has an
 "only-return-existing" field set to "true" ({"only-return-existing": true}).
 
 ### Account Update
