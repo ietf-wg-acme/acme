@@ -3234,8 +3234,8 @@ Internet-Draft                    ACME                        April 2017
 
 9.7.5.  Identifier Types
 
-   This registry lists the types of identifiers in certificates that
-   ACME clients may request authorization to issue.
+   This registry lists the types of identifiers that can be present in
+   ACME authorization objects.
 
    Template:
 
