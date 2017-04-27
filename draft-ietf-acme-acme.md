@@ -598,10 +598,10 @@ structured and how the ACME protocol makes use of them.
 
 In order to help clients configure themselves with the right URLs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
-needed to configure clients. It is a JSON object, whose keys are drawn from
+needed to configure clients. It is a JSON object, whose fields names are drawn from
 the following table and whose values are the corresponding URLs.
 
-| Key            | URL in value         |
+| Field          | URL in value         |
 |:---------------|:---------------------|
 | new-nonce      | New nonce            |
 | new-account    | New account          |
@@ -621,7 +621,7 @@ should not clash with other services. For instance:
  * a host which only functions as an ACME server could place the directory
    under the path "/".
 
-The object MAY additionally contain a key "meta". If present, it MUST be a
+The object MAY additionally contain a field "meta". If present, it MUST be a
 JSON object; each field in the object is an item of metadata relating to
 the service provided by the ACME server.
 
@@ -1390,7 +1390,7 @@ corresponding to these authorizations and reflect them as already valid in any
 orders submitted by the client.
 
 If a CA wishes to allow pre-authorization within ACME, it can offer a "new
-authorization" resource in its directory by adding the key "new-authz" with a
+authorization" resource in its directory by adding the field "new-authz" with a
 URL for the new authorization resource.
 
 To request authorization for an identifier, the client sends a POST request to
@@ -2347,7 +2347,7 @@ new-account request.
 
 Template:
 
-* Field name: The string to be used as a key in the JSON object
+* Field name: The string to be used as a field name in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
 * Client configurable: Boolean indicating whether the server should accept
@@ -2372,7 +2372,7 @@ new-order request.
 
 Template:
 
-* Field name: The string to be used as a key in the JSON object
+* Field name: The string to be used as a field name in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
 * Client configurable: Boolean indicating whether the server should accept
@@ -2413,13 +2413,13 @@ directory objects.
 
 Template:
 
-* Key: The value to be used as a field name in the directory object
-* Resource type: The type of resource labeled by the key
+* Field name: The value to be used as a field name in the directory object
+* Resource type: The type of resource labeled by the field
 * Reference: Where the resource type is defined
 
 Initial contents:
 
-| Key            | Resource type        | Reference |
+| Field Name     | Resource Type        | Reference |
 |:---------------|:---------------------|:----------|
 | new-account    | New account          | RFC XXXX  |
 | new-order      | New order            | RFC XXXX  |
