@@ -879,7 +879,7 @@ address {
 
 <dl>
   <dt>&#8220;terms-of-service&#8221; (optional, string):</dt>
-  <dd style="margin-left: 8">A URI identifying the current terms of service.</dd>
+  <dd style="margin-left: 8">A URL identifying the current terms of service.</dd>
   <dt>&#8220;website&#8221; (optional, string):</dt>
   <dd style="margin-left: 8">An HTTP or HTTPS URL locating a website providing more information about the ACME server.</dd>
   <dt>&#8220;caa-identities&#8221; (optional, array of string):</dt>
@@ -912,7 +912,7 @@ Content-Type: application/json
   <dt>status (required, string):</dt>
   <dd style="margin-left: 8">The status of this account. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;.  The value &#8220;deactivated&#8221; should be used to indicate client-initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate server-initiated deactivation.</dd>
   <dt>contact (optional, array of string):</dt>
-  <dd style="margin-left: 8">An array of URIs that the server can use to contact the client for issues related to this account. For example, the server may wish to notify the client about server-initiated revocation or certificate expiration.</dd>
+  <dd style="margin-left: 8">An array of URLs that the server can use to contact the client for issues related to this account. For example, the server may wish to notify the client about server-initiated revocation or certificate expiration.</dd>
   <dt>terms-of-service-agreed (optional, boolean):</dt>
   <dd style="margin-left: 8">Including this field in a new-account request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field is not updateable by the client.</dd>
   <dt>orders (required, string):</dt>
@@ -1016,6 +1016,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
 
   "challenges": [
     {
+      "url": "https://example.com/authz/1234/0",
       "type": "http-01",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
@@ -1072,7 +1073,7 @@ Content-Type: application/jose+json
 </pre>
 <p id="rfc.section.7.3.p.3">The server MUST ignore any values provided in the &#8220;orders&#8221; fields in account bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they can be provided by the client.</p>
 <p id="rfc.section.7.3.p.4">In general, the server MUST ignore any fields in the request object that it does not recognize.  In particular, it MUST NOT reflect unrecognized fields in the resulting account object.  This allows clients to detect when servers do not support an extension field.</p>
-<p id="rfc.section.7.3.p.5">The server SHOULD validate that the contact URIs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URIs it MUST support the &#8220;mailto&#8221; scheme. If the server rejects a contact URI for using an unsupported scheme it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description describing the error and what types of contact URIs the server considers acceptable. If the server rejects a contact URI for using a supported scheme but an invalid value then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
+<p id="rfc.section.7.3.p.5">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URLs it MUST support the &#8220;mailto&#8221; scheme. If the server rejects a contact URL for using an unsupported scheme it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description describing the error and what types of contact URLs the server considers acceptable. If the server rejects a contact URL for using a supported scheme but an invalid value then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
 <p id="rfc.section.7.3.p.6">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
 <p id="rfc.section.7.3.p.7">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field.</p>
 <pre>
@@ -2288,7 +2289,7 @@ Content-Type: application/jose+json
 <h1 id="rfc.section.10.4"><a href="#rfc.section.10.4">10.4.</a> <a href="#server-side-request-forgery" id="server-side-request-forgery">Server-Side Request Forgery</a></h1>
 <p id="rfc.section.10.4.p.1">Server-Side Request Forgery (SSRF) attacks can arise when an attacker can cause a server to perform HTTP requests to an attacker-chosen URL.  In the ACME HTTP challenge validation process, the ACME server performs an HTTP GET request to a URL in which the attacker can choose the domain.  This request is made before the server has verified that the client controls the domain, so any client can cause a query to any domain.</p>
 <p id="rfc.section.10.4.p.2">Some server implementations include information from the validation server&#8217;s response (in order to facilitate debugging).  Such implementations enable an attacker to extract this information from any web server that is accessible to the ACME server, even if it is not accessible to the ACME client.</p>
-<p id="rfc.section.10.4.p.3">It might seem that the risk of SSRF through this channel is limited by the fact that the attacker can only control the domain of the URL, not the path.  However, if the attacker first sets the domain to one they control, then they can send the server an HTTP redirect (e.g., a 302 response) which will cause the server to query an arbitrary URI.</p>
+<p id="rfc.section.10.4.p.3">It might seem that the risk of SSRF through this channel is limited by the fact that the attacker can only control the domain of the URL, not the path.  However, if the attacker first sets the domain to one they control, then they can send the server an HTTP redirect (e.g., a 302 response) which will cause the server to query an arbitrary URL.</p>
 <p id="rfc.section.10.4.p.4">In order to further limit the SSRF risk, ACME server operators should ensure that validation queries can only be sent to servers on the public Internet, and not, say, web services within the server operator&#8217;s internal network.  Since the attacker could make requests to these public servers himself, he can&#8217;t gain anything extra through an SSRF attack on ACME aside from a layer of anonymization.</p>
 <h1 id="rfc.section.10.5"><a href="#rfc.section.10.5">10.5.</a> <a href="#ca-policy-considerations" id="ca-policy-considerations">CA Policy Considerations</a></h1>
 <p id="rfc.section.10.5.p.1">The controls on issuance enabled by ACME are focused on validating that a certificate applicant controls the identifier he claims.  Before issuing a certificate, however, there are many other checks that a CA might need to perform, for example:</p>
