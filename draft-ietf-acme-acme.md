@@ -565,11 +565,11 @@ indicate HTTP link relations.
        |          |          |
        |          |          |
        V          |          V
-    account       |        order --------> cert
-                  |         | ^              |
-                  |         | | "up"         | "up"
-                  |         V |              V
-                  +------> authz         cert-chain
+    account       |        order -----> cert
+                  |          | 
+                  |          | 
+                  |          V 
+                  +------> authz     
                             | ^
                             | | "up"
                             V |
@@ -912,6 +912,7 @@ contact (optional, array of string):
 
 terms-of-service-agreed (optional, boolean):
 : Same meaning as the corresponding server field defined in {{account-objects}}
+
 
 only-return-existing (optional, boolean):
 : If this field is present with the value "true", then the server MUST NOT
@@ -1752,7 +1753,7 @@ Content-Type: application/jose+json
 Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
-the request is authorized to revoke the certificate.  The server SHOULD consider
+the request is authorized to revoke the certificate.  The server MUST consider
 at least the following accounts authorized for a given certificate:
 
 * the account that issued the certificate.
@@ -1760,7 +1761,7 @@ at least the following accounts authorized for a given certificate:
 * an account that holds authorizations for all of the identifiers in the
   certificate.
 
-The server SHOULD also consider a revocation request valid if it is signed with
+The server MUST also consider a revocation request valid if it is signed with
 the private key corresponding to the public key in the certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
@@ -1835,9 +1836,11 @@ validated (optional, string):
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
-error (optional, object):
-: The error that occurred while the server was validating the challenge, if any.
-This field is structured as a problem document {{!RFC7807}}.
+errors (optional, array of object):
+: Errors that occurred while the server was validating the challenge, if any,
+structured as problem documents {{!RFC7807}}. The server MUST NOT modify the
+array except by appending entries onto the end. The server can limit the size
+of this object by limiting the number of times it will retry a challenge.
 
 All additional fields are specified by the challenge type.  If the server sets a
 challenge's "status" to "invalid", it SHOULD also include the "error" field to
@@ -1873,6 +1876,35 @@ zero octets in the JWK object MUST be stripped before doing the computation.
 As specified in the individual challenges below, the token for a challenge is a
 string comprised entirely of characters in the URL-safe base64 alphabet.
 The "||" operator indicates concatenation of strings.
+
+## Retrying Challenges
+
+ACME challenges typically require the client to set up some network-accessible
+resource that the server can query in order to validate that the client
+controls an identifier.  In practice it is not uncommon for the server's
+queries to fail while a resource is being set up, e.g., due to information
+propagating across a cluster or firewall rules not being in place.
+
+Clients SHOULD NOT respond to challenges until they believe that the server's
+queries will succeed. If a server's initial validation query fails, the server
+SHOULD retry the query after some time.  While the server is still trying, the
+status of the challenge remains "pending"; it is only marked "invalid" once the
+server has given up.
+
+The server MUST provide information about its retry state to the client via the
+"errors" field in the challenge and the Retry-After HTTP header field in
+response to requests to the challenge resource. The server MUST add an entry to
+the "errors" field in the challenge after each failed validation query. The
+server SHOULD set the Retry-After header field to a time after the server's
+next validation query, since the status of the challenge will not change until
+that time.
+
+Clients can explicitly request a retry by re-sending their response to a
+challenge in a new POST request (with a new nonce, etc.). This allows clients
+to request a retry when state has changed (e.g., after firewall rules have been
+updated). Servers SHOULD retry a request immediately on receiving such a POST
+request. In order to avoid denial-of-service attacks via client-initiated
+retries, servers SHOULD rate-limit such requests.
 
 ## HTTP
 
@@ -2443,8 +2475,8 @@ document ]]
 
 ### Identifier Types {#iana-identifier}
 
-This registry lists the types of identifiers in certificates that ACME clients
-may request authorization to issue.
+This registry lists the types of identifiers that can be present in ACME
+authorization objects.
 
 Template:
 
