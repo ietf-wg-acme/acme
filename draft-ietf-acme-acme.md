@@ -865,6 +865,7 @@ name validation.
       "url": "https://example.com/authz/1234/0",
       "type": "http-01",
       "status": "valid",
+      "token": "DGyRejmCefe7v4NfDGDKfA"
       "validated": "2014-12-01T12:05:00Z",
       "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
     }
