@@ -913,7 +913,7 @@ contact (optional, array of string):
 terms-of-service-agreed (optional, boolean):
 : Same meaning as the corresponding server field defined in {{account-objects}}
 
-recovery (optional, boolean):
+only-return-existing (optional, boolean):
 : If this field is present with the value "true", then the server MUST NOT
   create a new account if one does not already exist.  This allows a client to
   look up an account URL based on an account key (see
@@ -1001,8 +1001,8 @@ an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to recover an existing account and does not want an account
 to be created if one does not already exist, then it SHOULD do so by sending a
-POST request to the new-account URL with a JWS whose payload has a "recovery"
-field set to "true" ({"recovery": true}).
+POST request to the new-account URL with a JWS whose payload has an
+"only-return-existing" field set to "true" ({"only-return-existing": true}).
 
 ### Account Update
 
