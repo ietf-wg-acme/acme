@@ -565,11 +565,11 @@ indicate HTTP link relations.
        |          |          |
        |          |          |
        V          |          V
-    account       |        order --------> cert
-                  |         | ^              |
-                  |         | | "up"         | "up"
-                  |         V |              V
-                  +------> authz         cert-chain
+    account       |        order -----> cert
+                  |          | 
+                  |          | 
+                  |          V 
+                  +------> authz     
                             | ^
                             | | "up"
                             V |
