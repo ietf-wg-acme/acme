@@ -127,10 +127,11 @@ Internet-Draft                    ACME                        April 2017
      7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  41
    8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  43
      8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  45
-     8.2.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  45
-     8.3.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  48
-     8.4.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  50
-     8.5.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  52
+     8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  45
+     8.3.  HTTP  . . . . . . . . . . . . . . . . . . . . . . . . . .  46
+     8.4.  TLS with Server Name Indication (TLS SNI) . . . . . . . .  48
+     8.5.  DNS . . . . . . . . . . . . . . . . . . . . . . . . . . .  50
+     8.6.  Out-of-Band . . . . . . . . . . . . . . . . . . . . . . .  52
    9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  53
      9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  53
      9.2.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  54
@@ -160,7 +161,6 @@ Internet-Draft                    ACME                        April 2017
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  68
      13.2.  Informative References . . . . . . . . . . . . . . . . .  70
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  71
-
 
 
 
@@ -2432,9 +2432,12 @@ Internet-Draft                    ACME                        April 2017
       3339 [RFC3339].  This field is REQUIRED if the "status" field is
       "valid".
 
-   error (optional, object):  The error that occurred while the server
-      was validating the challenge, if any.  This field is structured as
-      a problem document [RFC7807].
+   errors (optional, array of object):  Errors that occurred while the
+      server was validating the challenge, if any, structured as problem
+      documents [RFC7807].  The server MUST NOT modify the array except
+      by appending entries onto the end.  The server can limit the size
+      of this object by limiting the number of times it will retry a
+      challenge.
 
    All additional fields are specified by the challenge type.  If the
    server sets a challenge's "status" to "invalid", it SHOULD also
@@ -2453,9 +2456,6 @@ Internet-Draft                    ACME                        April 2017
    future to support other types of identifiers, there will need to be
    new challenge types, and they will need to specify which types of
    identifier they apply to.
-
-
-
 
 
 
@@ -2486,7 +2486,47 @@ Internet-Draft                    ACME                        April 2017
    safe base64 alphabet.  The "||" operator indicates concatenation of
    strings.
 
-8.2.  HTTP
+8.2.  Retrying Challenges
+
+   ACME challenges typically require the client to set up some network-
+   accessible resource that the server can query in order to validate
+   that the client controls an identifier.  In practice it is not
+   uncommon for the server's queries to fail while a resource is being
+   set up, e.g., due to information propagating across a cluster or
+   firewall rules not being in place.
+
+   Clients SHOULD NOT respond to challenges until they believe that the
+   server's queries will succeed.  If a server's initial validation
+   query fails, the server SHOULD retry the query after some time.
+   While the server is still trying, the status of the challenge remains
+   "pending"; it is only marked "invalid" once the server has given up.
+
+   The server MUST provide information about its retry state to the
+   client via the "errors" field in the challenge and the Retry-After
+   HTTP header field in response to requests to the challenge resource.
+   The server MUST add an entry to the "errors" field in the challenge
+   after each failed validation query.  The server SHOULD set the Retry-
+   After header field to a time after the server's next validation
+   query, since the status of the challenge will not change until that
+   time.
+
+   Clients can explicitly request a retry by re-sending their response
+   to a challenge in a new POST request (with a new nonce, etc.).  This
+   allows clients to request a retry when state has changed (e.g., after
+   firewall rules have been updated).  Servers SHOULD retry a request
+
+
+
+Barnes, et al.          Expires October 29, 2017               [Page 45]
+
+Internet-Draft                    ACME                        April 2017
+
+
+   immediately on receiving such a POST request.  In order to avoid
+   denial-of-service attacks via client-initiated retries, servers
+   SHOULD rate-limit such requests.
+
+8.3.  HTTP
 
    With HTTP validation, the client in an ACME transaction proves its
    control over a domain name by proving that for that domain name it
@@ -2507,20 +2547,6 @@ Internet-Draft                    ACME                        April 2017
       the challenge.  This value MUST have at least 128 bits of entropy.
       It MUST NOT contain any characters outside the base64url alphabet,
       including padding characters ("=").
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires October 29, 2017               [Page 45]
-
-Internet-Draft                    ACME                        April 2017
-
 
    GET /acme/authz/1234/0 HTTP/1.1
    Host: example.com
@@ -2544,6 +2570,14 @@ Internet-Draft                    ACME                        April 2017
    value in the challenge.  The value of the resource MUST be the ASCII
    representation of the key authorization.
 
+
+
+
+Barnes, et al.          Expires October 29, 2017               [Page 46]
+
+Internet-Draft                    ACME                        April 2017
+
+
 GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
 Host: example.com
 
@@ -2557,26 +2591,6 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
    keyAuthorization (required, string):  The key authorization for this
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires October 29, 2017               [Page 46]
-
-Internet-Draft                    ACME                        April 2017
-
 
    POST /acme/authz/1234/0
    Host: example.com
@@ -2612,6 +2626,14 @@ Internet-Draft                    ACME                        April 2017
 
    2.  Verify that the resulting URL is well-formed.
 
+
+
+
+Barnes, et al.          Expires October 29, 2017               [Page 47]
+
+Internet-Draft                    ACME                        April 2017
+
+
    3.  Dereference the URL using an HTTP GET request.  This request MUST
        be sent to TCP port 80 on the HTTP server.
 
@@ -2624,21 +2646,11 @@ Internet-Draft                    ACME                        April 2017
 
    The server SHOULD follow redirects when dereferencing the URL.
 
-
-
-
-
-
-Barnes, et al.          Expires October 29, 2017               [Page 47]
-
-Internet-Draft                    ACME                        April 2017
-
-
    If all of the above verifications succeed, then the validation is
    successful.  If the request fails, or the body does not pass these
    checks, then it has failed.
 
-8.3.  TLS with Server Name Indication (TLS SNI)
+8.4.  TLS with Server Name Indication (TLS SNI)
 
    The TLS with Server Name Indication (TLS SNI) validation method
    proves control over a domain name by requiring the client to
@@ -2670,6 +2682,14 @@ Internet-Draft                    ACME                        April 2017
    certificate which the client MUST provision at the domain name
    concerned in order to pass the challenge.
 
+
+
+
+Barnes, et al.          Expires October 29, 2017               [Page 48]
+
+Internet-Draft                    ACME                        April 2017
+
+
    The certificate may be constructed arbitrarily, except that each
    certificate MUST have exactly two subjectAlternativeNames, SAN A and
    SAN B.  Both MUST be dNSNames [RFC5280].
@@ -2682,14 +2702,6 @@ Internet-Draft                    ACME                        April 2017
 
    SAN B MUST be constructed as follows: compute the SHA-256 digest of
    the key authorization and encode it in lowercase hexadecimal form.
-
-
-
-Barnes, et al.          Expires October 29, 2017               [Page 48]
-
-Internet-Draft                    ACME                        April 2017
-
-
    The dNSName is "x.y.ka.acme.invalid" where x is the first half of the
    hexadecimal representation and y is the second half.
 
@@ -2726,6 +2738,14 @@ Internet-Draft                    ACME                        April 2017
    the server MUST return an HTTP error in response to the POST request
    in which the client sent the challenge.
 
+
+
+
+Barnes, et al.          Expires October 29, 2017               [Page 49]
+
+Internet-Draft                    ACME                        April 2017
+
+
    Given a challenge/response pair, the ACME server verifies the
    client's control of the domain by verifying that the TLS server was
    configured appropriately, using these steps:
@@ -2738,14 +2758,6 @@ Internet-Draft                    ACME                        April 2017
        the TLS handshake, the server MUST include a server_name
        extension (i.e., SNI) containing SAN A.  The server SHOULD ensure
        that it does not reveal SAN B in any way when making the TLS
-
-
-
-Barnes, et al.          Expires October 29, 2017               [Page 49]
-
-Internet-Draft                    ACME                        April 2017
-
-
        connection, such that the presentation of SAN B in the returned
        certificate proves association with the client.
 
@@ -2757,7 +2769,7 @@ Internet-Draft                    ACME                        April 2017
    If all of the above verifications succeed, then the validation is
    successful.  Otherwise, the validation fails.
 
-8.4.  DNS
+8.5.  DNS
 
    When the identifier being validated is a domain name, the client can
    prove control of that domain by provisioning a TXT resource record
@@ -2781,6 +2793,15 @@ Internet-Draft                    ACME                        April 2017
      "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
    }
 
+
+
+
+
+Barnes, et al.          Expires October 29, 2017               [Page 50]
+
+Internet-Draft                    ACME                        April 2017
+
+
    A client responds to this challenge by constructing a key
    authorization from the "token" value provided in the challenge and
    the client's account key.  The client then computes the SHA-256
@@ -2793,14 +2814,6 @@ Internet-Draft                    ACME                        April 2017
    that name.  For example, if the domain name being validated is
    "example.com", then the client would provision the following DNS
    record:
-
-
-
-
-Barnes, et al.          Expires October 29, 2017               [Page 50]
-
-Internet-Draft                    ACME                        April 2017
-
 
    _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 
@@ -2837,6 +2850,14 @@ Internet-Draft                    ACME                        April 2017
 
    To validate a DNS challenge, the server performs the following steps:
 
+
+
+
+Barnes, et al.          Expires October 29, 2017               [Page 51]
+
+Internet-Draft                    ACME                        April 2017
+
+
    1.  Compute the SHA-256 digest [FIPS180-4] of the key authorization
 
    2.  Query for TXT records for the validation domain name
@@ -2848,17 +2869,7 @@ Internet-Draft                    ACME                        April 2017
    successful.  If no DNS record is found, or DNS record and response
    payload do not pass these checks, then the validation fails.
 
-
-
-
-
-
-Barnes, et al.          Expires October 29, 2017               [Page 51]
-
-Internet-Draft                    ACME                        April 2017
-
-
-8.5.  Out-of-Band
+8.6.  Out-of-Band
 
    There may be cases where a server cannot perform automated validation
    of an identifier, for example, if validation requires some manual
@@ -2893,17 +2904,6 @@ Internet-Draft                    ACME                        April 2017
    acknowledgement response to the server.
 
    type (required, string):  The string "oob-01"
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2990,7 +2990,7 @@ Internet-Draft                    ACME                        April 2017
 
    Change controller: IETF
 
-   Specification document(s): This document, Section Section 8.2
+   Specification document(s): This document, Section Section 8.3
 
    Related information: N/A
 

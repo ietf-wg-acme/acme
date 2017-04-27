@@ -316,10 +316,11 @@ address {
 <link href="#rfc.section.7.6" rel="Chapter" title="7.6 Certificate Revocation"/>
 <link href="#rfc.section.8" rel="Chapter" title="8 Identifier Validation Challenges"/>
 <link href="#rfc.section.8.1" rel="Chapter" title="8.1 Key Authorizations"/>
-<link href="#rfc.section.8.2" rel="Chapter" title="8.2 HTTP"/>
-<link href="#rfc.section.8.3" rel="Chapter" title="8.3 TLS with Server Name Indication (TLS SNI)"/>
-<link href="#rfc.section.8.4" rel="Chapter" title="8.4 DNS"/>
-<link href="#rfc.section.8.5" rel="Chapter" title="8.5 Out-of-Band"/>
+<link href="#rfc.section.8.2" rel="Chapter" title="8.2 Retrying Challenges"/>
+<link href="#rfc.section.8.3" rel="Chapter" title="8.3 HTTP"/>
+<link href="#rfc.section.8.4" rel="Chapter" title="8.4 TLS with Server Name Indication (TLS SNI)"/>
+<link href="#rfc.section.8.5" rel="Chapter" title="8.5 DNS"/>
+<link href="#rfc.section.8.6" rel="Chapter" title="8.6 Out-of-Band"/>
 <link href="#rfc.section.9" rel="Chapter" title="9 IANA Considerations"/>
 <link href="#rfc.section.9.1" rel="Chapter" title="9.1 MIME Type: application/pem-certificate-chain"/>
 <link href="#rfc.section.9.2" rel="Chapter" title="9.2 Well-Known URI for the HTTP Challenge"/>
@@ -466,10 +467,11 @@ address {
 </ul><li>7.6.   <a href="#rfc.section.7.6">Certificate Revocation</a></li>
 </ul><li>8.   <a href="#rfc.section.8">Identifier Validation Challenges</a></li>
 <ul><li>8.1.   <a href="#rfc.section.8.1">Key Authorizations</a></li>
-<li>8.2.   <a href="#rfc.section.8.2">HTTP</a></li>
-<li>8.3.   <a href="#rfc.section.8.3">TLS with Server Name Indication (TLS SNI)</a></li>
-<li>8.4.   <a href="#rfc.section.8.4">DNS</a></li>
-<li>8.5.   <a href="#rfc.section.8.5">Out-of-Band</a></li>
+<li>8.2.   <a href="#rfc.section.8.2">Retrying Challenges</a></li>
+<li>8.3.   <a href="#rfc.section.8.3">HTTP</a></li>
+<li>8.4.   <a href="#rfc.section.8.4">TLS with Server Name Indication (TLS SNI)</a></li>
+<li>8.5.   <a href="#rfc.section.8.5">DNS</a></li>
+<li>8.6.   <a href="#rfc.section.8.6">Out-of-Band</a></li>
 </ul><li>9.   <a href="#rfc.section.9">IANA Considerations</a></li>
 <ul><li>9.1.   <a href="#rfc.section.9.1">MIME Type: application/pem-certificate-chain</a></li>
 <li>9.2.   <a href="#rfc.section.9.2">Well-Known URI for the HTTP Challenge</a></li>
@@ -1612,8 +1614,8 @@ Content-Language: en
   <dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
   <dt>validated (optional, string):</dt>
   <dd style="margin-left: 8">The time at which this challenge was completed by the server, encoded in the format specified in RFC 3339 <a href="#RFC3339">[RFC3339]</a>.  This field is REQUIRED if the &#8220;status&#8221; field is &#8220;valid&#8221;.</dd>
-  <dt>error (optional, object):</dt>
-  <dd style="margin-left: 8">The error that occurred while the server was validating the challenge, if any.  This field is structured as a problem document <a href="#RFC7807">[RFC7807]</a>.</dd>
+  <dt>errors (optional, array of object):</dt>
+  <dd style="margin-left: 8">Errors that occurred while the server was validating the challenge, if any, structured as problem documents <a href="#RFC7807">[RFC7807]</a>. The server MUST NOT modify the array except by appending entries onto the end. The server can limit the size of this object by limiting the number of times it will retry a challenge.</dd>
 </dl>
 <p id="rfc.section.8.p.10">All additional fields are specified by the challenge type.  If the server sets a challenge&#8217;s &#8220;status&#8221; to &#8220;invalid&#8221;, it SHOULD also include the &#8220;error&#8221; field to help the client diagnose why the challenge failed.</p>
 <p id="rfc.section.8.p.11">Different challenges allow the server to obtain proof of different aspects of control over an identifier.  In some challenges, like HTTP, TLS SNI, and DNS, the client directly proves its ability to do certain things related to the identifier.  The choice of which challenges to offer to a client under which circumstances is a matter of server policy.</p>
@@ -1625,9 +1627,14 @@ key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 </pre>
 <p id="rfc.section.8.1.p.2">The &#8220;JWK_Thumbprint&#8221; step indicates the computation specified in <a href="#RFC7638">[RFC7638]</a>, using the SHA-256 digest <a href="#FIPS180-4">[FIPS180-4]</a>.  As noted in JWA <a href="#RFC7518">[RFC7518]</a> any prepended zero octets in the JWK object MUST be stripped before doing the computation.</p>
 <p id="rfc.section.8.1.p.3">As specified in the individual challenges below, the token for a challenge is a string comprised entirely of characters in the URL-safe base64 alphabet.  The &#8220;||&#8221; operator indicates concatenation of strings.</p>
-<h1 id="rfc.section.8.2"><a href="#rfc.section.8.2">8.2.</a> <a href="#http" id="http">HTTP</a></h1>
-<p id="rfc.section.8.2.p.1">With HTTP validation, the client in an ACME transaction proves its control over a domain name by proving that for that domain name it can provision resources to be returned by an HTTP server. The ACME server challenges the client to provision a file at a specific path, with a specific string as its content.</p>
-<p id="rfc.section.8.2.p.2">As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will connect to at least one of the hosts found in the DNS A and AAAA records, at its discretion.  Because many web servers allocate a default HTTPS virtual host to a particular low-privilege tenant user in a subtle and non-intuitive manner, the challenge must be completed over HTTP, not HTTPS.</p>
+<h1 id="rfc.section.8.2"><a href="#rfc.section.8.2">8.2.</a> <a href="#retrying-challenges" id="retrying-challenges">Retrying Challenges</a></h1>
+<p id="rfc.section.8.2.p.1">ACME challenges typically require the client to set up some network-accessible resource that the server can query in order to validate that the client controls an identifier.  In practice it is not uncommon for the server&#8217;s queries to fail while a resource is being set up, e.g., due to information propagating across a cluster or firewall rules not being in place.</p>
+<p id="rfc.section.8.2.p.2">Clients SHOULD NOT respond to challenges until they believe that the server&#8217;s queries will succeed. If a server&#8217;s initial validation query fails, the server SHOULD retry the query after some time.  While the server is still trying, the status of the challenge remains &#8220;pending&#8221;; it is only marked &#8220;invalid&#8221; once the server has given up.</p>
+<p id="rfc.section.8.2.p.3">The server MUST provide information about its retry state to the client via the &#8220;errors&#8221; field in the challenge and the Retry-After HTTP header field in response to requests to the challenge resource. The server MUST add an entry to the &#8220;errors&#8221; field in the challenge after each failed validation query. The server SHOULD set the Retry-After header field to a time after the server&#8217;s next validation query, since the status of the challenge will not change until that time.</p>
+<p id="rfc.section.8.2.p.4">Clients can explicitly request a retry by re-sending their response to a challenge in a new POST request (with a new nonce, etc.). This allows clients to request a retry when state has changed (e.g., after firewall rules have been updated). Servers SHOULD retry a request immediately on receiving such a POST request. In order to avoid denial-of-service attacks via client-initiated retries, servers SHOULD rate-limit such requests.</p>
+<h1 id="rfc.section.8.3"><a href="#rfc.section.8.3">8.3.</a> <a href="#http" id="http">HTTP</a></h1>
+<p id="rfc.section.8.3.p.1">With HTTP validation, the client in an ACME transaction proves its control over a domain name by proving that for that domain name it can provision resources to be returned by an HTTP server. The ACME server challenges the client to provision a file at a specific path, with a specific string as its content.</p>
+<p id="rfc.section.8.3.p.2">As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will connect to at least one of the hosts found in the DNS A and AAAA records, at its discretion.  Because many web servers allocate a default HTTPS virtual host to a particular low-privilege tenant user in a subtle and non-intuitive manner, the challenge must be completed over HTTP, not HTTPS.</p>
 <p/>
 
 <dl>
@@ -1648,8 +1655,8 @@ HTTP/1.1 200 OK
   "token": "evaGxfADs6pSRb2LAv9IZf17"
 }
 </pre>
-<p id="rfc.section.8.2.p.4">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then provisions the key authorization as a resource on the HTTP server for the domain in question.</p>
-<p id="rfc.section.8.2.p.5">The path at which the resource is provisioned is comprised of the fixed prefix &#8220;.well-known/acme-challenge/&#8221;, followed by the &#8220;token&#8221; value in the challenge.  The value of the resource MUST be the ASCII representation of the key authorization.</p>
+<p id="rfc.section.8.3.p.4">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then provisions the key authorization as a resource on the HTTP server for the domain in question.</p>
+<p id="rfc.section.8.3.p.5">The path at which the resource is provisioned is comprised of the fixed prefix &#8220;.well-known/acme-challenge/&#8221;, followed by the &#8220;token&#8221; value in the challenge.  The value of the resource MUST be the ASCII representation of the key authorization.</p>
 <pre>
 GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
 Host: example.com
@@ -1657,7 +1664,7 @@ Host: example.com
 HTTP/1.1 200 OK
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
 </pre>
-<p id="rfc.section.8.2.p.6">The client&#8217;s response to this challenge indicates its agreement to this challenge by sending the server the key authorization covering the challenge&#8217;s token and the client&#8217;s account key.</p>
+<p id="rfc.section.8.3.p.6">The client&#8217;s response to this challenge indicates its agreement to this challenge by sending the server the key authorization covering the challenge&#8217;s token and the client&#8217;s account key.</p>
 <p/>
 
 <dl>
@@ -1682,8 +1689,8 @@ Content-Type: application/jose+json
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.8.2.p.8">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
-<p id="rfc.section.8.2.p.9">Given a challenge/response pair, the server verifies the client&#8217;s control of the domain by verifying that the resource was provisioned as expected.</p>
+<p id="rfc.section.8.3.p.8">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
+<p id="rfc.section.8.3.p.9">Given a challenge/response pair, the server verifies the client&#8217;s control of the domain by verifying that the resource was provisioned as expected.</p>
 <p/>
 
 <ol>
@@ -1693,10 +1700,10 @@ Content-Type: application/jose+json
   <li>Verify that the body of the response is well-formed key authorization.  The server SHOULD ignore whitespace characters at the end of the body.</li>
   <li>Verify that key authorization provided by the HTTP server matches the token for this challenge and the client&#8217;s account key.</li>
 </ol>
-<p id="rfc.section.8.2.p.11">The server SHOULD follow redirects when dereferencing the URL.</p>
-<p id="rfc.section.8.2.p.12">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
-<h1 id="rfc.section.8.3"><a href="#rfc.section.8.3">8.3.</a> <a href="#tls-with-server-name-indication-tls-sni" id="tls-with-server-name-indication-tls-sni">TLS with Server Name Indication (TLS SNI)</a></h1>
-<p id="rfc.section.8.3.p.1">The TLS with Server Name Indication (TLS SNI) validation method proves control over a domain name by requiring the client to configure a TLS server referenced by the DNS A and AAAA resource records for the domain name to respond to specific connection attempts utilizing the Server Name Indication extension <a href="#RFC6066">[RFC6066]</a>. The server verifies the client&#8217;s challenge by accessing the TLS server and verifying a particular certificate is presented.</p>
+<p id="rfc.section.8.3.p.11">The server SHOULD follow redirects when dereferencing the URL.</p>
+<p id="rfc.section.8.3.p.12">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
+<h1 id="rfc.section.8.4"><a href="#rfc.section.8.4">8.4.</a> <a href="#tls-with-server-name-indication-tls-sni" id="tls-with-server-name-indication-tls-sni">TLS with Server Name Indication (TLS SNI)</a></h1>
+<p id="rfc.section.8.4.p.1">The TLS with Server Name Indication (TLS SNI) validation method proves control over a domain name by requiring the client to configure a TLS server referenced by the DNS A and AAAA resource records for the domain name to respond to specific connection attempts utilizing the Server Name Indication extension <a href="#RFC6066">[RFC6066]</a>. The server verifies the client&#8217;s challenge by accessing the TLS server and verifying a particular certificate is presented.</p>
 <p/>
 
 <dl>
@@ -1717,12 +1724,12 @@ HTTP/1.1 200 OK
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 </pre>
-<p id="rfc.section.8.3.p.3">A client responds to this challenge by constructing a self-signed certificate which the client MUST provision at the domain name concerned in order to pass the challenge.</p>
-<p id="rfc.section.8.3.p.4">The certificate may be constructed arbitrarily, except that each certificate MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be dNSNames <a href="#RFC5280">[RFC5280]</a>.</p>
-<p id="rfc.section.8.3.p.5">SAN A MUST be constructed as follows: compute the SHA-256 digest <a href="#FIPS180-4">[FIPS180-4]</a> of the challenge token and encode it in lowercase hexadecimal form.  The dNSName is &#8220;x.y.token.acme.invalid&#8221;, where x is the first half of the hexadecimal representation and y is the second half.</p>
-<p id="rfc.section.8.3.p.6">SAN B MUST be constructed as follows: compute the SHA-256 digest of the key authorization and encode it in lowercase hexadecimal form. The dNSName is &#8220;x.y.ka.acme.invalid&#8221; where x is the first half of the hexadecimal representation and y is the second half.</p>
-<p id="rfc.section.8.3.p.7">The client MUST ensure that the certificate is served to TLS connections specifying a Server Name Indication (SNI) value of SAN A.</p>
-<p id="rfc.section.8.3.p.8">The response to the TLS-SNI challenge simply acknowledges that the client is ready to fulfill this challenge.</p>
+<p id="rfc.section.8.4.p.3">A client responds to this challenge by constructing a self-signed certificate which the client MUST provision at the domain name concerned in order to pass the challenge.</p>
+<p id="rfc.section.8.4.p.4">The certificate may be constructed arbitrarily, except that each certificate MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be dNSNames <a href="#RFC5280">[RFC5280]</a>.</p>
+<p id="rfc.section.8.4.p.5">SAN A MUST be constructed as follows: compute the SHA-256 digest <a href="#FIPS180-4">[FIPS180-4]</a> of the challenge token and encode it in lowercase hexadecimal form.  The dNSName is &#8220;x.y.token.acme.invalid&#8221;, where x is the first half of the hexadecimal representation and y is the second half.</p>
+<p id="rfc.section.8.4.p.6">SAN B MUST be constructed as follows: compute the SHA-256 digest of the key authorization and encode it in lowercase hexadecimal form. The dNSName is &#8220;x.y.ka.acme.invalid&#8221; where x is the first half of the hexadecimal representation and y is the second half.</p>
+<p id="rfc.section.8.4.p.7">The client MUST ensure that the certificate is served to TLS connections specifying a Server Name Indication (SNI) value of SAN A.</p>
+<p id="rfc.section.8.4.p.8">The response to the TLS-SNI challenge simply acknowledges that the client is ready to fulfill this challenge.</p>
 <p/>
 
 <dl>
@@ -1747,8 +1754,8 @@ Content-Type: application/jose+json
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.8.3.p.10">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
-<p id="rfc.section.8.3.p.11">Given a challenge/response pair, the ACME server verifies the client&#8217;s control of the domain by verifying that the TLS server was configured appropriately, using these steps:</p>
+<p id="rfc.section.8.4.p.10">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
+<p id="rfc.section.8.4.p.11">Given a challenge/response pair, the ACME server verifies the client&#8217;s control of the domain by verifying that the TLS server was configured appropriately, using these steps:</p>
 <p/>
 
 <ol>
@@ -1756,9 +1763,9 @@ Content-Type: application/jose+json
   <li>Open a TLS connection to the domain name being validated, presenting SAN A in the SNI field. This connection MUST be sent to TCP port 443 on the TLS server. In the ClientHello initiating the TLS handshake, the server MUST include a server_name extension (i.e., SNI) containing SAN A. The server SHOULD ensure that it does not reveal SAN B in any way when making the TLS connection, such that the presentation of SAN B in the returned certificate proves association with the client.</li>
   <li>Verify that the certificate contains a subjectAltName extension containing dNSName entries of SAN A and SAN B and no other entries.  The comparison MUST be insensitive to case and ordering of names.</li>
 </ol>
-<p id="rfc.section.8.3.p.13">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
-<h1 id="rfc.section.8.4"><a href="#rfc.section.8.4">8.4.</a> <a href="#dns" id="dns">DNS</a></h1>
-<p id="rfc.section.8.4.p.1">When the identifier being validated is a domain name, the client can prove control of that domain by provisioning a TXT resource record containing a designated value for a specific validation domain name.</p>
+<p id="rfc.section.8.4.p.13">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
+<h1 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5.</a> <a href="#dns" id="dns">DNS</a></h1>
+<p id="rfc.section.8.5.p.1">When the identifier being validated is a domain name, the client can prove control of that domain by provisioning a TXT resource record containing a designated value for a specific validation domain name.</p>
 <p/>
 
 <dl>
@@ -1779,12 +1786,12 @@ HTTP/1.1 200 OK
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
 </pre>
-<p id="rfc.section.8.4.p.3">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then computes the SHA-256 digest <a href="#FIPS180-4">[FIPS180-4]</a> of the key authorization.</p>
-<p id="rfc.section.8.4.p.4">The record provisioned to the DNS is the base64url encoding of this digest.  The client constructs the validation domain name by prepending the label &#8220;_acme-challenge&#8221; to the domain name being validated, then provisions a TXT record with the digest value under that name. For example, if the domain name being validated is &#8220;example.com&#8221;, then the client would provision the following DNS record:</p>
+<p id="rfc.section.8.5.p.3">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then computes the SHA-256 digest <a href="#FIPS180-4">[FIPS180-4]</a> of the key authorization.</p>
+<p id="rfc.section.8.5.p.4">The record provisioned to the DNS is the base64url encoding of this digest.  The client constructs the validation domain name by prepending the label &#8220;_acme-challenge&#8221; to the domain name being validated, then provisions a TXT record with the digest value under that name. For example, if the domain name being validated is &#8220;example.com&#8221;, then the client would provision the following DNS record:</p>
 <pre>
 _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
 </pre>
-<p id="rfc.section.8.4.p.5">The response to the DNS challenge provides the computed key authorization to acknowledge that the client is ready to fulfill this challenge.</p>
+<p id="rfc.section.8.5.p.5">The response to the DNS challenge provides the computed key authorization to acknowledge that the client is ready to fulfill this challenge.</p>
 <p/>
 
 <dl>
@@ -1809,8 +1816,8 @@ Content-Type: application/jose+json
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.8.4.p.7">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
-<p id="rfc.section.8.4.p.8">To validate a DNS challenge, the server performs the following steps:</p>
+<p id="rfc.section.8.5.p.7">On receiving a response, the server MUST verify that the key authorization in the response matches the &#8220;token&#8221; value in the challenge and the client&#8217;s account key.  If they do not match, then the server MUST return an HTTP error in response to the POST request in which the client sent the challenge.</p>
+<p id="rfc.section.8.5.p.8">To validate a DNS challenge, the server performs the following steps:</p>
 <p/>
 
 <ol>
@@ -1818,10 +1825,10 @@ Content-Type: application/jose+json
   <li>Query for TXT records for the validation domain name</li>
   <li>Verify that the contents of one of the TXT records matches the digest value</li>
 </ol>
-<p id="rfc.section.8.4.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
-<h1 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5.</a> <a href="#out-of-band" id="out-of-band">Out-of-Band</a></h1>
-<p id="rfc.section.8.5.p.1">There may be cases where a server cannot perform automated validation of an identifier, for example, if validation requires some manual steps.  In such cases, the server may provide an &#8220;out of band&#8221; (OOB) challenge to request that the client perform some action outside of ACME in order to validate possession of the identifier.</p>
-<p id="rfc.section.8.5.p.2">The OOB challenge requests that the client have a human user visit a web page to receive instructions on how to validate possession of the identifier, by providing a URL for that web page.</p>
+<p id="rfc.section.8.5.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
+<h1 id="rfc.section.8.6"><a href="#rfc.section.8.6">8.6.</a> <a href="#out-of-band" id="out-of-band">Out-of-Band</a></h1>
+<p id="rfc.section.8.6.p.1">There may be cases where a server cannot perform automated validation of an identifier, for example, if validation requires some manual steps.  In such cases, the server may provide an &#8220;out of band&#8221; (OOB) challenge to request that the client perform some action outside of ACME in order to validate possession of the identifier.</p>
+<p id="rfc.section.8.6.p.2">The OOB challenge requests that the client have a human user visit a web page to receive instructions on how to validate possession of the identifier, by providing a URL for that web page.</p>
 <p/>
 
 <dl>
@@ -1840,7 +1847,7 @@ HTTP/1.1 200 OK
   "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 </pre>
-<p id="rfc.section.8.5.p.4">A client responds to this challenge by presenting the indicated URL for a human user to navigate to.  If the user chooses to complete this challenge (by visiting the website and completing its instructions), the client indicates this by sending a simple acknowledgement response to the server.</p>
+<p id="rfc.section.8.6.p.4">A client responds to this challenge by presenting the indicated URL for a human user to navigate to.  If the user chooses to complete this challenge (by visiting the website and completing its instructions), the client indicates this by sending a simple acknowledgement response to the server.</p>
 <p/>
 
 <dl>
@@ -1865,7 +1872,7 @@ Content-Type: application/jose+json
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.8.5.p.6">On receiving a response, the server MUST verify that the value of the &#8220;type&#8221; field is &#8220;oob-01&#8221;.  Otherwise, the steps the server takes to validate identifier possession are determined by the server&#8217;s local policy.</p>
+<p id="rfc.section.8.6.p.6">On receiving a response, the server MUST verify that the value of the &#8220;type&#8221; field is &#8220;oob-01&#8221;.  Otherwise, the steps the server takes to validate identifier possession are determined by the server&#8217;s local policy.</p>
 <h1 id="rfc.section.9"><a href="#rfc.section.9">9.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a></h1>
 <h1 id="rfc.section.9.1"><a href="#rfc.section.9.1">9.1.</a> <a href="#mime-type-applicationpem-certificate-chain" id="mime-type-applicationpem-certificate-chain">MIME Type: application/pem-certificate-chain</a></h1>
 <p id="rfc.section.9.1.p.1">The &#8220;Media Types&#8221; registry should be updated with the following additional value:</p>
@@ -1884,7 +1891,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.9.2.p.1">The &#8220;Well-Known URIs&#8221; registry should be updated with the following additional value (using the template from <a href="#RFC5785">[RFC5785]</a>):</p>
 <p id="rfc.section.9.2.p.2">URI suffix: acme-challenge</p>
 <p id="rfc.section.9.2.p.3">Change controller: IETF</p>
-<p id="rfc.section.9.2.p.4">Specification document(s): This document, Section <a href="#http">Section 8.2</a></p>
+<p id="rfc.section.9.2.p.4">Specification document(s): This document, Section <a href="#http">Section 8.3</a></p>
 <p id="rfc.section.9.2.p.5">Related information: N/A</p>
 <h1 id="rfc.section.9.3"><a href="#rfc.section.9.3">9.3.</a> <a href="#replay-nonce-http-header" id="replay-nonce-http-header">Replay-Nonce HTTP Header</a></h1>
 <p id="rfc.section.9.3.p.1">The &#8220;Message Headers&#8221; registry should be updated with the following additional value:</p>
