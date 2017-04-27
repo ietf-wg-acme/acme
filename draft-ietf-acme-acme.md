@@ -628,7 +628,7 @@ the service provided by the ACME server.
 The following metadata items are defined, all of which are OPTIONAL:
 
 "terms-of-service" (optional, string):
-: A URI identifying the current terms of service.
+: A URL identifying the current terms of service.
 
 "website" (optional, string):
 : An HTTP or HTTPS URL locating a website providing more
@@ -673,7 +673,7 @@ deactivation whereas "revoked" should be used to indicate server-initiated
 deactivation.
 
 contact (optional, array of string):
-: An array of URIs that the server can use to contact the client for issues
+: An array of URLs that the server can use to contact the client for issues
 related to this account. For example, the server may wish to notify the
 client about server-initiated revocation or certificate expiration.
 
@@ -862,6 +862,7 @@ name validation.
 
   "challenges": [
     {
+      "url": "https://example.com/authz/1234/0",
       "type": "http-01",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
@@ -954,12 +955,12 @@ not recognize.  In particular, it MUST NOT reflect unrecognized fields in the
 resulting account object.  This allows clients to detect when servers do not
 support an extension field.
 
-The server SHOULD validate that the contact URIs in the "contact" field are
-valid and supported by the server. If the server validates contact URIs it MUST
-support the "mailto" scheme. If the server rejects a contact URI for using an
+The server SHOULD validate that the contact URLs in the "contact" field are
+valid and supported by the server. If the server validates contact URLs it MUST
+support the "mailto" scheme. If the server rejects a contact URL for using an
 unsupported scheme it MUST return an error of type "unsupportedContact", with
-a description describing the error and what types of contact URIs the server
-considers acceptable. If the server rejects a contact URI for using a supported
+a description describing the error and what types of contact URLs the server
+considers acceptable. If the server rejects a contact URL for using a supported
 scheme but an invalid value then the server MUST return an error of type
 "invalidContact".
 
@@ -2716,7 +2717,7 @@ It might seem that the risk of SSRF through this channel is limited by the fact
 that the attacker can only control the domain of the URL, not the path.
 However, if the attacker first sets the domain to one they control, then they
 can send the server an HTTP redirect (e.g., a 302 response) which will cause the
-server to query an arbitrary URI.
+server to query an arbitrary URL.
 
 In order to further limit the SSRF risk, ACME server operators should ensure
 that validation queries can only be sent to servers on the public Internet, and
