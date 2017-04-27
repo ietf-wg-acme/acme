@@ -831,11 +831,11 @@ address {
 </table>
 <p id="rfc.section.7.1.p.9">The remainder of this section provides the details of how these resources are structured and how the ACME protocol makes use of them.</p>
 <h1 id="rfc.section.7.1.1"><a href="#rfc.section.7.1.1">7.1.1.</a> <a href="#directory" id="directory">Directory</a></h1>
-<p id="rfc.section.7.1.1.p.1">In order to help clients configure themselves with the right URLs for each ACME operation, ACME servers provide a directory object. This should be the only URL needed to configure clients. It is a JSON object, whose keys are drawn from the following table and whose values are the corresponding URLs.</p>
+<p id="rfc.section.7.1.1.p.1">In order to help clients configure themselves with the right URLs for each ACME operation, ACME servers provide a directory object. This should be the only URL needed to configure clients. It is a JSON object, whose fields names are drawn from the following table and whose values are the corresponding URLs.</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
-      <th class="left">Key</th>
+      <th class="left">Field</th>
       <th class="left">URL in value</th>
     </tr>
   </thead>
@@ -873,7 +873,7 @@ address {
   <li>a host which functions as both an ACME and a Web server may want to keep the root path &#8220;/&#8221; for an HTML &#8220;front page&#8221;, and place the ACME directory under the path &#8220;/acme&#8221;.</li>
   <li>a host which only functions as an ACME server could place the directory under the path &#8220;/&#8221;.</li>
 </ul>
-<p id="rfc.section.7.1.1.p.4">The object MAY additionally contain a key &#8220;meta&#8221;. If present, it MUST be a JSON object; each field in the object is an item of metadata relating to the service provided by the ACME server.</p>
+<p id="rfc.section.7.1.1.p.4">The object MAY additionally contain a field &#8220;meta&#8221;. If present, it MUST be a JSON object; each field in the object is an item of metadata relating to the service provided by the ACME server.</p>
 <p id="rfc.section.7.1.1.p.5">The following metadata items are defined, all of which are OPTIONAL:</p>
 <p/>
 
@@ -1341,7 +1341,7 @@ Location: https://example.com/acme/order/asdf
 <h1 id="rfc.section.7.4.1"><a href="#rfc.section.7.4.1">7.4.1.</a> <a href="#pre-authorization" id="pre-authorization">Pre-Authorization</a></h1>
 <p id="rfc.section.7.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to a certificate order.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any virtual servers are created and only create a certificate when a virtual server starts up.</p>
 <p id="rfc.section.7.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue for an identifier.  In these case, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already valid in any orders submitted by the client.</p>
-<p id="rfc.section.7.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the key &#8220;new-authz&#8221; with a URL for the new authorization resource.</p>
+<p id="rfc.section.7.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the field &#8220;new-authz&#8221; with a URL for the new authorization resource.</p>
 <p id="rfc.section.7.4.1.p.4">To request authorization for an identifier, the client sends a POST request to the new-authorization resource specifying the identifier for which authorization is being requested and how the server should behave with respect to existing authorizations for this identifier.</p>
 <p/>
 
@@ -1976,7 +1976,7 @@ Content-Type: application/jose+json
 <p/>
 
 <ul>
-  <li>Field name: The string to be used as a key in the JSON object</li>
+  <li>Field name: The string to be used as a field name in the JSON object</li>
   <li>Field type: The type of value to be provided, e.g., string, boolean, array of string</li>
   <li>Client configurable: Boolean indicating whether the server should accept values provided by the client</li>
   <li>Reference: Where this field is defined</li>
@@ -2030,7 +2030,7 @@ Content-Type: application/jose+json
 <p/>
 
 <ul>
-  <li>Field name: The string to be used as a key in the JSON object</li>
+  <li>Field name: The string to be used as a field name in the JSON object</li>
   <li>Field type: The type of value to be provided, e.g., string, boolean, array of string</li>
   <li>Client configurable: Boolean indicating whether the server should accept values provided by the client</li>
   <li>Reference: Where this field is defined</li>
@@ -2107,16 +2107,16 @@ Content-Type: application/jose+json
 <p/>
 
 <ul>
-  <li>Key: The value to be used as a field name in the directory object</li>
-  <li>Resource type: The type of resource labeled by the key</li>
+  <li>Field name: The value to be used as a field name in the directory object</li>
+  <li>Resource type: The type of resource labeled by the field</li>
   <li>Reference: Where the resource type is defined</li>
 </ul>
 <p id="rfc.section.9.7.4.p.4">Initial contents:</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
   <thead>
     <tr>
-      <th class="left">Key</th>
-      <th class="left">Resource type</th>
+      <th class="left">Field Name</th>
+      <th class="left">Resource Type</th>
       <th class="left">Reference</th>
     </tr>
   </thead>
