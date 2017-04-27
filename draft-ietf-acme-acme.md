@@ -1829,9 +1829,11 @@ validated (optional, string):
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
-error (optional, object):
-: The error that occurred while the server was validating the challenge, if any.
-This field is structured as a problem document {{!RFC7807}}.
+errors (optional, array of object):
+: Errors that occurred while the server was validating the challenge, if any,
+structured as problem documents {{!RFC7807}}. The server MUST NOT modify the
+array except by appending entries onto the end. The server can limit the size
+of this object by limiting the number of times it will retry a challenge.
 
 All additional fields are specified by the challenge type.  If the server sets a
 challenge's "status" to "invalid", it SHOULD also include the "error" field to
@@ -1867,6 +1869,35 @@ zero octets in the JWK object MUST be stripped before doing the computation.
 As specified in the individual challenges below, the token for a challenge is a
 string comprised entirely of characters in the URL-safe base64 alphabet.
 The "||" operator indicates concatenation of strings.
+
+## Retrying Challenges
+
+ACME challenges typically require the client to set up some network-accessible
+resource that the server can query in order to validate that the client
+controls an identifier.  In practice it is not uncommon for the server's
+queries to fail while a resource is being set up, e.g., due to information
+propagating across a cluster or firewall rules not being in place.
+
+Clients SHOULD NOT respond to challenges until they believe that the server's
+queries will succeed. If a server's initial validation query fails, the server
+SHOULD retry the query after some time.  While the server is still trying, the
+status of the challenge remains "pending"; it is only marked "invalid" once the
+server has given up.
+
+The server MUST provide information about its retry state to the client via the
+"errors" field in the challenge and the Retry-After HTTP header field in
+response to requests to the challenge resource. The server MUST add an entry to
+the "errors" field in the challenge after each failed validation query. The
+server SHOULD set the Retry-After header field to a time after the server's
+next validation query, since the status of the challenge will not change until
+that time.
+
+Clients can explicitly request a retry by re-sending their response to a
+challenge in a new POST request (with a new nonce, etc.). This allows clients
+to request a retry when state has changed (e.g., after firewall rules have been
+updated). Servers SHOULD retry a request immediately on receiving such a POST
+request. In order to avoid denial-of-service attacks via client-initiated
+retries, servers SHOULD rate-limit such requests.
 
 ## HTTP
 
