@@ -1045,6 +1045,8 @@ Cache-Control: no-store
   <dd style="margin-left: 8">Same meaning as the corresponding server field defined in <a href="#account-objects">Section 7.1.2</a></dd>
   <dt>terms-of-service-agreed (optional, boolean):</dt>
   <dd style="margin-left: 8">Same meaning as the corresponding server field defined in <a href="#account-objects">Section 7.1.2</a></dd>
+  <dt>only-return-existing (optional, boolean):</dt>
+  <dd style="margin-left: 8">If this field is present with the value &#8220;true&#8221;, then the server MUST NOT create a new account if one does not already exist.  This allows a client to look up an account URL based on an account key (see <a href="#finding-an-account-url-given-a-key">Section 7.3.1</a>).</dd>
 </dl>
 <pre>
 POST /acme/new-account HTTP/1.1
@@ -1091,7 +1093,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 </pre>
 <h1 id="rfc.section.7.3.1"><a href="#rfc.section.7.3.1">7.3.1.</a> <a href="#finding-an-account-url-given-a-key" id="finding-an-account-url-given-a-key">Finding an Account URL Given a Key</a></h1>
 <p id="rfc.section.7.3.1.p.1">If the server already has an account registered with the provided account key, then it MUST return a response with a 200 (OK) status code and provide the URL of that account in the Location header field.  This allows a client that has an account key but not the corresponding account URL to recover the account URL.</p>
-<p id="rfc.section.7.3.1.p.2">If a client wishes to recover an existing account and does not want a non existing account to be created, then it SHOULD do so by sending a POST request with an empty update. That is, it should send a JWS whose payload is an empty object ({}).</p>
+<p id="rfc.section.7.3.1.p.2">If a client wishes to find the URL for an existing account and does not want an account to be created if one does not already exist, then it SHOULD do so by sending a POST request to the new-account URL with a JWS whose payload has an &#8220;only-return-existing&#8221; field set to &#8220;true&#8221; ({&#8220;only-return-existing&#8221;: true}).</p>
 <h1 id="rfc.section.7.3.2"><a href="#rfc.section.7.3.2">7.3.2.</a> <a href="#account-update" id="account-update">Account Update</a></h1>
 <p id="rfc.section.7.3.2.p.1">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URL.  The server MUST ignore any updates to &#8220;order&#8221; fields or any other fields it does not recognize. If the server accepts the update, it MUST return a response with a 200 (OK) status code and the resulting account object.</p>
 <p id="rfc.section.7.3.2.p.2">For example, to update the contact information in the above account, the client could send the following request:</p>

@@ -1303,6 +1303,12 @@ Internet-Draft                    ACME                        April 2017
    terms-of-service-agreed (optional, boolean):  Same meaning as the
       corresponding server field defined in Section 7.1.2
 
+   only-return-existing (optional, boolean):  If this field is present
+      with the value "true", then the server MUST NOT create a new
+      account if one does not already exist.  This allows a client to
+      look up an account URL based on an account key (see
+      Section 7.3.1).
+
    POST /acme/new-account HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
@@ -1332,12 +1338,6 @@ Internet-Draft                    ACME                        April 2017
 
    In general, the server MUST ignore any fields in the request object
    that it does not recognize.  In particular, it MUST NOT reflect
-   unrecognized fields in the resulting account object.  This allows
-   clients to detect when servers do not support an extension field.
-
-   The server SHOULD validate that the contact URIs in the "contact"
-   field are valid and supported by the server.  If the server validates
-   contact URIs it MUST support the "mailto" scheme.  If the server
 
 
 
@@ -1346,6 +1346,12 @@ Barnes, et al.          Expires October 29, 2017               [Page 24]
 Internet-Draft                    ACME                        April 2017
 
 
+   unrecognized fields in the resulting account object.  This allows
+   clients to detect when servers do not support an extension field.
+
+   The server SHOULD validate that the contact URIs in the "contact"
+   field are valid and supported by the server.  If the server validates
+   contact URIs it MUST support the "mailto" scheme.  If the server
    rejects a contact URI for using an unsupported scheme it MUST return
    an error of type "unsupportedContact", with a description describing
    the error and what types of contact URIs the server considers
@@ -1388,12 +1394,6 @@ Internet-Draft                    ACME                        April 2017
    If the server already has an account registered with the provided
    account key, then it MUST return a response with a 200 (OK) status
    code and provide the URL of that account in the Location header
-   field.  This allows a client that has an account key but not the
-   corresponding account URL to recover the account URL.
-
-   If a client wishes to recover an existing account and does not want a
-   non existing account to be created, then it SHOULD do so by sending a
-
 
 
 
@@ -1402,8 +1402,14 @@ Barnes, et al.          Expires October 29, 2017               [Page 25]
 Internet-Draft                    ACME                        April 2017
 
 
-   POST request with an empty update.  That is, it should send a JWS
-   whose payload is an empty object ({}).
+   field.  This allows a client that has an account key but not the
+   corresponding account URL to recover the account URL.
+
+   If a client wishes to find the URL for an existing account and does
+   not want an account to be created if one does not already exist, then
+   it SHOULD do so by sending a POST request to the new-account URL with
+   a JWS whose payload has an "only-return-existing" field set to "true"
+   ({"only-return-existing": true}).
 
 7.3.2.  Account Update
 
@@ -1443,12 +1449,6 @@ Internet-Draft                    ACME                        April 2017
    these requests are not authenticated.  If a client wishes to query
    the server for information about its account (e.g., to examine the
    "contact" or "certificates" fields), then it SHOULD do so by sending
-   a POST request with an empty update.  That is, it should send a JWS
-   whose payload is an empty object ({}).
-
-
-
-
 
 
 
@@ -1457,6 +1457,9 @@ Barnes, et al.          Expires October 29, 2017               [Page 26]
 
 Internet-Draft                    ACME                        April 2017
 
+
+   a POST request with an empty update.  That is, it should send a JWS
+   whose payload is an empty object ({}).
 
 7.3.4.  Changes of Terms of Service
 
@@ -1503,9 +1506,6 @@ Internet-Draft                    ACME                        April 2017
 
    The ACME client then computes a binding JWS to indicate the external
    account's approval of the ACME account key.  The payload of this JWS
-   is the account key being registered, in JWK form.  The protected
-   header of the JWS MUST meet the following criteria:
-
 
 
 
@@ -1513,6 +1513,9 @@ Barnes, et al.          Expires October 29, 2017               [Page 27]
 
 Internet-Draft                    ACME                        April 2017
 
+
+   is the account key being registered, in JWK form.  The protected
+   header of the JWS MUST meet the following criteria:
 
    o  The "alg" field MUST indicate a MAC-based algorithm
 
@@ -1560,15 +1563,14 @@ Internet-Draft                    ACME                        April 2017
    object (if any).  To verify the account binding, the CA MUST take the
    following steps:
 
-   1.  Verify that the value of the field is a well-formed JWS
-
-
 
 
 Barnes, et al.          Expires October 29, 2017               [Page 28]
 
 Internet-Draft                    ACME                        April 2017
 
+
+   1.  Verify that the value of the field is a well-formed JWS
 
    2.  Verify that the JWS protected meets the above criteria
 
@@ -1615,8 +1617,6 @@ Internet-Draft                    ACME                        April 2017
 
    o  The inner JWS MUST have the same "url" header parameter as the
       outer JWS.
-
-
 
 
 
