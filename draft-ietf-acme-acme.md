@@ -1006,6 +1006,9 @@ If a client wishes to find the URL for an existing account and does not want an
 account to be created if one does not already exist, then it SHOULD do so by
 sending a POST request to the new-account URL with a JWS whose payload has an
 "only-return-existing" field set to "true" ({"only-return-existing": true}).
+If a client sends such a request and an account does not exist, then the server
+MUST return a response with a 200 (OK) status code and no Location header
+field.
 
 ### Account Update
 
