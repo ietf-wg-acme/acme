@@ -2289,7 +2289,7 @@ Applications which use this media type: Any MIME-complaint transport
 Additional information:
 
 File should contain one or more certificates encoded as PEM according to
-RFC 7468.  In order to provide easy interoperation with TLS, the first
+RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
 certificate MUST be an end-entity certificate. Each following certificate
 SHOULD directly certify one preceding it. Because certificate validation
 requires that trust anchors be distributed independently, a certificate
@@ -2828,6 +2828,24 @@ previous challenge responses for a new validation request. Secondly, the entropy
 requirement prevents ACME clients from implementing a "naive" validation server
 that automatically replies to challenges without participating in the creation
 of the intial authorization request.
+
+## Malformed Certificate Chains
+
+ACME provides certificate chains in the widely-used format known colloquially
+as PEM (though it may diverge from the actual Privacy Enhanced Mail
+specifications {{?RFC1421}}, as noted in {{RFC7468}}). Some current software
+will allow the configuration of a private key and a certificate in one PEM
+file, by concatenating the textual encodings of the two objects. In the context
+of ACME, such software might be vulnerable to "key replacement" attacks. A
+malicious ACME server could cause a client to use a private key of its choosing
+by including the key in the PEM file returned in response to a query for a
+certificate URL.
+
+When processing an file of type "application/pem-certificate-chain", a client
+SHOULD verify that the file contains only encoded certificates.  If anything
+other than a certificate is found (i.e., if the string "-----BEGIN" is ever
+followed by anything other than "CERTIFICATE"), then the client MUST reject the
+file as invalid.
 
 # Acknowledgements
 
