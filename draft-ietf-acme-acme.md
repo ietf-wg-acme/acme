@@ -1829,13 +1829,39 @@ validated (optional, string):
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
-error (optional, object):
-: The error that occurred while the server was validating the challenge, if any.
-This field is structured as a problem document {{!RFC7807}}.
+error-count (required, integer):
+: An integer with an initial value of 0. This is incremented whenever the
+validation of the challenge fails.
 
-All additional fields are specified by the challenge type.  If the server sets a
-challenge's "status" to "invalid", it SHOULD also include the "error" field to
-help the client diagnose why the challenge failed.
+errors (required, array of objects):
+: An array of objects structured as problem documents {{!RFC7807}}. This is a
+list of errors that have occurred over zero or more attempts to validate the
+challenge. It is initially empty and lists errors in their order of occurrence.
+When an error occurs as a result of a failed validation attempt, an error MUST
+be appended to this array. The server SHOULD NOT modify the array from its
+current or initial state other than by appending objects to it, but MAY do so
+(for example, by discarding leading items of the array to reduce the amount of
+information that needs to be stored about a challenge in the event of an
+excessive number of failed attempts).
+
+Because an order might include a large number of authorizations (for example,
+due to a large number of identifiers listed in a certificate), it is important
+that authorizations (and thus challenges) be repeatable, as otherwise the
+entire issuance process would need to be restarted in the event of a
+rectifiable challenge validation error.
+
+When the validation of a challenge is requested but fails, the status of the
+challenge SHOULD remain "pending", indicating that further attempts MAY be made
+to complete the challenge. The fact that a validation attempt failed MUST be
+indicated by appending an error to the "errors" array and incrementing
+"error-count". Clients which issue challenge validation requests SHOULD detect
+the completion of these requests by polling the challenge resource and
+detecting either a state other than "pending", or an increase to the
+"error-count" value.
+
+A server MAY set a challenge's status to "invalid" at any time to indicate that
+no further attempts may be made to complete a challenge, for example for
+administrative reasons or in other exceptional circumstances.
 
 Different challenges allow the server to obtain proof of different aspects of
 control over an identifier.  In some challenges, like HTTP, TLS SNI, and DNS, the
