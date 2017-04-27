@@ -2320,7 +2320,7 @@ Internet-Draft                    ACME                        April 2017
    they can be signed either with an account key pair or the key pair in
    the certificate.  Before revoking a certificate, the server MUST
    verify that the key used to sign the request is authorized to revoke
-   the certificate.  The server SHOULD consider at least the following
+   the certificate.  The server MUST consider at least the following
    accounts authorized for a given certificate:
 
    o  the account that issued the certificate.
@@ -2328,7 +2328,7 @@ Internet-Draft                    ACME                        April 2017
    o  an account that holds authorizations for all of the identifiers in
       the certificate.
 
-   The server SHOULD also consider a revocation request valid if it is
+   The server MUST also consider a revocation request valid if it is
    signed with the private key corresponding to the public key in the
    certificate.
 

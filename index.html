@@ -1554,14 +1554,14 @@ Content-Type: application/jose+json
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.7.6.p.3">Revocation requests are different from other ACME requests in that they can be signed either with an account key pair or the key pair in the certificate.  Before revoking a certificate, the server MUST verify that the key used to sign the request is authorized to revoke the certificate.  The server SHOULD consider at least the following accounts authorized for a given certificate:</p>
+<p id="rfc.section.7.6.p.3">Revocation requests are different from other ACME requests in that they can be signed either with an account key pair or the key pair in the certificate.  Before revoking a certificate, the server MUST verify that the key used to sign the request is authorized to revoke the certificate.  The server MUST consider at least the following accounts authorized for a given certificate:</p>
 <p/>
 
 <ul>
   <li>the account that issued the certificate.</li>
   <li>an account that holds authorizations for all of the identifiers in the certificate.</li>
 </ul>
-<p id="rfc.section.7.6.p.5">The server SHOULD also consider a revocation request valid if it is signed with the private key corresponding to the public key in the certificate.</p>
+<p id="rfc.section.7.6.p.5">The server MUST also consider a revocation request valid if it is signed with the private key corresponding to the public key in the certificate.</p>
 <p id="rfc.section.7.6.p.6">If the revocation succeeds, the server responds with status code 200 (OK).  If the revocation fails, the server returns an error.</p>
 <pre>
 HTTP/1.1 200 OK
