@@ -1740,7 +1740,7 @@ Content-Type: application/jose+json
 Revocation requests are different from other ACME requests in that they can be
 signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
-the request is authorized to revoke the certificate.  The server SHOULD consider
+the request is authorized to revoke the certificate.  The server MUST consider
 at least the following accounts authorized for a given certificate:
 
 * the account that issued the certificate.
@@ -1748,7 +1748,7 @@ at least the following accounts authorized for a given certificate:
 * an account that holds authorizations for all of the identifiers in the
   certificate.
 
-The server SHOULD also consider a revocation request valid if it is signed with
+The server MUST also consider a revocation request valid if it is signed with
 the private key corresponding to the public key in the certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
