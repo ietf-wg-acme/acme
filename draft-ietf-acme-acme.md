@@ -907,6 +907,12 @@ server's new-account URL.  The body of the request is a stub account object
 containing the "contact" field and optionally the "terms-of-service-agreed"
 field.
 
+contact (optional, array of string):
+: Same meaning as the corresponding server field defined in {{account-objects}}
+
+terms-of-service-agreed (optional, boolean):
+: Same meaning as the corresponding server field defined in {{account-objects}}
+
 ~~~~~~~~~~
 POST /acme/new-account HTTP/1.1
 Host: example.com
