@@ -1230,11 +1230,14 @@ addition to the typical JWS validation:
    the account matching the old key
 8. Check that the "newKey" field of the key-change object also verifies the
     inner JWS.
+9. Check that there is no current account whose account key is the same as the
+   key in the "newKey" field.
 
 If all of these checks pass, then the server updates the corresponding account
-by replacing the old account key with the new public key and returns status code
-200. Otherwise, the server responds with an error status code and a problem
-document describing the error.
+by replacing the old account key with the new public key and returns status
+code 200 (OK). Otherwise, the server responds with an error status code and a
+problem document describing the error.  If there is an existing account with
+the new key provided, then the server SHOULD use status code 409 (Conflict).
 
 ### Account Deactivation
 
