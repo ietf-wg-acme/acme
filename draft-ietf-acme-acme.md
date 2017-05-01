@@ -688,6 +688,7 @@ a GET request, as described in {{orders-list}}.
 
 ~~~~~~~~~~
 {
+  "status": "valid",
   "contact": [
     "mailto:cert-admin@example.com",
     "tel:+12025551212"
