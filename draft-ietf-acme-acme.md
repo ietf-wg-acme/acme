@@ -75,6 +75,9 @@ real-world identity.  (This is as opposed to "Organization Validation" (OV) and
 "Extended Validation" (EV) certificates, where the process is intended to also
 verify the real-world identity of the requester.)
 
+This section contains an unresolved reference to {{RFC6919}}.  And some more
+text.
+
 Existing Web PKI certificate authorities tend to run on a set of ad hoc
 protocols for certificate issuance and identity verification.  In the case of DV
 certificates, a typical user experience is something like:
