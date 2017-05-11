@@ -865,7 +865,7 @@ name validation.
   "challenges": [
     {
       "url": "https://example.com/authz/1234/0",
-      "type": "http-01",
+      "type": "http-07",
       "status": "valid",
       "token": "DGyRejmCefe7v4NfDGDKfA"
       "validated": "2014-12-01T12:05:00Z",
@@ -1568,7 +1568,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
   "challenges": [
     {
-      "type": "http-01",
+      "type": "http-07",
       "url": "https://example.com/authz/1234/0",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     },
@@ -1598,7 +1598,7 @@ with the response fields required by the challenge type, carried in a POST
 request to the challenge URL (not authorization URL) once it is ready for
 the server to attempt validation.
 
-For example, if the client were to respond to the "http-01" challenge in the
+For example, if the client were to respond to the "http-07" challenge in the
 above authorization, it would send the following request:
 
 ~~~~~~~~~~
@@ -1614,7 +1614,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/authz/asdf/0"
   }),
   "payload": base64url({
-    "type": "http-01",
+    "type": "http-07",
     "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
   }),
   "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
@@ -1670,7 +1670,7 @@ HTTP/1.1 200 OK
 
   "challenges": [
     {
-      "type": "http-01"
+      "type": "http-07"
       "url": "https://example.com/authz/asdf/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
@@ -1925,7 +1925,7 @@ particular low-privilege tenant user in a subtle and non-intuitive manner, the
 challenge must be completed over HTTP, not HTTPS.
 
 type (required, string):
-: The string "http-01"
+: The string "http-07"
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
@@ -1939,7 +1939,7 @@ Host: example.com
 
 HTTP/1.1 200 OK
 {
-  "type": "http-01",
+  "type": "http-07",
   "url": "https://example.com/acme/authz/0",
   "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17"
@@ -1952,16 +1952,16 @@ client then provisions the key authorization as a resource on the HTTP server
 for the domain in question.
 
 The path at which the resource is provisioned is comprised of the fixed prefix
-".well-known/acme-challenge/", followed by the "token" value in the challenge.
-The value of the resource MUST be the ASCII representation of the key
-authorization.
+".well-known/acme-challenge/", followed by the SHA-256 digest of the "token"
+value in the challenge. The value of the resource MUST be the ASCII
+representation of the key authorization.
 
 ~~~~~~~~~~
-GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
+GET .well-known/acme-challenge/66842C89EFA83AE60733CC34BB0FC8FE815DFF318334CFDAB1C41992224DD6B4
 Host: example.com
 
 HTTP/1.1 200 OK
-LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
+evaGxfADs6pSRb2LAv9IZf17.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
 ~~~~~~~~~~
 
 The client's response to this challenge indicates its agreement to this
@@ -2000,9 +2000,9 @@ Given a challenge/response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
 
 1. Construct a URL by populating the URL template {{!RFC6570}}
-   "http://{domain}/.well-known/acme-challenge/{token}", where:
+   "http://{domain}/.well-known/acme-challenge/{sha256_token}", where:
   * the domain field is set to the domain name being verified; and
-  * the token field is set to the token in the challenge.
+  * the sha256_token field is set to the SHA-256 digest of the token in the challenge.
 2. Verify that the resulting URL is well-formed.
 3. Dereference the URL using an HTTP GET request.  This request MUST be sent to
    TCP port 80 on the HTTP server.
@@ -2516,7 +2516,7 @@ Initial Contents
 
 | Label      | Identifier Type | Reference |
 |:-----------|:----------------|:----------|
-| http-01    | dns             | RFC XXXX  |
+| http-07    | dns             | RFC XXXX  |
 | tls-sni-02 | dns             | RFC XXXX  |
 | dns-01     | dns             | RFC XXXX  |
 | oob-01     | dns             | RFC XXXX  |
@@ -2825,7 +2825,7 @@ server is not in a default virtual host configuration.
 
 ## Token Entropy
 
-The http-01, tls-sni-02 and dns-01 validation methods mandate the usage of
+The http-07, tls-sni-02 and dns-01 validation methods mandate the usage of
 a random token value to uniquely identify the challenge. The value of the token
 is required to contain at least 128 bits of entropy for the following security
 properties. First, the ACME client should not be able to influence the ACME
