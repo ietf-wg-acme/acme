@@ -135,6 +135,7 @@ deploying an HTTPS server using ACME, the experience would be something like thi
 * The operator selects a CA.
 * In the background, the ACME client contacts the CA and requests that it
   issue a certificate for the intended domain name(s).
+* The CA verifies that the client controls the requested domain name(s).
 * Once the CA is satisfied, the certificate is issued and the ACME client
   automatically downloads and installs it, potentially notifying the operator
   via email, SMS, etc.
