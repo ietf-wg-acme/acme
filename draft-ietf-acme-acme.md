@@ -581,15 +581,15 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action               | Request           | Response        |
-|:---------------------|:------------------|:----------------|
-| Get a nonce          | HEAD new-nonce    | 204             |
-| Create account       | POST new-account  | 201 -> account  |
-| Submit an order      | POST new-order    | 201 -> order    |
-| Fetch challenges     | GET  authz        | 200             |
-| Respond to challenge | POST challenge    | 200             |
-| Poll for status      | GET  authz        | 200             |
-| Check for new cert   | GET  cert         | 200             |
+| Action                | Request           | Response        |
+|:--------------------- |:------------------|:----------------|
+| Get a nonce           | HEAD new-nonce    | 204             |
+| Create account        | POST new-account  | 201 -> account  |
+| Submit an order       | POST new-order    | 201 -> order    |
+| Fetch challenges      | GET  authz        | 200             |
+| Respond to challenges | POST challenge    | 200             |
+| Poll for status       | GET  order        | 200             |
+| Get new cert          | GET  cert         | 200             |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
