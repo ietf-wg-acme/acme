@@ -1195,7 +1195,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": /* old key */,
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "K60BWPrMQG9SDxBDS_xtSw",
     "url": "https://example.com/acme/key-change"
   }),
@@ -1431,7 +1431,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": {...},
+    "kid": "https://example.com/acme/acct/1",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
     "url": "https://example.com/acme/new-authz"
   }),
@@ -1741,7 +1741,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1", // OR "jwk"
+    "jwk": /* account key */,
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   }),
