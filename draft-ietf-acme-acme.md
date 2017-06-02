@@ -839,7 +839,7 @@ challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.  For final authorizations it contains
-the challenges that were completed.
+the challenges that were successfully completed.
 
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). If a domain name contains non-ASCII Unicode characters
@@ -2278,7 +2278,7 @@ Optional parameters: None
 
 Encoding considerations: None
 
-Security considerations: Carries a cryptographic certificate
+Security considerations: Carries a cryptographic certificate and its associated certificate chain 
 
 Interoperability considerations: None
 
