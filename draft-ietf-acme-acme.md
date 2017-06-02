@@ -654,7 +654,7 @@ Content-Type: application/json
   "revoke-cert": "https://example.com/acme/revoke-cert",
   "key-change": "https://example.com/acme/key-change",
   "meta": {
-    "terms-of-service": "https://example.com/acme/terms",
+    "terms-of-service": "https://example.com/acme/terms/2017-5-30",
     "website": "https://www.example.com/",
     "caa-identities": ["example.com"]
   }
@@ -1070,6 +1070,7 @@ order for instructions on how to agree to the terms.
 ~~~~~
 HTTP/1.1 403 Forbidden
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"
 Content-Type: application/problem+json
 Content-Language: en
 
