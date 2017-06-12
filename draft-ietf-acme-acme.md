@@ -1458,8 +1458,7 @@ from the inputs submitted by the client.
 * "identifier" the identifier submitted by the client
 * "status" MUST be "pending" unless the server has out-of-band information
   about the client's authorization status
-* "challenges" and "combinations" as selected by the server's policy for this
-  identifier
+* "challenges" as selected by the server's policy for this identifier
 
 The server allocates a new URL for this authorization, and returns a 201
 (Created) response, with the authorization URL in the Location header field, and
