@@ -1,5 +1,5 @@
 ---
-title: "Automatic Certificate Management Environment (ACME)"
+title: "Automatic Certificate Management Environment (ACME), Version 2"
 abbrev: ACME
 docname: draft-ietf-acme-acme-latest
 category: std
@@ -107,6 +107,10 @@ software to obtain certificates without user interaction.  Use of this protocol
 should radically simplify the deployment of HTTPS and the practicality of PKIX
 authentication for other protocols based on Transport Layer Security (TLS)
 {{!RFC5246}}.
+
+This document specifies the second version of ACME.  The first version was
+defined outside the IETF and deployed by Let's Encrypt as the interface to
+their CA.
 
 # Deployment Model and Operator Experience
 
