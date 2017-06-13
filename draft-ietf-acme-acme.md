@@ -2226,6 +2226,8 @@ Host: example.com
 HTTP/1.1 200 OK
 {
   "type": "oob-01",
+  "url": "https://example.com/acme/authz/1234/3",
+  "status": "pending",
   "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 ~~~~~~~~~~
@@ -2515,6 +2517,7 @@ Initial Contents
 | http-01    | dns             | RFC XXXX  |
 | tls-sni-02 | dns             | RFC XXXX  |
 | dns-01     | dns             | RFC XXXX  |
+| oob-01     | dns             | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
