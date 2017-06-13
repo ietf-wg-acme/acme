@@ -156,12 +156,12 @@ Internet-Draft                    ACME                         June 2017
      11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  67
      11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  68
      11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  68
+     11.4.  Malformed Certificate Chains . . . . . . . . . . . . . .  69
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  69
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  69
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  69
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  70
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  70
      13.2.  Informative References . . . . . . . . . . . . . . . . .  72
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  72
-
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  73
 
 
 
@@ -3031,13 +3031,13 @@ Internet-Draft                    ACME                         June 2017
    Additional information:
 
    File should contain one or more certificates encoded as PEM according
-   to RFC 7468.  In order to provide easy interoperation with TLS, the
-   first certificate MUST be an end-entity certificate.  Each following
-   certificate SHOULD directly certify one preceding it.  Because
-   certificate validation requires that trust anchors be distributed
-   independently, a certificate that specifies a trust anchor MAY be
-   omitted from the chain, provided that supported peers are known to
-   possess any omitted certificates.
+   to RFC 7468 [RFC7468].  In order to provide easy interoperation with
+   TLS, the first certificate MUST be an end-entity certificate.  Each
+   following certificate SHOULD directly certify one preceding it.
+   Because certificate validation requires that trust anchors be
+   distributed independently, a certificate that specifies a trust
+   anchor MAY be omitted from the chain, provided that supported peers
+   are known to possess any omitted certificates.
 
 9.2.  Well-Known URI for the HTTP Challenge
 
@@ -3816,6 +3816,25 @@ Internet-Draft                    ACME                         June 2017
    without participating in the creation of the intial authorization
    request.
 
+11.4.  Malformed Certificate Chains
+
+   ACME provides certificate chains in the widely-used format known
+   colloquially as PEM (though it may diverge from the actual Privacy
+   Enhanced Mail specifications [RFC1421], as noted in [RFC7468]).  Some
+   current software will allow the configuration of a private key and a
+   certificate in one PEM file, by concatenating the textual encodings
+   of the two objects.  In the context of ACME, such software might be
+   vulnerable to "key replacement" attacks.  A malicious ACME server
+   could cause a client to use a private key of its choosing by
+   including the key in the PEM file returned in response to a query for
+   a certificate URL.
+
+   When processing an file of type "application/pem-certificate-chain",
+   a client SHOULD verify that the file contains only encoded
+   certificates.  If anything other than a certificate is found (i.e.,
+   if the string "---BEGIN" is ever followed by anything other than
+   "CERTIFICATE"), then the client MUST reject the file as invalid.
+
 12.  Acknowledgements
 
    In addition to the editors listed on the front page, this document
@@ -3838,6 +3857,15 @@ Internet-Draft                    ACME                         June 2017
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
 
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 69]
+
+Internet-Draft                    ACME                         June 2017
+
+
 13.  References
 
 13.1.  Normative References
@@ -3857,14 +3885,6 @@ Internet-Draft                    ACME                         June 2017
               Infrastructure Operational Protocols: FTP and HTTP",
               RFC 2585, DOI 10.17487/RFC2585, May 1999,
               <http://www.rfc-editor.org/info/rfc2585>.
-
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 69]
-
-Internet-Draft                    ACME                         June 2017
-
 
    [RFC2818]  Rescorla, E., "HTTP Over TLS", RFC 2818,
               DOI 10.17487/RFC2818, May 2000,
@@ -3893,6 +3913,15 @@ Internet-Draft                    ACME                         June 2017
               10646", STD 63, RFC 3629, DOI 10.17487/RFC3629, November
               2003, <http://www.rfc-editor.org/info/rfc3629>.
 
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 70]
+
+Internet-Draft                    ACME                         June 2017
+
+
    [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
               Resource Identifier (URI): Generic Syntax", STD 66,
               RFC 3986, DOI 10.17487/RFC3986, January 2005,
@@ -3911,16 +3940,6 @@ Internet-Draft                    ACME                         June 2017
               (TLS) Protocol Version 1.2", RFC 5246,
               DOI 10.17487/RFC5246, August 2008,
               <http://www.rfc-editor.org/info/rfc5246>.
-
-
-
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 70]
-
-Internet-Draft                    ACME                         June 2017
-
 
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key
@@ -3952,6 +3971,13 @@ Internet-Draft                    ACME                         June 2017
               DOI 10.17487/RFC6844, January 2013,
               <http://www.rfc-editor.org/info/rfc6844>.
 
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 71]
+
+Internet-Draft                    ACME                         June 2017
+
+
    [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
               Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
               2014, <http://www.rfc-editor.org/info/rfc7159>.
@@ -3961,6 +3987,10 @@ Internet-Draft                    ACME                         June 2017
               DOI 10.17487/RFC7231, June 2014,
               <http://www.rfc-editor.org/info/rfc7231>.
 
+   [RFC7468]  Josefsson, S. and S. Leonard, "Textual Encodings of PKIX,
+              PKCS, and CMS Structures", RFC 7468, DOI 10.17487/RFC7468,
+              April 2015, <http://www.rfc-editor.org/info/rfc7468>.
+
    [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
               Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
               2015, <http://www.rfc-editor.org/info/rfc7515>.
@@ -3968,15 +3998,6 @@ Internet-Draft                    ACME                         June 2017
    [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
               DOI 10.17487/RFC7518, May 2015,
               <http://www.rfc-editor.org/info/rfc7518>.
-
-
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 71]
-
-Internet-Draft                    ACME                         June 2017
-
 
    [RFC7638]  Jones, M. and N. Sakimura, "JSON Web Key (JWK)
               Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
@@ -3993,10 +4014,25 @@ Internet-Draft                    ACME                         June 2017
               Improve Transaction Identity", draft-vixie-dnsext-
               dns0x20-00 (work in progress), March 2008.
 
+   [RFC1421]  Linn, J., "Privacy Enhancement for Internet Electronic
+              Mail: Part I: Message Encryption and Authentication
+              Procedures", RFC 1421, DOI 10.17487/RFC1421, February
+              1993, <http://www.rfc-editor.org/info/rfc1421>.
+
    [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
               Text on Security Considerations", BCP 72, RFC 3552,
               DOI 10.17487/RFC3552, July 2003,
               <http://www.rfc-editor.org/info/rfc3552>.
+
+
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 72]
+
+Internet-Draft                    ACME                         June 2017
+
 
    [RFC3553]  Mealling, M., Masinter, L., Hardie, T., and G. Klyne, "An
               IETF URN Sub-namespace for Registered Protocol
@@ -4027,46 +4063,10 @@ Authors' Addresses
    Email: jsha@eff.org
 
 
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 72]
-
-Internet-Draft                    ACME                         June 2017
-
-
    James Kasten
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

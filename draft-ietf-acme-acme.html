@@ -345,6 +345,7 @@ address {
 <link href="#rfc.section.11.1" rel="Chapter" title="11.1 DNS security"/>
 <link href="#rfc.section.11.2" rel="Chapter" title="11.2 Default Virtual Hosts"/>
 <link href="#rfc.section.11.3" rel="Chapter" title="11.3 Token Entropy"/>
+<link href="#rfc.section.11.4" rel="Chapter" title="11.4 Malformed Certificate Chains"/>
 <link href="#rfc.section.12" rel="Chapter" title="12 Acknowledgements"/>
 <link href="#rfc.references" rel="Chapter" title="13 References"/>
 <link href="#rfc.references.1" rel="Chapter" title="13.1 Normative References"/>
@@ -496,6 +497,7 @@ address {
 <ul><li>11.1.   <a href="#rfc.section.11.1">DNS security</a></li>
 <li>11.2.   <a href="#rfc.section.11.2">Default Virtual Hosts</a></li>
 <li>11.3.   <a href="#rfc.section.11.3">Token Entropy</a></li>
+<li>11.4.   <a href="#rfc.section.11.4">Malformed Certificate Chains</a></li>
 </ul><li>12.   <a href="#rfc.section.12">Acknowledgements</a></li>
 <li>13.   <a href="#rfc.references">References</a></li>
 <ul><li>13.1.   <a href="#rfc.references.1">Normative References</a></li>
@@ -1895,7 +1897,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.9.1.p.9">Published specification: draft-ietf-acme-acme [[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]</p>
 <p id="rfc.section.9.1.p.10">Applications which use this media type: Any MIME-complaint transport</p>
 <p id="rfc.section.9.1.p.11">Additional information:</p>
-<p id="rfc.section.9.1.p.12">File should contain one or more certificates encoded as PEM according to RFC 7468.  In order to provide easy interoperation with TLS, the first certificate MUST be an end-entity certificate. Each following certificate SHOULD directly certify one preceding it. Because certificate validation requires that trust anchors be distributed independently, a certificate that specifies a trust anchor MAY be omitted from the chain, provided that supported peers are known to possess any omitted certificates.</p>
+<p id="rfc.section.9.1.p.12">File should contain one or more certificates encoded as PEM according to RFC 7468 <a href="#RFC7468">[RFC7468]</a>.  In order to provide easy interoperation with TLS, the first certificate MUST be an end-entity certificate. Each following certificate SHOULD directly certify one preceding it. Because certificate validation requires that trust anchors be distributed independently, a certificate that specifies a trust anchor MAY be omitted from the chain, provided that supported peers are known to possess any omitted certificates.</p>
 <h1 id="rfc.section.9.2"><a href="#rfc.section.9.2">9.2.</a> <a href="#well-known-uri-for-the-http-challenge" id="well-known-uri-for-the-http-challenge">Well-Known URI for the HTTP Challenge</a></h1>
 <p id="rfc.section.9.2.p.1">The &#8220;Well-Known URIs&#8221; registry should be updated with the following additional value (using the template from <a href="#RFC5785">[RFC5785]</a>):</p>
 <p id="rfc.section.9.2.p.2">URI suffix: acme-challenge</p>
@@ -2330,6 +2332,9 @@ Content-Type: application/jose+json
 <p id="rfc.section.11.2.p.5">A CA can detect such a bounded default vhost by initiating TLS connections to the host with random SNI values within the namespace used for the TLS-based challenge (the &#8220;acme.invalid&#8221; namespace for &#8220;tls-sni-02&#8221;).  If it receives the same certificate on two different connections, then it is very likely that the server is in a default virtual host configuration.  Conversely, if the TLS server returns an unrecognized_name alert, then this is an indication that the server is not in a default virtual host configuration.</p>
 <h1 id="rfc.section.11.3"><a href="#rfc.section.11.3">11.3.</a> <a href="#token-entropy" id="token-entropy">Token Entropy</a></h1>
 <p id="rfc.section.11.3.p.1">The http-01, tls-sni-02 and dns-01 validation methods mandate the usage of a random token value to uniquely identify the challenge. The value of the token is required to contain at least 128 bits of entropy for the following security properties. First, the ACME client should not be able to influence the ACME server&#8217;s choice of token as this may allow an attacker to reuse a domain owner&#8217;s previous challenge responses for a new validation request. Secondly, the entropy requirement prevents ACME clients from implementing a &#8220;naive&#8221; validation server that automatically replies to challenges without participating in the creation of the intial authorization request.</p>
+<h1 id="rfc.section.11.4"><a href="#rfc.section.11.4">11.4.</a> <a href="#malformed-certificate-chains" id="malformed-certificate-chains">Malformed Certificate Chains</a></h1>
+<p id="rfc.section.11.4.p.1">ACME provides certificate chains in the widely-used format known colloquially as PEM (though it may diverge from the actual Privacy Enhanced Mail specifications <a href="#RFC1421">[RFC1421]</a>, as noted in <a href="#RFC7468">[RFC7468]</a>). Some current software will allow the configuration of a private key and a certificate in one PEM file, by concatenating the textual encodings of the two objects. In the context of ACME, such software might be vulnerable to &#8220;key replacement&#8221; attacks. A malicious ACME server could cause a client to use a private key of its choosing by including the key in the PEM file returned in response to a query for a certificate URL.</p>
+<p id="rfc.section.11.4.p.2">When processing an file of type &#8220;application/pem-certificate-chain&#8221;, a client SHOULD verify that the file contains only encoded certificates.  If anything other than a certificate is found (i.e., if the string &#8220;&#8212;&#8211;BEGIN&#8221; is ever followed by anything other than &#8220;CERTIFICATE&#8221;), then the client MUST reject the file as invalid.</p>
 <h1 id="rfc.section.12"><a href="#rfc.section.12">12.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a></h1>
 <p id="rfc.section.12.p.1">In addition to the editors listed on the front page, this document has benefited from contributions from a broad set of contributors, all the way back to its inception.</p>
 <p/>
@@ -2475,6 +2480,12 @@ Content-Type: application/jose+json
     </tr>
     <tr>
       <td class="reference">
+        <b id="RFC7468">[RFC7468]</b>
+      </td>
+      <td class="top"><a>Josefsson, S.</a> and <a>S. Leonard</a>, "<a href="http://tools.ietf.org/html/rfc7468">Textual Encodings of PKIX, PKCS, and CMS Structures</a>", RFC 7468, DOI 10.17487/RFC7468, April 2015.</td>
+    </tr>
+    <tr>
+      <td class="reference">
         <b id="RFC7515">[RFC7515]</b>
       </td>
       <td class="top"><a>Jones, M.</a>, <a>Bradley, J.</a> and <a>N. Sakimura</a>, "<a href="http://tools.ietf.org/html/rfc7515">JSON Web Signature (JWS)</a>", RFC 7515, DOI 10.17487/RFC7515, May 2015.</td>
@@ -2507,6 +2518,12 @@ Content-Type: application/jose+json
         <b id="I-D.vixie-dnsext-dns0x20">[I-D.vixie-dnsext-dns0x20]</b>
       </td>
       <td class="top"><a>Vixie, P.</a> and <a>D. Dagon</a>, "<a href="http://tools.ietf.org/html/draft-vixie-dnsext-dns0x20-00">Use of Bit 0x20 in DNS Labels to Improve Transaction Identity</a>", Internet-Draft draft-vixie-dnsext-dns0x20-00, March 2008.</td>
+    </tr>
+    <tr>
+      <td class="reference">
+        <b id="RFC1421">[RFC1421]</b>
+      </td>
+      <td class="top"><a>Linn, J.</a>, "<a href="http://tools.ietf.org/html/rfc1421">Privacy Enhancement for Internet Electronic Mail: Part I: Message Encryption and Authentication Procedures</a>", RFC 1421, DOI 10.17487/RFC1421, February 1993.</td>
     </tr>
     <tr>
       <td class="reference">
