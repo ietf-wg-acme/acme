@@ -1008,7 +1008,7 @@ account to be created if one does not already exist, then it SHOULD do so by
 sending a POST request to the new-account URL with a JWS whose payload has an
 "only-return-existing" field set to "true" ({"only-return-existing": true}).
 If a client sends such a request and an account does not exist, then the server
-MUST return am error response with status code 400 (Bad Request) and type
+MUST return an error response with status code 400 (Bad Request) and type
 "urn:ietf:params:acme:error:accountDoesNotExist".
 
 ### Account Update
