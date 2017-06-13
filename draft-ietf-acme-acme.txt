@@ -282,6 +282,9 @@ Barnes, et al.          Expires December 15, 2017               [Page 5]
 Internet-Draft                    ACME                         June 2017
 
 
+   o  The CA verifies that the client controls the requested domain
+      name(s).
+
    o  Once the CA is satisfied, the certificate is issued and the ACME
       client automatically downloads and installs it, potentially
       notifying the operator via email, SMS, etc.
@@ -326,9 +329,6 @@ Internet-Draft                    ACME                         June 2017
    a set of JavaScript Object Notation (JSON) messages carried over
    HTTPS.  In many ways, ACME functions much like a traditional CA, in
    which a user creates an account, requests a certificate, and proves
-   control of the domains in that certificate in order for the CA to
-   sign the requested certificate.
-
 
 
 
@@ -337,6 +337,9 @@ Barnes, et al.          Expires December 15, 2017               [Page 6]
 
 Internet-Draft                    ACME                         June 2017
 
+
+   control of the domains in that certificate in order for the CA to
+   sign the requested certificate.
 
    The first phase of ACME is for the client to request an account with
    the ACME server.  The client generates an asymmetric key pair and
@@ -383,9 +386,6 @@ Internet-Draft                    ACME                         June 2017
    Once the validation process is complete and the server is satisfied
    that the client has met its requirements, the server will issue the
    requested certificate and make it available to the client.
-
-
-
 
 
 

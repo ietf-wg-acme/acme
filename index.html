@@ -530,6 +530,7 @@ address {
   <li>The ACME client presents the operator with a list of CAs from which it could get a certificate.  (This list will change over time based on the capabilities of CAs and updates to ACME configuration.) The ACME client might prompt the operator for payment information at this point.</li>
   <li>The operator selects a CA.</li>
   <li>In the background, the ACME client contacts the CA and requests that it issue a certificate for the intended domain name(s).</li>
+  <li>The CA verifies that the client controls the requested domain name(s).</li>
   <li>Once the CA is satisfied, the certificate is issued and the ACME client automatically downloads and installs it, potentially notifying the operator via email, SMS, etc.</li>
   <li>The ACME client periodically contacts the CA to get updated certificates, stapled OCSP responses, or whatever else would be required to keep the web server functional and its credentials up-to-date.</li>
 </ul>
