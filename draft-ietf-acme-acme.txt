@@ -95,7 +95,7 @@ Table of Contents
        6.4.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  12
      6.5.  Rate limits . . . . . . . . . . . . . . . . . . . . . . .  13
      6.6.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  13
-   7.  Certificate Management  . . . . . . . . . . . . . . . . . . .  14
+   7.  Certificate Management  . . . . . . . . . . . . . . . . . . .  15
      7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  15
        7.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  17
        7.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  19
@@ -730,6 +730,9 @@ Barnes, et al.          Expires December 15, 2017              [Page 13]
 Internet-Draft                    ACME                         June 2017
 
 
+   | accountDoesNotExist   | The request specified an account that     |
+   |                       | does not exist                            |
+   |                       |                                           |
    | malformed             | The request message was malformed         |
    |                       |                                           |
    | rateLimited           | The request exceeds a rate limit          |
@@ -771,12 +774,9 @@ Internet-Draft                    ACME                         June 2017
    the standard types.  Clients SHOULD display the "detail" field of all
    errors.
 
-7.  Certificate Management
 
-   In this section, we describe the certificate management functions
-   that ACME enables:
 
-   o  Account Creation
+
 
 
 
@@ -785,6 +785,13 @@ Barnes, et al.          Expires December 15, 2017              [Page 14]
 
 Internet-Draft                    ACME                         June 2017
 
+
+7.  Certificate Management
+
+   In this section, we describe the certificate management functions
+   that ACME enables:
+
+   o  Account Creation
 
    o  Ordering a Certificate
 
@@ -828,19 +835,17 @@ Internet-Draft                    ACME                         June 2017
 
    The server MUST provide "directory" and "new-nonce" resources.
 
-   ACME uses different URLs for different management functions.  Each
-   function is listed in a directory along with its corresponding URL,
-   so clients only need to be configured with the directory URL.  These
-   URLs are connected by a few different link relations [RFC5988].
-
-
-
 
 
 Barnes, et al.          Expires December 15, 2017              [Page 15]
 
 Internet-Draft                    ACME                         June 2017
 
+
+   ACME uses different URLs for different management functions.  Each
+   function is listed in a directory along with its corresponding URL,
+   so clients only need to be configured with the directory URL.  These
+   URLs are connected by a few different link relations [RFC5988].
 
    The "up" link relation is used with challenge resources to indicate
    the authorization resource to which a challenge belongs.  It is also
@@ -883,11 +888,6 @@ Internet-Draft                    ACME                         June 2017
    an identifier, issue a certificate, and fetch an updated certificate
    some time after issuance.  The "->" is a mnemonic for a Location
    header pointing to a created resource.
-
-
-
-
-
 
 
 
@@ -1414,7 +1414,10 @@ Internet-Draft                    ACME                         June 2017
    not want an account to be created if one does not already exist, then
    it SHOULD do so by sending a POST request to the new-account URL with
    a JWS whose payload has an "only-return-existing" field set to "true"
-   ({"only-return-existing": true}).
+   ({"only-return-existing": true}).  If a client sends such a request
+   and an account does not exist, then the server MUST return an error
+   response with status code 400 (Bad Request) and type
+   "urn:ietf:params:acme:error:accountDoesNotExist".
 
 7.3.2.  Account Update
 
@@ -1447,9 +1450,6 @@ Internet-Draft                    ACME                         June 2017
      }),
      "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
    }
-
-
-
 
 
 
