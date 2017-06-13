@@ -1744,11 +1744,15 @@ Internet-Draft                    ACME                         June 2017
    8.  Check that the "newKey" field of the key-change object also
        verifies the inner JWS.
 
+   9.  Check that no account exists whose account key is the same as the
+       key in the "newKey" field.
+
    If all of these checks pass, then the server updates the
    corresponding account by replacing the old account key with the new
-   public key and returns status code 200.  Otherwise, the server
+   public key and returns status code 200 (OK).  Otherwise, the server
    responds with an error status code and a problem document describing
-   the error.
+   the error.  If there is an existing account with the new key
+   provided, then the server SHOULD use status code 409 (Conflict).
 
 7.3.7.  Account Deactivation
 
@@ -1782,10 +1786,6 @@ Internet-Draft                    ACME                         June 2017
    any pending operations authorized by the account's key, such as
    certificate orders.  A server may take a variety of actions in
    response to an account deactivation, e.g., deleting data related to
-   that account or sending mail to the account's contacts.  Servers
-   SHOULD NOT revoke certificates issued by the deactivated account,
-   since this could cause operational disruption for servers using these
-
 
 
 
@@ -1794,6 +1794,9 @@ Barnes, et al.          Expires December 15, 2017              [Page 32]
 Internet-Draft                    ACME                         June 2017
 
 
+   that account or sending mail to the account's contacts.  Servers
+   SHOULD NOT revoke certificates issued by the deactivated account,
+   since this could cause operational disruption for servers using these
    certificates.  ACME does not provide a way to reactivate a
    deactivated account.
 
@@ -1839,9 +1842,6 @@ Internet-Draft                    ACME                         June 2017
    The CSR encodes the client's requests with regard to the content of
    the certificate to be issued.  The CSR MUST indicate the requested
    identifiers, either in the commonName portion of the requested
-   subject name, or in an extensionRequest attribute [RFC2985]
-   requesting a subjectAltName extension.
-
 
 
 
@@ -1849,6 +1849,9 @@ Barnes, et al.          Expires December 15, 2017              [Page 33]
 
 Internet-Draft                    ACME                         June 2017
 
+
+   subject name, or in an extensionRequest attribute [RFC2985]
+   requesting a subjectAltName extension.
 
    The server MUST return an error if it cannot fulfill the request as
    specified, and MUST NOT issue a certificate with contents other than
@@ -1895,9 +1898,6 @@ Internet-Draft                    ACME                         June 2017
    certificate and update the order resource with a URL for the
    certificate once the client has fulfilled the server's requirements.
    If the client has already satisfied the server's requirements at the
-   time of this request (e.g., by obtaining authorization for all of the
-   identifiers in the certificate in previous transactions), then the
-   server MUST proactively issue the requested certificate and provide a
 
 
 
@@ -1906,6 +1906,9 @@ Barnes, et al.          Expires December 15, 2017              [Page 34]
 Internet-Draft                    ACME                         June 2017
 
 
+   time of this request (e.g., by obtaining authorization for all of the
+   identifiers in the certificate in previous transactions), then the
+   server MUST proactively issue the requested certificate and provide a
    URL for it in the "certificate" field of the order.  The server MUST,
    however, still list the completed authorizations in the
    "authorizations" array.
@@ -1951,9 +1954,6 @@ Internet-Draft                    ACME                         June 2017
    "new authorization" resource in its directory by adding the field
    "new-authz" with a URL for the new authorization resource.
 
-   To request authorization for an identifier, the client sends a POST
-   request to the new-authorization resource specifying the identifier
-
 
 
 
@@ -1962,6 +1962,8 @@ Barnes, et al.          Expires December 15, 2017              [Page 35]
 Internet-Draft                    ACME                         June 2017
 
 
+   To request authorization for an identifier, the client sends a POST
+   request to the new-authorization resource specifying the identifier
    for which authorization is being requested and how the server should
    behave with respect to existing authorizations for this identifier.
 
@@ -2008,8 +2010,6 @@ Internet-Draft                    ACME                         June 2017
 
    o  "status" MUST be "pending" unless the server has out-of-band
       information about the client's authorization status
-
-
 
 
 

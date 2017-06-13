@@ -1255,8 +1255,9 @@ Content-Type: application/jose+json
   <li>Check that the &#8220;url&#8221; parameters of the inner and outer JWSs are the same.</li>
   <li>Check that the &#8220;account&#8221; field of the key-change object contains the URL for the account matching the old key</li>
   <li>Check that the &#8220;newKey&#8221; field of the key-change object also verifies the inner JWS.</li>
+  <li>Check that no account exists whose account key is the same as the key in the &#8220;newKey&#8221; field.</li>
 </ol>
-<p id="rfc.section.7.3.6.p.10">If all of these checks pass, then the server updates the corresponding account by replacing the old account key with the new public key and returns status code 200. Otherwise, the server responds with an error status code and a problem document describing the error.</p>
+<p id="rfc.section.7.3.6.p.10">If all of these checks pass, then the server updates the corresponding account by replacing the old account key with the new public key and returns status code 200 (OK). Otherwise, the server responds with an error status code and a problem document describing the error.  If there is an existing account with the new key provided, then the server SHOULD use status code 409 (Conflict).</p>
 <h1 id="rfc.section.7.3.7"><a href="#rfc.section.7.3.7">7.3.7.</a> <a href="#account-deactivation" id="account-deactivation">Account Deactivation</a></h1>
 <p id="rfc.section.7.3.7.p.1">A client can deactivate an account by posting a signed update to the server with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised or decommissioned.</p>
 <pre>
