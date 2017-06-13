@@ -1205,7 +1205,7 @@ Internet-Draft                    ACME                         June 2017
       attempt to fulfill one of these challenges, and a server should
       consider any one of the challenges sufficient to make the
       authorization valid.  For final authorizations it contains the
-      challenges that were completed.
+      challenges that were successfully completed.
 
    The only type of identifier defined by this specification is a fully-
    qualified domain name (type: "dns").  If a domain name contains non-
@@ -3009,7 +3009,8 @@ Internet-Draft                    ACME                         June 2017
 
    Encoding considerations: None
 
-   Security considerations: Carries a cryptographic certificate
+   Security considerations: Carries a cryptographic certificate and its
+   associated certificate chain
 
    Interoperability considerations: None
 
@@ -3017,7 +3018,6 @@ Internet-Draft                    ACME                         June 2017
    replace draft-ietf-acme-acme above with the RFC number assigned to
    this ]]
 
-   Applications which use this media type: Any MIME-complaint transport
 
 
 
@@ -3025,6 +3025,8 @@ Barnes, et al.          Expires December 15, 2017              [Page 54]
 
 Internet-Draft                    ACME                         June 2017
 
+
+   Applications which use this media type: Any MIME-complaint transport
 
    Additional information:
 
@@ -3072,8 +3074,6 @@ Internet-Draft                    ACME                         June 2017
 
    o  Header Parameter Usage Location(s): JWE, JWS
 
-   o  Change Controller: IESG
-
 
 
 
@@ -3081,6 +3081,8 @@ Barnes, et al.          Expires December 15, 2017              [Page 55]
 
 Internet-Draft                    ACME                         June 2017
 
+
+   o  Change Controller: IESG
 
    o  Specification Document(s): Section 6.3.1 of RFC XXXX
 
@@ -3129,14 +3131,14 @@ Internet-Draft                    ACME                         June 2017
 
    1.  ACME Account Object Fields (Section 9.7.1)
 
-   2.  ACME Order Object Fields (Section 9.7.2)
-
 
 
 Barnes, et al.          Expires December 15, 2017              [Page 56]
 
 Internet-Draft                    ACME                         June 2017
 
+
+   2.  ACME Order Object Fields (Section 9.7.2)
 
    3.  ACME Error Types (Section 9.7.3)
 
@@ -3171,8 +3173,6 @@ Internet-Draft                    ACME                         June 2017
 
    Initial contents: The fields and descriptions defined in
    Section 7.1.2.
-
-
 
 
 

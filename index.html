@@ -1002,7 +1002,7 @@ Link: href="/acme/acct/1/orders?cursor=2", rel="next"
   <dt>scope (optional, string):</dt>
   <dd style="margin-left: 8">If this field is present, then it MUST contain a URL for an order resource, such that this authorization is only valid for that resource.  If this field is absent, then the CA MUST consider this authorization valid for all orders until the authorization expires.</dd>
   <dt>challenges (required, array of objects):</dt>
-  <dd style="margin-left: 8">For pending authorizations, the challenges that the client can fulfill in order to prove possession of the identifier.  For final authorizations, the challenges that were used.  Each array entry is an object with parameters required to validate the challenge.  A client should attempt to fulfill one of these challenges, and a server should consider any one of the challenges sufficient to make the authorization valid.  For final authorizations it contains the challenges that were completed.</dd>
+  <dd style="margin-left: 8">For pending authorizations, the challenges that the client can fulfill in order to prove possession of the identifier.  For final authorizations, the challenges that were used.  Each array entry is an object with parameters required to validate the challenge.  A client should attempt to fulfill one of these challenges, and a server should consider any one of the challenges sufficient to make the authorization valid.  For final authorizations it contains the challenges that were successfully completed.</dd>
 </dl>
 <p id="rfc.section.7.1.4.p.4">The only type of identifier defined by this specification is a fully-qualified domain name (type: &#8220;dns&#8221;). If a domain name contains non-ASCII Unicode characters it MUST be encoded using the rules defined in <a href="#RFC3492">[RFC3492]</a>. Servers MUST verify any identifier values that begin with the ASCII Compatible Encoding prefix &#8220;xn&#8211;&#8221; as defined in <a href="#RFC5890">[RFC5890]</a> are properly encoded. Wildcard domain names (with &#8220;*&#8221; as the first label) MUST NOT be included in authorization objects.</p>
 <p><a href="#identifier-validation-challenges">Section 8</a> describes a set of challenges for domain name validation.</p>
@@ -1887,7 +1887,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.9.1.p.4">Required parameters: None</p>
 <p id="rfc.section.9.1.p.5">Optional parameters: None</p>
 <p id="rfc.section.9.1.p.6">Encoding considerations: None</p>
-<p id="rfc.section.9.1.p.7">Security considerations: Carries a cryptographic certificate</p>
+<p id="rfc.section.9.1.p.7">Security considerations: Carries a cryptographic certificate and its associated certificate chain</p>
 <p id="rfc.section.9.1.p.8">Interoperability considerations: None</p>
 <p id="rfc.section.9.1.p.9">Published specification: draft-ietf-acme-acme [[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]</p>
 <p id="rfc.section.9.1.p.10">Applications which use this media type: Any MIME-complaint transport</p>
