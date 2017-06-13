@@ -1760,13 +1760,15 @@ Internet-Draft                    ACME                         June 2017
    (OK) status code and the current contents of the account object.
 
    Once an account is deactivated, the server MUST NOT accept further
-   requests authorized by that account's key.  A server may take a
-   variety of actions in response to an account deactivation, e.g.,
-   deleting data related to that account or sending mail to the
-   account's contacts.  Servers SHOULD NOT revoke certificates issued by
-   the deactivated account, since this could cause operational
-   disruption for servers using these certificates.  ACME does not
-   provide a way to reactivate a deactivated account.
+   requests authorized by that account's key.  The server SHOULD cancel
+   any pending operations authorized by the account's key, such as
+   certificate orders.  A server may take a variety of actions in
+   response to an account deactivation, e.g., deleting data related to
+   that account or sending mail to the account's contacts.  Servers
+   SHOULD NOT revoke certificates issued by the deactivated account,
+   since this could cause operational disruption for servers using these
+   certificates.  ACME does not provide a way to reactivate a
+   deactivated account.
 
 7.4.  Applying for Certificate Issuance
 
@@ -1784,8 +1786,6 @@ Internet-Draft                    ACME                         June 2017
 
    notBefore (optional, string):  The requested value of the notBefore
       field in the certificate, in the date format defined in [RFC3339]
-
-
 
 
 
