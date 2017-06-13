@@ -480,6 +480,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support               |
 | invalidContact        | A contact URL for an account was invalid                                       |
 | unsupportedContact    | A contact URL for an account used an unsupported protocol scheme               |
+| accountDoesNotExist   | The request specified an account that does not exist                           |
 | malformed             | The request message was malformed                                              |
 | rateLimited           | The request exceeds a rate limit                                               |
 | rejectedIdentifier    | The server will not issue for the identifier                                   |
@@ -1008,6 +1009,9 @@ If a client wishes to find the URL for an existing account and does not want an
 account to be created if one does not already exist, then it SHOULD do so by
 sending a POST request to the new-account URL with a JWS whose payload has an
 "only-return-existing" field set to "true" ({"only-return-existing": true}).
+If a client sends such a request and an account does not exist, then the server
+MUST return an error response with status code 400 (Bad Request) and type
+"urn:ietf:params:acme:error:accountDoesNotExist".
 
 ### Account Update
 
