@@ -1850,6 +1850,8 @@ Host: example.com
 HTTP/1.1 200 OK
 {
   "type": "oob-01",
+  "url": "https://example.com/acme/authz/1234/3",
+  "status": "pending",
   "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 </pre>
@@ -2204,6 +2206,11 @@ Content-Type: application/jose+json
     </tr>
     <tr>
       <td class="left">dns-01</td>
+      <td class="left">dns</td>
+      <td class="left">RFC XXXX</td>
+    </tr>
+    <tr>
+      <td class="left">oob-01</td>
       <td class="left">dns</td>
       <td class="left">RFC XXXX</td>
     </tr>

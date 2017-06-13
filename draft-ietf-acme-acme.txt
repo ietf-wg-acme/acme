@@ -2950,6 +2950,8 @@ Internet-Draft                    ACME                         June 2017
    HTTP/1.1 200 OK
    {
      "type": "oob-01",
+     "url": "https://example.com/acme/authz/1234/3",
+     "status": "pending",
      "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
    }
 
@@ -2960,8 +2962,6 @@ Internet-Draft                    ACME                         June 2017
    acknowledgement response to the server.
 
    type (required, string):  The string "oob-01"
-
-
 
 
 
@@ -3382,6 +3382,8 @@ Internet-Draft                    ACME                         June 2017
                | tls-sni-02 | dns             | RFC XXXX  |
                |            |                 |           |
                | dns-01     | dns             | RFC XXXX  |
+               |            |                 |           |
+               | oob-01     | dns             | RFC XXXX  |
                +------------+-----------------+-----------+
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
@@ -3407,8 +3409,6 @@ Internet-Draft                    ACME                         June 2017
    the ways that ACME achieves these security goals within that threat
    model.  We also discuss the denial-of-service risks that ACME servers
    face, and a few other miscellaneous considerations.
-
-
 
 
 
