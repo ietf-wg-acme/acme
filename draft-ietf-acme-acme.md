@@ -1952,9 +1952,9 @@ client then provisions the key authorization as a resource on the HTTP server
 for the domain in question.
 
 The path at which the resource is provisioned is comprised of the fixed prefix
-".well-known/acme-challenge/", followed by the SHA-256 digest of the "token"
-value in the challenge. The value of the resource MUST be the ASCII
-representation of the key authorization.
+".well-known/acme-challenge/", followed by base64url encoding of the SHA-256
+digest of the "token" value in the challenge. The value of the resource MUST be
+the ASCII representation of the key authorization.
 
 ~~~~~~~~~~
 GET .well-known/acme-challenge/66842C89EFA83AE60733CC34BB0FC8FE815DFF318334CFDAB1C41992224DD6B4
