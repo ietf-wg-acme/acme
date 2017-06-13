@@ -116,9 +116,9 @@ Internet-Draft                    ACME                         June 2017
 
        7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  27
        7.3.5.  External Account Binding  . . . . . . . . . . . . . .  27
-       7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  29
-       7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  31
-     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  32
+       7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  30
+       7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  32
+     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  33
        7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  35
        7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  37
      7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  38
@@ -993,7 +993,7 @@ Internet-Draft                    ACME                         June 2017
      "revoke-cert": "https://example.com/acme/revoke-cert",
      "key-change": "https://example.com/acme/key-change",
      "meta": {
-       "terms-of-service": "https://example.com/acme/terms",
+       "terms-of-service": "https://example.com/acme/terms/2017-5-30",
        "website": "https://www.example.com/",
        "caa-identities": ["example.com"]
      }
@@ -1486,16 +1486,17 @@ Internet-Draft                    ACME                         June 2017
    human user to visit in order for instructions on how to agree to the
    terms.
 
-   HTTP/1.1 403 Forbidden
-   Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
-   Content-Type: application/problem+json
-   Content-Language: en
+ HTTP/1.1 403 Forbidden
+ Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+ Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"
+ Content-Type: application/problem+json
+ Content-Language: en
 
-   {
-     "type": "urn:ietf:params:acme:error:userActionRequired",
-     "detail": "Terms of service have changed",
-     "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
-   }
+ {
+   "type": "urn:ietf:params:acme:error:userActionRequired",
+   "detail": "Terms of service have changed",
+   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
+ }
 
 7.3.5.  External Account Binding
 
@@ -1504,8 +1505,7 @@ Internet-Draft                    ACME                         June 2017
    existing account in a non-ACME system, such as a CA customer
    database.
 
-   To enable ACME account binding, a CA needs to provision the ACME
-   client with a MAC key and a key identifier.  The key identifier MUST
+
 
 
 
@@ -1514,6 +1514,8 @@ Barnes, et al.          Expires December 15, 2017              [Page 27]
 Internet-Draft                    ACME                         June 2017
 
 
+   To enable ACME account binding, a CA needs to provision the ACME
+   client with a MAC key and a key identifier.  The key identifier MUST
    be an ASCII string.  The MAC key SHOULD be provided in base64url-
    encoded form, to maximize compatibility between provisioning systems
    and ACME clients.
@@ -1533,6 +1535,40 @@ Internet-Draft                    ACME                         June 2017
 
    The "signature" field of the JWS will contain the MAC value computed
    with the MAC key provided by the CA.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 28]
+
+Internet-Draft                    ACME                         June 2017
+
 
    POST /acme/new-account HTTP/1.1
    Host: example.com
@@ -1562,14 +1598,6 @@ Internet-Draft                    ACME                         June 2017
      "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
    }
 
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 28]
-
-Internet-Draft                    ACME                         June 2017
-
-
    When a CA receives a new-account request containing an "external-
    account-binding" field, it decides whether or not to verify the
    binding.  If the CA does not verify the binding, then it MUST NOT
@@ -1589,6 +1617,14 @@ Internet-Draft                    ACME                         June 2017
    5.  Verify that the payload of the JWS represents the same key as was
        used to verify the outer JWS (i.e., the "jwk" field of the outer
        JWS)
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 29]
+
+Internet-Draft                    ACME                         June 2017
+
 
    If all of these checks pass and the CA creates a new account, then
    the CA may consider the new account associated with the external
@@ -1618,14 +1654,6 @@ Internet-Draft                    ACME                         June 2017
    with the requested new account key (i.e., the key matching the
    "newKey" value).
 
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 29]
-
-Internet-Draft                    ACME                         June 2017
-
-
    The outer JWS MUST meet the normal requirements for an ACME JWS (see
    Section 6.2).  The inner JWS MUST meet the normal requirements, with
    the following exceptions:
@@ -1642,6 +1670,17 @@ Internet-Draft                    ACME                         June 2017
    agree to the change.  The signatures are nested to preserve the
    property that all signatures on POST messages are signed by exactly
    one key.
+
+
+
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 30]
+
+Internet-Draft                    ACME                         June 2017
+
 
    POST /acme/key-change HTTP/1.1
    Host: example.com
@@ -1675,13 +1714,6 @@ Internet-Draft                    ACME                         June 2017
    1.  Validate the POST request belongs to a currently active account,
        as described in Section 6.
 
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 30]
-
-Internet-Draft                    ACME                         June 2017
-
-
    2.  Check that the payload of the JWS is a well-formed JWS object
        (the "inner JWS").
 
@@ -1696,6 +1728,15 @@ Internet-Draft                    ACME                         June 2017
 
    6.  Check that the "url" parameters of the inner and outer JWSs are
        the same.
+
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 31]
+
+Internet-Draft                    ACME                         June 2017
+
 
    7.  Check that the "account" field of the key-change object contains
        the URL for the account matching the old key
@@ -1714,29 +1755,6 @@ Internet-Draft                    ACME                         June 2017
    A client can deactivate an account by posting a signed update to the
    server with a status field of "deactivated."  Clients may wish to do
    this when the account key is compromised or decommissioned.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 31]
-
-Internet-Draft                    ACME                         June 2017
-
 
    POST /acme/acct/1 HTTP/1.1
    Host: example.com
@@ -1767,6 +1785,15 @@ Internet-Draft                    ACME                         June 2017
    that account or sending mail to the account's contacts.  Servers
    SHOULD NOT revoke certificates issued by the deactivated account,
    since this could cause operational disruption for servers using these
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 32]
+
+Internet-Draft                    ACME                         June 2017
+
+
    certificates.  ACME does not provide a way to reactivate a
    deactivated account.
 
@@ -1786,13 +1813,6 @@ Internet-Draft                    ACME                         June 2017
 
    notBefore (optional, string):  The requested value of the notBefore
       field in the certificate, in the date format defined in [RFC3339]
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 32]
-
-Internet-Draft                    ACME                         June 2017
-
 
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339]
@@ -1822,6 +1842,14 @@ Internet-Draft                    ACME                         June 2017
    subject name, or in an extensionRequest attribute [RFC2985]
    requesting a subjectAltName extension.
 
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 33]
+
+Internet-Draft                    ACME                         June 2017
+
+
    The server MUST return an error if it cannot fulfill the request as
    specified, and MUST NOT issue a certificate with contents other than
    those requested.  If the server requires the request to be modified
@@ -1833,22 +1861,6 @@ Internet-Draft                    ACME                         June 2017
    an order object reflecting the client's request and any
    authorizations the client must complete before the certificate will
    be issued.
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 33]
-
-Internet-Draft                    ACME                         June 2017
-
 
    HTTP/1.1 201 Created
    Replay-Nonce: MYAuvOpaoIiywTezizk5vw
@@ -1886,6 +1898,14 @@ Internet-Draft                    ACME                         June 2017
    time of this request (e.g., by obtaining authorization for all of the
    identifiers in the certificate in previous transactions), then the
    server MUST proactively issue the requested certificate and provide a
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 34]
+
+Internet-Draft                    ACME                         June 2017
+
+
    URL for it in the "certificate" field of the order.  The server MUST,
    however, still list the completed authorizations in the
    "authorizations" array.
@@ -1897,14 +1917,6 @@ Internet-Draft                    ACME                         June 2017
 
    o  "invalid": The certificate will not be issued.  Consider this
       order process abandoned.
-
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 34]
-
-Internet-Draft                    ACME                         June 2017
-
 
    o  "pending": The server does not believe that the client has
       fulfilled the requirements.  Check the "authorizations" array for
@@ -1941,6 +1953,15 @@ Internet-Draft                    ACME                         June 2017
 
    To request authorization for an identifier, the client sends a POST
    request to the new-authorization resource specifying the identifier
+
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 35]
+
+Internet-Draft                    ACME                         June 2017
+
+
    for which authorization is being requested and how the server should
    behave with respect to existing authorizations for this identifier.
 
@@ -1950,17 +1971,6 @@ Internet-Draft                    ACME                         June 2017
       type (required, string):  The type of identifier.
 
       value (required, string):  The identifier itself.
-
-
-
-
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 35]
-
-Internet-Draft                    ACME                         June 2017
-
 
    POST /acme/new-authz HTTP/1.1
    Host: example.com
@@ -1999,16 +2009,6 @@ Internet-Draft                    ACME                         June 2017
    o  "status" MUST be "pending" unless the server has out-of-band
       information about the client's authorization status
 
-   o  "challenges" as selected by the server's policy for this
-      identifier
-
-   The server allocates a new URL for this authorization, and returns a
-   201 (Created) response, with the authorization URL in the Location
-   header field, and the JSON authorization object in the body.  The
-   client then follows the process described in Section 7.5 to complete
-   the authorization process.
-
-
 
 
 
@@ -2017,6 +2017,15 @@ Barnes, et al.          Expires December 15, 2017              [Page 36]
 
 Internet-Draft                    ACME                         June 2017
 
+
+   o  "challenges" as selected by the server's policy for this
+      identifier
+
+   The server allocates a new URL for this authorization, and returns a
+   201 (Created) response, with the authorization URL in the Location
+   header field, and the JSON authorization object in the body.  The
+   client then follows the process described in Section 7.5 to complete
+   the authorization process.
 
 7.4.2.  Downloading the Certificate
 
@@ -2057,6 +2066,14 @@ Internet-Draft                    ACME                         June 2017
 
    Because certificate resources are immutable once issuance is
    complete, the server MAY enable the caching of the resource by adding
+
+
+
+Barnes, et al.          Expires December 15, 2017              [Page 37]
+
+Internet-Draft                    ACME                         June 2017
+
+
    Expires and Cache-Control headers specifying a point in time in the
    distant future.  These headers have no relation to the certificate's
    period of validity.
@@ -2066,14 +2083,6 @@ Internet-Draft                    ACME                         June 2017
    type "application/pkix-cert" [RFC2585] to request the end-entity
    certificate in DER format.  Server support for alternate formats is
    OPTIONAL.  For formats that can only express a single certificate,
-
-
-
-Barnes, et al.          Expires December 15, 2017              [Page 37]
-
-Internet-Draft                    ACME                         June 2017
-
-
    the server SHOULD provide one or more "Link: rel="up"" headers
    pointing to an issuer or issuers so that ACME clients can build a
    certificate chain as defined in TLS.
@@ -2107,15 +2116,6 @@ Internet-Draft                    ACME                         June 2017
    URLs.  If the client initiates authorization using a request to the
    new authorization resource, it will have already received the pending
    authorization object in the response to that request.
-
-
-
-
-
-
-
-
-
 
 
 
