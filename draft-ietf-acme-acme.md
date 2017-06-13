@@ -1267,8 +1267,8 @@ server accepts the deactivation request, it replies with a 200 (OK) status code
 and the current contents of the account object.
 
 Once an account is deactivated, the server MUST NOT accept further requests
-authorized by that account's key. The server MUST cancel any pending operations authorized
-by the account's key, such as certificate Orders. A server may take a variety of actions in
+authorized by that account's key. The server SHOULD cancel any pending operations authorized
+by the account's key, such as certificate orders. A server may take a variety of actions in
 response to an account deactivation, e.g., deleting data related to that account
 or sending mail to the account's contacts.  Servers SHOULD NOT revoke
 certificates issued by the deactivated account, since this could cause
