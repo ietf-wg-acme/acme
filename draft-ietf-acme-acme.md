@@ -1609,7 +1609,7 @@ For example, if the client were to respond to the "http-01" challenge in the
 above authorization, it would send the following request:
 
 ~~~~~~~~~~
-POST /acme/authz/asdf/0 HTTP/1.1
+POST /acme/authz/1234/0 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1618,7 +1618,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
-    "url": "https://example.com/acme/authz/asdf/0"
+    "url": "https://example.com/acme/authz/1234/0"
   }),
   "payload": base64url({
     "type": "http-01",
@@ -1661,7 +1661,7 @@ progress, the server MUST return a 200 (OK) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
-GET /acme/authz/asdf HTTP/1.1
+GET /acme/authz/1234 HTTP/1.1
 Host: example.com
 
 HTTP/1.1 200 OK
@@ -1678,7 +1678,7 @@ HTTP/1.1 200 OK
   "challenges": [
     {
       "type": "http-01"
-      "url": "https://example.com/authz/asdf/0",
+      "url": "https://example.com/authz/1234/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -1696,7 +1696,7 @@ associated with it by sending POST requests with the static object
 {"status": "deactivated"} to each authorization URL.
 
 ~~~~~~~~~~
-POST /acme/authz/asdf HTTP/1.1
+POST /acme/authz/1234 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1705,7 +1705,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
-    "url": "https://example.com/acme/authz/asdf"
+    "url": "https://example.com/acme/authz/1234"
   }),
   "payload": base64url({
     "status": "deactivated"
