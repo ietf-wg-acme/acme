@@ -1918,7 +1918,7 @@ updated). Servers SHOULD retry a request immediately on receiving such a POST
 request. In order to avoid denial-of-service attacks via client-initiated
 retries, servers SHOULD rate-limit such requests.
 
-## HTTP
+## HTTP Challenge
 
 With HTTP validation, the client in an ACME transaction proves its control over
 a domain name by proving that for that domain name it can provision resources
@@ -2024,7 +2024,7 @@ If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
 failed.
 
-## TLS with Server Name Indication (TLS SNI)
+## TLS with Server Name Indication (TLS SNI) Challenge
 
 The TLS with Server Name Indication (TLS SNI) validation method
 proves control over a domain name by requiring the client to configure a TLS
@@ -2125,7 +2125,7 @@ using these steps:
 If all of the above verifications succeed, then the validation is successful.
 Otherwise, the validation fails.
 
-## DNS
+## DNS Challenge
 
 When the identifier being validated is a domain name, the client can prove
 control of that domain by provisioning a TXT resource record containing a designated
@@ -2208,7 +2208,7 @@ If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
 
-## Out-of-Band
+## Out-of-Band Challenge
 
 There may be cases where a server cannot perform automated validation of an
 identifier, for example, if validation requires some manual steps.  In such
