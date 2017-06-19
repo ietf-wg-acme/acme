@@ -1965,7 +1965,7 @@ authorization.
 
 ~~~~~~~~~~
 GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
-Host: example.com
+Host: example.org
 
 HTTP/1.1 200 OK
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
