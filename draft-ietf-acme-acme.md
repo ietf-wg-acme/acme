@@ -1250,7 +1250,6 @@ Note that changing the account key for an account should not have any other
 impact on the account.  For example, the server MUST NOT invalidate pending
 orders or authorization transactions based on a change of account key.
 
-
 ### Account Deactivation
 
 A client can deactivate an account by posting a signed update to the server with
