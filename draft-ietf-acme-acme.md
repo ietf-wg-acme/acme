@@ -2160,11 +2160,11 @@ The record provisioned to the DNS is the base64url encoding of this digest.  The
 client constructs the validation domain name by prepending the label
 "_acme-challenge" to the domain name being validated, then provisions a TXT
 record with the digest value under that name. For example, if the domain name
-being validated is "example.com", then the client would provision the following
+being validated is "example.org", then the client would provision the following
 DNS record:
 
 ~~~~~~~~~~
-_acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
+_acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 ~~~~~~~~~~
 
 The response to the DNS challenge provides the computed key authorization to
