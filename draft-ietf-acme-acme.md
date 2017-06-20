@@ -2317,7 +2317,7 @@ URI suffix: acme-challenge
 
 Change controller: IETF
 
-Specification document(s): This document, Section {{http}}
+Specification document(s): This document, Section {{http-challenge}}
 
 Related information: N/A
 
