@@ -3,7 +3,7 @@
 
 
 ACME Working Group                                             R. Barnes
-Internet-Draft                                                   Mozilla
+Internet-Draft                                                     Cisco
 Intended status: Standards Track                      J. Hoffman-Andrews
 Expires: December 23, 2017                                           EFF
                                                                J. Kasten
@@ -4108,7 +4108,7 @@ Internet-Draft                    ACME                         June 2017
 Authors' Addresses
 
    Richard Barnes
-   Mozilla
+   Cisco
 
    Email: rlb@ipv.sx
 
