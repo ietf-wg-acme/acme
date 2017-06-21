@@ -1246,7 +1246,7 @@ code 200 (OK). Otherwise, the server responds with an error status code and a
 problem document describing the error.  If there is an existing account with
 the new key provided, then the server SHOULD use status code 409 (Conflict).
 
-Note that changing the account key for an account should not have any other
+Note that changing the account key for an account SHOULD NOT have any other
 impact on the account.  For example, the server MUST NOT invalidate pending
 orders or authorization transactions based on a change of account key.
 
