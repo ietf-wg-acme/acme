@@ -317,10 +317,10 @@ address {
 <link href="#rfc.section.8" rel="Chapter" title="8 Identifier Validation Challenges"/>
 <link href="#rfc.section.8.1" rel="Chapter" title="8.1 Key Authorizations"/>
 <link href="#rfc.section.8.2" rel="Chapter" title="8.2 Retrying Challenges"/>
-<link href="#rfc.section.8.3" rel="Chapter" title="8.3 HTTP"/>
-<link href="#rfc.section.8.4" rel="Chapter" title="8.4 TLS with Server Name Indication (TLS SNI)"/>
-<link href="#rfc.section.8.5" rel="Chapter" title="8.5 DNS"/>
-<link href="#rfc.section.8.6" rel="Chapter" title="8.6 Out-of-Band"/>
+<link href="#rfc.section.8.3" rel="Chapter" title="8.3 HTTP Challenge"/>
+<link href="#rfc.section.8.4" rel="Chapter" title="8.4 TLS with Server Name Indication (TLS SNI) Challenge"/>
+<link href="#rfc.section.8.5" rel="Chapter" title="8.5 DNS Challenge"/>
+<link href="#rfc.section.8.6" rel="Chapter" title="8.6 Out-of-Band Challenge"/>
 <link href="#rfc.section.9" rel="Chapter" title="9 IANA Considerations"/>
 <link href="#rfc.section.9.1" rel="Chapter" title="9.1 MIME Type: application/pem-certificate-chain"/>
 <link href="#rfc.section.9.2" rel="Chapter" title="9.2 Well-Known URI for the HTTP Challenge"/>
@@ -358,7 +358,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-6-13" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-6-21" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -382,7 +382,7 @@ address {
   <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-  <td class="left">Expires: December 15, 2017</td>
+  <td class="left">Expires: December 23, 2017</td>
   <td class="right">EFF</td>
 </tr>
 <tr>
@@ -395,7 +395,7 @@ address {
 </tr>
 <tr>
   <td class="left"></td>
-  <td class="right">June 13, 2017</td>
+  <td class="right">June 21, 2017</td>
 </tr>
 
     	
@@ -417,7 +417,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on December 15, 2017.</p>
+<p>This Internet-Draft will expire on December 23, 2017.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -469,10 +469,10 @@ address {
 </ul><li>8.   <a href="#rfc.section.8">Identifier Validation Challenges</a></li>
 <ul><li>8.1.   <a href="#rfc.section.8.1">Key Authorizations</a></li>
 <li>8.2.   <a href="#rfc.section.8.2">Retrying Challenges</a></li>
-<li>8.3.   <a href="#rfc.section.8.3">HTTP</a></li>
-<li>8.4.   <a href="#rfc.section.8.4">TLS with Server Name Indication (TLS SNI)</a></li>
-<li>8.5.   <a href="#rfc.section.8.5">DNS</a></li>
-<li>8.6.   <a href="#rfc.section.8.6">Out-of-Band</a></li>
+<li>8.3.   <a href="#rfc.section.8.3">HTTP Challenge</a></li>
+<li>8.4.   <a href="#rfc.section.8.4">TLS with Server Name Indication (TLS SNI) Challenge</a></li>
+<li>8.5.   <a href="#rfc.section.8.5">DNS Challenge</a></li>
+<li>8.6.   <a href="#rfc.section.8.6">Out-of-Band Challenge</a></li>
 </ul><li>9.   <a href="#rfc.section.9">IANA Considerations</a></li>
 <ul><li>9.1.   <a href="#rfc.section.9.1">MIME Type: application/pem-certificate-chain</a></li>
 <li>9.2.   <a href="#rfc.section.9.2">Well-Known URI for the HTTP Challenge</a></li>
@@ -1646,7 +1646,7 @@ key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 <p id="rfc.section.8.2.p.2">Clients SHOULD NOT respond to challenges until they believe that the server&#8217;s queries will succeed. If a server&#8217;s initial validation query fails, the server SHOULD retry the query after some time.  While the server is still trying, the status of the challenge remains &#8220;pending&#8221;; it is only marked &#8220;invalid&#8221; once the server has given up.</p>
 <p id="rfc.section.8.2.p.3">The server MUST provide information about its retry state to the client via the &#8220;errors&#8221; field in the challenge and the Retry-After HTTP header field in response to requests to the challenge resource. The server MUST add an entry to the &#8220;errors&#8221; field in the challenge after each failed validation query. The server SHOULD set the Retry-After header field to a time after the server&#8217;s next validation query, since the status of the challenge will not change until that time.</p>
 <p id="rfc.section.8.2.p.4">Clients can explicitly request a retry by re-sending their response to a challenge in a new POST request (with a new nonce, etc.). This allows clients to request a retry when state has changed (e.g., after firewall rules have been updated). Servers SHOULD retry a request immediately on receiving such a POST request. In order to avoid denial-of-service attacks via client-initiated retries, servers SHOULD rate-limit such requests.</p>
-<h1 id="rfc.section.8.3"><a href="#rfc.section.8.3">8.3.</a> <a href="#http" id="http">HTTP</a></h1>
+<h1 id="rfc.section.8.3"><a href="#rfc.section.8.3">8.3.</a> <a href="#http-challenge" id="http-challenge">HTTP Challenge</a></h1>
 <p id="rfc.section.8.3.p.1">With HTTP validation, the client in an ACME transaction proves its control over a domain name by proving that for that domain name it can provision resources to be returned by an HTTP server. The ACME server challenges the client to provision a file at a specific path, with a specific string as its content.</p>
 <p id="rfc.section.8.3.p.2">As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will connect to at least one of the hosts found in the DNS A and AAAA records, at its discretion.  Because many web servers allocate a default HTTPS virtual host to a particular low-privilege tenant user in a subtle and non-intuitive manner, the challenge must be completed over HTTP, not HTTPS.</p>
 <p/>
@@ -1716,7 +1716,7 @@ Content-Type: application/jose+json
 </ol>
 <p id="rfc.section.8.3.p.11">The server SHOULD follow redirects when dereferencing the URL.</p>
 <p id="rfc.section.8.3.p.12">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
-<h1 id="rfc.section.8.4"><a href="#rfc.section.8.4">8.4.</a> <a href="#tls-with-server-name-indication-tls-sni" id="tls-with-server-name-indication-tls-sni">TLS with Server Name Indication (TLS SNI)</a></h1>
+<h1 id="rfc.section.8.4"><a href="#rfc.section.8.4">8.4.</a> <a href="#tls-with-server-name-indication-tls-sni-challenge" id="tls-with-server-name-indication-tls-sni-challenge">TLS with Server Name Indication (TLS SNI) Challenge</a></h1>
 <p id="rfc.section.8.4.p.1">The TLS with Server Name Indication (TLS SNI) validation method proves control over a domain name by requiring the client to configure a TLS server referenced by the DNS A and AAAA resource records for the domain name to respond to specific connection attempts utilizing the Server Name Indication extension <a href="#RFC6066">[RFC6066]</a>. The server verifies the client&#8217;s challenge by accessing the TLS server and verifying a particular certificate is presented.</p>
 <p/>
 
@@ -1778,7 +1778,7 @@ Content-Type: application/jose+json
   <li>Verify that the certificate contains a subjectAltName extension containing dNSName entries of SAN A and SAN B and no other entries.  The comparison MUST be insensitive to case and ordering of names.</li>
 </ol>
 <p id="rfc.section.8.4.p.13">If all of the above verifications succeed, then the validation is successful.  Otherwise, the validation fails.</p>
-<h1 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5.</a> <a href="#dns" id="dns">DNS</a></h1>
+<h1 id="rfc.section.8.5"><a href="#rfc.section.8.5">8.5.</a> <a href="#dns-challenge" id="dns-challenge">DNS Challenge</a></h1>
 <p id="rfc.section.8.5.p.1">When the identifier being validated is a domain name, the client can prove control of that domain by provisioning a TXT resource record containing a designated value for a specific validation domain name.</p>
 <p/>
 
@@ -1840,7 +1840,7 @@ Content-Type: application/jose+json
   <li>Verify that the contents of one of the TXT records matches the digest value</li>
 </ol>
 <p id="rfc.section.8.5.p.10">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
-<h1 id="rfc.section.8.6"><a href="#rfc.section.8.6">8.6.</a> <a href="#out-of-band" id="out-of-band">Out-of-Band</a></h1>
+<h1 id="rfc.section.8.6"><a href="#rfc.section.8.6">8.6.</a> <a href="#out-of-band-challenge" id="out-of-band-challenge">Out-of-Band Challenge</a></h1>
 <p id="rfc.section.8.6.p.1">There may be cases where a server cannot perform automated validation of an identifier, for example, if validation requires some manual steps.  In such cases, the server may provide an &#8220;out of band&#8221; (OOB) challenge to request that the client perform some action outside of ACME in order to validate possession of the identifier.</p>
 <p id="rfc.section.8.6.p.2">The OOB challenge requests that the client have a human user visit a web page to receive instructions on how to validate possession of the identifier, by providing a URL for that web page.</p>
 <p/>
@@ -1907,7 +1907,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.9.2.p.1">The &#8220;Well-Known URIs&#8221; registry should be updated with the following additional value (using the template from <a href="#RFC5785">[RFC5785]</a>):</p>
 <p id="rfc.section.9.2.p.2">URI suffix: acme-challenge</p>
 <p id="rfc.section.9.2.p.3">Change controller: IETF</p>
-<p id="rfc.section.9.2.p.4">Specification document(s): This document, Section <a href="#http">Section 8.3</a></p>
+<p id="rfc.section.9.2.p.4">Specification document(s): This document, Section <a href="#http-challenge">Section 8.3</a></p>
 <p id="rfc.section.9.2.p.5">Related information: N/A</p>
 <h1 id="rfc.section.9.3"><a href="#rfc.section.9.3">9.3.</a> <a href="#replay-nonce-http-header" id="replay-nonce-http-header">Replay-Nonce HTTP Header</a></h1>
 <p id="rfc.section.9.3.p.1">The &#8220;Message Headers&#8221; registry should be updated with the following additional value:</p>
@@ -2427,7 +2427,7 @@ Content-Type: application/jose+json
       <td class="reference">
         <b id="RFC5226">[RFC5226]</b>
       </td>
-      <td class="top"><a>Narten, T.</a> and <a>H. Alvestrand</a>, "<a href="http://tools.ietf.org/html/rfc5226">Guidelines for Writing an IANA Considerations Section in RFCs</a>", BCP 26, RFC 5226, DOI 10.17487/RFC5226, May 2008.</td>
+      <td class="top"><a>Narten, T.</a> and <a>H. Alvestrand</a>, "<a href="http://tools.ietf.org/html/rfc5226">Guidelines for Writing an IANA Considerations Section in RFCs</a>", RFC 5226, DOI 10.17487/RFC5226, May 2008.</td>
     </tr>
     <tr>
       <td class="reference">
