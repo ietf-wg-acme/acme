@@ -119,49 +119,49 @@ Internet-Draft                    ACME                         June 2017
        7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  30
        7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  32
      7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  33
-       7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  35
-       7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  37
-     7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  38
-       7.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  39
-       7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  41
-     7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  42
-   8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  44
-     8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  46
-     8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  46
-     8.3.  HTTP Challenge  . . . . . . . . . . . . . . . . . . . . .  47
-     8.4.  TLS with Server Name Indication (TLS SNI) Challenge . . .  49
-     8.5.  DNS Challenge . . . . . . . . . . . . . . . . . . . . . .  51
-     8.6.  Out-of-Band Challenge . . . . . . . . . . . . . . . . . .  53
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  54
-     9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  54
-     9.2.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  55
-     9.3.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  55
-     9.4.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  55
-     9.5.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  56
-     9.6.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  56
-     9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  56
-       9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  57
-       9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  58
-       9.7.3.  Error Types . . . . . . . . . . . . . . . . . . . . .  59
-       9.7.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  59
-       9.7.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  60
-       9.7.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  60
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  61
-     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  62
-     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  63
-     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  65
-     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  66
-     10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  66
-   11. Operational Considerations  . . . . . . . . . . . . . . . . .  67
-     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  67
-     11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  68
-     11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  68
-     11.4.  Malformed Certificate Chains . . . . . . . . . . . . . .  69
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  69
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  70
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  70
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  72
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  73
+       7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  36
+       7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  38
+     7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  39
+       7.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  40
+       7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  42
+     7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  43
+   8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  45
+     8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  47
+     8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  47
+     8.3.  HTTP Challenge  . . . . . . . . . . . . . . . . . . . . .  48
+     8.4.  TLS with Server Name Indication (TLS SNI) Challenge . . .  50
+     8.5.  DNS Challenge . . . . . . . . . . . . . . . . . . . . . .  52
+     8.6.  Out-of-Band Challenge . . . . . . . . . . . . . . . . . .  54
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  55
+     9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  55
+     9.2.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  56
+     9.3.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  56
+     9.4.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  56
+     9.5.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  57
+     9.6.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  57
+     9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  57
+       9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  58
+       9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  59
+       9.7.3.  Error Types . . . . . . . . . . . . . . . . . . . . .  60
+       9.7.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  60
+       9.7.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  61
+       9.7.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  61
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  62
+     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  63
+     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  64
+     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  66
+     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  67
+     10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  67
+   11. Operational Considerations  . . . . . . . . . . . . . . . . .  68
+     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  68
+     11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  69
+     11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  69
+     11.4.  Malformed Certificate Chains . . . . . . . . . . . . . .  70
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  70
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  71
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  71
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  73
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  74
 
 
 
@@ -1754,6 +1754,11 @@ Internet-Draft                    ACME                         June 2017
    the error.  If there is an existing account with the new key
    provided, then the server SHOULD use status code 409 (Conflict).
 
+   Note that changing the account key for an account SHOULD NOT have any
+   other impact on the account.  For example, the server MUST NOT
+   invalidate pending orders or authorization transactions based on a
+   change of account key.
+
 7.3.7.  Account Deactivation
 
    A client can deactivate an account by posting a signed update to the
@@ -1781,11 +1786,6 @@ Internet-Draft                    ACME                         June 2017
    If the server accepts the deactivation request, it replies with a 200
    (OK) status code and the current contents of the account object.
 
-   Once an account is deactivated, the server MUST NOT accept further
-   requests authorized by that account's key.  The server SHOULD cancel
-   any pending operations authorized by the account's key, such as
-   certificate orders.  A server may take a variety of actions in
-   response to an account deactivation, e.g., deleting data related to
 
 
 
@@ -1794,6 +1794,11 @@ Barnes, et al.          Expires December 23, 2017              [Page 32]
 Internet-Draft                    ACME                         June 2017
 
 
+   Once an account is deactivated, the server MUST NOT accept further
+   requests authorized by that account's key.  The server SHOULD cancel
+   any pending operations authorized by the account's key, such as
+   certificate orders.  A server may take a variety of actions in
+   response to an account deactivation, e.g., deleting data related to
    that account or sending mail to the account's contacts.  Servers
    SHOULD NOT revoke certificates issued by the deactivated account,
    since this could cause operational disruption for servers using these
@@ -1820,6 +1825,31 @@ Internet-Draft                    ACME                         June 2017
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339]
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires December 23, 2017              [Page 33]
+
+Internet-Draft                    ACME                         June 2017
+
+
    POST /acme/new-order HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
@@ -1842,14 +1872,6 @@ Internet-Draft                    ACME                         June 2017
    The CSR encodes the client's requests with regard to the content of
    the certificate to be issued.  The CSR MUST indicate the requested
    identifiers, either in the commonName portion of the requested
-
-
-
-Barnes, et al.          Expires December 23, 2017              [Page 33]
-
-Internet-Draft                    ACME                         June 2017
-
-
    subject name, or in an extensionRequest attribute [RFC2985]
    requesting a subjectAltName extension.
 
@@ -1864,6 +1886,25 @@ Internet-Draft                    ACME                         June 2017
    an order object reflecting the client's request and any
    authorizations the client must complete before the certificate will
    be issued.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires December 23, 2017              [Page 34]
+
+Internet-Draft                    ACME                         June 2017
+
 
    HTTP/1.1 201 Created
    Replay-Nonce: MYAuvOpaoIiywTezizk5vw
@@ -1898,14 +1939,6 @@ Internet-Draft                    ACME                         June 2017
    certificate and update the order resource with a URL for the
    certificate once the client has fulfilled the server's requirements.
    If the client has already satisfied the server's requirements at the
-
-
-
-Barnes, et al.          Expires December 23, 2017              [Page 34]
-
-Internet-Draft                    ACME                         June 2017
-
-
    time of this request (e.g., by obtaining authorization for all of the
    identifiers in the certificate in previous transactions), then the
    server MUST proactively issue the requested certificate and provide a
@@ -1920,6 +1953,14 @@ Internet-Draft                    ACME                         June 2017
 
    o  "invalid": The certificate will not be issued.  Consider this
       order process abandoned.
+
+
+
+
+Barnes, et al.          Expires December 23, 2017              [Page 35]
+
+Internet-Draft                    ACME                         June 2017
+
 
    o  "pending": The server does not believe that the client has
       fulfilled the requirements.  Check the "authorizations" array for
@@ -1954,14 +1995,6 @@ Internet-Draft                    ACME                         June 2017
    "new authorization" resource in its directory by adding the field
    "new-authz" with a URL for the new authorization resource.
 
-
-
-
-Barnes, et al.          Expires December 23, 2017              [Page 35]
-
-Internet-Draft                    ACME                         June 2017
-
-
    To request authorization for an identifier, the client sends a POST
    request to the new-authorization resource specifying the identifier
    for which authorization is being requested and how the server should
@@ -1973,6 +2006,17 @@ Internet-Draft                    ACME                         June 2017
       type (required, string):  The type of identifier.
 
       value (required, string):  The identifier itself.
+
+
+
+
+
+
+
+Barnes, et al.          Expires December 23, 2017              [Page 36]
+
+Internet-Draft                    ACME                         June 2017
+
 
    POST /acme/new-authz HTTP/1.1
    Host: example.com
@@ -2011,13 +2055,6 @@ Internet-Draft                    ACME                         June 2017
    o  "status" MUST be "pending" unless the server has out-of-band
       information about the client's authorization status
 
-
-
-Barnes, et al.          Expires December 23, 2017              [Page 36]
-
-Internet-Draft                    ACME                         June 2017
-
-
    o  "challenges" as selected by the server's policy for this
       identifier
 
@@ -2026,6 +2063,16 @@ Internet-Draft                    ACME                         June 2017
    header field, and the JSON authorization object in the body.  The
    client then follows the process described in Section 7.5 to complete
    the authorization process.
+
+
+
+
+
+
+Barnes, et al.          Expires December 23, 2017              [Page 37]
+
+Internet-Draft                    ACME                         June 2017
+
 
 7.4.2.  Downloading the Certificate
 
@@ -2066,14 +2113,6 @@ Internet-Draft                    ACME                         June 2017
 
    Because certificate resources are immutable once issuance is
    complete, the server MAY enable the caching of the resource by adding
-
-
-
-Barnes, et al.          Expires December 23, 2017              [Page 37]
-
-Internet-Draft                    ACME                         June 2017
-
-
    Expires and Cache-Control headers specifying a point in time in the
    distant future.  These headers have no relation to the certificate's
    period of validity.
@@ -2083,6 +2122,14 @@ Internet-Draft                    ACME                         June 2017
    type "application/pkix-cert" [RFC2585] to request the end-entity
    certificate in DER format.  Server support for alternate formats is
    OPTIONAL.  For formats that can only express a single certificate,
+
+
+
+Barnes, et al.          Expires December 23, 2017              [Page 38]
+
+Internet-Draft                    ACME                         June 2017
+
+
    the server SHOULD provide one or more "Link: rel="up"" headers
    pointing to an issuer or issuers so that ACME clients can build a
    certificate chain as defined in TLS.
@@ -2125,7 +2172,16 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 38]
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires December 23, 2017              [Page 39]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2181,7 +2237,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 39]
+Barnes, et al.          Expires December 23, 2017              [Page 40]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2237,7 +2293,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 40]
+Barnes, et al.          Expires December 23, 2017              [Page 41]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2293,7 +2349,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 41]
+Barnes, et al.          Expires December 23, 2017              [Page 42]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2349,7 +2405,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 42]
+Barnes, et al.          Expires December 23, 2017              [Page 43]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2405,7 +2461,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 43]
+Barnes, et al.          Expires December 23, 2017              [Page 44]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2461,7 +2517,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 44]
+Barnes, et al.          Expires December 23, 2017              [Page 45]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2517,7 +2573,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 45]
+Barnes, et al.          Expires December 23, 2017              [Page 46]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2573,7 +2629,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 46]
+Barnes, et al.          Expires December 23, 2017              [Page 47]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2629,7 +2685,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 47]
+Barnes, et al.          Expires December 23, 2017              [Page 48]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2685,7 +2741,7 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 48]
+Barnes, et al.          Expires December 23, 2017              [Page 49]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2698,7 +2754,8 @@ Internet-Draft                    ACME                         June 2017
        the end of the body.
 
    5.  Verify that key authorization provided by the HTTP server matches
-       the token for this challenge and the client's account key.
+       the key authorization provided by the client in its response to
+       the challenge.
 
    The server SHOULD follow redirects when dereferencing the URL.
 
@@ -2740,8 +2797,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-
-Barnes, et al.          Expires December 23, 2017              [Page 49]
+Barnes, et al.          Expires December 23, 2017              [Page 50]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2797,7 +2853,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 50]
+Barnes, et al.          Expires December 23, 2017              [Page 51]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2853,7 +2909,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 51]
+Barnes, et al.          Expires December 23, 2017              [Page 52]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2909,7 +2965,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 52]
+Barnes, et al.          Expires December 23, 2017              [Page 53]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -2965,7 +3021,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 53]
+Barnes, et al.          Expires December 23, 2017              [Page 54]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3021,7 +3077,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 54]
+Barnes, et al.          Expires December 23, 2017              [Page 55]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3077,7 +3133,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 55]
+Barnes, et al.          Expires December 23, 2017              [Page 56]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3133,7 +3189,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 56]
+Barnes, et al.          Expires December 23, 2017              [Page 57]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3189,7 +3245,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 57]
+Barnes, et al.          Expires December 23, 2017              [Page 58]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3245,7 +3301,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 58]
+Barnes, et al.          Expires December 23, 2017              [Page 59]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3301,7 +3357,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 59]
+Barnes, et al.          Expires December 23, 2017              [Page 60]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3357,7 +3413,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 60]
+Barnes, et al.          Expires December 23, 2017              [Page 61]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3413,7 +3469,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 61]
+Barnes, et al.          Expires December 23, 2017              [Page 62]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3469,7 +3525,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 62]
+Barnes, et al.          Expires December 23, 2017              [Page 63]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3525,7 +3581,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 63]
+Barnes, et al.          Expires December 23, 2017              [Page 64]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3581,7 +3637,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 64]
+Barnes, et al.          Expires December 23, 2017              [Page 65]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3637,7 +3693,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 65]
+Barnes, et al.          Expires December 23, 2017              [Page 66]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3693,7 +3749,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 66]
+Barnes, et al.          Expires December 23, 2017              [Page 67]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3749,7 +3805,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 67]
+Barnes, et al.          Expires December 23, 2017              [Page 68]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3805,7 +3861,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 68]
+Barnes, et al.          Expires December 23, 2017              [Page 69]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3861,7 +3917,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 69]
+Barnes, et al.          Expires December 23, 2017              [Page 70]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3917,7 +3973,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 70]
+Barnes, et al.          Expires December 23, 2017              [Page 71]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -3973,7 +4029,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 71]
+Barnes, et al.          Expires December 23, 2017              [Page 72]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -4029,7 +4085,7 @@ Internet-Draft                    ACME                         June 2017
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 72]
+Barnes, et al.          Expires December 23, 2017              [Page 73]
 
 Internet-Draft                    ACME                         June 2017
 
@@ -4085,4 +4141,4 @@ Authors' Addresses
 
 
 
-Barnes, et al.          Expires December 23, 2017              [Page 73]
+Barnes, et al.          Expires December 23, 2017              [Page 74]
