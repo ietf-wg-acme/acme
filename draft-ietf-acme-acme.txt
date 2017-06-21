@@ -2189,7 +2189,7 @@ Internet-Draft                    ACME                         June 2017
    For example, if the client were to respond to the "http-01" challenge
    in the above authorization, it would send the following request:
 
-   POST /acme/authz/asdf/0 HTTP/1.1
+   POST /acme/authz/1234/0 HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
 
@@ -2198,7 +2198,7 @@ Internet-Draft                    ACME                         June 2017
        "alg": "ES256",
        "kid": "https://example.com/acme/acct/1",
        "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
-       "url": "https://example.com/acme/authz/asdf/0"
+       "url": "https://example.com/acme/authz/1234/0"
      }),
      "payload": base64url({
        "type": "http-01",
@@ -2252,7 +2252,7 @@ Internet-Draft                    ACME                         June 2017
    (OK) response and MAY include a Retry-After header field to suggest a
    polling interval to the client.
 
-   GET /acme/authz/asdf HTTP/1.1
+   GET /acme/authz/1234 HTTP/1.1
    Host: example.com
 
    HTTP/1.1 200 OK
@@ -2269,7 +2269,7 @@ Internet-Draft                    ACME                         June 2017
      "challenges": [
        {
          "type": "http-01"
-         "url": "https://example.com/authz/asdf/0",
+         "url": "https://example.com/authz/1234/0",
          "status": "valid",
          "validated": "2014-12-01T12:05:00Z",
          "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -2298,7 +2298,7 @@ Barnes, et al.          Expires December 23, 2017              [Page 41]
 Internet-Draft                    ACME                         June 2017
 
 
-   POST /acme/authz/asdf HTTP/1.1
+   POST /acme/authz/1234 HTTP/1.1
    Host: example.com
    Content-Type: application/jose+json
 
@@ -2307,7 +2307,7 @@ Internet-Draft                    ACME                         June 2017
        "alg": "ES256",
        "kid": "https://example.com/acme/acct/1",
        "nonce": "xWCM9lGbIyCgue8di6ueWQ",
-       "url": "https://example.com/acme/authz/asdf"
+       "url": "https://example.com/acme/authz/1234"
      }),
      "payload": base64url({
        "status": "deactivated"
@@ -2612,7 +2612,7 @@ Internet-Draft                    ACME                         June 2017
      "type": "http-01",
      "url": "https://example.com/acme/authz/0",
      "status": "pending",
-     "token": "evaGxfADs6pSRb2LAv9IZf17"
+     "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"
    }
 
    A client responds to this challenge by constructing a key
@@ -2634,8 +2634,8 @@ Barnes, et al.          Expires December 23, 2017              [Page 47]
 Internet-Draft                    ACME                         June 2017
 
 
-GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
-Host: example.com
+GET .well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
+Host: example.org
 
 HTTP/1.1 200 OK
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
@@ -2868,10 +2868,10 @@ Internet-Draft                    ACME                         June 2017
    prepending the label "_acme-challenge" to the domain name being
    validated, then provisions a TXT record with the digest value under
    that name.  For example, if the domain name being validated is
-   "example.com", then the client would provision the following DNS
+   "example.org", then the client would provision the following DNS
    record:
 
-   _acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
+   _acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 
    The response to the DNS challenge provides the computed key
    authorization to acknowledge that the client is ready to fulfill this

@@ -1469,7 +1469,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 <p id="rfc.section.7.5.1.p.2">The client sends these updates back to the server in the form of a JSON object with the response fields required by the challenge type, carried in a POST request to the challenge URL (not authorization URL) once it is ready for the server to attempt validation.</p>
 <p id="rfc.section.7.5.1.p.3">For example, if the client were to respond to the &#8220;http-01&#8221; challenge in the above authorization, it would send the following request:</p>
 <pre>
-POST /acme/authz/asdf/0 HTTP/1.1
+POST /acme/authz/1234/0 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1478,7 +1478,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
-    "url": "https://example.com/acme/authz/asdf/0"
+    "url": "https://example.com/acme/authz/1234/0"
   }),
   "payload": base64url({
     "type": "http-01",
@@ -1493,7 +1493,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.7.5.1.p.7">Usually, the validation process will take some time, so the client will need to poll the authorization resource to see when it is finalized.  For challenges where the client can tell when the server has validated the challenge (e.g., by seeing an HTTP or DNS request from the server), the client SHOULD NOT begin polling until it has seen the validation request from the server.</p>
 <p id="rfc.section.7.5.1.p.8">To check on the status of an authorization, the client sends a GET request to the authorization URL, and the server responds with the current  authorization object. In responding to poll requests while the validation is still in progress, the server MUST return a 200 (OK) response and MAY include a Retry-After header field to suggest a polling interval to the client.</p>
 <pre>
-GET /acme/authz/asdf HTTP/1.1
+GET /acme/authz/1234 HTTP/1.1
 Host: example.com
 
 HTTP/1.1 200 OK
@@ -1510,7 +1510,7 @@ HTTP/1.1 200 OK
   "challenges": [
     {
       "type": "http-01"
-      "url": "https://example.com/authz/asdf/0",
+      "url": "https://example.com/authz/1234/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -1522,7 +1522,7 @@ HTTP/1.1 200 OK
 <h1 id="rfc.section.7.5.2"><a href="#rfc.section.7.5.2">7.5.2.</a> <a href="#deactivating-an-authorization" id="deactivating-an-authorization">Deactivating an Authorization</a></h1>
 <p id="rfc.section.7.5.2.p.1">If a client wishes to relinquish its authorization to issue certificates for an identifier, then it may request that the server deactivates each authorization associated with it by sending POST requests with the static object {&#8220;status&#8221;: &#8220;deactivated&#8221;} to each authorization URL.</p>
 <pre>
-POST /acme/authz/asdf HTTP/1.1
+POST /acme/authz/1234 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1531,7 +1531,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
-    "url": "https://example.com/acme/authz/asdf"
+    "url": "https://example.com/acme/authz/1234"
   }),
   "payload": base64url({
     "status": "deactivated"
@@ -1666,14 +1666,14 @@ HTTP/1.1 200 OK
   "type": "http-01",
   "url": "https://example.com/acme/authz/0",
   "status": "pending",
-  "token": "evaGxfADs6pSRb2LAv9IZf17"
+  "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"
 }
 </pre>
 <p id="rfc.section.8.3.p.4">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then provisions the key authorization as a resource on the HTTP server for the domain in question.</p>
 <p id="rfc.section.8.3.p.5">The path at which the resource is provisioned is comprised of the fixed prefix &#8220;.well-known/acme-challenge/&#8221;, followed by the &#8220;token&#8221; value in the challenge.  The value of the resource MUST be the ASCII representation of the key authorization.</p>
 <pre>
-GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
-Host: example.com
+GET .well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
+Host: example.org
 
 HTTP/1.1 200 OK
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
@@ -1801,9 +1801,9 @@ HTTP/1.1 200 OK
 }
 </pre>
 <p id="rfc.section.8.5.p.3">A client responds to this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then computes the SHA-256 digest <a href="#FIPS180-4">[FIPS180-4]</a> of the key authorization.</p>
-<p id="rfc.section.8.5.p.4">The record provisioned to the DNS is the base64url encoding of this digest.  The client constructs the validation domain name by prepending the label &#8220;_acme-challenge&#8221; to the domain name being validated, then provisions a TXT record with the digest value under that name. For example, if the domain name being validated is &#8220;example.com&#8221;, then the client would provision the following DNS record:</p>
+<p id="rfc.section.8.5.p.4">The record provisioned to the DNS is the base64url encoding of this digest.  The client constructs the validation domain name by prepending the label &#8220;_acme-challenge&#8221; to the domain name being validated, then provisions a TXT record with the digest value under that name. For example, if the domain name being validated is &#8220;example.org&#8221;, then the client would provision the following DNS record:</p>
 <pre>
-_acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
+_acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 </pre>
 <p id="rfc.section.8.5.p.5">The response to the DNS challenge provides the computed key authorization to acknowledge that the client is ready to fulfill this challenge.</p>
 <p/>
