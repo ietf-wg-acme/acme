@@ -13,7 +13,7 @@ author:
  -
     ins: R. Barnes
     name: Richard Barnes
-    org: Mozilla
+    org: Cisco
     email: rlb@ipv.sx
  -
     ins: J. Hoffman-Andrews
