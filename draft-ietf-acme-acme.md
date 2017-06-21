@@ -2019,8 +2019,8 @@ domain by verifying that the resource was provisioned as expected.
    TCP port 80 on the HTTP server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
-5. Verify that key authorization provided by the HTTP server matches the token
-   for this challenge and the client's account key.
+5. Verify that key authorization provided by the HTTP server matches the key
+   authorization provided by the client in its response to the challenge.
 
 The server SHOULD follow redirects when dereferencing the URL.
 
