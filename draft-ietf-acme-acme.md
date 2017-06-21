@@ -1246,6 +1246,10 @@ code 200 (OK). Otherwise, the server responds with an error status code and a
 problem document describing the error.  If there is an existing account with
 the new key provided, then the server SHOULD use status code 409 (Conflict).
 
+Note that changing the account key for an account SHOULD NOT have any other
+impact on the account.  For example, the server MUST NOT invalidate pending
+orders or authorization transactions based on a change of account key.
+
 ### Account Deactivation
 
 A client can deactivate an account by posting a signed update to the server with
@@ -2015,8 +2019,8 @@ domain by verifying that the resource was provisioned as expected.
    TCP port 80 on the HTTP server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
-5. Verify that key authorization provided by the HTTP server matches the token
-   for this challenge and the client's account key.
+5. Verify that key authorization provided by the HTTP server matches the key
+   authorization provided by the client in its response to the challenge.
 
 The server SHOULD follow redirects when dereferencing the URL.
 
