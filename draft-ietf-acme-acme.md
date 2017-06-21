@@ -1613,7 +1613,7 @@ For example, if the client were to respond to the "http-01" challenge in the
 above authorization, it would send the following request:
 
 ~~~~~~~~~~
-POST /acme/authz/asdf/0 HTTP/1.1
+POST /acme/authz/1234/0 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1622,7 +1622,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
-    "url": "https://example.com/acme/authz/asdf/0"
+    "url": "https://example.com/acme/authz/1234/0"
   }),
   "payload": base64url({
     "type": "http-01",
@@ -1665,7 +1665,7 @@ progress, the server MUST return a 200 (OK) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
-GET /acme/authz/asdf HTTP/1.1
+GET /acme/authz/1234 HTTP/1.1
 Host: example.com
 
 HTTP/1.1 200 OK
@@ -1682,7 +1682,7 @@ HTTP/1.1 200 OK
   "challenges": [
     {
       "type": "http-01"
-      "url": "https://example.com/authz/asdf/0",
+      "url": "https://example.com/authz/1234/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -1700,7 +1700,7 @@ associated with it by sending POST requests with the static object
 {"status": "deactivated"} to each authorization URL.
 
 ~~~~~~~~~~
-POST /acme/authz/asdf HTTP/1.1
+POST /acme/authz/1234 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
@@ -1709,7 +1709,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
-    "url": "https://example.com/acme/authz/asdf"
+    "url": "https://example.com/acme/authz/1234"
   }),
   "payload": base64url({
     "status": "deactivated"
@@ -1922,7 +1922,7 @@ updated). Servers SHOULD retry a request immediately on receiving such a POST
 request. In order to avoid denial-of-service attacks via client-initiated
 retries, servers SHOULD rate-limit such requests.
 
-## HTTP
+## HTTP Challenge
 
 With HTTP validation, the client in an ACME transaction proves its control over
 a domain name by proving that for that domain name it can provision resources
@@ -1953,7 +1953,7 @@ HTTP/1.1 200 OK
   "type": "http-01",
   "url": "https://example.com/acme/authz/0",
   "status": "pending",
-  "token": "evaGxfADs6pSRb2LAv9IZf17"
+  "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"
 }
 ~~~~~~~~~~
 
@@ -1968,8 +1968,8 @@ The value of the resource MUST be the ASCII representation of the key
 authorization.
 
 ~~~~~~~~~~
-GET .well-known/acme-challenge/evaGxfADs6pSRb2LAv9IZf17
-Host: example.com
+GET .well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
+Host: example.org
 
 HTTP/1.1 200 OK
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
@@ -2028,7 +2028,7 @@ If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
 failed.
 
-## TLS with Server Name Indication (TLS SNI)
+## TLS with Server Name Indication (TLS SNI) Challenge
 
 The TLS with Server Name Indication (TLS SNI) validation method
 proves control over a domain name by requiring the client to configure a TLS
@@ -2129,7 +2129,7 @@ using these steps:
 If all of the above verifications succeed, then the validation is successful.
 Otherwise, the validation fails.
 
-## DNS
+## DNS Challenge
 
 When the identifier being validated is a domain name, the client can prove
 control of that domain by provisioning a TXT resource record containing a designated
@@ -2164,11 +2164,11 @@ The record provisioned to the DNS is the base64url encoding of this digest.  The
 client constructs the validation domain name by prepending the label
 "_acme-challenge" to the domain name being validated, then provisions a TXT
 record with the digest value under that name. For example, if the domain name
-being validated is "example.com", then the client would provision the following
+being validated is "example.org", then the client would provision the following
 DNS record:
 
 ~~~~~~~~~~
-_acme-challenge.example.com. 300 IN TXT "gfj9Xq...Rg85nM"
+_acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 ~~~~~~~~~~
 
 The response to the DNS challenge provides the computed key authorization to
@@ -2212,7 +2212,7 @@ If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
 
-## Out-of-Band
+## Out-of-Band Challenge
 
 There may be cases where a server cannot perform automated validation of an
 identifier, for example, if validation requires some manual steps.  In such
@@ -2321,7 +2321,7 @@ URI suffix: acme-challenge
 
 Change controller: IETF
 
-Specification document(s): This document, Section {{http}}
+Specification document(s): This document, Section {{http-challenge}}
 
 Related information: N/A
 
