@@ -2623,9 +2623,10 @@ account key for one of his choosing, e.g.:
   account key A (the legitimate domain holder)
 
 All of the challenges above have a binding between the account private key and
-the validation query made by the server, via the key authorization.  The key
-authorization is signed by the account private key, reflects the corresponding
-public key, and is provided to the server in the validation response.
+the validation query made by the server, via the key authorization. The key
+authorization reflects the account public key, is provided to the server in the
+validation response over the validation channel and signed afterwards by the
+corresponding private key in the challenge response over the ACME channel.
 
 The association of challenges to identifiers is typically done by requiring the
 client to perform some action that only someone who effectively controls the
