@@ -2506,27 +2506,29 @@ Initial contents:
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
-### Challenge Types {#iana-challenge}
+### Validation Methods {#iana-challenge}
 
-This registry lists the ways that ACME servers can offer to validate control of
-an identifier.  The "Identifier Type" field in the template must be contained
-in the Label column of the ACME Identifier Types registry.
+This registry lists identifiers for the ways that CAs can validate control of
+identifiers.  Each method's entry must specify whether it corresponds to an
+ACME challenge type.  The "Identifier Type" field must be contained in the
+Label column of the ACME Identifier Types registry.
 
 Template:
 
-* Label: The value to be put in the "type" field of challenge objects using this
-  validation mechanism
-* Identifier Type: The type of identifier that this mechanism applies to
-* Reference: Where the challenge type is defined
+* Label: The identifier for this validation method
+* Identifier Type: The type of identifier that this method applies to
+* ACME: "Y" if the validation method corresponds to an ACME challenge type;
+  "N" otherwise
+* Reference: Where the validation method is defined
 
 Initial Contents
 
-| Label      | Identifier Type | Reference |
-|:-----------|:----------------|:----------|
-| http-01    | dns             | RFC XXXX  |
-| tls-sni-02 | dns             | RFC XXXX  |
-| dns-01     | dns             | RFC XXXX  |
-| oob-01     | dns             | RFC XXXX  |
+| Label      | Identifier Type | ACME | Reference |
+|:-----------|:----------------|:-----|:----------|
+| http-01    | dns             | Y    | RFC XXXX  |
+| tls-sni-02 | dns             | Y    | RFC XXXX  |
+| dns-01     | dns             | Y    | RFC XXXX  |
+| oob-01     | dns             | Y    | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
