@@ -1244,7 +1244,8 @@ If all of these checks pass, then the server updates the corresponding account
 by replacing the old account key with the new public key and returns status
 code 200 (OK). Otherwise, the server responds with an error status code and a
 problem document describing the error.  If there is an existing account with
-the new key provided, then the server SHOULD use status code 409 (Conflict).
+the new key provided, then the server SHOULD use status code 409 (Conflict) and
+provide the URL of that account in the Location header field.
 
 Note that changing the account key for an account SHOULD NOT have any other
 impact on the account.  For example, the server MUST NOT invalidate pending
