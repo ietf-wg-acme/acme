@@ -742,11 +742,14 @@ expires (optional, string):
 in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED for
 objects with "pending" or "valid" in the status field.
 
-csr (required, string):
-: A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
-The CSR is sent in the base64url-encoded version of the DER format. (Note:
-Because this field uses base64url, and does not include headers, it is different
-from PEM.)
+identifiers (required, array of object):
+: An array of identifier objects that the order pertains to.
+
+  type (required, string):
+  : The type of identifier.
+
+  value (required, string):
+  : The identifier itself.
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
@@ -766,6 +769,11 @@ before the requested certificate can be issued (see
 {{identifier-authorization}}).  For final orders, the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
+
+finalizeURL (requred, string):
+: A URL that a CSR must be POSTed to once all of the order's authorizations are
+satisfied in order to finalize the order. The result of a successful
+finalization will be the population of the certificate URL for the order.
 
 certificate (optional, string):
 : A URL for the certificate that has been issued in response to this order.
@@ -788,10 +796,13 @@ certificate (optional, string):
 }
 ~~~~~~~~~~
 
-The elements of the "authorizations" array are immutable once set.  The server
-MUST NOT change the contents of the "authorizations" array after it is created.
-If a client observes a change in the contents of the "authorizations" array,
-then it SHOULD consider the order invalid.
+Identifiers in the new-order request MAY contain wildcard identifiers, even if
+the resulting authorizations returned by the server do not.
+
+The elements of the "authorizations" and "identities" array are immutable once
+set.  The server MUST NOT change the contents either array after they are
+created. If a client observes a change in the contents of either array, then it
+SHOULD consider the order invalid.
 
 The "authorizations" array in the challenge SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
@@ -1295,11 +1306,14 @@ new-order resource.  The body of the POST is a JWS object whose JSON payload is
 a subset of the order object defined in {{order-objects}}, containing the fields
 that describe the certificate to be issued:
 
-csr (required, string):
-: A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
-The CSR is sent in the base64url-encoded version of the DER format.  (Note:
-Because this field uses base64url, and does not include headers, it is different
-from PEM.)
+identifiers (required, array of object):
+: An array of identifier objects that the client wishes to submit an order for.
+
+  type (required, string):
+  : The type of identifier.
+
+  value (required, string):
+  : The identifier itself.
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
@@ -1330,11 +1344,6 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The CSR encodes the client's requests with regard to the content of the
-certificate to be issued.  The CSR MUST indicate the requested identifiers,
-either in the commonName portion of the requested subject name, or in an
-extensionRequest attribute {{!RFC2985}} requesting a subjectAltName extension.
-
 The server MUST return an error if it cannot fulfill the request as specified,
 and MUST NOT issue a certificate with contents other than those requested.  If
 the server requires the request to be modified in a certain way, it should
@@ -1361,7 +1370,9 @@ Location: https://example.com/acme/order/asdf
   "authorizations": [
     "https://example.com/acme/authz/1234",
     "https://example.com/acme/authz/2345"
-  ]
+  ],
+
+  "finalizeURL": "https://example.com/acme/order/finalize/asdf"
 }
 ~~~~~~~~~~
 
@@ -1375,18 +1386,24 @@ client fails to complete the required actions before the "expires" time, then
 the server SHOULD change the status of the order to "invalid" and MAY
 delete the order resource.
 
-The server MUST begin the issuance process for the requested certificate and
-update the order resource with a URL for the certificate once the client has
-fulfilled the server's requirements.   If the client has already satisfied the
-server's requirements at the time of this request (e.g., by obtaining
-authorization for all of the identifiers in the certificate in previous
-transactions), then the server MUST proactively issue the requested certificate
-and provide a URL for it in the "certificate" field of the order.  The server
-MUST, however, still list the completed authorizations in the "authorizations"
-array.
-
 Once the client believes it has fulfilled the server's requirements, it should
-send a GET request to the order resource to obtain its current state.  The
+send a POST request to the order resource's finalize URL. The POST body MUST
+include a CSR:
+
+csr (required, string):
+: A CSR encoding the parameters for the certificate being requested {{!RFC2986}}.
+The CSR is sent in the base64url-encoded version of the DER format.  (Note:
+Because this field uses base64url, and does not include headers, it is different
+from PEM.).
+
+The CSR encodes the client's requests with regard to the content of the
+certificate to be issued.  The CSR MUST indicate the same requested identifiers
+as the initial new-order request, either in the commonName portion of the
+requested subject name, or in an extensionRequest attribute {{!RFC2985}}
+requesting a subjectAltName extension.
+
+After submitting a POST to the order finalize URL the client should send a GET
+request to the order resource to obtain its current state.  The
 status of the order will indicate what action the client should take:
 
 * "invalid": The certificate will not be issued.  Consider this order process
