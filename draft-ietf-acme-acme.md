@@ -583,15 +583,16 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action               | Request           | Response        |
-|:---------------------|:------------------|:----------------|
-| Get a nonce          | HEAD new-nonce    | 204             |
-| Create account       | POST new-account  | 201 -> account  |
-| Submit an order      | POST new-order    | 201 -> order    |
-| Fetch challenges     | GET  authz        | 200             |
-| Respond to challenge | POST challenge    | 200             |
-| Poll for status      | GET  authz        | 200             |
-| Check for new cert   | GET  cert         | 200             |
+| Action               | Request                 | Response        |
+|:---------------------|:------------------------|:----------------|
+| Get a nonce          | HEAD new-nonce          | 204             |
+| Create account       | POST new-account        | 201 -> account  |
+| Submit an order      | POST new-order          | 201 -> order    |
+| Fetch challenges     | GET  authz              | 200             |
+| Respond to challenge | POST challenge          | 200             |
+| Finalize order       | POST order finalize URL | 200             |
+| Poll for status      | GET  authz              | 200             |
+| Check for new cert   | GET  cert               | 200             |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -780,7 +781,7 @@ certificate (optional, string):
 
 ~~~~~~~~~~
 {
-  "status": "pending",
+  "status": "valid",
   "expires": "2015-03-01T14:09:00Z",
 
   "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
@@ -796,10 +797,10 @@ certificate (optional, string):
 }
 ~~~~~~~~~~
 
-Identifiers in the new-order request MAY contain wildcard identifiers, even if
+Identifiers in a new-order request MAY contain wildcard identifiers, even if
 the resulting authorizations returned by the server do not.
 
-The elements of the "authorizations" and "identities" array are immutable once
+The elements of the "authorizations" and "identifiers" array are immutable once
 set.  The server MUST NOT change the contents either array after they are
 created. If a client observes a change in the contents of either array, then it
 SHOULD consider the order invalid.
@@ -1378,13 +1379,13 @@ Location: https://example.com/acme/order/asdf
 
 The order object returned by the server represents a promise that if the
 client fulfills the server's requirements before the "expires" time, then the
-server will issue the requested certificate.  In the order object, any
-authorization referenced in the "authorizations" array whose status is "pending"
-represents an authorization transaction that the client must complete before the
-server will issue the certificate (see {{identifier-authorization}}).  If the
-client fails to complete the required actions before the "expires" time, then
-the server SHOULD change the status of the order to "invalid" and MAY
-delete the order resource.
+server will be willing to finalize the order upon request and issue the
+requested certificate.  In the order object, any authorization referenced in the
+"authorizations" array whose status is "pending" represents an authorization
+transaction that the client must complete before the server will issue the
+certificate (see {{identifier-authorization}}).  If the client fails to complete
+the required actions before the "expires" time, then the server SHOULD change
+the status of the order to "invalid" and MAY delete the order resource.
 
 Once the client believes it has fulfilled the server's requirements, it should
 send a POST request to the order resource's finalize URL. The POST body MUST
@@ -1397,14 +1398,19 @@ Because this field uses base64url, and does not include headers, it is different
 from PEM.).
 
 The CSR encodes the client's requests with regard to the content of the
-certificate to be issued.  The CSR MUST indicate the same requested identifiers
-as the initial new-order request, either in the commonName portion of the
-requested subject name, or in an extensionRequest attribute {{!RFC2985}}
+certificate to be issued.  The CSR MUST indicate the exact same set of requested
+identifiers as the initial new-order request, either in the commonName portion
+of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
 requesting a subjectAltName extension.
 
-After submitting a POST to the order finalize URL the client should send a GET
-request to the order resource to obtain its current state.  The
-status of the order will indicate what action the client should take:
+A request to finalize an order will result in error if the order indicated does
+not have status "pending", if the CSR and order identifiers differ, or if the
+account is not authorized for the identifiers indicated in the CSR.
+
+A valid request to finalize an order will return the order to be finalized.
+The client should begin polling the order by sending a GET request to the order
+resource to obtain its current state. The status of the order will indicate what
+action the client should take:
 
 * "invalid": The certificate will not be issued.  Consider this order process
   abandoned.
@@ -2460,15 +2466,16 @@ Template:
 
 Initial contents: The fields and descriptions defined in {{order-objects}}.
 
-| Field Name     | Field Type          | Configurable | Reference |
-|:---------------|:--------------------|:-------------|:----------|
-| status         | string              | false        | RFC XXXX  |
-| expires        | string              | false        | RFC XXXX  |
-| csr            | string              | true         | RFC XXXX  |
-| notBefore      | string              | true         | RFC XXXX  |
-| notAfter       | string              | true         | RFC XXXX  |
-| authorizations | array of string     | false        | RFC XXXX  |
-| certificate    | string              | false        | RFC XXXX  |
+| Field Name     | Field Type           | Configurable | Reference |
+|:---------------|:---------------------|:-------------|:----------|
+| status         | string               | false        | RFC XXXX  |
+| expires        | string               | false        | RFC XXXX  |
+| identifiers    | array of object      | true         | RFC XXXX  |
+| notBefore      | string               | true         | RFC XXXX  |
+| notAfter       | string               | true         | RFC XXXX  |
+| authorizations | array of string      | false        | RFC XXXX  |
+| finalizeURL    | string               | false        | RFC XXXX  |
+| certificate    | string               | false        | RFC XXXX  |
 
 ### Error Types {#iana-error}
 
