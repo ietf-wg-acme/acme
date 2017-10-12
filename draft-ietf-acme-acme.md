@@ -1372,7 +1372,7 @@ Location: https://example.com/acme/order/asdf
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/order/finalize/asdf"
+  "finalizeURL": "https://example.com/acme/order/asdf/finalize"
 }
 ~~~~~~~~~~
 
