@@ -1963,12 +1963,12 @@ client then provisions the key authorization as a resource on the HTTP server
 for the domain in question.
 
 The path at which the resource is provisioned is comprised of the fixed prefix
-".well-known/acme-challenge/", followed by the "token" value in the challenge.
+"/.well-known/acme-challenge/", followed by the "token" value in the challenge.
 The value of the resource MUST be the ASCII representation of the key
 authorization.
 
 ~~~~~~~~~~
-GET .well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
+GET /.well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
 Host: example.org
 
 HTTP/1.1 200 OK
