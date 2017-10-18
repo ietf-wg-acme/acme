@@ -784,7 +784,11 @@ certificate (optional, string):
   "status": "valid",
   "expires": "2015-03-01T14:09:00Z",
 
-  "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
+  "identifiers": [
+    { "type": "dns", "value": "example.com" },
+    { "type": "dns", "value": "www.example.com" }
+  ],
+
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
@@ -792,6 +796,8 @@ certificate (optional, string):
     "https://example.com/acme/authz/1234",
     "https://example.com/acme/authz/2345"
   ],
+
+  "finalizeURL": "https://example.com/acme/acct/1/order/1/finalize",
 
   "certificate": "https://example.com/acme/cert/1234"
 }
