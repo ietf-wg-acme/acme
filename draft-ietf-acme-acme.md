@@ -455,7 +455,7 @@ when the current request may succeed again.  If multiple rate limits are
 in place, that is the time where all rate limits allow access again for
 the current request with exactly the same parameters.
 
-In addition to the human readable "detail" field of the error response, the
+In addition to the human-readable "detail" field of the error response, the
 server MAY send one or multiple tokens in the "Link" header pointing to
 documentation about the specific hit rate limits using the
 "urn:ietf:params:acme:documentation" relation.
@@ -568,9 +568,9 @@ indicate HTTP link relations.
        |          |          |
        V          |          V
     account       |        order -----> cert
-                  |          | 
-                  |          | 
-                  |          V 
+                  |          |
+                  |          |
+                  |          V
                   +------> authz     
                             | ^
                             | | "up"
@@ -840,7 +840,7 @@ order to prove possession of the identifier.  For final authorizations, the
 challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill
 one of these challenges, and a server should consider any one of the challenges
-sufficient to make the authorization valid.  For final authorizations it contains
+sufficient to make the authorization valid.  For final authorizations, it contains
 the challenges that were successfully completed.
 
 The only type of identifier defined by this specification is a fully-qualified
@@ -1917,7 +1917,7 @@ that time.
 
 Clients can explicitly request a retry by re-sending their response to a
 challenge in a new POST request (with a new nonce, etc.). This allows clients
-to request a retry when state has changed (e.g., after firewall rules have been
+to request a retry when the state has changed (e.g., after firewall rules have been
 updated). Servers SHOULD retry a request immediately on receiving such a POST
 request. In order to avoid denial-of-service attacks via client-initiated
 retries, servers SHOULD rate-limit such requests.
@@ -2206,7 +2206,7 @@ To validate a DNS challenge, the server performs the following steps:
 
 1. Compute the SHA-256 digest [FIPS180-4] of the key authorization
 2. Query for TXT records for the validation domain name
-3. Verify that the contents of one of the TXT records matches the digest value
+3. Verify that the contents of one of the TXT records match the digest value
 
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
@@ -2293,7 +2293,7 @@ Optional parameters: None
 
 Encoding considerations: None
 
-Security considerations: Carries a cryptographic certificate and its associated certificate chain 
+Security considerations: Carries a cryptographic certificate and its associated certificate chain
 
 Interoperability considerations: None
 
@@ -2761,7 +2761,7 @@ perform, for example:
   * Is the name a known phishing domain?
 * Is the key in the CSR sufficiently strong?
 * Is the CSR signed with an acceptable algorithm?
-* Has issuance been authorized or forbidden by a Certficate Authority
+* Has issuance been authorized or forbidden by a Certificate Authority
   Authorization (CAA) record?  {{?RFC6844}}
 
 CAs that use ACME to automate issuance will need to ensure that their servers
