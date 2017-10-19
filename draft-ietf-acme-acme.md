@@ -2395,7 +2395,7 @@ This document requests that IANA create the following new registries:
 3. ACME Error Types ({{iana-error}})
 4. ACME Resource Types ({{iana-resource}})
 5. ACME Identifier Types ({{iana-identifier}})
-6. ACME Challenge Types ({{iana-challenge}})
+6. ACME Validation Methods ({{iana-validation}})
 
 All of these registries are under a heading of "Automated Certificate Management
 Environment (ACME) Protocol" and are administered under a Specification
@@ -2510,7 +2510,7 @@ Initial contents:
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
-### Validation Methods {#iana-challenge}
+### Validation Methods {#iana-validation}
 
 This registry lists identifiers for the ways that CAs can validate control of
 identifiers.  Each method's entry must specify whether it corresponds to an
@@ -2533,6 +2533,12 @@ Initial Contents
 | tls-sni-02 | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
 | oob-01     | dns             | Y    | RFC XXXX  |
+
+When evaluating a request for an assignment in this registry, the designated
+expert should ensure that the method being registered has a clear,
+interoperable definition and does not overlap with existing validation methods.
+That is, it should not be possible for a client and server to follow take the
+same set of actions to fulfill two different validation mechanisms.
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
