@@ -2471,7 +2471,7 @@ Content-Type: application/jose+json
 <li>ACME server performs validation query and sees the response provisioned by the legitimate domain holder</li>
 <li>Because the challenges were issued in response to a message signed account key B, the ACME server grants authorization to account key B (the MitM) instead of account key A (the legitimate domain holder)</li>
 </ul>
-<p id="rfc.section.10.2.p.4">All of the challenges above have a binding between the account private key and the validation query made by the server, via the key authorization.  The key authorization is signed by the account private key, reflects the corresponding public key, and is provided to the server in the validation response.</p>
+<p id="rfc.section.10.2.p.4">All of the challenges above have a binding between the account private key and the validation query made by the server, via the key authorization. The key authorization reflects the account public key, is provided to the server in the validation response over the validation channel and signed afterwards by the corresponding private key in the challenge response over the ACME channel.</p>
 <p id="rfc.section.10.2.p.5">The association of challenges to identifiers is typically done by requiring the client to perform some action that only someone who effectively controls the identifier can perform.  For the challenges in this document, the actions are:</p>
 <p></p>
 
