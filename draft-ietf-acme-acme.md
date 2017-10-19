@@ -2657,7 +2657,7 @@ misconfiguration and by attacks.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
 web server's hostname by responding to an HTTP challenge, and likewise for TLS
 configuration and TLS SNI.  Similarly, if a server that can be used for ACME
-validation is compromised by a malicious actor, then that malicious acter can
+validation is compromised by a malicious actor, then that malicious actor can
 use that access to obtain certificates via ACME.
 
 The use of hosting providers is a particular risk for ACME validation.  If the
