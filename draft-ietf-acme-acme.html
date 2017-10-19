@@ -594,6 +594,7 @@ address {
 </ul>
 <p id="rfc.section.1.p.5">With the exception of the CSR itself and the certificates that are issued, these are all completely ad hoc procedures and are accomplished by getting the human user to follow interactive natural-language instructions from the CA rather than by machine-implemented published protocols.  In many cases, the instructions are difficult to follow and cause significant confusion.  Informal usability tests by the authors indicate that webmasters often need 1-3 hours to obtain and install a certificate for a domain.  Even in the best case, the lack of published, standardized mechanisms presents an obstacle to the wide deployment of HTTPS and other PKIX-dependent systems because it inhibits mechanization of tasks related to certificate issuance, deployment, and revocation.</p>
 <p id="rfc.section.1.p.6">This document describes an extensible framework for automating the issuance and domain validation procedure, thereby allowing servers and infrastructural software to obtain certificates without user interaction.  Use of this protocol should radically simplify the deployment of HTTPS and the practicality of PKIX authentication for other protocols based on Transport Layer Security (TLS) <a href="#RFC5246" class="xref">[RFC5246]</a>.</p>
+<p id="rfc.section.1.p.7">It should be noted that while the focus of this document is on validating domain names for purposes of issuing certificates in the Web PKI, ACME supports extensions for uses with other identifiers in other PKI contexts.  For example, as of this writing, there is ongoing work to use ACME for issuance of WebPKI certificates attesting to IP addresses <a href="#I-D.ietf-acme-ip" class="xref">[I-D.ietf-acme-ip]</a> and STIR certificates attesting to telephone numbers <a href="#I-D.ietf-acme-telephone" class="xref">[I-D.ietf-acme-telephone]</a>.</p>
 <h1 id="rfc.section.2">
 <a href="#rfc.section.2">2.</a> <a href="#deployment-model-and-operator-experience" id="deployment-model-and-operator-experience">Deployment Model and Operator Experience</a>
 </h1>
@@ -611,7 +612,7 @@ address {
 <li>Once the CA is satisfied, the certificate is issued and the ACME client automatically downloads and installs it, potentially notifying the operator via email, SMS, etc.</li>
 <li>The ACME client periodically contacts the CA to get updated certificates, stapled OCSP responses, or whatever else would be required to keep the web server functional and its credentials up-to-date.</li>
 </ul>
-<p id="rfc.section.2.p.5">In this way, it would be nearly as easy to deploy with a CA-issued certificate as with a self-signed certificate. Furthermore, the maintenance of that CA-issued certificate would require minimal manual intervention.  Such close integration of ACME with HTTPS servers would allow the immediate and automated deployment of certificates as they are issued, sparing the human administrator from much of the time-consuming work described in the previous section.</p>
+<p id="rfc.section.2.p.5">In this way, it would be nearly as easy to deploy with a CA-issued certificate as with a self-signed certificate. Furthermore, the maintenance of that CA-issued certificate would require minimal manual intervention.  Such close integration of ACME with HTTPS servers allows the immediate and automated deployment of certificates as they are issued, sparing the human administrator from much of the time-consuming work described in the previous section.</p>
 <h1 id="rfc.section.3">
 <a href="#rfc.section.3">3.</a> <a href="#terminology" id="terminology">Terminology</a>
 </h1>
@@ -680,10 +681,11 @@ address {
 </h1>
 <p id="rfc.section.6.1.p.1">Each ACME function is accomplished by the client sending a sequence of HTTPS requests to the server, carrying JSON messages <a href="#RFC2818" class="xref">[RFC2818]</a><a href="#RFC7159" class="xref">[RFC7159]</a>.  Use of HTTPS is REQUIRED. Each subsection of <a href="#certificate-management" class="xref">Section 7</a> below describes the message formats used by the function and the order in which messages are sent.</p>
 <p id="rfc.section.6.1.p.2">In most HTTPS transactions used by ACME, the ACME client is the HTTPS client and the ACME server is the HTTPS server. The ACME server acts as an HTTP and HTTPS client when validating challenges via HTTP.</p>
-<p id="rfc.section.6.1.p.3">ACME clients SHOULD send a User-Agent header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a>, including the name and version of the ACME software in addition to the name and version of the underlying HTTP client software.</p>
-<p id="rfc.section.6.1.p.4">ACME clients SHOULD send an Accept-Language header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a> to enable localization of error messages.</p>
-<p id="rfc.section.6.1.p.5">ACME servers that are intended to be generally accessible need to use Cross-Origin Resource Sharing (CORS) in order to be accessible from browser-based clients <a href="#W3C.CR-cors-20130129" class="xref">[W3C.CR-cors-20130129]</a>.  Such servers SHOULD set the Access-Control-Allow-Origin header field to the value &#8220;*&#8221;.</p>
-<p id="rfc.section.6.1.p.6">Binary fields in the JSON objects used by ACME are encoded using base64url encoding described in <a href="#RFC4648" class="xref">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515" class="xref">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
+<p id="rfc.section.6.1.p.3">ACME servers SHOULD follow the recommendations of <a href="#RFC7525" class="xref">[RFC7525]</a> when configuring their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients to send early data (0xRTT).  This is safe because the ACME protocol itself includes anti-replay protections.</p>
+<p id="rfc.section.6.1.p.4">ACME clients SHOULD send a User-Agent header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a>, including the name and version of the ACME software in addition to the name and version of the underlying HTTP client software.</p>
+<p id="rfc.section.6.1.p.5">ACME clients SHOULD send an Accept-Language header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a> to enable localization of error messages.</p>
+<p id="rfc.section.6.1.p.6">ACME servers that are intended to be generally accessible need to use Cross-Origin Resource Sharing (CORS) in order to be accessible from browser-based clients <a href="#W3C.CR-cors-20130129" class="xref">[W3C.CR-cors-20130129]</a>.  Such servers SHOULD set the Access-Control-Allow-Origin header field to the value &#8220;*&#8221;.</p>
+<p id="rfc.section.6.1.p.7">Binary fields in the JSON objects used by ACME are encoded using base64url encoding described in <a href="#RFC4648" class="xref">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515" class="xref">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
 <h1 id="rfc.section.6.2">
 <a href="#rfc.section.6.2">6.2.</a> <a href="#request-authentication" id="request-authentication">Request Authentication</a>
 </h1>
@@ -2172,7 +2174,7 @@ Content-Type: application/jose+json
 <li>ACME Identifier Types (<a href="#iana-identifier" class="xref">Section 9.7.5</a>)</li>
 <li>ACME Challenge Types (<a href="#iana-challenge" class="xref">Section 9.7.6</a>)</li>
 </ol>
-<p id="rfc.section.9.7.p.3">All of these registries are under a heading of &#8220;Automated Certificate Management Environment (ACME) Protocol&#8221; and are administered under a Specification Required policy <a href="#RFC5226" class="xref">[RFC5226]</a>.</p>
+<p id="rfc.section.9.7.p.3">All of these registries are under a heading of &#8220;Automated Certificate Management Environment (ACME) Protocol&#8221; and are administered under a Specification Required policy <a href="#RFC8126" class="xref">[RFC8126]</a>.</p>
 <h1 id="rfc.section.9.7.1">
 <a href="#rfc.section.9.7.1">9.7.1.</a> <a href="#iana-account" id="iana-account">Fields in Account Objects</a>
 </h1>
@@ -2480,7 +2482,7 @@ Content-Type: application/jose+json
 <li>TLS SNI: Configure a TLS server for the domain</li>
 <li>DNS: Provision DNS resource records for the domain</li>
 </ul>
-<p id="rfc.section.10.2.p.7">There are several ways that these assumptions can be violated, both by misconfiguration and by attacks.  For example, on a web server that allows non-administrative users to write to .well-known, any user can claim to own the web server&#8217;s hostname by responding to an HTTP challenge, and likewise for TLS configuration and TLS SNI.</p>
+<p id="rfc.section.10.2.p.7">There are several ways that these assumptions can be violated, both by misconfiguration and by attacks.  For example, on a web server that allows non-administrative users to write to .well-known, any user can claim to own the web server&#8217;s hostname by responding to an HTTP challenge, and likewise for TLS configuration and TLS SNI.  Similarly, if a server that can be used for ACME validation is compromised by a malicious actor, then that malicious actor can use that access to obtain certificates via ACME.</p>
 <p id="rfc.section.10.2.p.8">The use of hosting providers is a particular risk for ACME validation.  If the owner of the domain has outsourced operation of DNS or web services to a hosting provider, there is nothing that can be done against tampering by the hosting provider.  As far as the outside world is concerned, the zone or website provided by the hosting provider is the real thing.</p>
 <p id="rfc.section.10.2.p.9">More limited forms of delegation can also lead to an unintended party gaining the ability to successfully complete a validation transaction.  For example, suppose an ACME server follows HTTP redirects in HTTP validation and a website operator provisions a catch-all redirect rule that redirects requests for unknown resources to a different domain.  Then the target of the redirect could use that to get a certificate through HTTP validation since the validation path will not be known to the primary server.</p>
 <p id="rfc.section.10.2.p.10">The DNS is a common point of vulnerability for all of these challenges.  An entity that can provision false DNS records for a domain can attack the DNS challenge directly and can provision false A/AAAA records to direct the ACME server to send its TLS SNI or HTTP validation query to a remote server of the attacker&#8217;s choosing.  There are a few different mitigations that ACME servers can apply:</p>
@@ -2635,11 +2637,6 @@ Content-Type: application/jose+json
 <a>Josefsson, S.</a>, "<a href="https://tools.ietf.org/html/rfc4648">The Base16, Base32, and Base64 Data Encodings</a>", RFC 4648, DOI 10.17487/RFC4648, October 2006.</td>
 </tr>
 <tr>
-<td class="reference"><b id="RFC5226">[RFC5226]</b></td>
-<td class="top">
-<a>Narten, T.</a> and <a>H. Alvestrand</a>, "<a href="https://tools.ietf.org/html/rfc5226">Guidelines for Writing an IANA Considerations Section in RFCs</a>", RFC 5226, DOI 10.17487/RFC5226, May 2008.</td>
-</tr>
-<tr>
 <td class="reference"><b id="RFC5246">[RFC5246]</b></td>
 <td class="top">
 <a>Dierks, T.</a> and <a>E. Rescorla</a>, "<a href="https://tools.ietf.org/html/rfc5246">The Transport Layer Security (TLS) Protocol Version 1.2</a>", RFC 5246, DOI 10.17487/RFC5246, August 2008.</td>
@@ -2709,10 +2706,25 @@ Content-Type: application/jose+json
 <td class="top">
 <a>Nottingham, M.</a> and <a>E. Wilde</a>, "<a href="https://tools.ietf.org/html/rfc7807">Problem Details for HTTP APIs</a>", RFC 7807, DOI 10.17487/RFC7807, March 2016.</td>
 </tr>
+<tr>
+<td class="reference"><b id="RFC8126">[RFC8126]</b></td>
+<td class="top">
+<a>Cotton, M.</a>, <a>Leiba, B.</a> and <a>T. Narten</a>, "<a href="https://tools.ietf.org/html/rfc8126">Guidelines for Writing an IANA Considerations Section in RFCs</a>", BCP 26, RFC 8126, DOI 10.17487/RFC8126, June 2017.</td>
+</tr>
 </tbody></table>
 <h1 id="rfc.references.2">
 <a href="#rfc.references.2">13.2.</a> Informative References</h1>
 <table><tbody>
+<tr>
+<td class="reference"><b id="I-D.ietf-acme-ip">[I-D.ietf-acme-ip]</b></td>
+<td class="top">
+<a>Shoemaker, R.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-acme-ip-01">ACME IP Identifier Validation Extension</a>", Internet-Draft draft-ietf-acme-ip-01, September 2017.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.ietf-acme-telephone">[I-D.ietf-acme-telephone]</b></td>
+<td class="top">
+<a>Peterson, J.</a> and <a>R. Barnes</a>, "<a href="https://tools.ietf.org/html/draft-ietf-acme-telephone-00">ACME Identifiers and Challenges for Telephone Numbers</a>", Internet-Draft draft-ietf-acme-telephone-00, July 2017.</td>
+</tr>
 <tr>
 <td class="reference"><b id="I-D.vixie-dnsext-dns0x20">[I-D.vixie-dnsext-dns0x20]</b></td>
 <td class="top">
@@ -2737,6 +2749,11 @@ Content-Type: application/jose+json
 <td class="reference"><b id="RFC5785">[RFC5785]</b></td>
 <td class="top">
 <a>Nottingham, M.</a> and <a>E. Hammer-Lahav</a>, "<a href="https://tools.ietf.org/html/rfc5785">Defining Well-Known Uniform Resource Identifiers (URIs)</a>", RFC 5785, DOI 10.17487/RFC5785, April 2010.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC7525">[RFC7525]</b></td>
+<td class="top">
+<a>Sheffer, Y.</a>, <a>Holz, R.</a> and <a>P. Saint-Andre</a>, "<a href="https://tools.ietf.org/html/rfc7525">Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)</a>", BCP 195, RFC 7525, DOI 10.17487/RFC7525, May 2015.</td>
 </tr>
 <tr>
 <td class="reference"><b id="W3C.CR-cors-20130129">[W3C.CR-cors-20130129]</b></td>

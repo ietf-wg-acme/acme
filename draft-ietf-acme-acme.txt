@@ -84,20 +84,20 @@ Table of Contents
    2.  Deployment Model and Operator Experience  . . . . . . . . . .   5
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   6
    4.  Protocol Overview . . . . . . . . . . . . . . . . . . . . . .   7
-   5.  Character Encoding  . . . . . . . . . . . . . . . . . . . . .   8
+   5.  Character Encoding  . . . . . . . . . . . . . . . . . . . . .   9
    6.  Message Transport . . . . . . . . . . . . . . . . . . . . . .   9
      6.1.  HTTPS Requests  . . . . . . . . . . . . . . . . . . . . .   9
-     6.2.  Request Authentication  . . . . . . . . . . . . . . . . .   9
+     6.2.  Request Authentication  . . . . . . . . . . . . . . . . .  10
      6.3.  Request URL Integrity . . . . . . . . . . . . . . . . . .  11
        6.3.1.  "url" (URL) JWS header parameter  . . . . . . . . . .  11
-     6.4.  Replay protection . . . . . . . . . . . . . . . . . . . .  11
+     6.4.  Replay protection . . . . . . . . . . . . . . . . . . . .  12
        6.4.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  12
        6.4.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  13
      6.5.  Rate limits . . . . . . . . . . . . . . . . . . . . . . .  13
      6.6.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  13
    7.  Certificate Management  . . . . . . . . . . . . . . . . . . .  15
      7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  15
-       7.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  17
+       7.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  18
        7.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  19
        7.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  20
        7.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  22
@@ -241,6 +241,14 @@ Internet-Draft                    ACME                      October 2017
    deployment of HTTPS and the practicality of PKIX authentication for
    other protocols based on Transport Layer Security (TLS) [RFC5246].
 
+   It should be noted that while the focus of this document is on
+   validating domain names for purposes of issuing certificates in the
+   Web PKI, ACME supports extensions for uses with other identifiers in
+   other PKI contexts.  For example, as of this writing, there is
+   ongoing work to use ACME for issuance of WebPKI certificates
+   attesting to IP addresses [I-D.ietf-acme-ip] and STIR certificates
+   attesting to telephone numbers [I-D.ietf-acme-telephone].
+
 2.  Deployment Model and Operator Experience
 
    The guiding use case for ACME is obtaining certificates for websites
@@ -265,14 +273,6 @@ Internet-Draft                    ACME                      October 2017
    o  The ACME client prompts the operator for the intended domain
       name(s) that the web server is to stand for.
 
-   o  The ACME client presents the operator with a list of CAs from
-      which it could get a certificate.  (This list will change over
-      time based on the capabilities of CAs and updates to ACME
-      configuration.)  The ACME client might prompt the operator for
-      payment information at this point.
-
-   o  The operator selects a CA.
-
 
 
 
@@ -281,6 +281,14 @@ Barnes, et al.           Expires April 22, 2018                 [Page 5]
 
 Internet-Draft                    ACME                      October 2017
 
+
+   o  The ACME client presents the operator with a list of CAs from
+      which it could get a certificate.  (This list will change over
+      time based on the capabilities of CAs and updates to ACME
+      configuration.)  The ACME client might prompt the operator for
+      payment information at this point.
+
+   o  The operator selects a CA.
 
    o  In the background, the ACME client contacts the CA and requests
       that it issue a certificate for the intended domain name(s).
@@ -301,9 +309,9 @@ Internet-Draft                    ACME                      October 2017
    certificate as with a self-signed certificate.  Furthermore, the
    maintenance of that CA-issued certificate would require minimal
    manual intervention.  Such close integration of ACME with HTTPS
-   servers would allow the immediate and automated deployment of
-   certificates as they are issued, sparing the human administrator from
-   much of the time-consuming work described in the previous section.
+   servers allows the immediate and automated deployment of certificates
+   as they are issued, sparing the human administrator from much of the
+   time-consuming work described in the previous section.
 
 3.  Terminology
 
@@ -321,14 +329,6 @@ Internet-Draft                    ACME                      October 2017
    authority, and responds to client requests, performing the requested
    actions if the client is authorized.
 
-   An ACME client is represented by an "account key pair".  The client
-   uses the private key of this key pair to sign all messages sent to
-   the server.  The server uses the public key to verify the
-   authenticity and integrity of messages from the client.
-
-
-
-
 
 
 
@@ -337,6 +337,11 @@ Barnes, et al.           Expires April 22, 2018                 [Page 6]
 
 Internet-Draft                    ACME                      October 2017
 
+
+   An ACME client is represented by an "account key pair".  The client
+   uses the private key of this key pair to sign all messages sent to
+   the server.  The server uses the public key to verify the
+   authenticity and integrity of messages from the client.
 
 4.  Protocol Overview
 
@@ -381,11 +386,6 @@ Internet-Draft                    ACME                      October 2017
 
    For example, in most cases, the server will require the client to
    demonstrate that it controls the identifiers in the requested
-   certificate.  Because there are many different ways to validate
-   possession of different types of identifiers, the server will choose
-   from an extensible set of challenges that are appropriate for the
-   identifier being claimed.  The client responds with a set of
-   responses that tell the server which challenges the client has
 
 
 
@@ -394,6 +394,11 @@ Barnes, et al.           Expires April 22, 2018                 [Page 7]
 Internet-Draft                    ACME                      October 2017
 
 
+   certificate.  Because there are many different ways to validate
+   possession of different types of identifiers, the server will choose
+   from an extensible set of challenges that are appropriate for the
+   identifier being claimed.  The client responds with a set of
+   responses that tell the server which challenges the client has
    completed.  The server then validates the challenges to check that
    the client has accomplished them.
 
@@ -433,11 +438,6 @@ Internet-Draft                    ACME                      October 2017
    in the protocol and what types of validation challenges the server
    might require.
 
-5.  Character Encoding
-
-   All requests and responses sent via HTTP by ACME clients, ACME
-   servers, and validation servers as well as any inputs for digest
-   computations MUST be encoded using the UTF-8 [RFC3629] character set.
 
 
 
@@ -449,6 +449,12 @@ Barnes, et al.           Expires April 22, 2018                 [Page 8]
 
 Internet-Draft                    ACME                      October 2017
 
+
+5.  Character Encoding
+
+   All requests and responses sent via HTTP by ACME clients, ACME
+   servers, and validation servers as well as any inputs for digest
+   computations MUST be encoded using the UTF-8 [RFC3629] character set.
 
 6.  Message Transport
 
@@ -472,6 +478,11 @@ Internet-Draft                    ACME                      October 2017
    client and the ACME server is the HTTPS server.  The ACME server acts
    as an HTTP and HTTPS client when validating challenges via HTTP.
 
+   ACME servers SHOULD follow the recommendations of [RFC7525] when
+   configuring their TLS implementations.  ACME servers that support TLS
+   1.3 MAY allow clients to send early data (0xRTT).  This is safe
+   because the ACME protocol itself includes anti-replay protections.
+
    ACME clients SHOULD send a User-Agent header in accordance with
    [RFC7231], including the name and version of the ACME software in
    addition to the name and version of the underlying HTTP client
@@ -487,6 +498,14 @@ Internet-Draft                    ACME                      October 2017
 
    Binary fields in the JSON objects used by ACME are encoded using
    base64url encoding described in [RFC4648] Section 5, according to the
+
+
+
+Barnes, et al.           Expires April 22, 2018                 [Page 9]
+
+Internet-Draft                    ACME                      October 2017
+
+
    profile specified in JSON Web Signature [RFC7515] Section 2.  This
    encoding uses a URL safe character set.  Trailing '=' characters MUST
    be stripped.
@@ -498,13 +517,6 @@ Internet-Draft                    ACME                      October 2017
    the account's private key unless otherwise specified.  The server
    MUST verify the JWS before processing the request.  Encapsulating
    request bodies in JWS provides authentication of requests.
-
-
-
-Barnes, et al.           Expires April 22, 2018                 [Page 9]
-
-Internet-Draft                    ACME                      October 2017
-
 
    JWS objects sent in ACME requests MUST meet the following additional
    criteria:
@@ -543,6 +555,13 @@ Internet-Draft                    ACME                      October 2017
    resources are the only sensitive resources defined in this
    specification.
 
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 10]
+
+Internet-Draft                    ACME                      October 2017
+
+
    If the client sends a JWS signed with an algorithm that the server
    does not support, then the server MUST return an error with status
    code 400 (Bad Request) and type
@@ -554,13 +573,6 @@ Internet-Draft                    ACME                      October 2017
    JSON serialization, with the protected header and payload expressed
    as base64url(content) instead of the actual base64-encoded value, so
    that the content is readable.
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 10]
-
-Internet-Draft                    ACME                      October 2017
-
 
 6.3.  Request URL Integrity
 
@@ -599,6 +611,13 @@ Internet-Draft                    ACME                      October 2017
    in the protected header of the JWS.  The value of the "url" header
    parameter MUST be a string representing the URL.
 
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 11]
+
+Internet-Draft                    ACME                      October 2017
+
+
 6.4.  Replay protection
 
    In order to protect ACME resources from any possible replay attacks,
@@ -609,15 +628,6 @@ Internet-Draft                    ACME                      October 2017
 
    An ACME server provides nonces to clients using the Replay-Nonce
    header field, as specified in Section 6.4.1 below.  The server MUST
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 11]
-
-Internet-Draft                    ACME                      October 2017
-
-
    include a Replay-Nonce header field in every successful response to a
    POST request and SHOULD provide it in error responses as well.
 
@@ -655,16 +665,6 @@ Internet-Draft                    ACME                      October 2017
    according to the base64url encoding described in Section 2 of
    [RFC7515].  Clients MUST ignore invalid Replay-Nonce values.
 
-     base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
-
-     Replay-Nonce = *base64url
-
-   The Replay-Nonce header field SHOULD NOT be included in HTTP request
-   messages.
-
-
-
-
 
 
 
@@ -673,6 +673,13 @@ Barnes, et al.           Expires April 22, 2018                [Page 12]
 
 Internet-Draft                    ACME                      October 2017
 
+
+     base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
+
+     Replay-Nonce = *base64url
+
+   The Replay-Nonce header field SHOULD NOT be included in HTTP request
+   messages.
 
 6.4.2.  "nonce" (Nonce) JWS header parameter
 
@@ -714,14 +721,7 @@ Internet-Draft                    ACME                      October 2017
    When the server responds with an error status, it SHOULD provide
    additional information using a problem document [RFC7807].  To
    facilitate automatic response to errors, this document defines the
-   following standard tokens for use in the "type" field (within the
-   "urn:ietf:params:acme:error:" namespace):
 
-   +-----------------------+-------------------------------------------+
-   | Type                  | Description                               |
-   +-----------------------+-------------------------------------------+
-   | badCSR                | The CSR is unacceptable (e.g., due to a   |
-   |                       | short key)                                |
 
 
 
@@ -730,6 +730,14 @@ Barnes, et al.           Expires April 22, 2018                [Page 13]
 Internet-Draft                    ACME                      October 2017
 
 
+   following standard tokens for use in the "type" field (within the
+   "urn:ietf:params:acme:error:" namespace):
+
+   +-----------------------+-------------------------------------------+
+   | Type                  | Description                               |
+   +-----------------------+-------------------------------------------+
+   | badCSR                | The CSR is unacceptable (e.g., due to a   |
+   |                       | short key)                                |
    |                       |                                           |
    | badNonce              | The client sent an unacceptable anti-     |
    |                       | replay nonce                              |
@@ -770,14 +778,6 @@ Internet-Draft                    ACME                      October 2017
    |                       |                                           |
    | dns                   | There was a problem with a DNS query      |
    |                       |                                           |
-   | connection            | The server could not connect to           |
-   |                       | validation target                         |
-   |                       |                                           |
-   | tls                   | The server received a TLS error during    |
-   |                       | validation                                |
-   |                       |                                           |
-   | incorrectResponse     | Response received didn't match the        |
-   |                       | challenge's requirements                  |
 
 
 
@@ -786,6 +786,14 @@ Barnes, et al.           Expires April 22, 2018                [Page 14]
 Internet-Draft                    ACME                      October 2017
 
 
+   | connection            | The server could not connect to           |
+   |                       | validation target                         |
+   |                       |                                           |
+   | tls                   | The server received a TLS error during    |
+   |                       | validation                                |
+   |                       |                                           |
+   | incorrectResponse     | Response received didn't match the        |
+   |                       | challenge's requirements                  |
    +-----------------------+-------------------------------------------+
 
    This list is not exhaustive.  The server MAY return errors whose
@@ -826,6 +834,14 @@ Internet-Draft                    ACME                      October 2017
    o  Challenge resources, representing a challenge to prove control of
       an identifier (Section 7.5, Section 8)
 
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 15]
+
+Internet-Draft                    ACME                      October 2017
+
+
    o  Certificate resources, representing issued certificates
       (Section 7.4.2)
 
@@ -834,13 +850,6 @@ Internet-Draft                    ACME                      October 2017
    o  A "new-nonce" resource (Section 7.2)
 
    o  A "new-account" resource (Section 7.3)
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 15]
-
-Internet-Draft                    ACME                      October 2017
-
 
    o  A "new-order" resource (Section 7.4)
 
@@ -869,6 +878,26 @@ Internet-Draft                    ACME                      October 2017
    URLs provided as strings in the resources' JSON representations.
    Lines with labels in quotes indicate HTTP link relations.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 16]
+
+Internet-Draft                    ACME                      October 2017
+
+
                                   directory
                                       |
                                       |--> new-nonce
@@ -890,13 +919,6 @@ Internet-Draft                    ACME                      October 2017
                                | | "up"
                                V |
                              challenge
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 16]
-
-Internet-Draft                    ACME                      October 2017
-
 
    The following table illustrates a typical sequence of requests
    required to establish a new account with the server, prove control of
@@ -925,6 +947,13 @@ Internet-Draft                    ACME                      October 2017
    The remainder of this section provides the details of how these
    resources are structured and how the ACME protocol makes use of them.
 
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 17]
+
+Internet-Draft                    ACME                      October 2017
+
+
 7.1.1.  Directory
 
    In order to help clients configure themselves with the right URLs for
@@ -932,27 +961,6 @@ Internet-Draft                    ACME                      October 2017
    should be the only URL needed to configure clients.  It is a JSON
    object, whose fields names are drawn from the following table and
    whose values are the corresponding URLs.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 17]
-
-Internet-Draft                    ACME                      October 2017
-
 
                    +-------------+--------------------+
                    | Field       | URL in value       |
@@ -993,14 +1001,6 @@ Internet-Draft                    ACME                      October 2017
    "website" (optional, string):  An HTTP or HTTPS URL locating a
       website providing more information about the ACME server.
 
-   "caa-identities" (optional, array of string):  Each string MUST be a
-      lowercase hostname which the ACME server recognizes as referring
-      to itself for the purposes of CAA record validation as defined in
-      [RFC6844].  This allows clients to determine the correct issuer
-      domain name to use when configuring CAA records.
-
-   Clients access the directory by sending a GET request to the
-   directory URL.
 
 
 
@@ -1009,6 +1009,15 @@ Barnes, et al.           Expires April 22, 2018                [Page 18]
 
 Internet-Draft                    ACME                      October 2017
 
+
+   "caa-identities" (optional, array of string):  Each string MUST be a
+      lowercase hostname which the ACME server recognizes as referring
+      to itself for the purposes of CAA record validation as defined in
+      [RFC6844].  This allows clients to determine the correct issuer
+      domain name to use when configuring CAA records.
+
+   Clients access the directory by sending a GET request to the
+   directory URL.
 
    HTTP/1.1 200 OK
    Content-Type: application/json
@@ -1048,15 +1057,6 @@ Internet-Draft                    ACME                      October 2017
       client's agreement with the terms of service.  This field is not
       updateable by the client.
 
-   orders (required, string):  A URL from which a list of orders
-      submitted by this account can be fetched via a GET request, as
-      described in Section 7.1.2.1.
-
-
-
-
-
-
 
 
 
@@ -1065,6 +1065,10 @@ Barnes, et al.           Expires April 22, 2018                [Page 19]
 
 Internet-Draft                    ACME                      October 2017
 
+
+   orders (required, string):  A URL from which a list of orders
+      submitted by this account can be fetched via a GET request, as
+      described in Section 7.1.2.1.
 
    {
      "status": "valid",
@@ -1111,10 +1115,6 @@ Internet-Draft                    ACME                      October 2017
    status (required, string):  The status of this order.  Possible
       values are: "pending", "processing", "valid", and "invalid".
 
-   expires (optional, string):  The timestamp after which the server
-      will consider this order invalid, encoded in the format specified
-
-
 
 
 Barnes, et al.           Expires April 22, 2018                [Page 20]
@@ -1122,6 +1122,8 @@ Barnes, et al.           Expires April 22, 2018                [Page 20]
 Internet-Draft                    ACME                      October 2017
 
 
+   expires (optional, string):  The timestamp after which the server
+      will consider this order invalid, encoded in the format specified
       in RFC 3339 [RFC3339].  This field is REQUIRED for objects with
       "pending" or "valid" in the status field.
 
@@ -1168,8 +1170,6 @@ Internet-Draft                    ACME                      October 2017
 
    The elements of the "authorizations" array are immutable once set.
    The server MUST NOT change the contents of the "authorizations" array
-   after it is created.  If a client observes a change in the contents
-
 
 
 
@@ -1178,6 +1178,7 @@ Barnes, et al.           Expires April 22, 2018                [Page 21]
 Internet-Draft                    ACME                      October 2017
 
 
+   after it is created.  If a client observes a change in the contents
    of the "authorizations" array, then it SHOULD consider the order
    invalid.
 
@@ -1225,7 +1226,6 @@ Internet-Draft                    ACME                      October 2017
       the challenges that the client can fulfill in order to prove
       possession of the identifier.  For final authorizations, the
       challenges that were used.  Each array entry is an object with
-      parameters required to validate the challenge.  A client should
 
 
 
@@ -1234,6 +1234,7 @@ Barnes, et al.           Expires April 22, 2018                [Page 22]
 Internet-Draft                    ACME                      October 2017
 
 
+      parameters required to validate the challenge.  A client should
       attempt to fulfill one of these challenges, and a server should
       consider any one of the challenges sufficient to make the
       authorization valid.  For final authorizations, it contains the
@@ -1281,7 +1282,6 @@ Internet-Draft                    ACME                      October 2017
 
    To get a fresh nonce, the client sends a HEAD request to the new-
    nonce resource on the server.  The server's response MUST include a
-   Replay-Nonce header field containing a fresh nonce, and SHOULD have
 
 
 
@@ -1290,6 +1290,7 @@ Barnes, et al.           Expires April 22, 2018                [Page 23]
 Internet-Draft                    ACME                      October 2017
 
 
+   Replay-Nonce header field containing a fresh nonce, and SHOULD have
    status code 204 (No Content).  The server SHOULD also respond to GET
    requests for this resource, returning an empty body (while still
    providing a Replay-Nonce header) with a 204 (No Content) status.
@@ -1325,7 +1326,6 @@ Internet-Draft                    ACME                      October 2017
       account if one does not already exist.  This allows a client to
       look up an account URL based on an account key (see
       Section 7.3.1).
-
 
 
 
@@ -3206,7 +3206,7 @@ Internet-Draft                    ACME                      October 2017
 
    All of these registries are under a heading of "Automated Certificate
    Management Environment (ACME) Protocol" and are administered under a
-   Specification Required policy [RFC5226].
+   Specification Required policy [RFC8126].
 
 9.7.1.  Fields in Account Objects
 
@@ -3598,6 +3598,9 @@ Internet-Draft                    ACME                      October 2017
    that allows non-administrative users to write to .well-known, any
    user can claim to own the web server's hostname by responding to an
    HTTP challenge, and likewise for TLS configuration and TLS SNI.
+   Similarly, if a server that can be used for ACME validation is
+   compromised by a malicious actor, then that malicious actor can use
+   that access to obtain certificates via ACME.
 
    The use of hosting providers is a particular risk for ACME
    validation.  If the owner of the domain has outsourced operation of
@@ -3631,9 +3634,6 @@ Internet-Draft                    ACME                      October 2017
    o  Applying mitigations against DNS off-path attackers, e.g., adding
       entropy to requests [I-D.vixie-dnsext-dns0x20] or only using TCP
 
-   Given these considerations, the ACME validation process makes it
-   impossible for any attacker on the ACME channel or a passive attacker
-
 
 
 
@@ -3642,6 +3642,8 @@ Barnes, et al.           Expires April 22, 2018                [Page 65]
 Internet-Draft                    ACME                      October 2017
 
 
+   Given these considerations, the ACME validation process makes it
+   impossible for any attacker on the ACME channel or a passive attacker
    on the validation channel to hijack the authorization process to
    authorize a key of the attacker's choice.
 
@@ -3687,8 +3689,6 @@ Internet-Draft                    ACME                      October 2017
    subtree of the DNS.  And in order to prevent attackers from
    circumventing these limits simply by minting new accounts, servers
    would need to limit the rate at which accounts can be registered.
-
-
 
 
 
@@ -3987,11 +3987,6 @@ Internet-Draft                    ACME                      October 2017
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <https://www.rfc-editor.org/info/rfc4648>.
 
-   [RFC5226]  Narten, T. and H. Alvestrand, "Guidelines for Writing an
-              IANA Considerations Section in RFCs", RFC 5226,
-              DOI 10.17487/RFC5226, May 2008,
-              <https://www.rfc-editor.org/info/rfc5226>.
-
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
               DOI 10.17487/RFC5246, August 2008,
@@ -4027,16 +4022,17 @@ Internet-Draft                    ACME                      October 2017
               DOI 10.17487/RFC6844, January 2013,
               <https://www.rfc-editor.org/info/rfc6844>.
 
+   [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
+              Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
+              2014, <https://www.rfc-editor.org/info/rfc7159>.
+
+
 
 
 Barnes, et al.           Expires April 22, 2018                [Page 72]
 
 Internet-Draft                    ACME                      October 2017
 
-
-   [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
-              Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
-              2014, <https://www.rfc-editor.org/info/rfc7159>.
 
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
@@ -4063,22 +4059,26 @@ Internet-Draft                    ACME                      October 2017
               APIs", RFC 7807, DOI 10.17487/RFC7807, March 2016,
               <https://www.rfc-editor.org/info/rfc7807>.
 
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/info/rfc8126>.
+
 13.2.  Informative References
+
+   [I-D.ietf-acme-ip]
+              Shoemaker, R., "ACME IP Identifier Validation Extension",
+              draft-ietf-acme-ip-01 (work in progress), September 2017.
+
+   [I-D.ietf-acme-telephone]
+              Peterson, J. and R. Barnes, "ACME Identifiers and
+              Challenges for Telephone Numbers", draft-ietf-acme-
+              telephone-00 (work in progress), July 2017.
 
    [I-D.vixie-dnsext-dns0x20]
               Vixie, P. and D. Dagon, "Use of Bit 0x20 in DNS Labels to
               Improve Transaction Identity", draft-vixie-dnsext-
               dns0x20-00 (work in progress), March 2008.
-
-   [RFC1421]  Linn, J., "Privacy Enhancement for Internet Electronic
-              Mail: Part I: Message Encryption and Authentication
-              Procedures", RFC 1421, DOI 10.17487/RFC1421, February
-              1993, <https://www.rfc-editor.org/info/rfc1421>.
-
-   [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
-              Text on Security Considerations", BCP 72, RFC 3552,
-              DOI 10.17487/RFC3552, July 2003,
-              <https://www.rfc-editor.org/info/rfc3552>.
 
 
 
@@ -4090,6 +4090,16 @@ Barnes, et al.           Expires April 22, 2018                [Page 73]
 Internet-Draft                    ACME                      October 2017
 
 
+   [RFC1421]  Linn, J., "Privacy Enhancement for Internet Electronic
+              Mail: Part I: Message Encryption and Authentication
+              Procedures", RFC 1421, DOI 10.17487/RFC1421, February
+              1993, <https://www.rfc-editor.org/info/rfc1421>.
+
+   [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
+              Text on Security Considerations", BCP 72, RFC 3552,
+              DOI 10.17487/RFC3552, July 2003,
+              <https://www.rfc-editor.org/info/rfc3552>.
+
    [RFC3553]  Mealling, M., Masinter, L., Hardie, T., and G. Klyne, "An
               IETF URN Sub-namespace for Registered Protocol
               Parameters", BCP 73, RFC 3553, DOI 10.17487/RFC3553, June
@@ -4099,6 +4109,12 @@ Internet-Draft                    ACME                      October 2017
               Uniform Resource Identifiers (URIs)", RFC 5785,
               DOI 10.17487/RFC5785, April 2010,
               <https://www.rfc-editor.org/info/rfc5785>.
+
+   [RFC7525]  Sheffer, Y., Holz, R., and P. Saint-Andre,
+              "Recommendations for Secure Use of Transport Layer
+              Security (TLS) and Datagram Transport Layer Security
+              (DTLS)", BCP 195, RFC 7525, DOI 10.17487/RFC7525, May
+              2015, <https://www.rfc-editor.org/info/rfc7525>.
 
    [W3C.CR-cors-20130129]
               Kesteren, A., "Cross-Origin Resource Sharing", World Wide
@@ -4123,6 +4139,13 @@ Authors' Addresses
    Email: jsha@eff.org
 
 
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 74]
+
+Internet-Draft                    ACME                      October 2017
+
+
    James Kasten
    University of Michigan
 
@@ -4141,4 +4164,37 @@ Authors' Addresses
 
 
 
-Barnes, et al.           Expires April 22, 2018                [Page 74]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 75]
