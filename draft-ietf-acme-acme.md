@@ -108,6 +108,14 @@ should radically simplify the deployment of HTTPS and the practicality of PKIX
 authentication for other protocols based on Transport Layer Security (TLS)
 {{!RFC5246}}.
 
+It should be noted that while the focus of this document is on validating
+domain names for purposes of issuing certificates in the Web PKI, ACME supports
+extensions for uses with other identifiers in other PKI contexts.  For example,
+as of this writing, there is ongoing work to use ACME for issuance of WebPKI
+certificates attesting to IP addresses {{?I-D.ietf-acme-ip}} and STIR
+certificates attesting to telephone numbers {{?I-D.ietf-acme-telephone}}.
+
+
 # Deployment Model and Operator Experience
 
 The guiding use case for ACME is obtaining certificates for websites
@@ -146,7 +154,7 @@ deploying an HTTPS server using ACME, the experience would be something like thi
 In this way, it would be nearly as easy to deploy with a CA-issued certificate
 as with a self-signed certificate. Furthermore, the maintenance of that
 CA-issued certificate would require minimal manual intervention.  Such close
-integration of ACME with HTTPS servers would allow the immediate and automated
+integration of ACME with HTTPS servers allows the immediate and automated
 deployment of certificates as they are issued, sparing the human administrator
 from much of the time-consuming work described in the previous section.
 
@@ -286,6 +294,11 @@ function and the order in which messages are sent.
 In most HTTPS transactions used by ACME, the ACME client is the HTTPS client
 and the ACME server is the HTTPS server. The ACME server acts as an HTTP and
 HTTPS client when validating challenges via HTTP.
+
+ACME servers SHOULD follow the recommendations of {{?RFC7525}} when configuring
+their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
+to send early data (0xRTT).  This is safe because the ACME protocol itself
+includes anti-replay protections.
 
 ACME clients SHOULD send a User-Agent header in accordance with
 {{!RFC7231}}, including the name and version of the ACME software in
@@ -2399,7 +2412,7 @@ This document requests that IANA create the following new registries:
 
 All of these registries are under a heading of "Automated Certificate Management
 Environment (ACME) Protocol" and are administered under a Specification
-Required policy {{!RFC5226}}.
+Required policy {{!RFC8126}}.
 
 ### Fields in Account Objects {#iana-account}
 
@@ -2644,7 +2657,9 @@ There are several ways that these assumptions can be violated, both by
 misconfiguration and by attacks.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
 web server's hostname by responding to an HTTP challenge, and likewise for TLS
-configuration and TLS SNI.
+configuration and TLS SNI.  Similarly, if a server that can be used for ACME
+validation is compromised by a malicious actor, then that malicious actor can
+use that access to obtain certificates via ACME.
 
 The use of hosting providers is a particular risk for ACME validation.  If the
 owner of the domain has outsourced operation of DNS or web services to a hosting
