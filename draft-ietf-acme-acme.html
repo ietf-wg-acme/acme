@@ -2084,7 +2084,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.9.1.p.7">Security considerations: Carries a cryptographic certificate and its associated certificate chain</p>
 <p id="rfc.section.9.1.p.8">Interoperability considerations: None</p>
 <p id="rfc.section.9.1.p.9">Published specification: draft-ietf-acme-acme [[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]</p>
-<p id="rfc.section.9.1.p.10">Applications which use this media type: Any MIME-complaint transport</p>
+<p id="rfc.section.9.1.p.10">Applications which use this media type: Any MIME-compliant transport</p>
 <p id="rfc.section.9.1.p.11">Additional information:</p>
 <p id="rfc.section.9.1.p.12">File should contain one or more certificates encoded as PEM according to RFC 7468 <a href="#RFC7468" class="xref">[RFC7468]</a>.  In order to provide easy interoperation with TLS, the first certificate MUST be an end-entity certificate. Each following certificate SHOULD directly certify one preceding it. Because certificate validation requires that trust anchors be distributed independently, a certificate that specifies a trust anchor MAY be omitted from the chain, provided that supported peers are known to possess any omitted certificates.</p>
 <h1 id="rfc.section.9.2">

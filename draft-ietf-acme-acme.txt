@@ -3082,7 +3082,7 @@ Barnes, et al.           Expires April 22, 2018                [Page 55]
 Internet-Draft                    ACME                      October 2017
 
 
-   Applications which use this media type: Any MIME-complaint transport
+   Applications which use this media type: Any MIME-compliant transport
 
    Additional information:
 
