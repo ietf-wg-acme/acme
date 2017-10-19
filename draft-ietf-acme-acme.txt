@@ -145,23 +145,23 @@ Internet-Draft                    ACME                      October 2017
        9.7.3.  Error Types . . . . . . . . . . . . . . . . . . . . .  60
        9.7.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  60
        9.7.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  61
-       9.7.6.  Challenge Types . . . . . . . . . . . . . . . . . . .  61
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  62
+       9.7.6.  Validation Methods  . . . . . . . . . . . . . . . . .  61
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  63
      10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  63
      10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  64
      10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  66
      10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  67
-     10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  67
+     10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  68
    11. Operational Considerations  . . . . . . . . . . . . . . . . .  68
-     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  68
+     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  69
      11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  69
-     11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  69
+     11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  70
      11.4.  Malformed Certificate Chains . . . . . . . . . . . . . .  70
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  70
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  71
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  71
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  71
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  73
-     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  74
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  74
+     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  75
 
 
 
@@ -170,7 +170,7 @@ Barnes, et al.           Expires April 22, 2018                 [Page 3]
 Internet-Draft                    ACME                      October 2017
 
 
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  74
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  75
 
 1.  Introduction
 
@@ -3202,7 +3202,7 @@ Internet-Draft                    ACME                      October 2017
 
    5.  ACME Identifier Types (Section 9.7.5)
 
-   6.  ACME Challenge Types (Section 9.7.6)
+   6.  ACME Validation Methods (Section 9.7.6)
 
    All of these registries are under a heading of "Automated Certificate
    Management Environment (ACME) Protocol" and are administered under a
@@ -3404,12 +3404,12 @@ Internet-Draft                    ACME                      October 2017
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
-9.7.6.  Challenge Types
+9.7.6.  Validation Methods
 
-   This registry lists the ways that ACME servers can offer to validate
-   control of an identifier.  The "Identifier Type" field in the
-   template must be contained in the Label column of the ACME Identifier
-   Types registry.
+   This registry lists identifiers for the ways that CAs can validate
+   control of identifiers.  Each method's entry must specify whether it
+   corresponds to an ACME challenge type.  The "Identifier Type" field
+
 
 
 
@@ -3418,32 +3418,61 @@ Barnes, et al.           Expires April 22, 2018                [Page 61]
 Internet-Draft                    ACME                      October 2017
 
 
+   must be contained in the Label column of the ACME Identifier Types
+   registry.
+
    Template:
 
-   o  Label: The value to be put in the "type" field of challenge
-      objects using this validation mechanism
+   o  Label: The identifier for this validation method
 
-   o  Identifier Type: The type of identifier that this mechanism
-      applies to
+   o  Identifier Type: The type of identifier that this method applies
+      to
 
-   o  Reference: Where the challenge type is defined
+   o  ACME: "Y" if the validation method corresponds to an ACME
+      challenge type; "N" otherwise.
+
+   o  Reference: Where the validation method is defined
 
    Initial Contents
 
-               +------------+-----------------+-----------+
-               | Label      | Identifier Type | Reference |
-               +------------+-----------------+-----------+
-               | http-01    | dns             | RFC XXXX  |
-               |            |                 |           |
-               | tls-sni-02 | dns             | RFC XXXX  |
-               |            |                 |           |
-               | dns-01     | dns             | RFC XXXX  |
-               |            |                 |           |
-               | oob-01     | dns             | RFC XXXX  |
-               +------------+-----------------+-----------+
+            +------------+-----------------+------+-----------+
+            | Label      | Identifier Type | ACME | Reference |
+            +------------+-----------------+------+-----------+
+            | http-01    | dns             | Y    | RFC XXXX  |
+            |            |                 |      |           |
+            | tls-sni-02 | dns             | Y    | RFC XXXX  |
+            |            |                 |      |           |
+            | dns-01     | dns             | Y    | RFC XXXX  |
+            |            |                 |      |           |
+            | oob-01     | dns             | Y    | RFC XXXX  |
+            +------------+-----------------+------+-----------+
+
+   When evaluating a request for an assignment in this registry, the
+   designated expert should ensure that the method being registered has
+   a clear, interoperable definition and does not overlap with existing
+   validation methods.  That is, it should not be possible for a client
+   and server to follow take the same set of actions to fulfill two
+   different validation mechanisms.
+
+   Validation methods do not have to be compatible with ACME in order to
+   be registered.  For example, a CA might wish to register a validation
+   method in order to support its use with the ACME extensions to CAA
+   [I-D.ietf-acme-caa].
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 62]
+
+Internet-Draft                    ACME                      October 2017
+
 
 10.  Security Considerations
 
@@ -3465,14 +3494,6 @@ Internet-Draft                    ACME                      October 2017
    the ways that ACME achieves these security goals within that threat
    model.  We also discuss the denial-of-service risks that ACME servers
    face, and a few other miscellaneous considerations.
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 62]
-
-Internet-Draft                    ACME                      October 2017
-
 
 10.1.  Threat model
 
@@ -3501,6 +3522,14 @@ Internet-Draft                    ACME                      October 2017
    |   Server   |  Validation Channel
    +------------+
 
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 63]
+
+Internet-Draft                    ACME                      October 2017
+
+
    In practice, the risks to these channels are not entirely separate,
    but they are different in most cases.  Each channel, for example,
    uses a different communications pattern: the ACME channel will
@@ -3521,14 +3550,6 @@ Internet-Draft                    ACME                      October 2017
    means ensuring that an attacker with access to the validation channel
    can't obtain illegitimate authorization by acting as an ACME client
    (legitimately, in terms of the protocol).
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 63]
-
-Internet-Draft                    ACME                      October 2017
-
 
 10.2.  Integrity of Authorizations
 
@@ -3558,6 +3579,13 @@ Internet-Draft                    ACME                      October 2017
 
    o  Legitimate domain holder provisions the validation response
 
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 64]
+
+Internet-Draft                    ACME                      October 2017
+
+
    o  ACME server performs validation query and sees the response
       provisioned by the legitimate domain holder
 
@@ -3577,14 +3605,6 @@ Internet-Draft                    ACME                      October 2017
    requiring the client to perform some action that only someone who
    effectively controls the identifier can perform.  For the challenges
    in this document, the actions are:
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 64]
-
-Internet-Draft                    ACME                      October 2017
-
 
    o  HTTP: Provision files under .well-known on a web server for the
       domain
@@ -3614,6 +3634,14 @@ Internet-Draft                    ACME                      October 2017
    transaction.  For example, suppose an ACME server follows HTTP
    redirects in HTTP validation and a website operator provisions a
    catch-all redirect rule that redirects requests for unknown resources
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 65]
+
+Internet-Draft                    ACME                      October 2017
+
+
    to a different domain.  Then the target of the redirect could use
    that to get a certificate through HTTP validation since the
    validation path will not be known to the primary server.
@@ -3633,14 +3661,6 @@ Internet-Draft                    ACME                      October 2017
 
    o  Applying mitigations against DNS off-path attackers, e.g., adding
       entropy to requests [I-D.vixie-dnsext-dns0x20] or only using TCP
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 65]
-
-Internet-Draft                    ACME                      October 2017
-
 
    Given these considerations, the ACME validation process makes it
    impossible for any attacker on the ACME channel or a passive attacker
@@ -3669,6 +3689,15 @@ Internet-Draft                    ACME                      October 2017
    As a protocol run over HTTPS, standard considerations for TCP-based
    and HTTP-based DoS mitigation also apply to ACME.
 
+
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 66]
+
+Internet-Draft                    ACME                      October 2017
+
+
    At the application layer, ACME requires the server to perform a few
    potentially expensive operations.  Identifier validation transactions
    require the ACME server to make outbound connections to potentially
@@ -3689,14 +3718,6 @@ Internet-Draft                    ACME                      October 2017
    subtree of the DNS.  And in order to prevent attackers from
    circumventing these limits simply by minting new accounts, servers
    would need to limit the rate at which accounts can be registered.
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 66]
-
-Internet-Draft                    ACME                      October 2017
-
 
 10.4.  Server-Side Request Forgery
 
@@ -3724,6 +3745,15 @@ Internet-Draft                    ACME                      October 2017
    ensure that validation queries can only be sent to servers on the
    public Internet, and not, say, web services within the server
    operator's internal network.  Since the attacker could make requests
+
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 67]
+
+Internet-Draft                    ACME                      October 2017
+
+
    to these public servers himself, he can't gain anything extra through
    an SSRF attack on ACME aside from a layer of anonymization.
 
@@ -3746,13 +3776,6 @@ Internet-Draft                    ACME                      October 2017
       *  Is the name on the Public Suffix List?
 
       *  Is the name a high-value name?
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 67]
-
-Internet-Draft                    ACME                      October 2017
-
 
       *  Is the name a known phishing domain?
 
@@ -3778,6 +3801,15 @@ Internet-Draft                    ACME                      October 2017
    operators of ACME-based CAs will need to keep in mind when
    configuring their services.  For example:
 
+
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 68]
+
+Internet-Draft                    ACME                      October 2017
+
+
 11.1.  DNS security
 
    As noted above, DNS forgery attacks against the ACME server can
@@ -3801,14 +3833,6 @@ Internet-Draft                    ACME                      October 2017
    DNSSEC-validating resolvers within their trusted network and use
    these resolvers both for both CAA record lookups and all record
    lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 68]
-
-Internet-Draft                    ACME                      October 2017
-
 
 11.2.  Default Virtual Hosts
 
@@ -3834,6 +3858,14 @@ Internet-Draft                    ACME                      October 2017
    A CA that accepts TLS-based proof of domain control should attempt to
    check whether a domain is hosted on a domain with a default virtual
    host before allowing an authorization request for this host to use a
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 69]
+
+Internet-Draft                    ACME                      October 2017
+
+
    TLS-based challenge.  Typically, systems with default virtual hosts
    do not allow the holder of the default virtual host to control what
    certificates are presented on a request-by-request basis.  Rather,
@@ -3858,14 +3890,6 @@ Internet-Draft                    ACME                      October 2017
    entropy for the following security properties.  First, the ACME
    client should not be able to influence the ACME server's choice of
    token as this may allow an attacker to reuse a domain owner's
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 69]
-
-Internet-Draft                    ACME                      October 2017
-
-
    previous challenge responses for a new validation request.  Secondly,
    the entropy requirement prevents ACME clients from implementing a
    "naive" validation server that automatically replies to challenges
@@ -3891,6 +3915,13 @@ Internet-Draft                    ACME                      October 2017
    if the string "---BEGIN" is ever followed by anything other than
    "CERTIFICATE"), then the client MUST reject the file as invalid.
 
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 70]
+
+Internet-Draft                    ACME                      October 2017
+
+
 12.  Acknowledgements
 
    In addition to the editors listed on the front page, this document
@@ -3912,15 +3943,6 @@ Internet-Draft                    ACME                      October 2017
    This document draws on many concepts established by Eric Rescorla's
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
-
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 70]
-
-Internet-Draft                    ACME                      October 2017
-
 
 13.  References
 
@@ -3946,6 +3968,16 @@ Internet-Draft                    ACME                      October 2017
               DOI 10.17487/RFC2818, May 2000,
               <https://www.rfc-editor.org/info/rfc2818>.
 
+
+
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 71]
+
+Internet-Draft                    ACME                      October 2017
+
+
    [RFC2985]  Nystrom, M. and B. Kaliski, "PKCS #9: Selected Object
               Classes and Attribute Types Version 2.0", RFC 2985,
               DOI 10.17487/RFC2985, November 2000,
@@ -3968,15 +4000,6 @@ Internet-Draft                    ACME                      October 2017
    [RFC3629]  Yergeau, F., "UTF-8, a transformation format of ISO
               10646", STD 63, RFC 3629, DOI 10.17487/RFC3629, November
               2003, <https://www.rfc-editor.org/info/rfc3629>.
-
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 71]
-
-Internet-Draft                    ACME                      October 2017
-
 
    [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
               Resource Identifier (URI): Generic Syntax", STD 66,
@@ -4003,6 +4026,14 @@ Internet-Draft                    ACME                      October 2017
               RFC 5890, DOI 10.17487/RFC5890, August 2010,
               <https://www.rfc-editor.org/info/rfc5890>.
 
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 72]
+
+Internet-Draft                    ACME                      October 2017
+
+
    [RFC5988]  Nottingham, M., "Web Linking", RFC 5988,
               DOI 10.17487/RFC5988, October 2010,
               <https://www.rfc-editor.org/info/rfc5988>.
@@ -4025,14 +4056,6 @@ Internet-Draft                    ACME                      October 2017
    [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
               Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
               2014, <https://www.rfc-editor.org/info/rfc7159>.
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 72]
-
-Internet-Draft                    ACME                      October 2017
-
 
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
@@ -4059,12 +4082,25 @@ Internet-Draft                    ACME                      October 2017
               APIs", RFC 7807, DOI 10.17487/RFC7807, March 2016,
               <https://www.rfc-editor.org/info/rfc7807>.
 
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 73]
+
+Internet-Draft                    ACME                      October 2017
+
+
    [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
               Writing an IANA Considerations Section in RFCs", BCP 26,
               RFC 8126, DOI 10.17487/RFC8126, June 2017,
               <https://www.rfc-editor.org/info/rfc8126>.
 
 13.2.  Informative References
+
+   [I-D.ietf-acme-caa]
+              Landau, H., "CAA Record Extensions for Account URI and
+              ACME Method Binding", draft-ietf-acme-caa-03 (work in
+              progress), August 2017.
 
    [I-D.ietf-acme-ip]
               Shoemaker, R., "ACME IP Identifier Validation Extension",
@@ -4079,16 +4115,6 @@ Internet-Draft                    ACME                      October 2017
               Vixie, P. and D. Dagon, "Use of Bit 0x20 in DNS Labels to
               Improve Transaction Identity", draft-vixie-dnsext-
               dns0x20-00 (work in progress), March 2008.
-
-
-
-
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 73]
-
-Internet-Draft                    ACME                      October 2017
-
 
    [RFC1421]  Linn, J., "Privacy Enhancement for Internet Electronic
               Mail: Part I: Message Encryption and Authentication
@@ -4109,6 +4135,16 @@ Internet-Draft                    ACME                      October 2017
               Uniform Resource Identifiers (URIs)", RFC 5785,
               DOI 10.17487/RFC5785, April 2010,
               <https://www.rfc-editor.org/info/rfc5785>.
+
+
+
+
+
+
+Barnes, et al.           Expires April 22, 2018                [Page 74]
+
+Internet-Draft                    ACME                      October 2017
+
 
    [RFC7525]  Sheffer, Y., Holz, R., and P. Saint-Andre,
               "Recommendations for Secure Use of Transport Layer
@@ -4139,46 +4175,10 @@ Authors' Addresses
    Email: jsha@eff.org
 
 
-
-
-Barnes, et al.           Expires April 22, 2018                [Page 74]
-
-Internet-Draft                    ACME                      October 2017
-
-
    James Kasten
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

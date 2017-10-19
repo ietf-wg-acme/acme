@@ -332,7 +332,7 @@ address {
 <link href="#rfc.section.9.7.3" rel="Chapter" title="9.7.3 Error Types">
 <link href="#rfc.section.9.7.4" rel="Chapter" title="9.7.4 Resource Types">
 <link href="#rfc.section.9.7.5" rel="Chapter" title="9.7.5 Identifier Types">
-<link href="#rfc.section.9.7.6" rel="Chapter" title="9.7.6 Challenge Types">
+<link href="#rfc.section.9.7.6" rel="Chapter" title="9.7.6 Validation Methods">
 <link href="#rfc.section.10" rel="Chapter" title="10 Security Considerations">
 <link href="#rfc.section.10.1" rel="Chapter" title="10.1 Threat model">
 <link href="#rfc.section.10.2" rel="Chapter" title="10.2 Integrity of Authorizations">
@@ -535,7 +535,7 @@ address {
 </li>
 <li>9.7.5.   <a href="#rfc.section.9.7.5">Identifier Types</a>
 </li>
-<li>9.7.6.   <a href="#rfc.section.9.7.6">Challenge Types</a>
+<li>9.7.6.   <a href="#rfc.section.9.7.6">Validation Methods</a>
 </li>
 </ul></ul><li>10.   <a href="#rfc.section.10">Security Considerations</a>
 </li>
@@ -2172,7 +2172,7 @@ Content-Type: application/jose+json
 <li>ACME Error Types (<a href="#iana-error" class="xref">Section 9.7.3</a>)</li>
 <li>ACME Resource Types (<a href="#iana-resource" class="xref">Section 9.7.4</a>)</li>
 <li>ACME Identifier Types (<a href="#iana-identifier" class="xref">Section 9.7.5</a>)</li>
-<li>ACME Challenge Types (<a href="#iana-challenge" class="xref">Section 9.7.6</a>)</li>
+<li>ACME Validation Methods (<a href="#iana-validation" class="xref">Section 9.7.6</a>)</li>
 </ol>
 <p id="rfc.section.9.7.p.3">All of these registries are under a heading of &#8220;Automated Certificate Management Environment (ACME) Protocol&#8221; and are administered under a Specification Required policy <a href="#RFC8126" class="xref">[RFC8126]</a>.</p>
 <h1 id="rfc.section.9.7.1">
@@ -2375,48 +2375,56 @@ Content-Type: application/jose+json
 </table>
 <p id="rfc.section.9.7.5.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.9.7.6">
-<a href="#rfc.section.9.7.6">9.7.6.</a> <a href="#iana-challenge" id="iana-challenge">Challenge Types</a>
+<a href="#rfc.section.9.7.6">9.7.6.</a> <a href="#iana-validation" id="iana-validation">Validation Methods</a>
 </h1>
-<p id="rfc.section.9.7.6.p.1">This registry lists the ways that ACME servers can offer to validate control of an identifier.  The &#8220;Identifier Type&#8221; field in the template must be contained in the Label column of the ACME Identifier Types registry.</p>
+<p id="rfc.section.9.7.6.p.1">This registry lists identifiers for the ways that CAs can validate control of identifiers.  Each method&#8217;s entry must specify whether it corresponds to an ACME challenge type.  The &#8220;Identifier Type&#8221; field must be contained in the Label column of the ACME Identifier Types registry.</p>
 <p id="rfc.section.9.7.6.p.2">Template:</p>
 <p></p>
 
 <ul>
-<li>Label: The value to be put in the &#8220;type&#8221; field of challenge objects using this validation mechanism</li>
-<li>Identifier Type: The type of identifier that this mechanism applies to</li>
-<li>Reference: Where the challenge type is defined</li>
+<li>Label: The identifier for this validation method</li>
+<li>Identifier Type: The type of identifier that this method applies to</li>
+<li>ACME: &#8220;Y&#8221; if the validation method corresponds to an ACME challenge type; &#8220;N&#8221; otherwise.</li>
+<li>Reference: Where the validation method is defined</li>
 </ul>
 <p id="rfc.section.9.7.6.p.4">Initial Contents</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
 <th class="left">Label</th>
 <th class="left">Identifier Type</th>
+<th class="left">ACME</th>
 <th class="left">Reference</th>
 </tr></thead>
 <tbody>
 <tr>
 <td class="left">http-01</td>
 <td class="left">dns</td>
+<td class="left">Y</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
 <td class="left">tls-sni-02</td>
 <td class="left">dns</td>
+<td class="left">Y</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
 <td class="left">dns-01</td>
 <td class="left">dns</td>
+<td class="left">Y</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
 <td class="left">oob-01</td>
 <td class="left">dns</td>
+<td class="left">Y</td>
 <td class="left">RFC XXXX</td>
 </tr>
 </tbody>
 </table>
-<p id="rfc.section.9.7.6.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<p id="rfc.section.9.7.6.p.5">When evaluating a request for an assignment in this registry, the designated expert should ensure that the method being registered has a clear, interoperable definition and does not overlap with existing validation methods.  That is, it should not be possible for a client and server to follow take the same set of actions to fulfill two different validation mechanisms.</p>
+<p id="rfc.section.9.7.6.p.6">Validation methods do not have to be compatible with ACME in order to be registered.  For example, a CA might wish to register a validation method in order to support its use with the ACME extensions to CAA <a href="#I-D.ietf-acme-caa" class="xref">[I-D.ietf-acme-caa]</a>.</p>
+<p id="rfc.section.9.7.6.p.7">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.10">
 <a href="#rfc.section.10">10.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
@@ -2715,6 +2723,11 @@ Content-Type: application/jose+json
 <h1 id="rfc.references.2">
 <a href="#rfc.references.2">13.2.</a> Informative References</h1>
 <table><tbody>
+<tr>
+<td class="reference"><b id="I-D.ietf-acme-caa">[I-D.ietf-acme-caa]</b></td>
+<td class="top">
+<a>Landau, H.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-acme-caa-03">CAA Record Extensions for Account URI and ACME Method Binding</a>", Internet-Draft draft-ietf-acme-caa-03, August 2017.</td>
+</tr>
 <tr>
 <td class="reference"><b id="I-D.ietf-acme-ip">[I-D.ietf-acme-ip]</b></td>
 <td class="top">
