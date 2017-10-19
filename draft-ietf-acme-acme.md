@@ -1625,7 +1625,6 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/authz/1234/0"
   }),
   "payload": base64url({
-    "type": "http-01",
     "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
   }),
   "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
