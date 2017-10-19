@@ -2408,7 +2408,7 @@ This document requests that IANA create the following new registries:
 3. ACME Error Types ({{iana-error}})
 4. ACME Resource Types ({{iana-resource}})
 5. ACME Identifier Types ({{iana-identifier}})
-6. ACME Challenge Types ({{iana-challenge}})
+6. ACME Validation Methods ({{iana-validation}})
 
 All of these registries are under a heading of "Automated Certificate Management
 Environment (ACME) Protocol" and are administered under a Specification
@@ -2523,27 +2523,40 @@ Initial contents:
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
-### Challenge Types {#iana-challenge}
+### Validation Methods {#iana-validation}
 
-This registry lists the ways that ACME servers can offer to validate control of
-an identifier.  The "Identifier Type" field in the template must be contained
-in the Label column of the ACME Identifier Types registry.
+This registry lists identifiers for the ways that CAs can validate control of
+identifiers.  Each method's entry must specify whether it corresponds to an
+ACME challenge type.  The "Identifier Type" field must be contained in the
+Label column of the ACME Identifier Types registry.
 
 Template:
 
-* Label: The value to be put in the "type" field of challenge objects using this
-  validation mechanism
-* Identifier Type: The type of identifier that this mechanism applies to
-* Reference: Where the challenge type is defined
+* Label: The identifier for this validation method
+* Identifier Type: The type of identifier that this method applies to
+* ACME: "Y" if the validation method corresponds to an ACME challenge type;
+  "N" otherwise.
+* Reference: Where the validation method is defined
 
 Initial Contents
 
-| Label      | Identifier Type | Reference |
-|:-----------|:----------------|:----------|
-| http-01    | dns             | RFC XXXX  |
-| tls-sni-02 | dns             | RFC XXXX  |
-| dns-01     | dns             | RFC XXXX  |
-| oob-01     | dns             | RFC XXXX  |
+| Label      | Identifier Type | ACME | Reference |
+|:-----------|:----------------|:-----|:----------|
+| http-01    | dns             | Y    | RFC XXXX  |
+| tls-sni-02 | dns             | Y    | RFC XXXX  |
+| dns-01     | dns             | Y    | RFC XXXX  |
+| oob-01     | dns             | Y    | RFC XXXX  |
+
+When evaluating a request for an assignment in this registry, the designated
+expert should ensure that the method being registered has a clear,
+interoperable definition and does not overlap with existing validation methods.
+That is, it should not be possible for a client and server to follow take the
+same set of actions to fulfill two different validation mechanisms.
+
+Validation methods do not have to be compatible with ACME in order to be
+registered.  For example, a CA might wish to register a validation method in
+order to support its use with the ACME extensions to CAA
+{{?I-D.ietf-acme-caa}}.
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
