@@ -2299,7 +2299,7 @@ Interoperability considerations: None
 Published specification: draft-ietf-acme-acme
 \[\[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]
 
-Applications which use this media type: Any MIME-complaint transport
+Applications which use this media type: Any MIME-compliant transport
 
 Additional information:
 
