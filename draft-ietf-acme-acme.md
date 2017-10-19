@@ -975,9 +975,9 @@ support an extension field.
 The server SHOULD validate that the contact URLs in the "contact" field are
 valid and supported by the server. If the server validates contact URLs it MUST
 support the "mailto" scheme.  Clients MUST NOT provide a "mailto" URL in the
-"contact" field that contains `<hfields>` {{!RFC6068}}.  If a server encounters
-a "mailto" contact URL that contains non-empty `<hfields>`, then it SHOULD
-reject it as invalid.
+"contact" field that contains `hfields` {{!RFC6068}}, or more than one
+`addr-spec` in the `to` component.  If a server encounters a "mailto" contact
+URL that does not meet these criteria, then it SHOULD reject it as invalid.
 
 If the server rejects a contact URL for using an
 unsupported scheme it MUST return an error of type "unsupportedContact", with
