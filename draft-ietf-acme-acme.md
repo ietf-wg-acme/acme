@@ -13,7 +13,7 @@ author:
  -
     ins: R. Barnes
     name: Richard Barnes
-    org: Mozilla
+    org: Cisco
     email: rlb@ipv.sx
  -
     ins: J. Hoffman-Andrews
@@ -1246,6 +1246,10 @@ code 200 (OK). Otherwise, the server responds with an error status code and a
 problem document describing the error.  If there is an existing account with
 the new key provided, then the server SHOULD use status code 409 (Conflict).
 
+Note that changing the account key for an account SHOULD NOT have any other
+impact on the account.  For example, the server MUST NOT invalidate pending
+orders or authorization transactions based on a change of account key.
+
 ### Account Deactivation
 
 A client can deactivate an account by posting a signed update to the server with
@@ -1959,12 +1963,12 @@ client then provisions the key authorization as a resource on the HTTP server
 for the domain in question.
 
 The path at which the resource is provisioned is comprised of the fixed prefix
-".well-known/acme-challenge/", followed by the "token" value in the challenge.
+"/.well-known/acme-challenge/", followed by the "token" value in the challenge.
 The value of the resource MUST be the ASCII representation of the key
 authorization.
 
 ~~~~~~~~~~
-GET .well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
+GET /.well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
 Host: example.org
 
 HTTP/1.1 200 OK
@@ -2015,8 +2019,8 @@ domain by verifying that the resource was provisioned as expected.
    TCP port 80 on the HTTP server.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
-5. Verify that key authorization provided by the HTTP server matches the token
-   for this challenge and the client's account key.
+5. Verify that key authorization provided by the HTTP server matches the key
+   authorization provided by the client in its response to the challenge.
 
 The server SHOULD follow redirects when dereferencing the URL.
 
@@ -2842,7 +2846,7 @@ server's choice of token as this may allow an attacker to reuse a domain owner's
 previous challenge responses for a new validation request. Secondly, the entropy
 requirement prevents ACME clients from implementing a "naive" validation server
 that automatically replies to challenges without participating in the creation
-of the intial authorization request.
+of the initial authorization request.
 
 ## Malformed Certificate Chains
 
