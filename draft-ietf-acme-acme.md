@@ -298,7 +298,7 @@ HTTPS client when validating challenges via HTTP.
 ACME servers SHOULD follow the recommendations of {{?RFC7525}} when configuring
 their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
 to send early data (0xRTT).  This is safe because the ACME protocol itself
-includes anti-replay protections.
+includes anti-replay protections (see {{replay-protection}}).
 
 ACME clients SHOULD send a User-Agent header in accordance with
 {{!RFC7231}}, including the name and version of the ACME software in
