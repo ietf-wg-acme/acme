@@ -115,7 +115,7 @@ as of this writing, there is ongoing work to use ACME for issuance of WebPKI
 certificates attesting to IP addresses {{?I-D.ietf-acme-ip}} and STIR
 certificates attesting to telephone numbers {{?I-D.ietf-acme-telephone}}.
 
-ACME can also be used to autmoate some aspects of certificate management even
+ACME can also be used to automate some aspects of certificate management even
 where non-automated processes are still needed.  For example, the external
 account binding feature (see {{external-account-binding}}) can be used to
 associate authorizations with an account that were not validated through the
