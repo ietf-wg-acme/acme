@@ -356,7 +356,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-10-30" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-11-06" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -380,7 +380,7 @@ address {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: May 3, 2018</td>
+<td class="left">Expires: May 10, 2018</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -393,7 +393,7 @@ address {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">October 30, 2017</td>
+<td class="right">November 06, 2017</td>
 </tr>
 
     	
@@ -411,7 +411,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on May 3, 2018.</p>
+<p>This Internet-Draft will expire on May 10, 2018.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2017 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -595,6 +595,7 @@ address {
 <p id="rfc.section.1.p.5">With the exception of the CSR itself and the certificates that are issued, these are all completely ad hoc procedures and are accomplished by getting the human user to follow interactive natural-language instructions from the CA rather than by machine-implemented published protocols.  In many cases, the instructions are difficult to follow and cause significant confusion.  Informal usability tests by the authors indicate that webmasters often need 1-3 hours to obtain and install a certificate for a domain.  Even in the best case, the lack of published, standardized mechanisms presents an obstacle to the wide deployment of HTTPS and other PKIX-dependent systems because it inhibits mechanization of tasks related to certificate issuance, deployment, and revocation.</p>
 <p id="rfc.section.1.p.6">This document describes an extensible framework for automating the issuance and domain validation procedure, thereby allowing servers and infrastructural software to obtain certificates without user interaction.  Use of this protocol should radically simplify the deployment of HTTPS and the practicality of PKIX authentication for other protocols based on Transport Layer Security (TLS) <a href="#RFC5246" class="xref">[RFC5246]</a>.</p>
 <p id="rfc.section.1.p.7">It should be noted that while the focus of this document is on validating domain names for purposes of issuing certificates in the Web PKI, ACME supports extensions for uses with other identifiers in other PKI contexts.  For example, as of this writing, there is ongoing work to use ACME for issuance of WebPKI certificates attesting to IP addresses <a href="#I-D.ietf-acme-ip" class="xref">[I-D.ietf-acme-ip]</a> and STIR certificates attesting to telephone numbers <a href="#I-D.ietf-acme-telephone" class="xref">[I-D.ietf-acme-telephone]</a>.</p>
+<p id="rfc.section.1.p.8">ACME can also be used to automate some aspects of certificate management even where non-automated processes are still needed.  For example, the external account binding feature (see <a href="#external-account-binding" class="xref">Section 7.3.5</a>) can be used to associate authorizations with an account that were not validated through the ACME authorization process.  This allows ACME to address issuance scenarios that cannot yet be fully automated, such as the issuance of Extended Validation certificates.</p>
 <h1 id="rfc.section.2">
 <a href="#rfc.section.2">2.</a> <a href="#deployment-model-and-operator-experience" id="deployment-model-and-operator-experience">Deployment Model and Operator Experience</a>
 </h1>
@@ -681,7 +682,7 @@ address {
 </h1>
 <p id="rfc.section.6.1.p.1">Each ACME function is accomplished by the client sending a sequence of HTTPS requests to the server, carrying JSON messages <a href="#RFC2818" class="xref">[RFC2818]</a><a href="#RFC7159" class="xref">[RFC7159]</a>.  Use of HTTPS is REQUIRED. Each subsection of <a href="#certificate-management" class="xref">Section 7</a> below describes the message formats used by the function and the order in which messages are sent.</p>
 <p id="rfc.section.6.1.p.2">In most HTTPS transactions used by ACME, the ACME client is the HTTPS client and the ACME server is the HTTPS server. The ACME server acts as an HTTP and HTTPS client when validating challenges via HTTP.</p>
-<p id="rfc.section.6.1.p.3">ACME servers SHOULD follow the recommendations of <a href="#RFC7525" class="xref">[RFC7525]</a> when configuring their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients to send early data (0xRTT).  This is safe because the ACME protocol itself includes anti-replay protections.</p>
+<p id="rfc.section.6.1.p.3">ACME servers SHOULD follow the recommendations of <a href="#RFC7525" class="xref">[RFC7525]</a> when configuring their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients to send early data (0xRTT).  This is safe because the ACME protocol itself includes anti-replay protections (see <a href="#replay-protection" class="xref">Section 6.4</a>).</p>
 <p id="rfc.section.6.1.p.4">ACME clients SHOULD send a User-Agent header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a>, including the name and version of the ACME software in addition to the name and version of the underlying HTTP client software.</p>
 <p id="rfc.section.6.1.p.5">ACME clients SHOULD send an Accept-Language header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a> to enable localization of error messages.</p>
 <p id="rfc.section.6.1.p.6">ACME servers that are intended to be generally accessible need to use Cross-Origin Resource Sharing (CORS) in order to be accessible from browser-based clients <a href="#W3C.CR-cors-20130129" class="xref">[W3C.CR-cors-20130129]</a>.  Such servers SHOULD set the Access-Control-Allow-Origin header field to the value &#8220;*&#8221;.</p>
@@ -2742,7 +2743,7 @@ Content-Type: application/jose+json
 <tr>
 <td class="reference"><b id="I-D.ietf-acme-telephone">[I-D.ietf-acme-telephone]</b></td>
 <td class="top">
-<a>Peterson, J.</a> and <a>R. Barnes</a>, "<a href="https://tools.ietf.org/html/draft-ietf-acme-telephone-00">ACME Identifiers and Challenges for Telephone Numbers</a>", Internet-Draft draft-ietf-acme-telephone-00, July 2017.</td>
+<a>Peterson, J.</a> and <a>R. Barnes</a>, "<a href="https://tools.ietf.org/html/draft-ietf-acme-telephone-01">ACME Identifiers and Challenges for Telephone Numbers</a>", Internet-Draft draft-ietf-acme-telephone-01, October 2017.</td>
 </tr>
 <tr>
 <td class="reference"><b id="I-D.vixie-dnsext-dns0x20">[I-D.vixie-dnsext-dns0x20]</b></td>
