@@ -501,7 +501,8 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | unauthorized          | The client lacks sufficient authorization                                      |
 | unsupportedIdentifier | Identifier is not supported, but may be in future                              |
 | userActionRequired    | Visit the "instance" URL and take actions specified there                      |
-| badRevocationReason   | The revocation reason provided is not allowed by the server	                 |
+| authorizationFirst    | The client must complete authorizations before submitting an order             |
+| badRevocationReason   | The revocation reason provided is not allowed by the server                    |
 | caa                   | Certification Authority Authorization (CAA) records forbid the CA from issuing |
 | dns                   | There was a problem with a DNS query                                           |
 | connection            | The server could not connect to validation target                              |
@@ -1421,6 +1422,61 @@ status of the order will indicate what action the client should take:
 
 * "valid": The server has issued the certificate and provisioned its URL to the
   "certificate" field of the order.
+
+
+### Requiring Authorization before Order
+
+In some cases, a server may require a client to complete the authorizations
+necessary to issue a certificate before it will accept a new-order request.
+This allows the server to avoid caching a CSR before authorizations have been
+completed.  When such a server receives a new-order request without sufficient
+authorizations, it should return an error response with status code 401
+(Unauthorized) and error code "authorizationFirst".  Any error document with
+this error code MUST include a field "authorizations" containing an array of
+URLs for authorization objects that must be completed before the new-order
+request can succeed.
+
+~~~~~
+POST /acme/new-order HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "5XJ1L3lEkMG7tR6pA00clA",
+    "url": "https://example.com/acme/new-order"
+  }),
+  "payload": base64url({
+    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+    "notBefore": "2016-01-01T00:00:00Z",
+    "notAfter": "2016-01-08T00:00:00Z"
+  }),
+  "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
+}
+
+HTTP/1.1 403 Forbidden
+Replay-Nonce: LGjPMXAawTXRBMlFW-O18w
+Content-Type: application/problem+json
+Content-Language: en
+
+{
+  "type": "urn:ietf:params:acme:error:authorizationFirst",
+  "detail": "Complete authorization before requesting issuance",
+  "authorizations": [
+    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/authz/2345"
+  ]
+}
+~~~~~
+
+A client that receives an "authorizationFirst" error in response to a new-order
+request should proceed in much the same way as if it had received a success
+response.  Namely, it should fetch the authorization objects and respond to
+their challenges.  Once the client has completed all authorizations, it may
+perform a second new-order request, which should now be granted by the server.
+
 
 ### Pre-Authorization
 
