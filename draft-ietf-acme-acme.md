@@ -1395,15 +1395,10 @@ client fails to complete the required actions before the "expires" time, then
 the server SHOULD change the status of the order to "invalid" and MAY
 delete the order resource.
 
-The server MUST begin the issuance process for the requested certificate and
-update the order resource with a URL for the certificate once the client has
-fulfilled the server's requirements.   If the client has already satisfied the
-server's requirements at the time of this request (e.g., by obtaining
-authorization for all of the identifiers in the certificate in previous
-transactions), then the server MUST proactively issue the requested certificate
-and provide a URL for it in the "certificate" field of the order.  The server
-MUST, however, still list the completed authorizations in the "authorizations"
-array.
+Once the client has fulfilled the server's requirements, the server MUST update
+the order resoruce with a URL for the certificate.  It SHOULD begin the issuance
+process at this point, but MAY postpone issuance until it receives a GET request
+for the certificate URL.
 
 Once the client believes it has fulfilled the server's requirements, it should
 send a GET request to the order resource to obtain its current state.  The
@@ -1420,8 +1415,8 @@ status of the order will indicate what action the client should take:
   is in the process of generating the certificate.  Retry after the time given
   in the "Retry-After" header field of the response, if any.
 
-* "valid": The server has issued the certificate and provisioned its URL to the
-  "certificate" field of the order.
+* "valid": The server has agreed to issue the certificate; it can be fetched
+  from the URL in the "certificate" field of the order
 
 
 ### Requiring Authorization before Order
