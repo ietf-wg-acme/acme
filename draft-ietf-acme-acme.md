@@ -1396,7 +1396,7 @@ the server SHOULD change the status of the order to "invalid" and MAY
 delete the order resource.
 
 Once the client has fulfilled the server's requirements, the server MUST update
-the order resoruce with a URL for the certificate.  It SHOULD begin the issuance
+the order resource with a URL for the certificate.  It SHOULD begin the issuance
 process at this point, but MAY postpone issuance until it receives a GET request
 for the certificate URL.
 
