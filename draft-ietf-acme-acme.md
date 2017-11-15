@@ -886,7 +886,7 @@ name validation.
 
   "challenges": [
     {
-      "url": "https://example.com/authz/1234/0",
+      "url": "https://example.com/acme/authz/1234/0",
       "type": "http-01",
       "status": "valid",
       "token": "DGyRejmCefe7v4NfDGDKfA"
@@ -1108,7 +1108,7 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:userActionRequired",
   "detail": "Terms of service have changed",
-  "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
+  "instance": "http://example.com/acme/agreement/?token=W8Ih3PswD-8"
 }
 ~~~~~
 
@@ -1607,17 +1607,17 @@ Link: <https://example.com/acme/some-directory>;rel="index"
   "challenges": [
     {
       "type": "http-01",
-      "url": "https://example.com/authz/1234/0",
+      "url": "https://example.com/acme/authz/1234/0",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     },
     {
       "type": "tls-sni-02",
-      "url": "https://example.com/authz/1234/1",
+      "url": "https://example.com/acme/authz/1234/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     },
     {
       "type": "dns-01",
-      "url": "https://example.com/authz/1234/2",
+      "url": "https://example.com/acme/authz/1234/2",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ]
@@ -1708,7 +1708,7 @@ HTTP/1.1 200 OK
   "challenges": [
     {
       "type": "http-01"
-      "url": "https://example.com/authz/1234/0",
+      "url": "https://example.com/acme/authz/1234/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -1824,7 +1824,7 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
   "detail": "No authorization provided for name example.net",
-  "instance": "http://example.com/doc/unauthorized"
+  "instance": "http://example.com/acme/doc/unauthorized"
 }
 ~~~~~~~~~~
 
@@ -2267,7 +2267,7 @@ HTTP/1.1 200 OK
   "type": "oob-01",
   "url": "https://example.com/acme/authz/1234/3",
   "status": "pending",
-  "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
+  "href": "https://example.com/out-of-band/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 ~~~~~~~~~~
 
