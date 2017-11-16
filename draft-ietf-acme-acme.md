@@ -803,8 +803,11 @@ certificate (optional, string):
 }
 ~~~~~~~~~~
 
-Identifiers in a new-order request MAY contain wildcard identifiers, even if
-the resulting authorizations returned by the server do not.
+Identifiers in a new-order request MAY contain DNS type identifiers with
+wildcard values, even if the resulting authorizations returned by the server do
+not. DNS type identifiers for a wildcard value MUST contain only one '*'
+wildcard character comprising the entire leftmost DNS label. (E.g.
+"*.foo.example.com" not "foo.*.example.com" or "*.*.example.com").
 
 The elements of the "authorizations" and "identifiers" array are immutable once
 set.  The server MUST NOT change the contents either array after they are
