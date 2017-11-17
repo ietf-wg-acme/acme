@@ -714,7 +714,7 @@ a GET request, as described in {{orders-list}}.
   "status": "valid",
   "contact": [
     "mailto:cert-admin@example.com",
-    "tel:+12025551212"
+    "mailto:admin@example.com"
   ],
   "terms-of-service-agreed": true,
   "orders": "https://example.com/acme/acct/1/orders"
@@ -962,7 +962,7 @@ Content-Type: application/jose+json
     "terms-of-service-agreed": true,
     "contact": [
       "mailto:cert-admin@example.com",
-      "tel:+12025551212"
+      "mailto:admin@example.com"
     ]
   }),
   "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
@@ -1019,7 +1019,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
   "contact": [
     "mailto:cert-admin@example.com",
-    "tel:+12025551212"
+    "mailto:admin@example.com"
   ]
 }
 ~~~~~~~~~~
@@ -1066,7 +1066,7 @@ Content-Type: application/jose+json
   "payload": base64url({
     "contact": [
       "mailto:certificates@example.com",
-      "tel:+12125551212"
+      "mailto:admin@example.com"
     ]
   }),
   "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
