@@ -521,6 +521,53 @@ set to a URI other than those defined above.  Servers MUST NOT use the ACME URN 
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
 
+### Sub-problems
+
+Sometimes a CA may need to return multiple errors to a single
+request. Additionally, the CA may need to attribute errors to specific
+identifiers.  For instance, a new-order request may contain multiple
+identifiers for which the CA cannot issue. In this situation, an ACME
+problem document MAY contain the "sub-problems" field, contains a JSON
+array of problem documents, each of which MAY contain an "identifier"
+field. If present, the "identifier" field MUST contain an ACME identifier
+({{iana-identifier}}). The "identifier" field MUST NOT be present at
+the top level in ACME problem documents. It can only be present in sub-problems.
+Sub-problems need not all have the same type, and do not need to match the top level type.
+
+ACME clients may choose to use the "identifier" field as a hint that
+an operation would succeed if certain identifiers were omitted. For
+instance, if an order contains ten DNS identifiers, and the new-order
+request returns a problem document with two sub-problems, referencing two
+of those identifiers, the ACME client may choose to submit another order
+containing only the eight identifiers not listed in the problem document.
+
+~~~~~
+HTTP/1.1 403 Forbidden
+Content-Type: application/problem+json
+
+{
+    "type": "urn:ietf:params:acme:error:malformed",
+    "detail": "Some of the identifiers requested were rejected",
+    "sub-problems": [
+        {
+            "type": "urn:ietf:params:acme:error:malformed",
+            "value": "Invalid underscore in DNS name \"_example.com\"",
+            "identifier": {
+                "type": "dns",
+                "value": "_example.com"
+            }
+        },
+        {
+            "type": "urn:ietf:params:acme:error:rejectedIdentifier",
+            "value": "This CA will not issue for \"example.net\"",
+            "identifier": {
+                "type": "dns",
+                "value": "example.net"
+            }
+        }
+    ]
+}
+~~~~~
 
 # Certificate Management
 
