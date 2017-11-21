@@ -523,19 +523,19 @@ namespace for errors other than the standard types.  Clients SHOULD display the
 
 ### Sub-problems
 
-Sometimes a CA may need to return multiple errors to a single
-request. Additionally, the CA may need to attribute errors to specific
+Sometimes a CA may need to return multiple errors in response to a request.
+Additionally, the CA may need to attribute errors to specific
 identifiers.  For instance, a new-order request may contain multiple
 identifiers for which the CA cannot issue. In this situation, an ACME
-problem document MAY contain the "sub-problems" field, contains a JSON
+problem document MAY contain the "sub-problems" field, containing a JSON
 array of problem documents, each of which MAY contain an "identifier"
 field. If present, the "identifier" field MUST contain an ACME identifier
 ({{iana-identifier}}). The "identifier" field MUST NOT be present at
 the top level in ACME problem documents. It can only be present in sub-problems.
 Sub-problems need not all have the same type, and do not need to match the top level type.
 
-ACME clients may choose to use the "identifier" field as a hint that
-an operation would succeed if certain identifiers were omitted. For
+ACME clients may choose to use the "identifier" field of a sub-problem
+as a hint that an operation would succeed if that identifier were omitted. For
 instance, if an order contains ten DNS identifiers, and the new-order
 request returns a problem document with two sub-problems, referencing two
 of those identifiers, the ACME client may choose to submit another order
