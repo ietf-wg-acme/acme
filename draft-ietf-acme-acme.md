@@ -2350,10 +2350,8 @@ HTTP/1.1 200 OK
 A client responds to this challenge by presenting the indicated URL for a human
 user to navigate to.  If the user chooses to complete this challenge (by visiting
 the website and completing its instructions), the client indicates this by
-sending a simple acknowledgement response to the server.
-
-type (required, string):
-: The string "oob-01"
+sending a simple acknowledgement response to the server.  The payload of this
+response is an empty JSON object ("{}", or "e30" base64url-encoded)
 
 ~~~~~~~~~~
 POST /acme/authz/1234/3
@@ -2367,9 +2365,7 @@ Content-Type: application/jose+json
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/authz/1234/3"
   }),
-  "payload": base64url({
-    "type": "oob-01"
-  }),
+  "payload": "e30",
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 ~~~~~~~~~~
