@@ -75,7 +75,7 @@ real-world identity.  (This is as opposed to "Organization Validation" (OV) and
 "Extended Validation" (EV) certificates, where the process is intended to also
 verify the real-world identity of the requester.)
 
-Existing Web PKI certificate authorities tend to run on a set of ad hoc
+Existing Web PKI certificate authorities tend to use a set of ad hoc
 protocols for certificate issuance and identity verification.  In the case of DV
 certificates, a typical user experience is something like:
 
@@ -83,9 +83,9 @@ certificates, a typical user experience is something like:
 * Cut-and-paste the CSR into a CA web page.
 * Prove ownership of the domain by one of the following methods:
    * Put a CA-provided challenge at a specific place on the web server.
-   * Put a CA-provided challenge at a DNS location corresponding to the target
+   * Put a CA-provided challenge in a DNS record corresponding to the target
      domain.
-   * Receive CA challenge at a (hopefully) administrator-controlled email
+   * Receive CA-provided challenge at a (hopefully) administrator-controlled email
      address corresponding to the domain and then respond to it on the CA's web
      page.
 * Download the issued certificate and install it on their Web Server.
@@ -138,11 +138,11 @@ means that under typical circumstances, all steps in the request, verification,
 and issuance process can be represented and performed by Internet protocols with
 no out-of-band human intervention.
 
-Prior to ACME, when deploying an HTTPS server, an operator typically gets a
+Prior to ACME, when deploying an HTTPS server, a server operator typically gets a
 prompt to generate a self-signed certificate.  If the operator were instead
 deploying an HTTPS server using ACME, the experience would be something like this:
 
-* The ACME client prompts the operator for the intended domain name(s) that the
+* The operator's ACME client prompts the operator for the intended domain name(s) that the
   web server is to stand for.
 * The ACME client presents the operator with a list of CAs from which it could
   get a certificate.  (This list will change over time based on the capabilities
@@ -151,8 +151,9 @@ deploying an HTTPS server using ACME, the experience would be something like thi
 * The operator selects a CA.
 * In the background, the ACME client contacts the CA and requests that it
   issue a certificate for the intended domain name(s).
-* The CA verifies that the client controls the requested domain name(s).
-* Once the CA is satisfied, the certificate is issued and the ACME client
+* The CA verifies that the client controls the requested domain name(s) by 
+  having the ACME client perform some action related to the domain name(s)
+* Once the CA is satisfied, it issues hte certificate and the ACME client
   automatically downloads and installs it, potentially notifying the operator
   via email, SMS, etc.
 * The ACME client periodically contacts the CA to get updated certificates,
@@ -191,7 +192,7 @@ from the client.
 
 ACME allows a client to request certificate management actions using a set of
 JavaScript Object Notation (JSON) messages carried over HTTPS.  In many ways,
-ACME functions much like a traditional CA, in which a user creates an account,
+issuance using ACME proceeds in much way as a traditional issuance process, in which a user creates an account,
 requests a certificate, and proves control of the domains in that certificate in
 order for the CA to sign the requested certificate.
 
@@ -233,8 +234,7 @@ are many different ways to validate possession of different types of
 identifiers, the server will choose from an extensible set of challenges that
 are appropriate for the identifier being claimed.  The client responds with a
 set of responses that tell the server which challenges the client has completed.
-The server then validates the challenges to check that the client has
-accomplished them.
+The server then validates that the client has completed the challenges. 
 
 Once the validation process is complete and the server is satisfied that the
 client has met its requirements, the server will issue the requested certificate
@@ -243,8 +243,7 @@ and make it available to the client.
 ~~~~~~~~~~
       Order
       Signature                     ------->
-                                                             Required
-                                    <-------           Authorizations
+                                    <-------  Required Authorizations
 
       Responses
       Signature                     ------->
@@ -390,14 +389,14 @@ the request URL.  If the two do not match, then the server MUST reject the
 request as unauthorized.
 
 Except for the directory resource, all ACME resources are addressed with URLs
-provided to the client by the server.  For these resources, the client MUST set
+provided to the client by the server.  In requests sent to these resources, the client MUST set
 the "url" header parameter to the exact string provided by the server (rather
 than performing any re-encoding on the URL).  The server SHOULD perform the
 corresponding string equality check, configuring each resource with the URL
 string provided to clients and having the resource check that requests have the
 same string in their "url" header parameter.
 
-### "url" (URL) JWS header parameter
+### "url" (URL) JWS Header Parameter
 
 The "url" header parameter specifies the URL {{!RFC3986}} to which this JWS
 object is directed.  The "url" header parameter MUST be carried in the protected
@@ -455,7 +454,7 @@ ignore invalid Replay-Nonce values.
 
 The Replay-Nonce header field SHOULD NOT be included in HTTP request messages.
 
-### "nonce" (Nonce) JWS header parameter
+### "nonce" (Nonce) JWS Header Parameter
 
 The "nonce" header parameter provides a unique value that enables the verifier
 of a JWS to recognize when replay has occurred. The "nonce" header parameter
@@ -466,9 +465,9 @@ according to the base64url encoding described in Section 2 of {{!RFC7515}}.  If
 the value of a "nonce" header parameter is not valid according to this encoding,
 then the verifier MUST reject the JWS as malformed.
 
-## Rate limits
+## Rate Limits
 
-Creation of resources can be rate limited to ensure fair usage and
+Creation of resources can be rate limited by servers to ensure fair usage and
 prevent abuse.  Once the rate limit is exceeded, the server MUST respond
 with an error with the type "urn:ietf:params:acme:error:rateLimited".
 Additionally, the server SHOULD send a "Retry-After" header indicating
@@ -477,9 +476,8 @@ in place, that is the time where all rate limits allow access again for
 the current request with exactly the same parameters.
 
 In addition to the human-readable "detail" field of the error response, the
-server MAY send one or multiple tokens in the "Link" header pointing to
-documentation about the specific hit rate limits using the
-"urn:ietf:params:acme:documentation" relation.
+server MAY send one or multiple link relations in the "Link" header pointing to
+documentation about the specific hit rate limits using the "help" link relation type.
 
 ## Errors
 
@@ -520,6 +518,10 @@ This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
+
+In the below, we use the tokens in the table above to refer to error types,
+rather than the full URNs.  For example, an "error of type 'badCSR'" refers to
+an error document with "type" value "urn:ietf:params:acme:error:badCSR".
 
 ### Sub-problems
 
@@ -625,13 +627,13 @@ indicate HTTP link relations.
 ~~~~~~~~~~
                                directory
                                    |
-                                   |--> new-nonce
+                                   +--> new-nonce
                                    |
-       ----------------------------------+
-       |          |          |           |
-       |          |          |           |
-       V          V          V           V
- new-account  new-authz  new-order  revoke-cert
+       +----------+----------+-----+-----+------------+
+       |          |          |           |            |
+       |          |          |           |            |
+       V          V          V           V            V
+ new-account  new-authz  new-order  revoke-cert  key-change
        |          |          |
        |          |          |
        V          |          V
@@ -669,7 +671,7 @@ structured and how the ACME protocol makes use of them.
 
 In order to help clients configure themselves with the right URLs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
-needed to configure clients. It is a JSON object, whose fields names are drawn from
+needed to configure clients. It is a JSON object, whose field names are drawn from
 the following table and whose values are the corresponding URLs.
 
 | Field          | URL in value         |
@@ -681,7 +683,7 @@ the following table and whose values are the corresponding URLs.
 | revoke-cert    | Revoke certificate   |
 | key-change     | Key change           |
 
-There is no constraint on the actual URL of the directory except that it
+There is no constraint on the URL of the directory except that it
 should be different from the other ACME server resources' URLs, and that it
 should not clash with other services. For instance:
 
@@ -782,7 +784,7 @@ relation indicating where further entries can be acquired.
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: href="/acme/acct/1/orders?cursor=2", rel="next"
+Link: <https://example.com/acme/acct/1/orders?cursor=2>, rel="next"
 
 {
   "orders": [
@@ -835,7 +837,7 @@ This field is structured as a problem document {{!RFC7807}}.
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
 before the requested certificate can be issued (see
-{{identifier-authorization}}).  For final orders, the authorizations that
+{{identifier-authorization}}).  For final orders (in the "valid" or "invalid" state), the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
@@ -921,7 +923,7 @@ for objects with "valid" in the "status" field.
 
 challenges (required, array of objects):
 : For pending authorizations, the challenges that the client can fulfill in
-order to prove possession of the identifier.  For final authorizations, the
+order to prove possession of the identifier.  For final authorizations (in the "valid" or "invalid" state), the
 challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill
 one of these challenges, and a server should consider any one of the challenges
@@ -1178,16 +1180,17 @@ Content-Language: en
 
 ### External Account Binding
 
-The server MAY require a value to be present for the "external-account-binding"
-field.  This can be used to an ACME account with an existing account in a
-non-ACME system, such as a CA customer database.
+The server MAY require a value for the "external-account-binding" field to be
+present in "new-account" requests.  This can be used to an ACME account with an
+existing account in a non-ACME system, such as a CA customer database.
 
-To enable ACME account binding, a CA needs to provision the ACME client with a
-MAC key and a key identifier. The key identifier MUST be an ASCII string. The
-MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility
-between provisioning systems and ACME clients.
+To enable ACME account binding, a CA needs to provide the ACME client with a
+MAC key and a key identifier, using some mechanism outside of ACME. The key
+identifier MUST be an ASCII string. The MAC key SHOULD be provided in
+base64url-encoded form, to maximize compatibility between provisioning systems
+and ACME clients.
 
-The ACME client then computes a binding JWS to indicate the external account's
+The ACME client then computes a binding JWS to indicate the external account holder's
 approval of the ACME account key.  The payload of this JWS is the account key
 being registered, in JWK form.  The protected header of the JWS MUST meet the
 following criteria:
@@ -1245,7 +1248,7 @@ verify the account binding, the CA MUST take the following steps:
 
 If all of these checks pass and the CA creates a new account, then the CA may
 consider the new account associated with the external account corresponding to
-the MAC key and MUST reflect value of the "external-account-binding" field in
+the MAC key and MUST reflect the value of the "external-account-binding" field in
 the resulting account object.  If any of these checks fail, then the CA MUST
 reject the new-account request.
 
@@ -1267,13 +1270,17 @@ new-account request that created the account.
 newKey (required, JWK):
 : The JWK representation of the new key
 
-The client then encapsulates the key-change object in a JWS, signed with the
-requested new account key (i.e., the key matching the "newKey" value).
+The client then encapsulates the key-change object in an "inner" JWS, signed with the
+requested new account key (i.e., the key matching the "newKey" value).  This JWS
+then becomes the payload for the "outer" JWS that is the body of the ACME
+request.
 
 The outer JWS MUST meet the normal requirements for an ACME JWS (see
 {{request-authentication}}).  The inner JWS MUST meet the normal requirements,
-with the following exceptions:
+with the following differences:
 
+* The inner JWS MUST have a "jwk" header parameter, containing the public key of
+  the new key pair (i.e., the same value as the "newKey" field).
 * The inner JWS MUST have the same "url" header parameter as the outer JWS.
 * The inner JWS is NOT REQUIRED to have a "nonce" header parameter.  The server
   MUST ignore any value provided for the "nonce" header parameter.
@@ -1516,7 +1523,7 @@ authorization before any virtual servers are created and only create a certifica
 a virtual server starts up.
 
 In some cases, a CA running an ACME server might have a completely external,
-non-ACME process for authorizing a client to issue for an identifier.  In these
+non-ACME process for authorizing a client to request issuance for an identifier.  In these
 case, the CA should provision its ACME server with authorization objects
 corresponding to these authorizations and reflect them as already valid in any
 orders submitted by the client.
@@ -1926,8 +1933,8 @@ The server presents a set of challenges in the authorization object it sends to 
 client (as objects in the "challenges" array), and the client responds by
 sending a response object in a POST request to a challenge URL.
 
-This section describes an initial set of challenge types.  Each challenge must
-describe:
+This section describes an initial set of challenge types.  The definition of a
+new type of challenge must describe:
 
 1. Content of challenge objects
 2. Content of response objects
@@ -1943,11 +1950,11 @@ url (required, string):
 : The URL to which a response can be posted.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "pending", "valid",
+: The status of this challenge.  Possible values are: "pending", "valid",
 and "invalid".
 
 validated (optional, string):
-: The time at which this challenge was completed by the server, encoded in the
+: The time at which the server considered this challenge complete, encoded in the
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
@@ -1955,10 +1962,10 @@ errors (optional, array of object):
 : Errors that occurred while the server was validating the challenge, if any,
 structured as problem documents {{!RFC7807}}. The server MUST NOT modify the
 array except by appending entries onto the end. The server can limit the size
-of this object by limiting the number of times it will retry a challenge.
+of this object by limiting the number of times it will try to validate a challenge.
 
 All additional fields are specified by the challenge type.  If the server sets a
-challenge's "status" to "invalid", it SHOULD also include the "error" field to
+challenge's "status" to "invalid", it SHOULD also include the "errors" field to
 help the client diagnose why the challenge failed.
 
 Different challenges allow the server to obtain proof of different aspects of
@@ -1986,7 +1993,7 @@ key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 
 The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
 using the SHA-256 digest [FIPS180-4].  As noted in JWA {{!RFC7518}} any prepended
-zero octets in the JWK object MUST be stripped before doing the computation.
+zero octets in the fields of a JWK object MUST be stripped before doing the computation.
 
 As specified in the individual challenges below, the token for a challenge is a
 string comprised entirely of characters in the URL-safe base64 alphabet.
@@ -2024,8 +2031,9 @@ retries, servers SHOULD rate-limit such requests.
 ## HTTP Challenge
 
 With HTTP validation, the client in an ACME transaction proves its control over
-a domain name by proving that for that domain name it can provision resources
-to be returned by an HTTP server. The ACME server challenges the client to
+a domain name by proving that can provision HTTP resources on a server with that
+domain name.
+The ACME server challenges the client to
 provision a file at a specific path, with a specific string as its content.
 
 As a domain may resolve to multiple IPv4 and IPv6 addresses, the server will
@@ -2040,8 +2048,8 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy.
-It MUST NOT contain any characters outside the base64url alphabet, including
-padding characters ("=").
+It MUST NOT contain any characters outside the base64url alphabet, and MUST NOT
+include base64 padding characters ("=").
 
 ~~~~~~~~~~
 GET /acme/authz/1234/0 HTTP/1.1
@@ -2074,7 +2082,7 @@ HTTP/1.1 200 OK
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
 ~~~~~~~~~~
 
-The client's response to this challenge indicates its agreement to this
+The client's response to the validation request indicates its agreement to this
 challenge by sending the server the key authorization covering the challenge's
 token and the client's account key.
 
@@ -2111,8 +2119,8 @@ domain by verifying that the resource was provisioned as expected.
 
 1. Construct a URL by populating the URL template {{!RFC6570}}
    "http://{domain}/.well-known/acme-challenge/{token}", where:
-  * the domain field is set to the domain name being verified; and
-  * the token field is set to the token in the challenge.
+    * the domain field is set to the domain name being verified; and
+    * the token field is set to the token in the challenge.
 2. Verify that the resulting URL is well-formed.
 3. Dereference the URL using an HTTP GET request.  This request MUST be sent to
    TCP port 80 on the HTTP server.
@@ -2259,7 +2267,7 @@ A client responds to this challenge by constructing a key authorization from the
 "token" value provided in the challenge and the client's account key.  The
 client then computes the SHA-256 digest [FIPS180-4] of the key authorization.
 
-The record provisioned to the DNS is the base64url encoding of this digest.  The
+The record provisioned to the DNS contains the base64url encoding of this digest.  The
 client constructs the validation domain name by prepending the label
 "_acme-challenge" to the domain name being validated, then provisions a TXT
 record with the digest value under that name. For example, if the domain name
@@ -2403,7 +2411,7 @@ Applications which use this media type: Any MIME-compliant transport
 
 Additional information:
 
-File should contain one or more certificates encoded as PEM according to
+File contains one or more certificates encoded with the PEM textual encoding, according to
 RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
 certificate MUST be an end-entity certificate. Each following certificate
 SHOULD directly certify one preceding it. Because certificate validation
@@ -2485,6 +2493,7 @@ Index value:
 document, and replace URL-TBD with the URL assigned by IANA for registries of
 ACME parameters. ]]
 
+
 ## New Registries
 
 This document requests that IANA create the following new registries:
@@ -2553,6 +2562,30 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | finalizeURL    | string               | false        | RFC XXXX  |
 | certificate    | string               | false        | RFC XXXX  |
 
+### Fields in Authorization Objects {#iana-authz}
+
+This registry lists field names that are defined for use in ACME authorization
+objects.  Fields marked as "configurable" may be included in a
+new-authorization request.
+
+Template:
+
+* Field name: The string to be used as a field name in the JSON object
+* Field type: The type of value to be provided, e.g., string, boolean, array of
+  string
+* Client configurable: Boolean indicating whether the server should accept
+  values provided by the client
+* Reference: Where this field is defined
+
+Initial contents: The fields and descriptions defined in {{authorization-objects}}.
+
+| Field Name  | Field Type      | Configurable | Reference |
+|:------------|:----------------|:-------------|:----------|
+| identifier  | object          | true         | RFC XXXX  |
+| status      | string          | false        | RFC XXXX  |
+| expires     | string          | false        | RFC XXXX  |
+| challenges  | array of object | false        | RFC XXXX  |
+
 ### Error Types {#iana-error}
 
 This registry lists values that are used within URN values that are provided in
@@ -2583,8 +2616,10 @@ Initial contents:
 
 | Field Name     | Resource Type        | Reference |
 |:---------------|:---------------------|:----------|
+| new-nonce      | New nonce            | RFC XXXX  |
 | new-account    | New account          | RFC XXXX  |
 | new-order      | New order            | RFC XXXX  |
+| new-authz      | New authorization    | RFC XXXX  |
 | revoke-cert    | Revoke certificate   | RFC XXXX  |
 | key-change     | Key change           | RFC XXXX  |
 
@@ -2667,7 +2702,7 @@ that ACME achieves these security goals within that threat model.  We also
 discuss the denial-of-service risks that ACME servers face, and a few other
 miscellaneous considerations.
 
-## Threat model
+## Threat Model
 
 As a service on the Internet, ACME broadly exists within the Internet threat
 model {{?RFC3552}}.  In analyzing ACME, it is useful to think of an ACME server
