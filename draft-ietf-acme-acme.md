@@ -733,7 +733,7 @@ Content-Type: application/json
   "meta": {
     "terms-of-service": "https://example.com/acme/terms/2017-5-30",
     "website": "https://www.example.com/",
-    "caa-identities": ["example.com"]
+    "caa-identities": ["example.com"],
     "external-account-required": false
   }
 }
