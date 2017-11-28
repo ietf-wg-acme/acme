@@ -291,6 +291,7 @@ address {
 <link href="#rfc.section.6.4.2" rel="Chapter" title="6.4.2 &#8220;nonce&#8221; (Nonce) JWS header parameter">
 <link href="#rfc.section.6.5" rel="Chapter" title="6.5 Rate limits">
 <link href="#rfc.section.6.6" rel="Chapter" title="6.6 Errors">
+<link href="#rfc.section.6.6.1" rel="Chapter" title="6.6.1 Sub-problems">
 <link href="#rfc.section.7" rel="Chapter" title="7 Certificate Management">
 <link href="#rfc.section.7.1" rel="Chapter" title="7.1 Resources">
 <link href="#rfc.section.7.1.1" rel="Chapter" title="7.1.1 Directory">
@@ -452,7 +453,9 @@ address {
 </li>
 <li>6.6.   <a href="#rfc.section.6.6">Errors</a>
 </li>
-</ul><li>7.   <a href="#rfc.section.7">Certificate Management</a>
+<ul><li>6.6.1.   <a href="#rfc.section.6.6.1">Sub-problems</a>
+</li>
+</ul></ul><li>7.   <a href="#rfc.section.7">Certificate Management</a>
 </li>
 <ul><li>7.1.   <a href="#rfc.section.7.1">Resources</a>
 </li>
@@ -843,6 +846,38 @@ address {
 </tbody>
 </table>
 <p id="rfc.section.6.6.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN <a href="#RFC3553" class="xref">[RFC3553]</a> namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of all errors.</p>
+<h1 id="rfc.section.6.6.1">
+<a href="#rfc.section.6.6.1">6.6.1.</a> <a href="#sub-problems" id="sub-problems">Sub-problems</a>
+</h1>
+<p id="rfc.section.6.6.1.p.1">Sometimes a CA may need to return multiple errors in response to a request.  Additionally, the CA may need to attribute errors to specific identifiers.  For instance, a new-order request may contain multiple identifiers for which the CA cannot issue. In this situation, an ACME problem document MAY contain the &#8220;sub-problems&#8221; field, containing a JSON array of problem documents, each of which MAY contain an &#8220;identifier&#8221; field. If present, the &#8220;identifier&#8221; field MUST contain an ACME identifier (<a href="#iana-identifier" class="xref">Section 9.7.5</a>). The &#8220;identifier&#8221; field MUST NOT be present at the top level in ACME problem documents. It can only be present in sub-problems.  Sub-problems need not all have the same type, and do not need to match the top level type.</p>
+<p id="rfc.section.6.6.1.p.2">ACME clients may choose to use the &#8220;identifier&#8221; field of a sub-problem as a hint that an operation would succeed if that identifier were omitted. For instance, if an order contains ten DNS identifiers, and the new-order request returns a problem document with two sub-problems, referencing two of those identifiers, the ACME client may choose to submit another order containing only the eight identifiers not listed in the problem document.</p>
+<pre>
+HTTP/1.1 403 Forbidden
+Content-Type: application/problem+json
+
+{
+    "type": "urn:ietf:params:acme:error:malformed",
+    "detail": "Some of the identifiers requested were rejected",
+    "sub-problems": [
+        {
+            "type": "urn:ietf:params:acme:error:malformed",
+            "value": "Invalid underscore in DNS name \"_example.com\"",
+            "identifier": {
+                "type": "dns",
+                "value": "_example.com"
+            }
+        },
+        {
+            "type": "urn:ietf:params:acme:error:rejectedIdentifier",
+            "value": "This CA will not issue for \"example.net\"",
+            "identifier": {
+                "type": "dns",
+                "value": "example.net"
+            }
+        }
+    ]
+}
+</pre>
 <h1 id="rfc.section.7">
 <a href="#rfc.section.7">7.</a> <a href="#certificate-management" id="certificate-management">Certificate Management</a>
 </h1>

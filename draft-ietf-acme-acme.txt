@@ -95,17 +95,17 @@ Table of Contents
        6.4.2.  "nonce" (Nonce) JWS header parameter  . . . . . . . .  13
      6.5.  Rate limits . . . . . . . . . . . . . . . . . . . . . . .  13
      6.6.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  13
-   7.  Certificate Management  . . . . . . . . . . . . . . . . . . .  15
-     7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  15
-       7.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  18
-       7.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  19
-       7.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  20
-       7.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  22
-     7.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  24
-     7.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  25
-       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  27
-       7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  27
-       7.3.3.  Account Information . . . . . . . . . . . . . . . . .  28
+       6.6.1.  Sub-problems  . . . . . . . . . . . . . . . . . . . .  15
+   7.  Certificate Management  . . . . . . . . . . . . . . . . . . .  16
+     7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  16
+       7.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  19
+       7.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  20
+       7.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  21
+       7.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  23
+     7.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  25
+     7.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  26
+       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  28
+       7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  28
 
 
 
@@ -114,54 +114,54 @@ Barnes, et al.            Expires June 1, 2018                  [Page 2]
 Internet-Draft                    ACME                     November 2017
 
 
-       7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  28
-       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  29
-       7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  31
-       7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  33
-     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  34
-       7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  37
-       7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  39
-     7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  40
-       7.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  41
-       7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  43
-     7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  44
-   8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  46
-     8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  48
-     8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  48
-     8.3.  HTTP Challenge  . . . . . . . . . . . . . . . . . . . . .  49
-     8.4.  TLS with Server Name Indication (TLS SNI) Challenge . . .  51
-     8.5.  DNS Challenge . . . . . . . . . . . . . . . . . . . . . .  53
-     8.6.  Out-of-Band Challenge . . . . . . . . . . . . . . . . . .  55
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  56
-     9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  56
-     9.2.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  57
-     9.3.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  57
-     9.4.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  57
-     9.5.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  58
-     9.6.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  58
-     9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  58
-       9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  59
-       9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  60
-       9.7.3.  Error Types . . . . . . . . . . . . . . . . . . . . .  61
-       9.7.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  61
-       9.7.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  62
-       9.7.6.  Validation Methods  . . . . . . . . . . . . . . . . .  63
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  64
-     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  64
-     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  65
-     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  67
-     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  68
-     10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  69
-   11. Operational Considerations  . . . . . . . . . . . . . . . . .  69
-     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  70
-     11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  70
-     11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  71
-     11.4.  Malformed Certificate Chains . . . . . . . . . . . . . .  71
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  72
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  72
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  72
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  75
-     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  76
+       7.3.3.  Account Information . . . . . . . . . . . . . . . . .  29
+       7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  29
+       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  30
+       7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  32
+       7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  34
+     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  35
+       7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  38
+       7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  40
+     7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  41
+       7.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  42
+       7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  44
+     7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  45
+   8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  47
+     8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  49
+     8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  49
+     8.3.  HTTP Challenge  . . . . . . . . . . . . . . . . . . . . .  50
+     8.4.  TLS with Server Name Indication (TLS SNI) Challenge . . .  52
+     8.5.  DNS Challenge . . . . . . . . . . . . . . . . . . . . . .  54
+     8.6.  Out-of-Band Challenge . . . . . . . . . . . . . . . . . .  56
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  57
+     9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  57
+     9.2.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  58
+     9.3.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  58
+     9.4.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  58
+     9.5.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  59
+     9.6.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  59
+     9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  59
+       9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  60
+       9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  61
+       9.7.3.  Error Types . . . . . . . . . . . . . . . . . . . . .  62
+       9.7.4.  Resource Types  . . . . . . . . . . . . . . . . . . .  62
+       9.7.5.  Identifier Types  . . . . . . . . . . . . . . . . . .  63
+       9.7.6.  Validation Methods  . . . . . . . . . . . . . . . . .  64
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  65
+     10.1.  Threat model . . . . . . . . . . . . . . . . . . . . . .  65
+     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  66
+     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  68
+     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  69
+     10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  70
+   11. Operational Considerations  . . . . . . . . . . . . . . . . .  70
+     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  71
+     11.2.  Default Virtual Hosts  . . . . . . . . . . . . . . . . .  71
+     11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  72
+     11.4.  Malformed Certificate Chains . . . . . . . . . . . . . .  72
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  73
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  73
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  73
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  76
 
 
 
@@ -170,7 +170,8 @@ Barnes, et al.            Expires June 1, 2018                  [Page 3]
 Internet-Draft                    ACME                     November 2017
 
 
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  76
+     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  77
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  77
 
 1.  Introduction
 
@@ -217,7 +218,6 @@ Internet-Draft                    ACME                     November 2017
    issued, these are all completely ad hoc procedures and are
    accomplished by getting the human user to follow interactive natural-
    language instructions from the CA rather than by machine-implemented
-   published protocols.  In many cases, the instructions are difficult
 
 
 
@@ -226,6 +226,7 @@ Barnes, et al.            Expires June 1, 2018                  [Page 4]
 Internet-Draft                    ACME                     November 2017
 
 
+   published protocols.  In many cases, the instructions are difficult
    to follow and cause significant confusion.  Informal usability tests
    by the authors indicate that webmasters often need 1-3 hours to
    obtain and install a certificate for a domain.  Even in the best
@@ -272,7 +273,6 @@ Internet-Draft                    ACME                     November 2017
    circumstances, all steps in the request, verification, and issuance
    process can be represented and performed by Internet protocols with
    no out-of-band human intervention.
-
 
 
 
@@ -808,6 +808,66 @@ Internet-Draft                    ACME                     November 2017
    the standard types.  Clients SHOULD display the "detail" field of all
    errors.
 
+6.6.1.  Sub-problems
+
+   Sometimes a CA may need to return multiple errors in response to a
+   request.  Additionally, the CA may need to attribute errors to
+   specific identifiers.  For instance, a new-order request may contain
+   multiple identifiers for which the CA cannot issue.  In this
+   situation, an ACME problem document MAY contain the "sub-problems"
+   field, containing a JSON array of problem documents, each of which
+   MAY contain an "identifier" field.  If present, the "identifier"
+   field MUST contain an ACME identifier (Section 9.7.5).  The
+   "identifier" field MUST NOT be present at the top level in ACME
+   problem documents.  It can only be present in sub-problems.  Sub-
+   problems need not all have the same type, and do not need to match
+   the top level type.
+
+   ACME clients may choose to use the "identifier" field of a sub-
+   problem as a hint that an operation would succeed if that identifier
+   were omitted.  For instance, if an order contains ten DNS
+   identifiers, and the new-order request returns a problem document
+   with two sub-problems, referencing two of those identifiers, the ACME
+   client may choose to submit another order containing only the eight
+   identifiers not listed in the problem document.
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 1, 2018                 [Page 15]
+
+Internet-Draft                    ACME                     November 2017
+
+
+ HTTP/1.1 403 Forbidden
+ Content-Type: application/problem+json
+
+ {
+     "type": "urn:ietf:params:acme:error:malformed",
+     "detail": "Some of the identifiers requested were rejected",
+     "sub-problems": [
+         {
+             "type": "urn:ietf:params:acme:error:malformed",
+             "value": "Invalid underscore in DNS name \"_example.com\"",
+             "identifier": {
+                 "type": "dns",
+                 "value": "_example.com"
+             }
+         },
+         {
+             "type": "urn:ietf:params:acme:error:rejectedIdentifier",
+             "value": "This CA will not issue for \"example.net\"",
+             "identifier": {
+                 "type": "dns",
+                 "value": "example.net"
+             }
+         }
+     ]
+ }
+
 7.  Certificate Management
 
    In this section, we describe the certificate management functions
@@ -831,16 +891,15 @@ Internet-Draft                    ACME                     November 2017
    o  Account resources, representing information about an account
       (Section 7.1.2, Section 7.3)
 
-   o  Order resources, representing an account's requests to issue
-      certificates (Section 7.1.3)
 
 
-
-
-Barnes, et al.            Expires June 1, 2018                 [Page 15]
+Barnes, et al.            Expires June 1, 2018                 [Page 16]
 
 Internet-Draft                    ACME                     November 2017
 
+
+   o  Order resources, representing an account's requests to issue
+      certificates (Section 7.1.3)
 
    o  Authorization resources, representing an account's authorization
       to act for an identifier (Section 7.1.4)
@@ -890,10 +949,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-
-
-
-Barnes, et al.            Expires June 1, 2018                 [Page 16]
+Barnes, et al.            Expires June 1, 2018                 [Page 17]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -949,7 +1005,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 17]
+Barnes, et al.            Expires June 1, 2018                 [Page 18]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1005,7 +1061,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 18]
+Barnes, et al.            Expires June 1, 2018                 [Page 19]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1061,7 +1117,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 19]
+Barnes, et al.            Expires June 1, 2018                 [Page 20]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1117,7 +1173,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 20]
+Barnes, et al.            Expires June 1, 2018                 [Page 21]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1173,7 +1229,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 21]
+Barnes, et al.            Expires June 1, 2018                 [Page 22]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1229,7 +1285,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 22]
+Barnes, et al.            Expires June 1, 2018                 [Page 23]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1285,7 +1341,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 23]
+Barnes, et al.            Expires June 1, 2018                 [Page 24]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1341,7 +1397,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 24]
+Barnes, et al.            Expires June 1, 2018                 [Page 25]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1397,7 +1453,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 25]
+Barnes, et al.            Expires June 1, 2018                 [Page 26]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1453,7 +1509,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 26]
+Barnes, et al.            Expires June 1, 2018                 [Page 27]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1509,7 +1565,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 27]
+Barnes, et al.            Expires June 1, 2018                 [Page 28]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1565,7 +1621,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 28]
+Barnes, et al.            Expires June 1, 2018                 [Page 29]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1621,7 +1677,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 29]
+Barnes, et al.            Expires June 1, 2018                 [Page 30]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1677,7 +1733,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 30]
+Barnes, et al.            Expires June 1, 2018                 [Page 31]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1733,7 +1789,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 31]
+Barnes, et al.            Expires June 1, 2018                 [Page 32]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1789,7 +1845,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 32]
+Barnes, et al.            Expires June 1, 2018                 [Page 33]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1845,7 +1901,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 33]
+Barnes, et al.            Expires June 1, 2018                 [Page 34]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1901,7 +1957,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 34]
+Barnes, et al.            Expires June 1, 2018                 [Page 35]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -1957,7 +2013,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 35]
+Barnes, et al.            Expires June 1, 2018                 [Page 36]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2013,7 +2069,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 36]
+Barnes, et al.            Expires June 1, 2018                 [Page 37]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2069,7 +2125,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 37]
+Barnes, et al.            Expires June 1, 2018                 [Page 38]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2125,7 +2181,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 38]
+Barnes, et al.            Expires June 1, 2018                 [Page 39]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2181,7 +2237,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 39]
+Barnes, et al.            Expires June 1, 2018                 [Page 40]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2237,7 +2293,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 40]
+Barnes, et al.            Expires June 1, 2018                 [Page 41]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2293,7 +2349,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 41]
+Barnes, et al.            Expires June 1, 2018                 [Page 42]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2349,7 +2405,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 42]
+Barnes, et al.            Expires June 1, 2018                 [Page 43]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2405,7 +2461,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 43]
+Barnes, et al.            Expires June 1, 2018                 [Page 44]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2461,7 +2517,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 44]
+Barnes, et al.            Expires June 1, 2018                 [Page 45]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2517,7 +2573,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 45]
+Barnes, et al.            Expires June 1, 2018                 [Page 46]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2573,7 +2629,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 46]
+Barnes, et al.            Expires June 1, 2018                 [Page 47]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2629,7 +2685,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 47]
+Barnes, et al.            Expires June 1, 2018                 [Page 48]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2685,7 +2741,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 48]
+Barnes, et al.            Expires June 1, 2018                 [Page 49]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2741,7 +2797,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 49]
+Barnes, et al.            Expires June 1, 2018                 [Page 50]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2797,7 +2853,7 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 50]
+Barnes, et al.            Expires June 1, 2018                 [Page 51]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2853,7 +2909,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 51]
+Barnes, et al.            Expires June 1, 2018                 [Page 52]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2909,7 +2965,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 52]
+Barnes, et al.            Expires June 1, 2018                 [Page 53]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -2965,7 +3021,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 53]
+Barnes, et al.            Expires June 1, 2018                 [Page 54]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3021,7 +3077,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 54]
+Barnes, et al.            Expires June 1, 2018                 [Page 55]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3077,7 +3133,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 55]
+Barnes, et al.            Expires June 1, 2018                 [Page 56]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3133,7 +3189,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 56]
+Barnes, et al.            Expires June 1, 2018                 [Page 57]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3189,7 +3245,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 57]
+Barnes, et al.            Expires June 1, 2018                 [Page 58]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3245,7 +3301,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 58]
+Barnes, et al.            Expires June 1, 2018                 [Page 59]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3301,7 +3357,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 59]
+Barnes, et al.            Expires June 1, 2018                 [Page 60]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3357,7 +3413,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 60]
+Barnes, et al.            Expires June 1, 2018                 [Page 61]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3413,7 +3469,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 61]
+Barnes, et al.            Expires June 1, 2018                 [Page 62]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3469,7 +3525,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 62]
+Barnes, et al.            Expires June 1, 2018                 [Page 63]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3525,7 +3581,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 63]
+Barnes, et al.            Expires June 1, 2018                 [Page 64]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3581,7 +3637,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 64]
+Barnes, et al.            Expires June 1, 2018                 [Page 65]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3637,7 +3693,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 65]
+Barnes, et al.            Expires June 1, 2018                 [Page 66]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3693,7 +3749,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 66]
+Barnes, et al.            Expires June 1, 2018                 [Page 67]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3749,7 +3805,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 67]
+Barnes, et al.            Expires June 1, 2018                 [Page 68]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3805,7 +3861,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 68]
+Barnes, et al.            Expires June 1, 2018                 [Page 69]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3861,7 +3917,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 69]
+Barnes, et al.            Expires June 1, 2018                 [Page 70]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3917,7 +3973,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 70]
+Barnes, et al.            Expires June 1, 2018                 [Page 71]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -3973,7 +4029,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 71]
+Barnes, et al.            Expires June 1, 2018                 [Page 72]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -4029,7 +4085,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 72]
+Barnes, et al.            Expires June 1, 2018                 [Page 73]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -4085,7 +4141,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 73]
+Barnes, et al.            Expires June 1, 2018                 [Page 74]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -4141,7 +4197,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 74]
+Barnes, et al.            Expires June 1, 2018                 [Page 75]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -4197,7 +4253,7 @@ Internet-Draft                    ACME                     November 2017
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 75]
+Barnes, et al.            Expires June 1, 2018                 [Page 76]
 
 Internet-Draft                    ACME                     November 2017
 
@@ -4253,4 +4309,4 @@ Authors' Addresses
 
 
 
-Barnes, et al.            Expires June 1, 2018                 [Page 76]
+Barnes, et al.            Expires June 1, 2018                 [Page 77]
