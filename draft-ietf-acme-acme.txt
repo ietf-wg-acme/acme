@@ -1357,7 +1357,7 @@ Internet-Draft                    ACME                     November 2017
 
      "challenges": [
        {
-         "url": "https://example.com/authz/1234/0",
+         "url": "https://example.com/acme/authz/1234/0",
          "type": "http-01",
          "status": "valid",
          "token": "DGyRejmCefe7v4NfDGDKfA"
@@ -1635,7 +1635,7 @@ Internet-Draft                    ACME                     November 2017
  {
    "type": "urn:ietf:params:acme:error:userActionRequired",
    "detail": "Terms of service have changed",
-   "instance": "http://example.com/agreement/?token=W8Ih3PswD-8"
+   "instance": "http://example.com/acme/agreement/?token=W8Ih3PswD-8"
  }
 
 7.3.5.  External Account Binding
@@ -2317,17 +2317,17 @@ Internet-Draft                    ACME                     November 2017
      "challenges": [
        {
          "type": "http-01",
-         "url": "https://example.com/authz/1234/0",
+         "url": "https://example.com/acme/authz/1234/0",
          "token": "DGyRejmCefe7v4NfDGDKfA"
        },
        {
          "type": "tls-sni-02",
-         "url": "https://example.com/authz/1234/1",
+         "url": "https://example.com/acme/authz/1234/1",
          "token": "DGyRejmCefe7v4NfDGDKfA"
        },
        {
          "type": "dns-01",
-         "url": "https://example.com/authz/1234/2",
+         "url": "https://example.com/acme/authz/1234/2",
          "token": "DGyRejmCefe7v4NfDGDKfA"
        }
      ]
@@ -2437,7 +2437,7 @@ Internet-Draft                    ACME                     November 2017
      "challenges": [
        {
          "type": "http-01"
-         "url": "https://example.com/authz/1234/0",
+         "url": "https://example.com/acme/authz/1234/0",
          "status": "valid",
          "validated": "2014-12-01T12:05:00Z",
          "token": "IlirfxKKXAsHtmzK29Pj8A",
@@ -2592,7 +2592,7 @@ Internet-Draft                    ACME                     November 2017
    {
      "type": "urn:ietf:params:acme:error:unauthorized",
      "detail": "No authorization provided for name example.net",
-     "instance": "http://example.com/doc/unauthorized"
+     "instance": "http://example.com/acme/doc/unauthorized"
    }
 
 8.  Identifier Validation Challenges
@@ -3112,16 +3112,16 @@ Internet-Draft                    ACME                     November 2017
       from the "url" field of the challenge, which identifies the
       challenge itself.
 
-   GET /acme/authz/1234/3 HTTP/1.1
-   Host: example.com
+GET /acme/authz/1234/3 HTTP/1.1
+Host: example.com
 
-   HTTP/1.1 200 OK
-   {
-     "type": "oob-01",
-     "url": "https://example.com/acme/authz/1234/3",
-     "status": "pending",
-     "href": "https://example.com/validate/evaGxfADs6pSRb2LAv9IZ"
-   }
+HTTP/1.1 200 OK
+{
+  "type": "oob-01",
+  "url": "https://example.com/acme/authz/1234/3",
+  "status": "pending",
+  "href": "https://example.com/out-of-band/validate/evaGxfADs6pSRb2LAv9IZ"
+}
 
    A client responds to this challenge by presenting the indicated URL
    for a human user to navigate to.  If the user chooses to complete
