@@ -1179,7 +1179,7 @@ Content-Language: en
 ### External Account Binding
 
 The server MAY require a value to be present for the "external-account-binding"
-field.  This can be used to an ACME account with an existing account in a
+field.  This can be used to associate an ACME account with an existing account in a
 non-ACME system, such as a CA customer database.
 
 To enable ACME account binding, a CA needs to provision the ACME client with a
@@ -1517,7 +1517,7 @@ a virtual server starts up.
 
 In some cases, a CA running an ACME server might have a completely external,
 non-ACME process for authorizing a client to issue for an identifier.  In these
-case, the CA should provision its ACME server with authorization objects
+cases, the CA should provision its ACME server with authorization objects
 corresponding to these authorizations and reflect them as already valid in any
 orders submitted by the client.
 
