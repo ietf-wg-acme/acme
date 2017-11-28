@@ -48,9 +48,6 @@ applicant can use to automate the process of verification and certificate
 issuance.  The protocol also provides facilities for other certificate
 management functions, such as certificate revocation.
 
-DISCLAIMER: This is a work in progress draft of ACME and has not yet had a
-thorough security analysis.
-
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH: The source for this draft is
 maintained in GitHub. Suggested changes should be submitted as pull requests at
 <https://github.com/ietf-wg-acme/acme>. Instructions are on that page as well.
@@ -1172,7 +1169,7 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:userActionRequired",
   "detail": "Terms of service have changed",
-  "instance": "http://example.com/acme/agreement/?token=W8Ih3PswD-8"
+  "instance": "https://example.com/acme/agreement/?token=W8Ih3PswD-8"
 }
 ~~~~~
 
@@ -1897,7 +1894,7 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
   "detail": "No authorization provided for name example.net",
-  "instance": "http://example.com/acme/doc/unauthorized"
+  "instance": "https://example.com/acme/doc/unauthorized"
 }
 ~~~~~~~~~~
 
@@ -2002,7 +1999,13 @@ propagating across a cluster or firewall rules not being in place.
 
 Clients SHOULD NOT respond to challenges until they believe that the server's
 queries will succeed. If a server's initial validation query fails, the server
-SHOULD retry the query after some time.  While the server is still trying, the
+SHOULD retry the query after some time, in order to account for delay in setting 
+up responses such as DNS records or HTTP resources.  The precise retry schedule
+is up to the server, but server operators should keep in mind the operational
+scenarios that the schedule is trying to accommodate.  For example, a server
+might perform the first few of retries at intervals 5 or 10 seconds to catch
+automated clients, then back off to intervals of a minute or more to deal with
+manual setup.  While the server is still trying, the
 status of the challenge remains "pending"; it is only marked "invalid" once the
 server has given up.
 
