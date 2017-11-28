@@ -872,12 +872,6 @@ expires (optional, string):
 encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
 for objects with "valid" in the "status" field.
 
-scope (optional, string):
-: If this field is present, then it MUST contain a URL for an order resource,
-such that this authorization is only valid for that resource.  If this field is
-absent, then the CA MUST consider this authorization valid for all orders until
-the authorization expires.
-
 challenges (required, array of objects):
 : For pending authorizations, the challenges that the client can fulfill in
 order to prove possession of the identifier.  For final authorizations, the
@@ -1605,9 +1599,7 @@ server of two things:
 This process may be repeated to associate multiple identifiers to a key pair
 (e.g., to request certificates with multiple identifiers), or to associate
 multiple accounts with an identifier (e.g., to allow multiple entities to manage
-certificates).  The server may declare that an authorization is only valid for a
-specific order by setting the "scope" field of the authorization to the
-URL for that order.
+certificates).
 
 Authorization resources are created by the server in response to certificate
 orders or authorization requests submitted by an account key holder; their
