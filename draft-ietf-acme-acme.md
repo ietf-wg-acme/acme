@@ -501,6 +501,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support               |
 | invalidContact        | A contact URL for an account was invalid                                       |
 | unsupportedContact    | A contact URL for an account used an unsupported protocol scheme               |
+| externalAccountNeeded | The request must include an external account binding                           |
 | accountDoesNotExist   | The request specified an account that does not exist                           |
 | malformed             | The request message was malformed                                              |
 | rateLimited           | The request exceeds a rate limit                                               |
@@ -711,6 +712,11 @@ referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
 use when configuring CAA records.
 
+"external-account-required" (optional, boolean):
+: If this field is present and set to "true", then the CA requires that all
+new-acount requests include an "external-account-binding" field associating them
+with an external account.
+
 Clients access the directory by sending a GET request to the directory URL.
 
 ~~~~~~~~~~
@@ -728,6 +734,7 @@ Content-Type: application/json
     "terms-of-service": "https://example.com/acme/terms/2017-5-30",
     "website": "https://www.example.com/",
     "caa-identities": ["example.com"]
+    "external-account-required": false
   }
 }
 ~~~~~~~~~~
@@ -1229,6 +1236,12 @@ Content-Type: application/jose+json
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 ~~~~~
+
+If a CA requires that new-account requests contain an "external-account-binding"
+field, then it MUST provide the value "true" in the "terms-of-service" subfield
+of the "meta" field in the directory object.  If such a CA receives a
+new-account request without an "external-account-binding" field, then it should
+reply with an error of type "externalAccountRequired". 
 
 When a CA receives a new-account request containing an
 "external-account-binding" field, it decides whether or not to verify the
