@@ -1702,7 +1702,7 @@ updates the authorization object received from the server by filling in any
 required information in the elements of the "challenges" dictionary.
 
 The client sends these updates back to the server in the form of a JSON object
-with the response fields required by the challenge type, carried in a POST
+with contents as specified by the challenge type, carried in a POST
 request to the challenge URL (not authorization URL) once it is ready for
 the server to attempt validation.
 
@@ -1729,7 +1729,7 @@ Content-Type: application/jose+json
 ~~~~~~~~~~
 
 The server updates the authorization document by updating its representation of
-the challenge with the response fields provided by the client.  The server MUST
+the challenge with the response object provided by the client.  The server MUST
 ignore any fields in the response object that are not specified as response
 fields for this type of challenge.  The server provides a 200 (OK) response
 with the updated challenge object as its body.
