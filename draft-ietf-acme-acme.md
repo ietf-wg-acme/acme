@@ -48,9 +48,6 @@ applicant can use to automate the process of verification and certificate
 issuance.  The protocol also provides facilities for other certificate
 management functions, such as certificate revocation.
 
-DISCLAIMER: This is a work in progress draft of ACME and has not yet had a
-thorough security analysis.
-
 RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH: The source for this draft is
 maintained in GitHub. Suggested changes should be submitted as pull requests at
 <https://github.com/ietf-wg-acme/acme>. Instructions are on that page as well.
@@ -1172,14 +1169,14 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:userActionRequired",
   "detail": "Terms of service have changed",
-  "instance": "http://example.com/acme/agreement/?token=W8Ih3PswD-8"
+  "instance": "https://example.com/acme/agreement/?token=W8Ih3PswD-8"
 }
 ~~~~~
 
 ### External Account Binding
 
 The server MAY require a value to be present for the "external-account-binding"
-field.  This can be used to an ACME account with an existing account in a
+field.  This can be used to associate an ACME account with an existing account in a
 non-ACME system, such as a CA customer database.
 
 To enable ACME account binding, a CA needs to provision the ACME client with a
@@ -1517,7 +1514,7 @@ a virtual server starts up.
 
 In some cases, a CA running an ACME server might have a completely external,
 non-ACME process for authorizing a client to issue for an identifier.  In these
-case, the CA should provision its ACME server with authorization objects
+cases, the CA should provision its ACME server with authorization objects
 corresponding to these authorizations and reflect them as already valid in any
 orders submitted by the client.
 
@@ -1705,7 +1702,7 @@ updates the authorization object received from the server by filling in any
 required information in the elements of the "challenges" dictionary.
 
 The client sends these updates back to the server in the form of a JSON object
-with the response fields required by the challenge type, carried in a POST
+with contents as specified by the challenge type, carried in a POST
 request to the challenge URL (not authorization URL) once it is ready for
 the server to attempt validation.
 
@@ -1732,7 +1729,7 @@ Content-Type: application/jose+json
 ~~~~~~~~~~
 
 The server updates the authorization document by updating its representation of
-the challenge with the response fields provided by the client.  The server MUST
+the challenge with the response object provided by the client.  The server MUST
 ignore any fields in the response object that are not specified as response
 fields for this type of challenge.  The server provides a 200 (OK) response
 with the updated challenge object as its body.
@@ -2001,7 +1998,13 @@ propagating across a cluster or firewall rules not being in place.
 
 Clients SHOULD NOT respond to challenges until they believe that the server's
 queries will succeed. If a server's initial validation query fails, the server
-SHOULD retry the query after some time.  While the server is still trying, the
+SHOULD retry the query after some time, in order to account for delay in setting 
+up responses such as DNS records or HTTP resources. The precise retry schedule
+is up to the server, but server operators should keep in mind the operational
+scenarios that the schedule is trying to accommodate.  Given that retries are
+intended to address things like propagation delays in HTTP or DNS provisioning,
+there should not usually be any reason to retry more often than every 5 or 10
+seconds. While the server is still trying, the
 status of the challenge remains "pending"; it is only marked "invalid" once the
 server has given up.
 
@@ -2346,10 +2349,8 @@ HTTP/1.1 200 OK
 A client responds to this challenge by presenting the indicated URL for a human
 user to navigate to.  If the user chooses to complete this challenge (by visiting
 the website and completing its instructions), the client indicates this by
-sending a simple acknowledgement response to the server.
-
-type (required, string):
-: The string "oob-01"
+sending a simple acknowledgement response to the server.  The payload of this
+response is an empty JSON object ("{}", or "e30" base64url-encoded).
 
 ~~~~~~~~~~
 POST /acme/authz/1234/3
@@ -2363,9 +2364,7 @@ Content-Type: application/jose+json
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/authz/1234/3"
   }),
-  "payload": base64url({
-    "type": "oob-01"
-  }),
+  "payload": "e30",
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 ~~~~~~~~~~
