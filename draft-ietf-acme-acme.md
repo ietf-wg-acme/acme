@@ -152,8 +152,8 @@ deploying an HTTPS server using ACME, the experience would be something like thi
 * In the background, the ACME client contacts the CA and requests that it
   issue a certificate for the intended domain name(s).
 * The CA verifies that the client controls the requested domain name(s) by 
-  having the ACME client perform some action related to the domain name(s)
-* Once the CA is satisfied, it issues hte certificate and the ACME client
+  having the ACME client perform some action related to the domain name(s).
+* Once the CA is satisfied, it issues the certificate and the ACME client
   automatically downloads and installs it, potentially notifying the operator
   via email, SMS, etc.
 * The ACME client periodically contacts the CA to get updated certificates,
@@ -191,8 +191,8 @@ from the client.
 # Protocol Overview
 
 ACME allows a client to request certificate management actions using a set of
-JavaScript Object Notation (JSON) messages carried over HTTPS.  In many ways,
-issuance using ACME proceeds in much way as a traditional issuance process, in which a user creates an account,
+JavaScript Object Notation (JSON) messages carried over HTTPS.  
+Issuance using ACME resembles a traditional CA's issuance process, in which a user creates an account,
 requests a certificate, and proves control of the domains in that certificate in
 order for the CA to sign the requested certificate.
 
@@ -467,7 +467,7 @@ then the verifier MUST reject the JWS as malformed.
 
 ## Rate Limits
 
-Creation of resources can be rate limited by servers to ensure fair usage and
+Creation of resources can be rate limited by ACME servers to ensure fair usage and
 prevent abuse.  Once the rate limit is exceeded, the server MUST respond
 with an error with the type "urn:ietf:params:acme:error:rateLimited".
 Additionally, the server SHOULD send a "Retry-After" header indicating
@@ -477,7 +477,7 @@ the current request with exactly the same parameters.
 
 In addition to the human-readable "detail" field of the error response, the
 server MAY send one or multiple link relations in the "Link" header pointing to
-documentation about the specific hit rate limits using the "help" link relation type.
+documentation about the specific rate limit that was hit, using the "help" link relation type.
 
 ## Errors
 
@@ -519,9 +519,10 @@ set to a URI other than those defined above.  Servers MUST NOT use the ACME URN 
 namespace for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
 
-In the below, we use the tokens in the table above to refer to error types,
-rather than the full URNs.  For example, an "error of type 'badCSR'" refers to
-an error document with "type" value "urn:ietf:params:acme:error:badCSR".
+In the remainder of this document, we use the tokens in the table above to refer
+to error types, rather than the full URNs.  For example, an "error of type
+'badCSR'" refers to an error document with "type" value
+"urn:ietf:params:acme:error:badCSR".
 
 ### Sub-problems
 
@@ -1187,7 +1188,7 @@ existing account in a non-ACME system, such as a CA customer database.
 To enable ACME account binding, a CA needs to provide the ACME client with a
 MAC key and a key identifier, using some mechanism outside of ACME. The key
 identifier MUST be an ASCII string. The MAC key SHOULD be provided in
-base64url-encoded form, to maximize compatibility between provisioning systems
+base64url-encoded form, to maximize compatibility between non-ACME provisioning systems
 and ACME clients.
 
 The ACME client then computes a binding JWS to indicate the external account holder's
@@ -1523,7 +1524,7 @@ authorization before any virtual servers are created and only create a certifica
 a virtual server starts up.
 
 In some cases, a CA running an ACME server might have a completely external,
-non-ACME process for authorizing a client to request issuance for an identifier.  In these
+non-ACME process for authorizing a client to issue certificates for an identifier.  In these
 case, the CA should provision its ACME server with authorization objects
 corresponding to these authorizations and reflect them as already valid in any
 orders submitted by the client.
@@ -1934,7 +1935,7 @@ client (as objects in the "challenges" array), and the client responds by
 sending a response object in a POST request to a challenge URL.
 
 This section describes an initial set of challenge types.  The definition of a
-new type of challenge must describe:
+challenge type includes:
 
 1. Content of challenge objects
 2. Content of response objects
@@ -1954,7 +1955,7 @@ status (required, string):
 and "invalid".
 
 validated (optional, string):
-: The time at which the server considered this challenge complete, encoded in the
+: The time at which the server validated this challenge, encoded in the
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
@@ -2031,8 +2032,8 @@ retries, servers SHOULD rate-limit such requests.
 ## HTTP Challenge
 
 With HTTP validation, the client in an ACME transaction proves its control over
-a domain name by proving that can provision HTTP resources on a server with that
-domain name.
+a domain name by proving that it can provision HTTP resources on a server
+accessible under that domain name.
 The ACME server challenges the client to
 provision a file at a specific path, with a specific string as its content.
 
@@ -2492,7 +2493,6 @@ Index value:
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document, and replace URL-TBD with the URL assigned by IANA for registries of
 ACME parameters. ]]
-
 
 ## New Registries
 
