@@ -407,7 +407,6 @@ address {
   
   <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
 <p>Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation.</p>
-<p>DISCLAIMER: This is a work in progress draft of ACME and has not yet had a thorough security analysis.</p>
 <p>RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH: The source for this draft is maintained in GitHub. Suggested changes should be submitted as pull requests at <a href="https://github.com/ietf-wg-acme/acme">https://github.com/ietf-wg-acme/acme</a>. Instructions are on that page as well.  Editorial changes can be managed in GitHub, but any substantive change should be discussed on the ACME mailing list (acme@ietf.org).</p>
 <h1 id="rfc.status"><a href="#rfc.status">Status of This Memo</a></h1>
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
@@ -1340,13 +1339,13 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:userActionRequired",
   "detail": "Terms of service have changed",
-  "instance": "http://example.com/acme/agreement/?token=W8Ih3PswD-8"
+  "instance": "https://example.com/acme/agreement/?token=W8Ih3PswD-8"
 }
 </pre>
 <h1 id="rfc.section.7.3.5">
 <a href="#rfc.section.7.3.5">7.3.5.</a> <a href="#external-account-binding" id="external-account-binding">External Account Binding</a>
 </h1>
-<p id="rfc.section.7.3.5.p.1">The server MAY require a value to be present for the &#8220;external-account-binding&#8221; field.  This can be used to an ACME account with an existing account in a non-ACME system, such as a CA customer database.</p>
+<p id="rfc.section.7.3.5.p.1">The server MAY require a value to be present for the &#8220;external-account-binding&#8221; field.  This can be used to associate an ACME account with an existing account in a non-ACME system, such as a CA customer database.</p>
 <p id="rfc.section.7.3.5.p.2">To enable ACME account binding, a CA needs to provision the ACME client with a MAC key and a key identifier. The key identifier MUST be an ASCII string. The MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility between provisioning systems and ACME clients.</p>
 <p id="rfc.section.7.3.5.p.3">The ACME client then computes a binding JWS to indicate the external account&#8217;s approval of the ACME account key.  The payload of this JWS is the account key being registered, in JWK form.  The protected header of the JWS MUST meet the following criteria:</p>
 <p></p>
@@ -1576,7 +1575,7 @@ Location: https://example.com/acme/order/asdf
 <a href="#rfc.section.7.4.1">7.4.1.</a> <a href="#pre-authorization" id="pre-authorization">Pre-Authorization</a>
 </h1>
 <p id="rfc.section.7.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to a certificate order.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any virtual servers are created and only create a certificate when a virtual server starts up.</p>
-<p id="rfc.section.7.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue for an identifier.  In these case, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already valid in any orders submitted by the client.</p>
+<p id="rfc.section.7.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue for an identifier.  In these cases, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already valid in any orders submitted by the client.</p>
 <p id="rfc.section.7.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the field &#8220;new-authz&#8221; with a URL for the new authorization resource.</p>
 <p id="rfc.section.7.4.1.p.4">To request authorization for an identifier, the client sends a POST request to the new-authorization resource specifying the identifier for which authorization is being requested and how the server should behave with respect to existing authorizations for this identifier.</p>
 <p></p>
@@ -1704,7 +1703,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 <a href="#rfc.section.7.5.1">7.5.1.</a> <a href="#responding-to-challenges" id="responding-to-challenges">Responding to Challenges</a>
 </h1>
 <p id="rfc.section.7.5.1.p.1">To prove control of the identifier and receive authorization, the client needs to respond with information to complete the challenges.  To do this, the client updates the authorization object received from the server by filling in any required information in the elements of the &#8220;challenges&#8221; dictionary.</p>
-<p id="rfc.section.7.5.1.p.2">The client sends these updates back to the server in the form of a JSON object with the response fields required by the challenge type, carried in a POST request to the challenge URL (not authorization URL) once it is ready for the server to attempt validation.</p>
+<p id="rfc.section.7.5.1.p.2">The client sends these updates back to the server in the form of a JSON object with contents as specified by the challenge type, carried in a POST request to the challenge URL (not authorization URL) once it is ready for the server to attempt validation.</p>
 <p id="rfc.section.7.5.1.p.3">For example, if the client were to respond to the &#8220;http-01&#8221; challenge in the above authorization, it would send the following request:</p>
 <pre>
 POST /acme/authz/1234/0 HTTP/1.1
@@ -1724,7 +1723,7 @@ Content-Type: application/jose+json
   "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
 }
 </pre>
-<p id="rfc.section.7.5.1.p.4">The server updates the authorization document by updating its representation of the challenge with the response fields provided by the client.  The server MUST ignore any fields in the response object that are not specified as response fields for this type of challenge.  The server provides a 200 (OK) response with the updated challenge object as its body.</p>
+<p id="rfc.section.7.5.1.p.4">The server updates the authorization document by updating its representation of the challenge with the response object provided by the client.  The server MUST ignore any fields in the response object that are not specified as response fields for this type of challenge.  The server provides a 200 (OK) response with the updated challenge object as its body.</p>
 <p id="rfc.section.7.5.1.p.5">If the client&#8217;s response is invalid for any reason or does not provide the server with appropriate information to validate the challenge, then the server MUST return an HTTP error.  On receiving such an error, the client SHOULD undo any actions that have been taken to fulfill the challenge, e.g., removing files that have been provisioned to a web server.</p>
 <p id="rfc.section.7.5.1.p.6">The server is said to &#8220;finalize&#8221; the authorization when it has completed one of the validations, by assigning the authorization a status of &#8220;valid&#8221; or &#8220;invalid&#8221;, corresponding to whether it considers the account authorized for the identifier. If the final state is &#8220;valid&#8221;, then the server MUST include an &#8220;expires&#8221; field. When finalizing an authorization, the server MAY remove challenges other than the one that was completed, and may modify the &#8220;expires&#8221; field. The server SHOULD NOT remove challenges with status &#8220;invalid&#8221;.</p>
 <p id="rfc.section.7.5.1.p.7">Usually, the validation process will take some time, so the client will need to poll the authorization resource to see when it is finalized.  For challenges where the client can tell when the server has validated the challenge (e.g., by seeing an HTTP or DNS request from the server), the client SHOULD NOT begin polling until it has seen the validation request from the server.</p>
@@ -1889,7 +1888,7 @@ key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
 <a href="#rfc.section.8.2">8.2.</a> <a href="#retrying-challenges" id="retrying-challenges">Retrying Challenges</a>
 </h1>
 <p id="rfc.section.8.2.p.1">ACME challenges typically require the client to set up some network-accessible resource that the server can query in order to validate that the client controls an identifier.  In practice it is not uncommon for the server&#8217;s queries to fail while a resource is being set up, e.g., due to information propagating across a cluster or firewall rules not being in place.</p>
-<p id="rfc.section.8.2.p.2">Clients SHOULD NOT respond to challenges until they believe that the server&#8217;s queries will succeed. If a server&#8217;s initial validation query fails, the server SHOULD retry the query after some time.  While the server is still trying, the status of the challenge remains &#8220;pending&#8221;; it is only marked &#8220;invalid&#8221; once the server has given up.</p>
+<p id="rfc.section.8.2.p.2">Clients SHOULD NOT respond to challenges until they believe that the server&#8217;s queries will succeed. If a server&#8217;s initial validation query fails, the server SHOULD retry the query after some time, in order to account for delay in setting up responses such as DNS records or HTTP resources. The precise retry schedule is up to the server, but server operators should keep in mind the operational scenarios that the schedule is trying to accommodate.  Given that retries are intended to address things like propagation delays in HTTP or DNS provisioning, there should not usually be any reason to retry more often than every 5 or 10 seconds. While the server is still trying, the status of the challenge remains &#8220;pending&#8221;; it is only marked &#8220;invalid&#8221; once the server has given up.</p>
 <p id="rfc.section.8.2.p.3">The server MUST provide information about its retry state to the client via the &#8220;errors&#8221; field in the challenge and the Retry-After HTTP header field in response to requests to the challenge resource. The server MUST add an entry to the &#8220;errors&#8221; field in the challenge after each failed validation query. The server SHOULD set the Retry-After header field to a time after the server&#8217;s next validation query, since the status of the challenge will not change until that time.</p>
 <p id="rfc.section.8.2.p.4">Clients can explicitly request a retry by re-sending their response to a challenge in a new POST request (with a new nonce, etc.). This allows clients to request a retry when the state has changed (e.g., after firewall rules have been updated). Servers SHOULD retry a request immediately on receiving such a POST request. In order to avoid denial-of-service attacks via client-initiated retries, servers SHOULD rate-limit such requests.</p>
 <h1 id="rfc.section.8.3">
@@ -2117,13 +2116,7 @@ HTTP/1.1 200 OK
   "href": "https://example.com/out-of-band/validate/evaGxfADs6pSRb2LAv9IZ"
 }
 </pre>
-<p id="rfc.section.8.6.p.4">A client responds to this challenge by presenting the indicated URL for a human user to navigate to.  If the user chooses to complete this challenge (by visiting the website and completing its instructions), the client indicates this by sending a simple acknowledgement response to the server.</p>
-<p></p>
-
-<dl>
-<dt>type (required, string):</dt>
-<dd style="margin-left: 8">The string &#8220;oob-01&#8221;</dd>
-</dl>
+<p id="rfc.section.8.6.p.4">A client responds to this challenge by presenting the indicated URL for a human user to navigate to.  If the user chooses to complete this challenge (by visiting the website and completing its instructions), the client indicates this by sending a simple acknowledgement response to the server.  The payload of this response is an empty JSON object (&#8220;{}&#8221;, or &#8220;e30&#8221; base64url-encoded).</p>
 <pre>
 POST /acme/authz/1234/3
 Host: example.com
@@ -2136,13 +2129,11 @@ Content-Type: application/jose+json
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/authz/1234/3"
   }),
-  "payload": base64url({
-    "type": "oob-01"
-  }),
+  "payload": "e30",
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.8.6.p.6">On receiving a response, the server MUST verify that the value of the &#8220;type&#8221; field is &#8220;oob-01&#8221;.  Otherwise, the steps the server takes to validate identifier possession are determined by the server&#8217;s local policy.</p>
+<p id="rfc.section.8.6.p.5">On receiving a response, the server MUST verify that the value of the &#8220;type&#8221; field is &#8220;oob-01&#8221;.  Otherwise, the steps the server takes to validate identifier possession are determined by the server&#8217;s local policy.</p>
 <h1 id="rfc.section.9">
 <a href="#rfc.section.9">9.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
 </h1>

@@ -28,9 +28,6 @@ Abstract
    other certificate management functions, such as certificate
    revocation.
 
-   DISCLAIMER: This is a work in progress draft of ACME and has not yet
-   had a thorough security analysis.
-
    RFC EDITOR: PLEASE REMOVE THE FOLLOWING PARAGRAPH: The source for
    this draft is maintained in GitHub.  Suggested changes should be
    submitted as pull requests at https://github.com/ietf-wg-acme/acme
@@ -50,6 +47,9 @@ Status of This Memo
 
    Internet-Drafts are draft documents valid for a maximum of six months
    and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
 
 
 
@@ -57,9 +57,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 1]
 
 Internet-Draft                    ACME                     November 2017
 
-
-   time.  It is inappropriate to use Internet-Drafts as reference
-   material or to cite them other than as "work in progress."
 
    This Internet-Draft will expire on June 2, 2018.
 
@@ -106,6 +103,9 @@ Table of Contents
      7.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  26
        7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  28
        7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  28
+       7.3.3.  Account Information . . . . . . . . . . . . . . . . .  29
+       7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  29
+       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  30
 
 
 
@@ -114,9 +114,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 2]
 Internet-Draft                    ACME                     November 2017
 
 
-       7.3.3.  Account Information . . . . . . . . . . . . . . . . .  29
-       7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  29
-       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  30
        7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  32
        7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  34
      7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  35
@@ -131,16 +128,16 @@ Internet-Draft                    ACME                     November 2017
      8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  49
      8.3.  HTTP Challenge  . . . . . . . . . . . . . . . . . . . . .  50
      8.4.  TLS with Server Name Indication (TLS SNI) Challenge . . .  52
-     8.5.  DNS Challenge . . . . . . . . . . . . . . . . . . . . . .  54
+     8.5.  DNS Challenge . . . . . . . . . . . . . . . . . . . . . .  55
      8.6.  Out-of-Band Challenge . . . . . . . . . . . . . . . . . .  56
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  57
-     9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  57
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  58
+     9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  58
      9.2.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  58
-     9.3.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  58
-     9.4.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  58
+     9.3.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  59
+     9.4.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  59
      9.5.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  59
-     9.6.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  59
-     9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  59
+     9.6.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  60
+     9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  60
        9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  60
        9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  61
        9.7.3.  Error Types . . . . . . . . . . . . . . . . . . . . .  62
@@ -162,6 +159,9 @@ Internet-Draft                    ACME                     November 2017
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  73
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  73
      13.2.  Informative References . . . . . . . . . . . . . . . . .  76
+     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  77
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  77
+
 
 
 
@@ -169,9 +169,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 3]
 
 Internet-Draft                    ACME                     November 2017
 
-
-     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  77
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  77
 
 1.  Introduction
 
@@ -218,6 +215,9 @@ Internet-Draft                    ACME                     November 2017
    issued, these are all completely ad hoc procedures and are
    accomplished by getting the human user to follow interactive natural-
    language instructions from the CA rather than by machine-implemented
+   published protocols.  In many cases, the instructions are difficult
+   to follow and cause significant confusion.  Informal usability tests
+   by the authors indicate that webmasters often need 1-3 hours to
 
 
 
@@ -226,9 +226,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 4]
 Internet-Draft                    ACME                     November 2017
 
 
-   published protocols.  In many cases, the instructions are difficult
-   to follow and cause significant confusion.  Informal usability tests
-   by the authors indicate that webmasters often need 1-3 hours to
    obtain and install a certificate for a domain.  Even in the best
    case, the lack of published, standardized mechanisms presents an
    obstacle to the wide deployment of HTTPS and other PKIX-dependent
@@ -274,6 +271,9 @@ Internet-Draft                    ACME                     November 2017
    process can be represented and performed by Internet protocols with
    no out-of-band human intervention.
 
+   Prior to ACME, when deploying an HTTPS server, an operator typically
+   gets a prompt to generate a self-signed certificate.  If the operator
+
 
 
 
@@ -282,8 +282,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 5]
 Internet-Draft                    ACME                     November 2017
 
 
-   Prior to ACME, when deploying an HTTPS server, an operator typically
-   gets a prompt to generate a self-signed certificate.  If the operator
    were instead deploying an HTTPS server using ACME, the experience
    would be something like this:
 
@@ -330,6 +328,8 @@ Internet-Draft                    ACME                     November 2017
    The two main roles in ACME are "client" and "server".  The ACME
    client uses the protocol to request certificate management actions,
    such as issuance or revocation.  An ACME client may run on a web
+   server, mail server, or some other server system which requires valid
+   TLS certificates.  Or, it may run on a separate server that does not
 
 
 
@@ -338,8 +338,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 6]
 Internet-Draft                    ACME                     November 2017
 
 
-   server, mail server, or some other server system which requires valid
-   TLS certificates.  Or, it may run on a separate server that does not
    consume the certificate, but is authorized to respond to a CA-
    provided challenge.  The ACME server runs at a certification
    authority, and responds to client requests, performing the requested
@@ -386,6 +384,8 @@ Internet-Draft                    ACME                     November 2017
 
    The client's order for a certificate describes the desired
    certificate using a PKCS#10 Certificate Signing Request (CSR) plus a
+   few additional fields that capture semantics that are not supported
+   in the CSR format.  If the server is willing to consider issuing such
 
 
 
@@ -394,8 +394,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 7]
 Internet-Draft                    ACME                     November 2017
 
 
-   few additional fields that capture semantics that are not supported
-   in the CSR format.  If the server is willing to consider issuing such
    a certificate, it responds with a list of requirements that the
    client must satisfy before the certificate will be issued.
 
@@ -442,6 +440,8 @@ Internet-Draft                    ACME                     November 2017
    challenges described in Section 8 below address validation of domain
    names.  The use of ACME for other identifiers will require further
    specification in order to describe how these identifiers are encoded
+   in the protocol and what types of validation challenges the server
+   might require.
 
 
 
@@ -449,9 +449,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 8]
 
 Internet-Draft                    ACME                     November 2017
 
-
-   in the protocol and what types of validation challenges the server
-   might require.
 
 5.  Character Encoding
 
@@ -497,6 +494,9 @@ Internet-Draft                    ACME                     November 2017
 
    ACME servers that are intended to be generally accessible need to use
    Cross-Origin Resource Sharing (CORS) in order to be accessible from
+   browser-based clients [W3C.CR-cors-20130129].  Such servers SHOULD
+   set the Access-Control-Allow-Origin header field to the value "*".
+
 
 
 
@@ -505,9 +505,6 @@ Barnes, et al.            Expires June 2, 2018                  [Page 9]
 
 Internet-Draft                    ACME                     November 2017
 
-
-   browser-based clients [W3C.CR-cors-20130129].  Such servers SHOULD
-   set the Access-Control-Allow-Origin header field to the value "*".
 
    Binary fields in the JSON objects used by ACME are encoded using
    base64url encoding described in [RFC4648] Section 5, according to the
@@ -554,6 +551,9 @@ Internet-Draft                    ACME                     November 2017
    contain the account URL received by POSTing to the new-account
    resource.
 
+   Note that authentication via signed JWS request bodies implies that
+   GET requests are not authenticated.  Servers MUST NOT respond to GET
+   requests for resources that might be considered sensitive.  Account
 
 
 
@@ -562,9 +562,6 @@ Barnes, et al.            Expires June 2, 2018                 [Page 10]
 Internet-Draft                    ACME                     November 2017
 
 
-   Note that authentication via signed JWS request bodies implies that
-   GET requests are not authenticated.  Servers MUST NOT respond to GET
-   requests for resources that might be considered sensitive.  Account
    resources are the only sensitive resources defined in this
    specification.
 
@@ -609,6 +606,9 @@ Internet-Draft                    ACME                     November 2017
    check, configuring each resource with the URL string provided to
    clients and having the resource check that requests have the same
    string in their "url" header parameter.
+
+
+
 
 
 
@@ -1635,15 +1635,15 @@ Internet-Draft                    ACME                     November 2017
  {
    "type": "urn:ietf:params:acme:error:userActionRequired",
    "detail": "Terms of service have changed",
-   "instance": "http://example.com/acme/agreement/?token=W8Ih3PswD-8"
+   "instance": "https://example.com/acme/agreement/?token=W8Ih3PswD-8"
  }
 
 7.3.5.  External Account Binding
 
    The server MAY require a value to be present for the "external-
-   account-binding" field.  This can be used to an ACME account with an
-   existing account in a non-ACME system, such as a CA customer
-   database.
+   account-binding" field.  This can be used to associate an ACME
+   account with an existing account in a non-ACME system, such as a CA
+   customer database.
 
    To enable ACME account binding, a CA needs to provision the ACME
    client with a MAC key and a key identifier.  The key identifier MUST
@@ -2112,7 +2112,7 @@ Internet-Draft                    ACME                     November 2017
 
    In some cases, a CA running an ACME server might have a completely
    external, non-ACME process for authorizing a client to issue for an
-   identifier.  In these case, the CA should provision its ACME server
+   identifier.  In these cases, the CA should provision its ACME server
    with authorization objects corresponding to these authorizations and
    reflect them as already valid in any orders submitted by the client.
 
@@ -2342,9 +2342,9 @@ Internet-Draft                    ACME                     November 2017
    the "challenges" dictionary.
 
    The client sends these updates back to the server in the form of a
-   JSON object with the response fields required by the challenge type,
-   carried in a POST request to the challenge URL (not authorization
-   URL) once it is ready for the server to attempt validation.
+   JSON object with contents as specified by the challenge type, carried
+   in a POST request to the challenge URL (not authorization URL) once
+   it is ready for the server to attempt validation.
 
 
 
@@ -2375,7 +2375,7 @@ Internet-Draft                    ACME                     November 2017
    }
 
    The server updates the authorization document by updating its
-   representation of the challenge with the response fields provided by
+   representation of the challenge with the response object provided by
    the client.  The server MUST ignore any fields in the response object
    that are not specified as response fields for this type of challenge.
    The server provides a 200 (OK) response with the updated challenge
@@ -2721,9 +2721,16 @@ Internet-Draft                    ACME                     November 2017
 
    Clients SHOULD NOT respond to challenges until they believe that the
    server's queries will succeed.  If a server's initial validation
-   query fails, the server SHOULD retry the query after some time.
-   While the server is still trying, the status of the challenge remains
-   "pending"; it is only marked "invalid" once the server has given up.
+   query fails, the server SHOULD retry the query after some time, in
+   order to account for delay in setting up responses such as DNS
+   records or HTTP resources.  The precise retry schedule is up to the
+   server, but server operators should keep in mind the operational
+   scenarios that the schedule is trying to accommodate.  Given that
+   retries are intended to address things like propagation delays in
+   HTTP or DNS provisioning, there should not usually be any reason to
+   retry more often than every 5 or 10 seconds.  While the server is
+   still trying, the status of the challenge remains "pending"; it is
+   only marked "invalid" once the server has given up.
 
    The server MUST provide information about its retry state to the
    client via the "errors" field in the challenge and the Retry-After
@@ -2731,13 +2738,6 @@ Internet-Draft                    ACME                     November 2017
    The server MUST add an entry to the "errors" field in the challenge
    after each failed validation query.  The server SHOULD set the Retry-
    After header field to a time after the server's next validation
-   query, since the status of the challenge will not change until that
-   time.
-
-   Clients can explicitly request a retry by re-sending their response
-   to a challenge in a new POST request (with a new nonce, etc.).  This
-   allows clients to request a retry when the state has changed (e.g.,
-   after firewall rules have been updated).  Servers SHOULD retry a
 
 
 
@@ -2746,6 +2746,13 @@ Barnes, et al.            Expires June 2, 2018                 [Page 49]
 Internet-Draft                    ACME                     November 2017
 
 
+   query, since the status of the challenge will not change until that
+   time.
+
+   Clients can explicitly request a retry by re-sending their response
+   to a challenge in a new POST request (with a new nonce, etc.).  This
+   allows clients to request a retry when the state has changed (e.g.,
+   after firewall rules have been updated).  Servers SHOULD retry a
    request immediately on receiving such a POST request.  In order to
    avoid denial-of-service attacks via client-initiated retries, servers
    SHOULD rate-limit such requests.
@@ -2786,13 +2793,6 @@ Internet-Draft                    ACME                     November 2017
    A client responds to this challenge by constructing a key
    authorization from the "token" value provided in the challenge and
    the client's account key.  The client then provisions the key
-   authorization as a resource on the HTTP server for the domain in
-   question.
-
-   The path at which the resource is provisioned is comprised of the
-   fixed prefix "/.well-known/acme-challenge/", followed by the "token"
-   value in the challenge.  The value of the resource MUST be the ASCII
-   representation of the key authorization.
 
 
 
@@ -2801,6 +2801,14 @@ Barnes, et al.            Expires June 2, 2018                 [Page 50]
 
 Internet-Draft                    ACME                     November 2017
 
+
+   authorization as a resource on the HTTP server for the domain in
+   question.
+
+   The path at which the resource is provisioned is comprised of the
+   fixed prefix "/.well-known/acme-challenge/", followed by the "token"
+   value in the challenge.  The value of the resource MUST be the ASCII
+   representation of the key authorization.
 
 GET /.well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
 Host: example.org
@@ -2843,20 +2851,19 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
    control of the domain by verifying that the resource was provisioned
    as expected.
 
-   1.  Construct a URL by populating the URL template [RFC6570]
-       "http://{domain}/.well-known/acme-challenge/{token}", where: *
-       the domain field is set to the domain name being verified; and *
-       the token field is set to the token in the challenge.
-
-   2.  Verify that the resulting URL is well-formed.
-
-
 
 
 Barnes, et al.            Expires June 2, 2018                 [Page 51]
 
 Internet-Draft                    ACME                     November 2017
 
+
+   1.  Construct a URL by populating the URL template [RFC6570]
+       "http://{domain}/.well-known/acme-challenge/{token}", where: *
+       the domain field is set to the domain name being verified; and *
+       the token field is set to the token in the challenge.
+
+   2.  Verify that the resulting URL is well-formed.
 
    3.  Dereference the URL using an HTTP GET request.  This request MUST
        be sent to TCP port 80 on the HTTP server.
@@ -2892,6 +2899,21 @@ Internet-Draft                    ACME                     November 2017
       It MUST NOT contain any characters outside the base64url alphabet,
       including padding characters ("=").
 
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 52]
+
+Internet-Draft                    ACME                     November 2017
+
+
    GET /acme/authz/1234/1 HTTP/1.1
    Host: example.com
 
@@ -2906,13 +2928,6 @@ Internet-Draft                    ACME                     November 2017
    A client responds to this challenge by constructing a self-signed
    certificate which the client MUST provision at the domain name
    concerned in order to pass the challenge.
-
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 52]
-
-Internet-Draft                    ACME                     November 2017
-
 
    The certificate may be constructed arbitrarily, except that each
    certificate MUST have exactly two subjectAlternativeNames, SAN A and
@@ -2939,6 +2954,22 @@ Internet-Draft                    ACME                     November 2017
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
 
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 53]
+
+Internet-Draft                    ACME                     November 2017
+
+
    POST /acme/authz/1234/1
    Host: example.com
    Content-Type: application/jose+json
@@ -2962,14 +2993,6 @@ Internet-Draft                    ACME                     November 2017
    the server MUST return an HTTP error in response to the POST request
    in which the client sent the challenge.
 
-
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 53]
-
-Internet-Draft                    ACME                     November 2017
-
-
    Given a challenge/response pair, the ACME server verifies the
    client's control of the domain by verifying that the TLS server was
    configured appropriately, using these steps:
@@ -2992,6 +3015,16 @@ Internet-Draft                    ACME                     November 2017
 
    If all of the above verifications succeed, then the validation is
    successful.  Otherwise, the validation fails.
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 54]
+
+Internet-Draft                    ACME                     November 2017
+
 
 8.5.  DNS Challenge
 
@@ -3017,15 +3050,6 @@ Internet-Draft                    ACME                     November 2017
      "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
    }
 
-
-
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 54]
-
-Internet-Draft                    ACME                     November 2017
-
-
    A client responds to this challenge by constructing a key
    authorization from the "token" value provided in the challenge and
    the client's account key.  The client then computes the SHA-256
@@ -3048,6 +3072,15 @@ Internet-Draft                    ACME                     November 2017
    keyAuthorization (required, string):  The key authorization for this
       challenge.  This value MUST match the token from the challenge and
       the client's account key.
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 55]
+
+Internet-Draft                    ACME                     November 2017
+
 
    POST /acme/authz/1234/2
    Host: example.com
@@ -3074,14 +3107,6 @@ Internet-Draft                    ACME                     November 2017
 
    To validate a DNS challenge, the server performs the following steps:
 
-
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 55]
-
-Internet-Draft                    ACME                     November 2017
-
-
    1.  Compute the SHA-256 digest [FIPS180-4] of the key authorization
 
    2.  Query for TXT records for the validation domain name
@@ -3105,6 +3130,14 @@ Internet-Draft                    ACME                     November 2017
    web page to receive instructions on how to validate possession of the
    identifier, by providing a URL for that web page.
 
+
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 56]
+
+Internet-Draft                    ACME                     November 2017
+
+
    type (required, string):  The string "oob-01"
 
    href (required, string):  The URL to be visited.  The scheme of this
@@ -3127,16 +3160,8 @@ HTTP/1.1 200 OK
    for a human user to navigate to.  If the user chooses to complete
    this challenge (by visiting the website and completing its
    instructions), the client indicates this by sending a simple
-   acknowledgement response to the server.
-
-   type (required, string):  The string "oob-01"
-
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 56]
-
-Internet-Draft                    ACME                     November 2017
-
+   acknowledgement response to the server.  The payload of this response
+   is an empty JSON object ("{}", or "e30" base64url-encoded).
 
    POST /acme/authz/1234/3
    Host: example.com
@@ -3149,9 +3174,7 @@ Internet-Draft                    ACME                     November 2017
        "nonce": "JHb54aT_KTXBWQOzGYkt9A",
        "url": "https://example.com/acme/authz/1234/3"
      }),
-     "payload": base64url({
-       "type": "oob-01"
-     }),
+     "payload": "e30",
      "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
    }
 
@@ -3159,6 +3182,17 @@ Internet-Draft                    ACME                     November 2017
    "type" field is "oob-01".  Otherwise, the steps the server takes to
    validate identifier possession are determined by the server's local
    policy.
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 57]
+
+Internet-Draft                    ACME                     November 2017
+
 
 9.  IANA Considerations
 
@@ -3186,14 +3220,6 @@ Internet-Draft                    ACME                     November 2017
    replace draft-ietf-acme-acme above with the RFC number assigned to
    this ]]
 
-
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 57]
-
-Internet-Draft                    ACME                     November 2017
-
-
    Applications which use this media type: Any MIME-compliant transport
 
    Additional information:
@@ -3215,6 +3241,14 @@ Internet-Draft                    ACME                     November 2017
    URI suffix: acme-challenge
 
    Change controller: IETF
+
+
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 58]
+
+Internet-Draft                    ACME                     November 2017
+
 
    Specification document(s): This document, Section Section 8.3
 
@@ -3242,14 +3276,6 @@ Internet-Draft                    ACME                     November 2017
 
    o  Header Parameter Usage Location(s): JWE, JWS
 
-
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 58]
-
-Internet-Draft                    ACME                     November 2017
-
-
    o  Change Controller: IESG
 
    o  Specification Document(s): Section 6.3.1 of RFC XXXX
@@ -3271,6 +3297,14 @@ Internet-Draft                    ACME                     November 2017
    o  Change Controller: IESG
 
    o  Specification Document(s): Section 6.4.2 of RFC XXXX
+
+
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 59]
+
+Internet-Draft                    ACME                     November 2017
+
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -3299,13 +3333,6 @@ Internet-Draft                    ACME                     November 2017
 
    1.  ACME Account Object Fields (Section 9.7.1)
 
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 59]
-
-Internet-Draft                    ACME                     November 2017
-
-
    2.  ACME Order Object Fields (Section 9.7.2)
 
    3.  ACME Error Types (Section 9.7.3)
@@ -3328,6 +3355,13 @@ Internet-Draft                    ACME                     November 2017
 
    Template:
 
+
+
+Barnes, et al.            Expires June 2, 2018                 [Page 60]
+
+Internet-Draft                    ACME                     November 2017
+
+
    o  Field name: The string to be used as a field name in the JSON
       object
 
@@ -3341,26 +3375,6 @@ Internet-Draft                    ACME                     November 2017
 
    Initial contents: The fields and descriptions defined in
    Section 7.1.2.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 2, 2018                 [Page 60]
-
-Internet-Draft                    ACME                     November 2017
-
 
    +--------------------------+-------------+--------------+-----------+
    | Field Name               | Field Type  | Configurable | Reference |
@@ -3397,26 +3411,15 @@ Internet-Draft                    ACME                     November 2017
 
    o  Reference: Where this field is defined
 
-   Initial contents: The fields and descriptions defined in
-   Section 7.1.3.
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 Barnes, et al.            Expires June 2, 2018                 [Page 61]
 
 Internet-Draft                    ACME                     November 2017
 
+
+   Initial contents: The fields and descriptions defined in
+   Section 7.1.3.
 
       +----------------+-----------------+--------------+-----------+
       | Field Name     | Field Type      | Configurable | Reference |
@@ -3463,9 +3466,6 @@ Internet-Draft                    ACME                     November 2017
 
    Template:
 
-   o  Field name: The value to be used as a field name in the directory
-      object
-
 
 
 
@@ -3473,6 +3473,9 @@ Barnes, et al.            Expires June 2, 2018                 [Page 62]
 
 Internet-Draft                    ACME                     November 2017
 
+
+   o  Field name: The value to be used as a field name in the directory
+      object
 
    o  Resource type: The type of resource labeled by the field
 
@@ -3517,9 +3520,6 @@ Internet-Draft                    ACME                     November 2017
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
-
-
-
 
 
 
