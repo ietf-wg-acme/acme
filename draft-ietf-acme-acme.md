@@ -1894,7 +1894,6 @@ Content-Language: en
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
   "detail": "No authorization provided for name example.net",
-  "instance": "https://example.com/acme/doc/unauthorized"
 }
 ~~~~~~~~~~
 
@@ -2000,12 +1999,12 @@ propagating across a cluster or firewall rules not being in place.
 Clients SHOULD NOT respond to challenges until they believe that the server's
 queries will succeed. If a server's initial validation query fails, the server
 SHOULD retry the query after some time, in order to account for delay in setting 
-up responses such as DNS records or HTTP resources.  The precise retry schedule
+up responses such as DNS records or HTTP resources. The precise retry schedule
 is up to the server, but server operators should keep in mind the operational
-scenarios that the schedule is trying to accommodate.  For example, a server
-might perform the first few of retries at intervals 5 or 10 seconds to catch
-automated clients, then back off to intervals of a minute or more to deal with
-manual setup.  While the server is still trying, the
+scenarios that the schedule is trying to accommodate.  Given that retries are
+intended to address things like propagation delays in HTTP or DNS provisioning,
+there should not usually be any reason to retry more often than every 5 or 10
+seconds. While the server is still trying, the
 status of the challenge remains "pending"; it is only marked "invalid" once the
 server has given up.
 
@@ -2351,7 +2350,7 @@ A client responds to this challenge by presenting the indicated URL for a human
 user to navigate to.  If the user chooses to complete this challenge (by visiting
 the website and completing its instructions), the client indicates this by
 sending a simple acknowledgement response to the server.  The payload of this
-response is an empty JSON object ("{}", or "e30" base64url-encoded)
+response is an empty JSON object ("{}", or "e30" base64url-encoded).
 
 ~~~~~~~~~~
 POST /acme/authz/1234/3
