@@ -1893,7 +1893,7 @@ Content-Language: en
 
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
-  "detail": "No authorization provided for name example.net",
+  "detail": "No authorization provided for name example.net"
 }
 ~~~~~~~~~~
 
