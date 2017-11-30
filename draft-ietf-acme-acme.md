@@ -2322,66 +2322,6 @@ If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
 
-## Out-of-Band Challenge
-
-There may be cases where a server cannot perform automated validation of an
-identifier, for example, if validation requires some manual steps.  In such
-cases, the server may provide an "out of band" (OOB) challenge to request that
-the client perform some action outside of ACME in order to validate possession
-of the identifier.
-
-The OOB challenge requests that the client have a human user visit a web page to
-receive instructions on how to validate possession of the identifier, by
-providing a URL for that web page.
-
-type (required, string):
-: The string "oob-01"
-
-href (required, string):
-: The URL to be visited.  The scheme of this URL MUST be "http" or "https".
-Note that this field is distinct from the "url" field of the challenge, which
-identifies the challenge itself.
-
-~~~~~~~~~~
-GET /acme/authz/1234/3 HTTP/1.1
-Host: example.com
-
-HTTP/1.1 200 OK
-{
-  "type": "oob-01",
-  "url": "https://example.com/acme/authz/1234/3",
-  "status": "pending",
-  "href": "https://example.com/out-of-band/validate/evaGxfADs6pSRb2LAv9IZ"
-}
-~~~~~~~~~~
-
-A client responds to this challenge by presenting the indicated URL for a human
-user to navigate to.  If the user chooses to complete this challenge (by visiting
-the website and completing its instructions), the client indicates this by
-sending a simple acknowledgement response to the server.  The payload of this
-response is an empty JSON object ("{}", or "e30" base64url-encoded).
-
-~~~~~~~~~~
-POST /acme/authz/1234/3
-Host: example.com
-Content-Type: application/jose+json
-
-{
-  "protected": base64url({
-    "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
-    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
-    "url": "https://example.com/acme/authz/1234/3"
-  }),
-  "payload": "e30",
-  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
-}
-~~~~~~~~~~
-
-On receiving a response, the server MUST verify that the value of the "type"
-field is "oob-01".  Otherwise, the steps the server takes to validate
-identifier possession are determined by the server's local policy.
-
 # IANA Considerations
 
 ## MIME Type: application/pem-certificate-chain
@@ -2918,8 +2858,7 @@ perform all necessary checks before issuing.
 
 CAs using ACME to allow clients to agree to terms of service should keep in mind
 that ACME clients can automate this agreement, possibly not involving a human
-user.  If a CA wishes to have stronger evidence of user consent, it may present
-an out-of-band requirement or challenge to require human involvement.
+user.
 
 # Operational Considerations
 
