@@ -551,7 +551,7 @@ Content-Type: application/problem+json
     "sub-problems": [
         {
             "type": "urn:ietf:params:acme:error:malformed",
-            "value": "Invalid underscore in DNS name \"_example.com\"",
+            "detail": "Invalid underscore in DNS name \"_example.com\"",
             "identifier": {
                 "type": "dns",
                 "value": "_example.com"
@@ -559,7 +559,7 @@ Content-Type: application/problem+json
         },
         {
             "type": "urn:ietf:params:acme:error:rejectedIdentifier",
-            "value": "This CA will not issue for \"example.net\"",
+            "detail": "This CA will not issue for \"example.net\"",
             "identifier": {
                 "type": "dns",
                 "value": "example.net"
