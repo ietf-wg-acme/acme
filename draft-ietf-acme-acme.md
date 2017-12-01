@@ -820,12 +820,12 @@ identifiers (required, array of object):
   value (required, string):
   : The identifier itself.
 
-notBefore (optional, string):
-: The requested value of the notBefore field in the certificate, in the date
+not-before (optional, string):
+: The requested value of the "not-before" field in the certificate, in the date
 format defined in {{!RFC3339}}.
 
-notAfter (optional, string):
-: The requested value of the notAfter field in the certificate, in the date
+not-after (optional, string):
+: The requested value of the "not-after" field in the certificate, in the date
 format defined in {{!RFC3339}}.
 
 error (optional, object):
@@ -839,7 +839,7 @@ before the requested certificate can be issued (see
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
-finalizeURL (requred, string):
+finalize-url (requred, string):
 : A URL that a CSR must be POSTed to once all of the order's authorizations are
 satisfied to finalize the order. The result of a successful finalization will be
 the population of the certificate URL for the order.
@@ -857,15 +857,15 @@ certificate (optional, string):
     { "type": "dns", "value": "www.example.com" }
   ],
 
-  "notBefore": "2016-01-01T00:00:00Z",
-  "notAfter": "2016-01-08T00:00:00Z",
+  "not-before": "2016-01-01T00:00:00Z",
+  "not-after": "2016-01-08T00:00:00Z",
 
   "authorizations": [
     "https://example.com/acme/authz/1234",
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/acct/1/order/1/finalize",
+  "finalize-url": "https://example.com/acme/acct/1/order/1/finalize",
 
   "certificate": "https://example.com/acme/cert/1234"
 }
@@ -955,7 +955,7 @@ name validation.
       "status": "valid",
       "token": "DGyRejmCefe7v4NfDGDKfA"
       "validated": "2014-12-01T12:05:00Z",
-      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
+      "key-authorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
     }
   ]
 }
@@ -1400,12 +1400,12 @@ identifiers (required, array of object):
   value (required, string):
   : The identifier itself.
 
-notBefore (optional, string):
-: The requested value of the notBefore field in the certificate, in the date
+not-before (optional, string):
+: The requested value of the "not-before" field in the certificate, in the date
 format defined in {{!RFC3339}}
 
-notAfter (optional, string):
-: The requested value of the notAfter field in the certificate, in the date
+not-after (optional, string):
+: The requested value of the "not-after" field in the certificate, in the date
 format defined in {{!RFC3339}}
 
 ~~~~~~~~~~
@@ -1422,8 +1422,8 @@ Content-Type: application/jose+json
   }),
   "payload": base64url({
     "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
-    "notBefore": "2016-01-01T00:00:00Z",
-    "notAfter": "2016-01-08T00:00:00Z"
+    "not-before": "2016-01-01T00:00:00Z",
+    "not-after": "2016-01-08T00:00:00Z"
   }),
   "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
 }
@@ -1449,15 +1449,15 @@ Location: https://example.com/acme/order/asdf
   "expires": "2016-01-01T00:00:00Z",
 
   "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
-  "notBefore": "2016-01-01T00:00:00Z",
-  "notAfter": "2016-01-08T00:00:00Z",
+  "not-before": "2016-01-01T00:00:00Z",
+  "not-after": "2016-01-08T00:00:00Z",
 
   "authorizations": [
     "https://example.com/acme/authz/1234",
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/order/asdf/finalize"
+  "finalize-url": "https://example.com/acme/order/asdf/finalize"
 }
 ~~~~~~~~~~
 
@@ -1730,7 +1730,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/authz/1234/0"
   }),
   "payload": base64url({
-    "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
+    "key-authorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
   }),
   "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
 }
@@ -1790,7 +1790,7 @@ HTTP/1.1 200 OK
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A",
-      "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
+      "key-authorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
     }
   ]
 }
@@ -2089,7 +2089,7 @@ The client's response to the validation request indicates its agreement to this
 challenge by sending the server the key authorization covering the challenge's
 token and the client's account key.
 
-keyAuthorization (required, string):
+key-authorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
 from the challenge and the client's account key.
 
@@ -2106,7 +2106,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/authz/1234/0"
   }),
   "payload": base64url({
-    "keyAuthorization": "evaGxfADs...62jcerQ"
+    "key-authorization": "evaGxfADs...62jcerQ"
   }),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
@@ -2192,7 +2192,7 @@ specifying a Server Name Indication (SNI) value of SAN A.
 The response to the TLS-SNI challenge simply acknowledges that the client is
 ready to fulfill this challenge.
 
-keyAuthorization (required, string):
+key-authorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
 from the challenge and the client's account key.
 
@@ -2209,7 +2209,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/authz/1234/1"
   }),
   "payload": base64url({
-    "keyAuthorization": "evaGxfADs...62jcerQ"
+    "key-authorization": "evaGxfADs...62jcerQ"
   }),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
@@ -2284,7 +2284,7 @@ _acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 The response to the DNS challenge provides the computed key authorization to
 acknowledge that the client is ready to fulfill this challenge.
 
-keyAuthorization (required, string):
+key-authorization (required, string):
 : The key authorization for this challenge.  This value MUST match the token
 from the challenge and the client's account key.
 
@@ -2301,7 +2301,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/authz/1234/2"
   }),
   "payload": base64url({
-    "keyAuthorization": "evaGxfADs...62jcerQ"
+    "key-authorization": "evaGxfADs...62jcerQ"
   }),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
@@ -2554,10 +2554,10 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | status         | string               | false        | RFC XXXX  |
 | expires        | string               | false        | RFC XXXX  |
 | identifiers    | array of object      | true         | RFC XXXX  |
-| notBefore      | string               | true         | RFC XXXX  |
-| notAfter       | string               | true         | RFC XXXX  |
+| not-before     | string               | true         | RFC XXXX  |
+| not-after      | string               | true         | RFC XXXX  |
 | authorizations | array of string      | false        | RFC XXXX  |
-| finalizeURL    | string               | false        | RFC XXXX  |
+| finalize-url   | string               | false        | RFC XXXX  |
 | certificate    | string               | false        | RFC XXXX  |
 
 ### Fields in Authorization Objects {#iana-authz}
