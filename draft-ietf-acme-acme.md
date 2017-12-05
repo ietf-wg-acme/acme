@@ -1532,8 +1532,7 @@ URL for the new authorization resource.
 
 To request authorization for an identifier, the client sends a POST request to
 the new-authorization resource specifying the identifier for which authorization
-is being requested and how the server should behave with respect to existing
-authorizations for this identifier.
+is being requested.
 
 identifier (required, object):
 : The identifier that the account is authorized to represent:
