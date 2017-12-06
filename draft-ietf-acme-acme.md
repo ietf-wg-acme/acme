@@ -1451,6 +1451,11 @@ Location: https://example.com/acme/order/asdf
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
+  "identifiers": [
+    { "type:"dns", "value":"example.com" },
+    { "type:"dns", "value":"www.example.com" }
+  ],
+
   "authorizations": [
     "https://example.com/acme/authz/1234",
     "https://example.com/acme/authz/2345"
@@ -1539,6 +1544,11 @@ Location: https://example.com/acme/order/asdf
 
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
+
+  "identifiers": [
+    { "type:"dns", "value":"example.com" },
+    { "type:"dns", "value":"www.example.com" }
+  ],
 
   "authorizations": [
     "https://example.com/acme/authz/1234",
