@@ -1421,7 +1421,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-order"
   }),
   "payload": base64url({
-    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+    "identifiers": [{"type:"dns","value":"example.com"}],
     "notBefore": "2016-01-01T00:00:00Z",
     "notAfter": "2016-01-08T00:00:00Z"
   }),
@@ -1448,7 +1448,6 @@ Location: https://example.com/acme/order/asdf
   "status": "pending",
   "expires": "2016-01-01T00:00:00Z",
 
-  "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
@@ -1481,6 +1480,25 @@ The CSR is sent in the base64url-encoded version of the DER format.  (Note:
 Because this field uses base64url, and does not include headers, it is different
 from PEM.).
 
+~~~~~~~~~~
+POST /acme/order/asdf/finalize HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "MSF2j2nawWHPxxkE3ZJtKQ",
+    "url": "https://example.com/acme/order/asdf/finalize"
+  }),
+  "payload": base64url({
+    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+  }),
+  "signature": "uOrUfIIk5RyQ...nw62Ay1cl6AB"
+}
+~~~~~~~~~~
+
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
 identifiers as the initial new-order request, either in the commonName portion
@@ -1509,6 +1527,29 @@ action the client should take:
 
 * "valid": The server has issued the certificate and provisioned its URL to the
   "certificate" field of the order.
+
+~~~~~~~~~~
+HTTP/1.1 200 Ok
+Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
+Location: https://example.com/acme/order/asdf
+
+{
+  "status": "valid",
+  "expires": "2016-01-01T00:00:00Z",
+
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z",
+
+  "authorizations": [
+    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/authz/2345"
+  ],
+
+  "finalizeURL": "https://example.com/acme/order/asdf/finalize",
+
+  "certificate": "https://example.com/acme/cert/asdf"
+}
+~~~~~~~~~~
 
 ### Pre-Authorization
 
