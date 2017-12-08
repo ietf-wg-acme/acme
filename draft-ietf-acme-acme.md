@@ -551,7 +551,7 @@ Content-Type: application/problem+json
     "sub-problems": [
         {
             "type": "urn:ietf:params:acme:error:malformed",
-            "value": "Invalid underscore in DNS name \"_example.com\"",
+            "detail": "Invalid underscore in DNS name \"_example.com\"",
             "identifier": {
                 "type": "dns",
                 "value": "_example.com"
@@ -559,7 +559,7 @@ Content-Type: application/problem+json
         },
         {
             "type": "urn:ietf:params:acme:error:rejectedIdentifier",
-            "value": "This CA will not issue for \"example.net\"",
+            "detail": "This CA will not issue for \"example.net\"",
             "identifier": {
                 "type": "dns",
                 "value": "example.net"
@@ -1532,8 +1532,7 @@ URL for the new authorization resource.
 
 To request authorization for an identifier, the client sends a POST request to
 the new-authorization resource specifying the identifier for which authorization
-is being requested and how the server should behave with respect to existing
-authorizations for this identifier.
+is being requested.
 
 identifier (required, object):
 : The identifier that the account is authorized to represent:
