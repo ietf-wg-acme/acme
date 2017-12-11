@@ -786,6 +786,10 @@ address {
 <td class="left">A contact URL for an account used an unsupported protocol scheme</td>
 </tr>
 <tr>
+<td class="left">externalAccountRequired</td>
+<td class="left">The request must include a value for the &#8220;external-account-binding&#8221; field</td>
+</tr>
+<tr>
 <td class="left">accountDoesNotExist</td>
 <td class="left">The request specified an account that does not exist</td>
 </tr>
@@ -1042,6 +1046,8 @@ Content-Type: application/problem+json
 <dd style="margin-left: 8">An HTTP or HTTPS URL locating a website providing more information about the ACME server.</dd>
 <dt>&#8220;caa-identities&#8221; (optional, array of string):</dt>
 <dd style="margin-left: 8">Each string MUST be a lowercase hostname which the ACME server recognizes as referring to itself for the purposes of CAA record validation as defined in <a href="#RFC6844" class="xref">[RFC6844]</a>.  This allows clients to determine the correct issuer domain name to use when configuring CAA records.</dd>
+<dt>&#8220;external-account-required&#8221; (optional, boolean):</dt>
+<dd style="margin-left: 8">If this field is present and set to &#8220;true&#8221;, then the CA requires that all new-account requests include an &#8220;external-account-binding&#8221; field associating the new account with an external account.</dd>
 </dl>
 <p id="rfc.section.7.1.1.p.7">Clients access the directory by sending a GET request to the directory URL.</p>
 <pre>
@@ -1058,7 +1064,8 @@ Content-Type: application/json
   "meta": {
     "terms-of-service": "https://example.com/acme/terms/2017-5-30",
     "website": "https://www.example.com/",
-    "caa-identities": ["example.com"]
+    "caa-identities": ["example.com"],
+    "external-account-required": false
   }
 }
 </pre>
@@ -1386,7 +1393,8 @@ Content-Type: application/jose+json
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 </pre>
-<p id="rfc.section.7.3.5.p.6">When a CA receives a new-account request containing an &#8220;external-account-binding&#8221; field, it decides whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;external-account-binding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
+<p id="rfc.section.7.3.5.p.6">If a CA requires that new-account requests contain an &#8220;external-account-binding&#8221; field, then it MUST provide the value &#8220;true&#8221; in the &#8220;external-account-required&#8221; subfield of the &#8220;meta&#8221; field in the directory object.  If the CA receives a new-account request without an &#8220;external-account-binding&#8221; field, then it should reply with an error of type &#8220;externalAccountRequired&#8221;.</p>
+<p id="rfc.section.7.3.5.p.7">When a CA receives a new-account request containing an &#8220;external-account-binding&#8221; field, it decides whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;external-account-binding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
 <p></p>
 
 <ol>
@@ -1396,7 +1404,7 @@ Content-Type: application/jose+json
 <li>Verify that the MAC on the JWS verifies using that MAC key</li>
 <li>Verify that the payload of the JWS represents the same key as was used to verify the outer JWS (i.e., the &#8220;jwk&#8221; field of the outer JWS)</li>
 </ol>
-<p id="rfc.section.7.3.5.p.8">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key and MUST reflect the value of the &#8220;external-account-binding&#8221; field in the resulting account object.  If any of these checks fail, then the CA MUST reject the new-account request.</p>
+<p id="rfc.section.7.3.5.p.9">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key and MUST reflect the value of the &#8220;external-account-binding&#8221; field in the resulting account object.  If any of these checks fail, then the CA MUST reject the new-account request.</p>
 <h1 id="rfc.section.7.3.6">
 <a href="#rfc.section.7.3.6">7.3.6.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a>
 </h1>
