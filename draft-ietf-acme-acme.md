@@ -494,28 +494,28 @@ information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Type                  | Description                                                                    |
-|:----------------------|:-------------------------------------------------------------------------------|
-| badCSR                | The CSR is unacceptable (e.g., due to a short key)                             |
-| badNonce              | The client sent an unacceptable anti-replay nonce                              |
-| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support               |
-| invalidContact        | A contact URL for an account was invalid                                       |
-| unsupportedContact    | A contact URL for an account used an unsupported protocol scheme               |
-| externalAccountNeeded | The request must include an external account binding                           |
-| accountDoesNotExist   | The request specified an account that does not exist                           |
-| malformed             | The request message was malformed                                              |
-| rateLimited           | The request exceeds a rate limit                                               |
-| rejectedIdentifier    | The server will not issue for the identifier                                   |
-| serverInternal        | The server experienced an internal error                                       |
-| unauthorized          | The client lacks sufficient authorization                                      |
-| unsupportedIdentifier | Identifier is not supported, but may be in future                              |
-| userActionRequired    | Visit the "instance" URL and take actions specified there                      |
-| badRevocationReason   | The revocation reason provided is not allowed by the server	                 |
-| caa                   | Certification Authority Authorization (CAA) records forbid the CA from issuing |
-| dns                   | There was a problem with a DNS query                                           |
-| connection            | The server could not connect to validation target                              |
-| tls                   | The server received a TLS error during validation                              |
-| incorrectResponse     | Response received didn't match the challenge's requirements                    |
+| Type                    | Description                                                                    |
+|:------------------------|:-------------------------------------------------------------------------------|
+| badCSR                  | The CSR is unacceptable (e.g., due to a short key)                             |
+| badNonce                | The client sent an unacceptable anti-replay nonce                              |
+| badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support               |
+| invalidContact          | A contact URL for an account was invalid                                       |
+| unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
+| externalAccountRequired | The request must include a value for the "external-account-binding" field      |
+| accountDoesNotExist     | The request specified an account that does not exist                           |
+| malformed               | The request message was malformed                                              |
+| rateLimited             | The request exceeds a rate limit                                               |
+| rejectedIdentifier      | The server will not issue for the identifier                                   |
+| serverInternal          | The server experienced an internal error                                       |
+| unauthorized            | The client lacks sufficient authorization                                      |
+| unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
+| userActionRequired      | Visit the "instance" URL and take actions specified there                      |
+| badRevocationReason     | The revocation reason provided is not allowed by the server	                   |
+| caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
+| dns                     | There was a problem with a DNS query                                           |
+| connection              | The server could not connect to validation target                              |
+| tls                     | The server received a TLS error during validation                              |
+| incorrectResponse       | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
@@ -714,8 +714,8 @@ use when configuring CAA records.
 
 "external-account-required" (optional, boolean):
 : If this field is present and set to "true", then the CA requires that all
-new-acount requests include an "external-account-binding" field associating them
-with an external account.
+new-account requests include an "external-account-binding" field associating the
+new account with an external account.
 
 Clients access the directory by sending a GET request to the directory URL.
 
@@ -1238,8 +1238,8 @@ Content-Type: application/jose+json
 ~~~~~
 
 If a CA requires that new-account requests contain an "external-account-binding"
-field, then it MUST provide the value "true" in the "terms-of-service" subfield
-of the "meta" field in the directory object.  If such a CA receives a
+field, then it MUST provide the value "true" in the "external-account-required" subfield
+of the "meta" field in the directory object.  If the CA receives a
 new-account request without an "external-account-binding" field, then it should
 reply with an error of type "externalAccountRequired". 
 
