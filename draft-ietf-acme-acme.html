@@ -358,7 +358,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-12-08" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-12-11" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -382,7 +382,7 @@ address {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: June 11, 2018</td>
+<td class="left">Expires: June 14, 2018</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -395,7 +395,7 @@ address {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">December 08, 2017</td>
+<td class="right">December 11, 2017</td>
 </tr>
 
     	
@@ -412,7 +412,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on June 11, 2018.</p>
+<p>This Internet-Draft will expire on June 14, 2018.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2017 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -1523,7 +1523,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-order"
   }),
   "payload": base64url({
-    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+    "identifiers": [{"type:"dns","value":"example.com"}],
     "notBefore": "2016-01-01T00:00:00Z",
     "notAfter": "2016-01-08T00:00:00Z"
   }),
@@ -1541,9 +1541,13 @@ Location: https://example.com/acme/order/asdf
   "status": "pending",
   "expires": "2016-01-01T00:00:00Z",
 
-  "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
+
+  "identifiers": [
+    { "type:"dns", "value":"example.com" },
+    { "type:"dns", "value":"www.example.com" }
+  ],
 
   "authorizations": [
     "https://example.com/acme/authz/1234",
@@ -1561,6 +1565,24 @@ Location: https://example.com/acme/order/asdf
 <dt>csr (required, string):</dt>
 <dd style="margin-left: 8">A CSR encoding the parameters for the certificate being requested <a href="#RFC2986" class="xref">[RFC2986]</a>.  The CSR is sent in the base64url-encoded version of the DER format.  (Note: Because this field uses base64url, and does not include headers, it is different from PEM.).</dd>
 </dl>
+<pre>
+POST /acme/order/asdf/finalize HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "MSF2j2nawWHPxxkE3ZJtKQ",
+    "url": "https://example.com/acme/order/asdf/finalize"
+  }),
+  "payload": base64url({
+    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+  }),
+  "signature": "uOrUfIIk5RyQ...nw62Ay1cl6AB"
+}
+</pre>
 <p id="rfc.section.7.4.p.8">The CSR encodes the client&#8217;s requests with regard to the content of the certificate to be issued.  The CSR MUST indicate the exact same set of requested identifiers as the initial new-order request, either in the commonName portion of the requested subject name, or in an extensionRequest attribute <a href="#RFC2985" class="xref">[RFC2985]</a> requesting a subjectAltName extension.</p>
 <p id="rfc.section.7.4.p.9">A request to finalize an order will result in error if the order indicated does not have status &#8220;pending&#8221;, if the CSR and order identifiers differ, or if the account is not authorized for the identifiers indicated in the CSR.</p>
 <p id="rfc.section.7.4.p.10">A valid request to finalize an order will return the order to be finalized.  The client should begin polling the order by sending a GET request to the order resource to obtain its current state. The status of the order will indicate what action the client should take:</p>
@@ -1572,6 +1594,33 @@ Location: https://example.com/acme/order/asdf
 <li>&#8220;processing&#8221;: The server agrees that the requirements have been fulfilled, and is in the process of generating the certificate.  Retry after the time given in the &#8220;Retry-After&#8221; header field of the response, if any.</li>
 <li>&#8220;valid&#8221;: The server has issued the certificate and provisioned its URL to the &#8220;certificate&#8221; field of the order.</li>
 </ul>
+<pre>
+HTTP/1.1 200 Ok
+Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
+Location: https://example.com/acme/order/asdf
+
+{
+  "status": "valid",
+  "expires": "2016-01-01T00:00:00Z",
+
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z",
+
+  "identifiers": [
+    { "type:"dns", "value":"example.com" },
+    { "type:"dns", "value":"www.example.com" }
+  ],
+
+  "authorizations": [
+    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/authz/2345"
+  ],
+
+  "finalizeURL": "https://example.com/acme/order/asdf/finalize",
+
+  "certificate": "https://example.com/acme/cert/asdf"
+}
+</pre>
 <h1 id="rfc.section.7.4.1">
 <a href="#rfc.section.7.4.1">7.4.1.</a> <a href="#pre-authorization" id="pre-authorization">Pre-Authorization</a>
 </h1>
