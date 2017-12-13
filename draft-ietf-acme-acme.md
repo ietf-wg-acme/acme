@@ -2503,8 +2503,9 @@ This document requests that IANA create the following new registries:
 2. ACME Order Object Fields ({{iana-order}})
 3. ACME Error Types ({{iana-error}})
 4. ACME Resource Types ({{iana-resource}})
-5. ACME Identifier Types ({{iana-identifier}})
-6. ACME Validation Methods ({{iana-validation}})
+5. ACME Directory Metadata Fields ({{iana-meta}})
+6. ACME Identifier Types ({{iana-identifier}})
+7. ACME Validation Methods ({{iana-validation}})
 
 All of these registries are under a heading of "Automated Certificate Management
 Environment (ACME) Protocol" and are administered under a Specification
@@ -2535,6 +2536,9 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 | terms-of-service-agreed  | boolean         | true         | RFC XXXX  |
 | orders                   | array of string | false        | RFC XXXX  |
 
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
 ### Fields in Order Objects {#iana-order}
 
 This registry lists field names that are defined for use in ACME order
@@ -2563,6 +2567,9 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | finalizeURL    | string               | false        | RFC XXXX  |
 | certificate    | string               | false        | RFC XXXX  |
 
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
 ### Fields in Authorization Objects {#iana-authz}
 
 This registry lists field names that are defined for use in ACME authorization
@@ -2586,6 +2593,9 @@ Initial contents: The fields and descriptions defined in {{authorization-objects
 | status      | string          | false        | RFC XXXX  |
 | expires     | string          | false        | RFC XXXX  |
 | challenges  | array of object | false        | RFC XXXX  |
+
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
 
 ### Error Types {#iana-error}
 
@@ -2623,6 +2633,31 @@ Initial contents:
 | new-authz      | New authorization    | RFC XXXX  |
 | revoke-cert    | Revoke certificate   | RFC XXXX  |
 | key-change     | Key change           | RFC XXXX  |
+| meta           | Metadata object      | RFC XXXX  |
+
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
+### Fields in the "meta" Object within a Directory Object {#iana-meta}
+
+This registry lists field names that are defined for use in the JSON
+object included in the "meta" field of an ACME directory object.
+
+Template:
+
+* Field name: The string to be used as a field name in the JSON object
+* Field type: The type of value to be provided, e.g., string, boolean, array of
+  string
+* Reference: Where this field is defined
+
+Initial contents: The fields and descriptions defined in {{account-objects}}.
+
+| Field Name                | Field Type      | Reference |
+|:--------------------------|:----------------|:----------|
+| terms-of-service          | string          | RFC XXXX  |
+| website                   | string          | RFC XXXX  |
+| caa-identities            | array of string | RFC XXXX  |
+| external-account-required | boolean         | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
