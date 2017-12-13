@@ -333,8 +333,9 @@ address {
 <link href="#rfc.section.9.7.3" rel="Chapter" title="9.7.3 Fields in Authorization Objects">
 <link href="#rfc.section.9.7.4" rel="Chapter" title="9.7.4 Error Types">
 <link href="#rfc.section.9.7.5" rel="Chapter" title="9.7.5 Resource Types">
-<link href="#rfc.section.9.7.6" rel="Chapter" title="9.7.6 Identifier Types">
-<link href="#rfc.section.9.7.7" rel="Chapter" title="9.7.7 Validation Methods">
+<link href="#rfc.section.9.7.6" rel="Chapter" title="9.7.6 Fields in the &#8220;meta&#8221; Object within a Directory Object">
+<link href="#rfc.section.9.7.7" rel="Chapter" title="9.7.7 Identifier Types">
+<link href="#rfc.section.9.7.8" rel="Chapter" title="9.7.8 Validation Methods">
 <link href="#rfc.section.10" rel="Chapter" title="10 Security Considerations">
 <link href="#rfc.section.10.1" rel="Chapter" title="10.1 Threat Model">
 <link href="#rfc.section.10.2" rel="Chapter" title="10.2 Integrity of Authorizations">
@@ -358,7 +359,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-12-11" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-12-13" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -382,7 +383,7 @@ address {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: June 14, 2018</td>
+<td class="left">Expires: June 16, 2018</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -395,7 +396,7 @@ address {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">December 11, 2017</td>
+<td class="right">December 13, 2017</td>
 </tr>
 
     	
@@ -412,7 +413,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on June 14, 2018.</p>
+<p>This Internet-Draft will expire on June 16, 2018.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2017 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -536,9 +537,11 @@ address {
 </li>
 <li>9.7.5.   <a href="#rfc.section.9.7.5">Resource Types</a>
 </li>
-<li>9.7.6.   <a href="#rfc.section.9.7.6">Identifier Types</a>
+<li>9.7.6.   <a href="#rfc.section.9.7.6">Fields in the &#8220;meta&#8221; Object within a Directory Object</a>
 </li>
-<li>9.7.7.   <a href="#rfc.section.9.7.7">Validation Methods</a>
+<li>9.7.7.   <a href="#rfc.section.9.7.7">Identifier Types</a>
+</li>
+<li>9.7.8.   <a href="#rfc.section.9.7.8">Validation Methods</a>
 </li>
 </ul></ul><li>10.   <a href="#rfc.section.10">Security Considerations</a>
 </li>
@@ -852,7 +855,7 @@ address {
 <h1 id="rfc.section.6.6.1">
 <a href="#rfc.section.6.6.1">6.6.1.</a> <a href="#sub-problems" id="sub-problems">Sub-problems</a>
 </h1>
-<p id="rfc.section.6.6.1.p.1">Sometimes a CA may need to return multiple errors in response to a request.  Additionally, the CA may need to attribute errors to specific identifiers.  For instance, a new-order request may contain multiple identifiers for which the CA cannot issue. In this situation, an ACME problem document MAY contain the &#8220;sub-problems&#8221; field, containing a JSON array of problem documents, each of which MAY contain an &#8220;identifier&#8221; field. If present, the &#8220;identifier&#8221; field MUST contain an ACME identifier (<a href="#iana-identifier" class="xref">Section 9.7.6</a>). The &#8220;identifier&#8221; field MUST NOT be present at the top level in ACME problem documents. It can only be present in sub-problems.  Sub-problems need not all have the same type, and do not need to match the top level type.</p>
+<p id="rfc.section.6.6.1.p.1">Sometimes a CA may need to return multiple errors in response to a request.  Additionally, the CA may need to attribute errors to specific identifiers.  For instance, a new-order request may contain multiple identifiers for which the CA cannot issue. In this situation, an ACME problem document MAY contain the &#8220;sub-problems&#8221; field, containing a JSON array of problem documents, each of which MAY contain an &#8220;identifier&#8221; field. If present, the &#8220;identifier&#8221; field MUST contain an ACME identifier (<a href="#iana-identifier" class="xref">Section 9.7.7</a>). The &#8220;identifier&#8221; field MUST NOT be present at the top level in ACME problem documents. It can only be present in sub-problems.  Sub-problems need not all have the same type, and do not need to match the top level type.</p>
 <p id="rfc.section.6.6.1.p.2">ACME clients may choose to use the &#8220;identifier&#8221; field of a sub-problem as a hint that an operation would succeed if that identifier were omitted. For instance, if an order contains ten DNS identifiers, and the new-order request returns a problem document with two sub-problems, referencing two of those identifiers, the ACME client may choose to submit another order containing only the eight identifiers not listed in the problem document.</p>
 <pre>
 HTTP/1.1 403 Forbidden
@@ -2253,8 +2256,9 @@ Content-Type: application/jose+json
 <li>ACME Order Object Fields (<a href="#iana-order" class="xref">Section 9.7.2</a>)</li>
 <li>ACME Error Types (<a href="#iana-error" class="xref">Section 9.7.4</a>)</li>
 <li>ACME Resource Types (<a href="#iana-resource" class="xref">Section 9.7.5</a>)</li>
-<li>ACME Identifier Types (<a href="#iana-identifier" class="xref">Section 9.7.6</a>)</li>
-<li>ACME Validation Methods (<a href="#iana-validation" class="xref">Section 9.7.7</a>)</li>
+<li>ACME Directory Metadata Fields (<a href="#iana-meta" class="xref">Section 9.7.6</a>)</li>
+<li>ACME Identifier Types (<a href="#iana-identifier" class="xref">Section 9.7.7</a>)</li>
+<li>ACME Validation Methods (<a href="#iana-validation" class="xref">Section 9.7.8</a>)</li>
 </ol>
 <p id="rfc.section.9.7.p.3">All of these registries are under a heading of &#8220;Automated Certificate Management Environment (ACME) Protocol&#8221; and are administered under a Specification Required policy <a href="#RFC8126" class="xref">[RFC8126]</a>.</p>
 <h1 id="rfc.section.9.7.1">
@@ -2311,6 +2315,7 @@ Content-Type: application/jose+json
 </tr>
 </tbody>
 </table>
+<p id="rfc.section.9.7.1.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.9.7.2">
 <a href="#rfc.section.9.7.2">9.7.2.</a> <a href="#iana-order" id="iana-order">Fields in Order Objects</a>
 </h1>
@@ -2383,6 +2388,7 @@ Content-Type: application/jose+json
 </tr>
 </tbody>
 </table>
+<p id="rfc.section.9.7.2.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.9.7.3">
 <a href="#rfc.section.9.7.3">9.7.3.</a> <a href="#iana-authz" id="iana-authz">Fields in Authorization Objects</a>
 </h1>
@@ -2431,6 +2437,7 @@ Content-Type: application/jose+json
 </tr>
 </tbody>
 </table>
+<p id="rfc.section.9.7.3.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.9.7.4">
 <a href="#rfc.section.9.7.4">9.7.4.</a> <a href="#iana-error" id="iana-error">Error Types</a>
 </h1>
@@ -2494,21 +2501,69 @@ Content-Type: application/jose+json
 <td class="left">Key change</td>
 <td class="left">RFC XXXX</td>
 </tr>
+<tr>
+<td class="left">meta</td>
+<td class="left">Metadata object</td>
+<td class="left">RFC XXXX</td>
+</tr>
 </tbody>
 </table>
 <p id="rfc.section.9.7.5.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.9.7.6">
-<a href="#rfc.section.9.7.6">9.7.6.</a> <a href="#iana-identifier" id="iana-identifier">Identifier Types</a>
+<a href="#rfc.section.9.7.6">9.7.6.</a> <a href="#iana-meta" id="iana-meta">Fields in the &#8220;meta&#8221; Object within a Directory Object</a>
 </h1>
-<p id="rfc.section.9.7.6.p.1">This registry lists the types of identifiers that can be present in ACME authorization objects.</p>
+<p id="rfc.section.9.7.6.p.1">This registry lists field names that are defined for use in the JSON object included in the &#8220;meta&#8221; field of an ACME directory object.</p>
 <p id="rfc.section.9.7.6.p.2">Template:</p>
+<p></p>
+
+<ul>
+<li>Field name: The string to be used as a field name in the JSON object</li>
+<li>Field type: The type of value to be provided, e.g., string, boolean, array of string</li>
+<li>Reference: Where this field is defined</li>
+</ul>
+<p id="rfc.section.9.7.6.p.4">Initial contents: The fields and descriptions defined in <a href="#account-objects" class="xref">Section 7.1.2</a>.</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="left">Field Name</th>
+<th class="left">Field Type</th>
+<th class="left">Reference</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="left">terms-of-service</td>
+<td class="left">string</td>
+<td class="left">RFC XXXX</td>
+</tr>
+<tr>
+<td class="left">website</td>
+<td class="left">string</td>
+<td class="left">RFC XXXX</td>
+</tr>
+<tr>
+<td class="left">caa-identities</td>
+<td class="left">array of string</td>
+<td class="left">RFC XXXX</td>
+</tr>
+<tr>
+<td class="left">external-account-required</td>
+<td class="left">boolean</td>
+<td class="left">RFC XXXX</td>
+</tr>
+</tbody>
+</table>
+<p id="rfc.section.9.7.6.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<h1 id="rfc.section.9.7.7">
+<a href="#rfc.section.9.7.7">9.7.7.</a> <a href="#iana-identifier" id="iana-identifier">Identifier Types</a>
+</h1>
+<p id="rfc.section.9.7.7.p.1">This registry lists the types of identifiers that can be present in ACME authorization objects.</p>
+<p id="rfc.section.9.7.7.p.2">Template:</p>
 <p></p>
 
 <ul>
 <li>Label: The value to be put in the &#8220;type&#8221; field of the identifier object</li>
 <li>Reference: Where the identifier type is defined</li>
 </ul>
-<p id="rfc.section.9.7.6.p.4">Initial contents:</p>
+<p id="rfc.section.9.7.7.p.4">Initial contents:</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
 <th class="left">Label</th>
@@ -2519,12 +2574,12 @@ Content-Type: application/jose+json
 <td class="left">RFC XXXX</td>
 </tr></tbody>
 </table>
-<p id="rfc.section.9.7.6.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
-<h1 id="rfc.section.9.7.7">
-<a href="#rfc.section.9.7.7">9.7.7.</a> <a href="#iana-validation" id="iana-validation">Validation Methods</a>
+<p id="rfc.section.9.7.7.p.5">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<h1 id="rfc.section.9.7.8">
+<a href="#rfc.section.9.7.8">9.7.8.</a> <a href="#iana-validation" id="iana-validation">Validation Methods</a>
 </h1>
-<p id="rfc.section.9.7.7.p.1">This registry lists identifiers for the ways that CAs can validate control of identifiers.  Each method&#8217;s entry must specify whether it corresponds to an ACME challenge type.  The &#8220;Identifier Type&#8221; field must be contained in the Label column of the ACME Identifier Types registry.</p>
-<p id="rfc.section.9.7.7.p.2">Template:</p>
+<p id="rfc.section.9.7.8.p.1">This registry lists identifiers for the ways that CAs can validate control of identifiers.  Each method&#8217;s entry must specify whether it corresponds to an ACME challenge type.  The &#8220;Identifier Type&#8221; field must be contained in the Label column of the ACME Identifier Types registry.</p>
+<p id="rfc.section.9.7.8.p.2">Template:</p>
 <p></p>
 
 <ul>
@@ -2533,7 +2588,7 @@ Content-Type: application/jose+json
 <li>ACME: &#8220;Y&#8221; if the validation method corresponds to an ACME challenge type; &#8220;N&#8221; otherwise.</li>
 <li>Reference: Where the validation method is defined</li>
 </ul>
-<p id="rfc.section.9.7.7.p.4">Initial Contents</p>
+<p id="rfc.section.9.7.8.p.4">Initial Contents</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
 <th class="left">Label</th>
@@ -2562,9 +2617,9 @@ Content-Type: application/jose+json
 </tr>
 </tbody>
 </table>
-<p id="rfc.section.9.7.7.p.5">When evaluating a request for an assignment in this registry, the designated expert should ensure that the method being registered has a clear, interoperable definition and does not overlap with existing validation methods.  That is, it should not be possible for a client and server to follow take the same set of actions to fulfill two different validation mechanisms.</p>
-<p id="rfc.section.9.7.7.p.6">Validation methods do not have to be compatible with ACME in order to be registered.  For example, a CA might wish to register a validation method in order to support its use with the ACME extensions to CAA <a href="#I-D.ietf-acme-caa" class="xref">[I-D.ietf-acme-caa]</a>.</p>
-<p id="rfc.section.9.7.7.p.7">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
+<p id="rfc.section.9.7.8.p.5">When evaluating a request for an assignment in this registry, the designated expert should ensure that the method being registered has a clear, interoperable definition and does not overlap with existing validation methods.  That is, it should not be possible for a client and server to follow take the same set of actions to fulfill two different validation mechanisms.</p>
+<p id="rfc.section.9.7.8.p.6">Validation methods do not have to be compatible with ACME in order to be registered.  For example, a CA might wish to register a validation method in order to support its use with the ACME extensions to CAA <a href="#I-D.ietf-acme-caa" class="xref">[I-D.ietf-acme-caa]</a>.</p>
+<p id="rfc.section.9.7.8.p.7">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.10">
 <a href="#rfc.section.10">10.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
