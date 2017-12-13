@@ -2633,6 +2633,7 @@ Initial contents:
 | new-authz      | New authorization    | RFC XXXX  |
 | revoke-cert    | Revoke certificate   | RFC XXXX  |
 | key-change     | Key change           | RFC XXXX  |
+| meta           | Metadata object      | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
