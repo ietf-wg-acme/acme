@@ -652,16 +652,16 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action               | Request                 | Response        |
-|:---------------------|:------------------------|:----------------|
-| Get a nonce          | HEAD newNonce           | 204             |
-| Create account       | POST newAccount         | 201 -> account  |
-| Submit an order      | POST newOrder           | 201 -> order    |
-| Fetch challenges     | GET  authz              | 200             |
-| Respond to challenge | POST challenge          | 200             |
-| Finalize order       | POST order finalize URL | 200             |
-| Poll for status      | GET  authz              | 200             |
-| Check for new cert   | GET  cert               | 200             |
+| Action               | Request             | Response        |
+|:---------------------|:--------------------|:----------------|
+| Get a nonce          | HEAD newNonce       | 204             |
+| Create account       | POST newAccount     | 201 -> account  |
+| Submit an order      | POST newOrder       | 201 -> order    |
+| Fetch challenges     | GET  authz          | 200             |
+| Respond to challenge | POST challenge      | 200             |
+| Finalize order       | POST order finalize | 200             |
+| Poll for status      | GET  authz          | 200             |
+| Check for new cert   | GET  cert           | 200             |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -846,7 +846,7 @@ before the requested certificate can be issued (see
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
-finalizeURL (requred, string):
+finalize (requred, string):
 : A URL that a CSR must be POSTed to once all of the order's authorizations are
 satisfied to finalize the order. The result of a successful finalization will be
 the population of the certificate URL for the order.
@@ -872,7 +872,7 @@ certificate (optional, string):
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/acct/1/order/1/finalize",
+  "finalize": "https://example.com/acme/acct/1/order/1/finalize",
 
   "certificate": "https://example.com/acme/cert/1234"
 }
@@ -1474,7 +1474,7 @@ Location: https://example.com/acme/order/asdf
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/order/asdf/finalize"
+  "finalize": "https://example.com/acme/order/asdf/finalize"
 }
 ~~~~~~~~~~
 
@@ -1568,7 +1568,7 @@ Location: https://example.com/acme/order/asdf
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/order/asdf/finalize",
+  "finalize": "https://example.com/acme/order/asdf/finalize",
 
   "certificate": "https://example.com/acme/cert/asdf"
 }
@@ -2564,7 +2564,7 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | notBefore      | string               | true         | RFC XXXX  |
 | notAfter       | string               | true         | RFC XXXX  |
 | authorizations | array of string      | false        | RFC XXXX  |
-| finalizeURL    | string               | false        | RFC XXXX  |
+| finalize       | string               | false        | RFC XXXX  |
 | certificate    | string               | false        | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
