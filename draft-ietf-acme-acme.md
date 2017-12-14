@@ -496,7 +496,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support               |
 | invalidContact          | A contact URL for an account was invalid                                       |
 | unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
-| externalAccountRequired | The request must include a value for the "external-account-binding" field      |
+| externalAccountRequired | The request must include a value for the "externalAccountBinding" field        |
 | accountDoesNotExist     | The request specified an account that does not exist                           |
 | malformed               | The request message was malformed                                              |
 | rateLimited             | The request exceeds a rate limit                                               |
@@ -505,7 +505,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | unauthorized            | The client lacks sufficient authorization                                      |
 | unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
 | userActionRequired      | Visit the "instance" URL and take actions specified there                      |
-| badRevocationReason     | The revocation reason provided is not allowed by the server	                   |
+| badRevocationReason     | The revocation reason provided is not allowed by the server                    |
 | caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
 | dns                     | There was a problem with a DNS query                                           |
 | connection              | The server could not connect to validation target                              |
@@ -522,23 +522,23 @@ to error types, rather than the full URNs.  For example, an "error of type
 'badCSR'" refers to an error document with "type" value
 "urn:ietf:params:acme:error:badCSR".
 
-### Sub-problems
+### Subproblems
 
 Sometimes a CA may need to return multiple errors in response to a request.
 Additionally, the CA may need to attribute errors to specific
 identifiers.  For instance, a new-order request may contain multiple
 identifiers for which the CA cannot issue. In this situation, an ACME
-problem document MAY contain the "sub-problems" field, containing a JSON
+problem document MAY contain the "subproblems" field, containing a JSON
 array of problem documents, each of which MAY contain an "identifier"
 field. If present, the "identifier" field MUST contain an ACME identifier
 ({{iana-identifier}}). The "identifier" field MUST NOT be present at
-the top level in ACME problem documents. It can only be present in sub-problems.
-Sub-problems need not all have the same type, and do not need to match the top level type.
+the top level in ACME problem documents. It can only be present in subproblems.
+Subproblems need not all have the same type, and do not need to match the top level type.
 
-ACME clients may choose to use the "identifier" field of a sub-problem
+ACME clients may choose to use the "identifier" field of a subproblem
 as a hint that an operation would succeed if that identifier were omitted. For
 instance, if an order contains ten DNS identifiers, and the new-order
-request returns a problem document with two sub-problems, referencing two
+request returns a problem document with two subproblems, referencing two
 of those identifiers, the ACME client may choose to submit another order
 containing only the eight identifiers not listed in the problem document.
 
@@ -549,7 +549,7 @@ Content-Type: application/problem+json
 {
     "type": "urn:ietf:params:acme:error:malformed",
     "detail": "Some of the identifiers requested were rejected",
-    "sub-problems": [
+    "subproblems": [
         {
             "type": "urn:ietf:params:acme:error:malformed",
             "detail": "Invalid underscore in DNS name \"_example.com\"",
@@ -596,13 +596,13 @@ ACME is structured as a REST application with the following types of resources:
 * Certificate resources, representing issued certificates
   ({{downloading-the-certificate}})
 * A "directory" resource ({{directory}})
-* A "new-nonce" resource ({{getting-a-nonce}})
-* A "new-account" resource ({{account-creation}})
-* A "new-order" resource ({{applying-for-certificate-issuance}})
-* A "revoke-cert" resource ({{certificate-revocation}})
-* A "key-change" resource ({{account-key-roll-over}})
+* A "newNonce" resource ({{getting-a-nonce}})
+* A "newAccount" resource ({{account-creation}})
+* A "newOrder" resource ({{applying-for-certificate-issuance}})
+* A "revokeCert" resource ({{certificate-revocation}})
+* A "keyChange" resource ({{account-key-roll-over}})
 
-The server MUST provide "directory" and "new-nonce" resources.
+The server MUST provide "directory" and "newNonce" resources.
 
 ACME uses different URLs for different management functions. Each function is
 listed in a directory along with its corresponding URL, so clients only need to
@@ -632,7 +632,7 @@ indicate HTTP link relations.
        |          |          |           |            |
        |          |          |           |            |
        V          V          V           V            V
- new-account  new-authz  new-order  revoke-cert  key-change
+  newAccount   newAuthz   newOrder   revokeCert   keyChange
        |          |          |
        |          |          |
        V          |          V
@@ -652,16 +652,16 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action               | Request                 | Response        |
-|:---------------------|:------------------------|:----------------|
-| Get a nonce          | HEAD new-nonce          | 204             |
-| Create account       | POST new-account        | 201 -> account  |
-| Submit an order      | POST new-order          | 201 -> order    |
-| Fetch challenges     | GET  authz              | 200             |
-| Respond to challenge | POST challenge          | 200             |
-| Finalize order       | POST order finalize URL | 200             |
-| Poll for status      | GET  authz              | 200             |
-| Check for new cert   | GET  cert               | 200             |
+| Action               | Request             | Response        |
+|:---------------------|:--------------------|:----------------|
+| Get a nonce          | HEAD newNonce       | 204             |
+| Create account       | POST newAccount     | 201 -> account  |
+| Submit an order      | POST newOrder       | 201 -> order    |
+| Fetch challenges     | GET  authz          | 200             |
+| Respond to challenge | POST challenge      | 200             |
+| Finalize order       | POST order finalize | 200             |
+| Poll for status      | GET  authz          | 200             |
+| Check for new cert   | GET  cert           | 200             |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -675,12 +675,12 @@ the following table and whose values are the corresponding URLs.
 
 | Field          | URL in value         |
 |:---------------|:---------------------|
-| new-nonce      | New nonce            |
-| new-account    | New account          |
-| new-order      | New order            |
-| new-authz      | New authorization    |
-| revoke-cert    | Revoke certificate   |
-| key-change     | Key change           |
+| newNonce      | New nonce            |
+| newAccount    | New account          |
+| newOrder      | New order            |
+| newAuthz      | New authorization    |
+| revokeCert    | Revoke certificate   |
+| keyChange     | Key change           |
 
 There is no constraint on the URL of the directory except that it
 should be different from the other ACME server resources' URLs, and that it
@@ -699,22 +699,22 @@ the service provided by the ACME server.
 
 The following metadata items are defined, all of which are OPTIONAL:
 
-"terms-of-service" (optional, string):
+termsOfService (optional, string):
 : A URL identifying the current terms of service.
 
-"website" (optional, string):
+website (optional, string):
 : An HTTP or HTTPS URL locating a website providing more
 information about the ACME server.
 
-"caa-identities" (optional, array of string):
+caaIdentities (optional, array of string):
 : Each string MUST be a lowercase hostname which the ACME server recognizes as
 referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
 use when configuring CAA records.
 
-"external-account-required" (optional, boolean):
+externalAccountRequired (optional, boolean):
 : If this field is present and set to "true", then the CA requires that all
-new-account requests include an "external-account-binding" field associating the
+new-account requests include an "externalAccountBinding" field associating the
 new account with an external account.
 
 Clients access the directory by sending a GET request to the directory URL.
@@ -724,17 +724,17 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "new-nonce": "https://example.com/acme/new-nonce",
-  "new-account": "https://example.com/acme/new-account",
-  "new-order": "https://example.com/acme/new-order",
-  "new-authz": "https://example.com/acme/new-authz",
-  "revoke-cert": "https://example.com/acme/revoke-cert",
-  "key-change": "https://example.com/acme/key-change",
+  "newNonce": "https://example.com/acme/new-nonce",
+  "newAccount": "https://example.com/acme/new-account",
+  "newOrder": "https://example.com/acme/new-order",
+  "newAuthz": "https://example.com/acme/new-authz",
+  "revokeCert": "https://example.com/acme/revoke-cert",
+  "keyChange": "https://example.com/acme/key-change",
   "meta": {
-    "terms-of-service": "https://example.com/acme/terms/2017-5-30",
+    "termsOfService": "https://example.com/acme/terms/2017-5-30",
     "website": "https://www.example.com/",
-    "caa-identities": ["example.com"],
-    "external-account-required": false
+    "caaIdentities": ["example.com"],
+    "externalAccountRequired": false
   }
 }
 ~~~~~~~~~~
@@ -755,7 +755,7 @@ contact (optional, array of string):
 related to this account. For example, the server may wish to notify the
 client about server-initiated revocation or certificate expiration.
 
-terms-of-service-agreed (optional, boolean):
+termsOfServiceAgreed (optional, boolean):
 : Including this field in a new-account request, with a value of true, indicates
 the client's agreement with the terms of service. This field is not updateable
 by the client.
@@ -771,7 +771,7 @@ a GET request, as described in {{orders-list}}.
     "mailto:cert-admin@example.com",
     "mailto:admin@example.com"
   ],
-  "terms-of-service-agreed": true,
+  "termsOfServiceAgreed": true,
   "orders": "https://example.com/acme/acct/1/orders"
 }
 ~~~~~~~~~~
@@ -846,7 +846,7 @@ before the requested certificate can be issued (see
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
-finalizeURL (requred, string):
+finalize (requred, string):
 : A URL that a CSR must be POSTed to once all of the order's authorizations are
 satisfied to finalize the order. The result of a successful finalization will be
 the population of the certificate URL for the order.
@@ -872,7 +872,7 @@ certificate (optional, string):
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/acct/1/order/1/finalize",
+  "finalize": "https://example.com/acme/acct/1/order/1/finalize",
 
   "certificate": "https://example.com/acme/cert/1234"
 }
@@ -1001,17 +1001,17 @@ caching of this resource.
 
 A client creates a new account with the server by sending a POST request to the
 server's new-account URL.  The body of the request is a stub account object
-containing the "contact" field and optionally the "terms-of-service-agreed"
+containing the "contact" field and optionally the "termsOfServiceAgreed"
 field.
 
 contact (optional, array of string):
 : Same meaning as the corresponding server field defined in {{account-objects}}
 
-terms-of-service-agreed (optional, boolean):
+termsOfServiceAgreed (optional, boolean):
 : Same meaning as the corresponding server field defined in {{account-objects}}
 
 
-only-return-existing (optional, boolean):
+onlyReturnExisting (optional, boolean):
 : If this field is present with the value "true", then the server MUST NOT
   create a new account if one does not already exist.  This allows a client to
   look up an account URL based on an account key (see
@@ -1030,7 +1030,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
-    "terms-of-service-agreed": true,
+    "termsOfServiceAgreed": true,
     "contact": [
       "mailto:cert-admin@example.com",
       "mailto:admin@example.com"
@@ -1067,9 +1067,9 @@ scheme but an invalid value then the server MUST return an error of type
 
 If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URL where such terms can be accessed
-in the "terms-of-service" subfield of the "meta" field in the directory object,
+in the "termsOfService" subfield of the "meta" field in the directory object,
 and the server MUST reject new-account requests that do not have the
-"terms-of-service-agreed" set to "true".  Clients SHOULD NOT automatically agree
+"termsOfServiceAgreed" set to "true".  Clients SHOULD NOT automatically agree
 to terms by default.  Rather, they SHOULD require some user interaction for
 agreement to terms.
 
@@ -1105,7 +1105,7 @@ an account key but not the corresponding account URL to recover the account URL.
 If a client wishes to find the URL for an existing account and does not want an
 account to be created if one does not already exist, then it SHOULD do so by
 sending a POST request to the new-account URL with a JWS whose payload has an
-"only-return-existing" field set to "true" ({"only-return-existing": true}).
+"onlyReturnExisting" field set to "true" ({"onlyReturnExisting": true}).
 If a client sends such a request and an account does not exist, then the server
 MUST return an error response with status code 400 (Bad Request) and type
 "urn:ietf:params:acme:error:accountDoesNotExist".
@@ -1155,7 +1155,7 @@ That is, it should send a JWS whose payload is an empty object ({}).
 ### Changes of Terms of Service
 
 As described above, a client can indicate its agreement with the CA's terms of
-service by setting the "terms-of-service-agreed" field in its account object to
+service by setting the "termsOfServiceAgreed" field in its account object to
 "true".
 
 If the server has changed its terms of service since a client initially agreed,
@@ -1185,8 +1185,8 @@ Content-Language: en
 
 ### External Account Binding
 
-The server MAY require a value for the "external-account-binding" field to be
-present in "new-account" requests.  This can be used to associate an ACME account with an
+The server MAY require a value for the "externalAccountBinding" field to be
+present in "newAccount" requests.  This can be used to associate an ACME account with an
 existing account in a non-ACME system, such as a CA customer database.
 
 To enable ACME account binding, a CA needs to provide the ACME client with a
@@ -1222,9 +1222,9 @@ Content-Type: application/jose+json
   }),
   "payload": base64url({
     "contact": ["mailto:example@anonymous.invalid"],
-    "terms-of-service-agreed": true,
+    "termsOfServiceAgreed": true,
 
-    "external-account-binding": {
+    "externalAccountBinding": {
       "protected": base64url({
         "alg": "HS256",
         "kid": /* key identifier from CA */,
@@ -1238,16 +1238,16 @@ Content-Type: application/jose+json
 }
 ~~~~~
 
-If a CA requires that new-account requests contain an "external-account-binding"
-field, then it MUST provide the value "true" in the "external-account-required" subfield
+If a CA requires that new-account requests contain an "externalAccountBinding"
+field, then it MUST provide the value "true" in the "externalAccountRequired" subfield
 of the "meta" field in the directory object.  If the CA receives a
-new-account request without an "external-account-binding" field, then it should
-reply with an error of type "externalAccountRequired". 
+new-account request without an "externalAccountBinding" field, then it should
+reply with an error of type "externalAccountRequired".
 
 When a CA receives a new-account request containing an
-"external-account-binding" field, it decides whether or not to verify the
+"externalAccountBinding" field, it decides whether or not to verify the
 binding.  If the CA does not verify the binding, then it MUST NOT reflect the
-"external-account-binding" field in the resulting account object (if any).  To
+"externalAccountBinding" field in the resulting account object (if any).  To
 verify the account binding, the CA MUST take the following steps:
 
 1. Verify that the value of the field is a well-formed JWS
@@ -1259,7 +1259,7 @@ verify the account binding, the CA MUST take the following steps:
 
 If all of these checks pass and the CA creates a new account, then the CA may
 consider the new account associated with the external account corresponding to
-the MAC key and MUST reflect the value of the "external-account-binding" field in
+the MAC key and MUST reflect the value of the "externalAccountBinding" field in
 the resulting account object.  If any of these checks fail, then the CA MUST
 reject the new-account request.
 
@@ -1474,7 +1474,7 @@ Location: https://example.com/acme/order/asdf
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/order/asdf/finalize"
+  "finalize": "https://example.com/acme/order/asdf/finalize"
 }
 ~~~~~~~~~~
 
@@ -1568,7 +1568,7 @@ Location: https://example.com/acme/order/asdf
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/order/asdf/finalize",
+  "finalize": "https://example.com/acme/order/asdf/finalize",
 
   "certificate": "https://example.com/acme/cert/asdf"
 }
@@ -1591,7 +1591,7 @@ corresponding to these authorizations and reflect them as already valid in any
 orders submitted by the client.
 
 If a CA wishes to allow pre-authorization within ACME, it can offer a "new
-authorization" resource in its directory by adding the field "new-authz" with a
+authorization" resource in its directory by adding the field "newAuthz" with a
 URL for the new authorization resource.
 
 To request authorization for an identifier, the client sends a POST request to
@@ -2532,8 +2532,8 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 |:-------------------------|:----------------|:-------------|:----------|
 | status                   | string          | false        | RFC XXXX  |
 | contact                  | array of string | true         | RFC XXXX  |
-| external-account-binding | object          | true         | RFC XXXX  |
-| terms-of-service-agreed  | boolean         | true         | RFC XXXX  |
+| externalAccountBinding   | object          | true         | RFC XXXX  |
+| termsOfServiceAgreed     | boolean         | true         | RFC XXXX  |
 | orders                   | array of string | false        | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
@@ -2564,7 +2564,7 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | notBefore      | string               | true         | RFC XXXX  |
 | notAfter       | string               | true         | RFC XXXX  |
 | authorizations | array of string      | false        | RFC XXXX  |
-| finalizeURL    | string               | false        | RFC XXXX  |
+| finalize       | string               | false        | RFC XXXX  |
 | certificate    | string               | false        | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
@@ -2627,12 +2627,12 @@ Initial contents:
 
 | Field Name     | Resource Type        | Reference |
 |:---------------|:---------------------|:----------|
-| new-nonce      | New nonce            | RFC XXXX  |
-| new-account    | New account          | RFC XXXX  |
-| new-order      | New order            | RFC XXXX  |
-| new-authz      | New authorization    | RFC XXXX  |
-| revoke-cert    | Revoke certificate   | RFC XXXX  |
-| key-change     | Key change           | RFC XXXX  |
+| newNonce      | New nonce            | RFC XXXX  |
+| newAccount    | New account          | RFC XXXX  |
+| newOrder      | New order            | RFC XXXX  |
+| newAuthz      | New authorization    | RFC XXXX  |
+| revokeCert    | Revoke certificate   | RFC XXXX  |
+| keyChange     | Key change           | RFC XXXX  |
 | meta           | Metadata object      | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
@@ -2652,12 +2652,12 @@ Template:
 
 Initial contents: The fields and descriptions defined in {{account-objects}}.
 
-| Field Name                | Field Type      | Reference |
-|:--------------------------|:----------------|:----------|
-| terms-of-service          | string          | RFC XXXX  |
-| website                   | string          | RFC XXXX  |
-| caa-identities            | array of string | RFC XXXX  |
-| external-account-required | boolean         | RFC XXXX  |
+| Field Name              | Field Type      | Reference |
+|:------------------------|:----------------|:----------|
+| termsOfService          | string          | RFC XXXX  |
+| website                 | string          | RFC XXXX  |
+| caaIdentities           | array of string | RFC XXXX  |
+| externalAccountRequired | boolean         | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
