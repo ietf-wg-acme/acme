@@ -291,7 +291,7 @@ address {
 <link href="#rfc.section.6.4.2" rel="Chapter" title="6.4.2 &#8220;nonce&#8221; (Nonce) JWS Header Parameter">
 <link href="#rfc.section.6.5" rel="Chapter" title="6.5 Rate Limits">
 <link href="#rfc.section.6.6" rel="Chapter" title="6.6 Errors">
-<link href="#rfc.section.6.6.1" rel="Chapter" title="6.6.1 Sub-problems">
+<link href="#rfc.section.6.6.1" rel="Chapter" title="6.6.1 Subproblems">
 <link href="#rfc.section.7" rel="Chapter" title="7 Certificate Management">
 <link href="#rfc.section.7.1" rel="Chapter" title="7.1 Resources">
 <link href="#rfc.section.7.1.1" rel="Chapter" title="7.1.1 Directory">
@@ -359,7 +359,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-12-13" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-12-14" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -383,7 +383,7 @@ address {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: June 16, 2018</td>
+<td class="left">Expires: June 17, 2018</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -396,7 +396,7 @@ address {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">December 13, 2017</td>
+<td class="right">December 14, 2017</td>
 </tr>
 
     	
@@ -413,7 +413,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on June 16, 2018.</p>
+<p>This Internet-Draft will expire on June 17, 2018.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2017 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -453,7 +453,7 @@ address {
 </li>
 <li>6.6.   <a href="#rfc.section.6.6">Errors</a>
 </li>
-<ul><li>6.6.1.   <a href="#rfc.section.6.6.1">Sub-problems</a>
+<ul><li>6.6.1.   <a href="#rfc.section.6.6.1">Subproblems</a>
 </li>
 </ul></ul><li>7.   <a href="#rfc.section.7">Certificate Management</a>
 </li>
@@ -790,7 +790,7 @@ address {
 </tr>
 <tr>
 <td class="left">externalAccountRequired</td>
-<td class="left">The request must include a value for the &#8220;external-account-binding&#8221; field</td>
+<td class="left">The request must include a value for the &#8220;externalAccountBinding&#8221; field</td>
 </tr>
 <tr>
 <td class="left">accountDoesNotExist</td>
@@ -853,10 +853,10 @@ address {
 <p id="rfc.section.6.6.p.3">This list is not exhaustive. The server MAY return errors whose &#8220;type&#8221; field is set to a URI other than those defined above.  Servers MUST NOT use the ACME URN <a href="#RFC3553" class="xref">[RFC3553]</a> namespace for errors other than the standard types.  Clients SHOULD display the &#8220;detail&#8221; field of all errors.</p>
 <p id="rfc.section.6.6.p.4">In the remainder of this document, we use the tokens in the table above to refer to error types, rather than the full URNs.  For example, an &#8220;error of type &#8216;badCSR&#8217;&#8221; refers to an error document with &#8220;type&#8221; value &#8220;urn:ietf:params:acme:error:badCSR&#8221;.</p>
 <h1 id="rfc.section.6.6.1">
-<a href="#rfc.section.6.6.1">6.6.1.</a> <a href="#sub-problems" id="sub-problems">Sub-problems</a>
+<a href="#rfc.section.6.6.1">6.6.1.</a> <a href="#subproblems" id="subproblems">Subproblems</a>
 </h1>
-<p id="rfc.section.6.6.1.p.1">Sometimes a CA may need to return multiple errors in response to a request.  Additionally, the CA may need to attribute errors to specific identifiers.  For instance, a new-order request may contain multiple identifiers for which the CA cannot issue. In this situation, an ACME problem document MAY contain the &#8220;sub-problems&#8221; field, containing a JSON array of problem documents, each of which MAY contain an &#8220;identifier&#8221; field. If present, the &#8220;identifier&#8221; field MUST contain an ACME identifier (<a href="#iana-identifier" class="xref">Section 9.7.7</a>). The &#8220;identifier&#8221; field MUST NOT be present at the top level in ACME problem documents. It can only be present in sub-problems.  Sub-problems need not all have the same type, and do not need to match the top level type.</p>
-<p id="rfc.section.6.6.1.p.2">ACME clients may choose to use the &#8220;identifier&#8221; field of a sub-problem as a hint that an operation would succeed if that identifier were omitted. For instance, if an order contains ten DNS identifiers, and the new-order request returns a problem document with two sub-problems, referencing two of those identifiers, the ACME client may choose to submit another order containing only the eight identifiers not listed in the problem document.</p>
+<p id="rfc.section.6.6.1.p.1">Sometimes a CA may need to return multiple errors in response to a request.  Additionally, the CA may need to attribute errors to specific identifiers.  For instance, a new-order request may contain multiple identifiers for which the CA cannot issue. In this situation, an ACME problem document MAY contain the &#8220;subproblems&#8221; field, containing a JSON array of problem documents, each of which MAY contain an &#8220;identifier&#8221; field. If present, the &#8220;identifier&#8221; field MUST contain an ACME identifier (<a href="#iana-identifier" class="xref">Section 9.7.7</a>). The &#8220;identifier&#8221; field MUST NOT be present at the top level in ACME problem documents. It can only be present in subproblems.  Subproblems need not all have the same type, and do not need to match the top level type.</p>
+<p id="rfc.section.6.6.1.p.2">ACME clients may choose to use the &#8220;identifier&#8221; field of a subproblem as a hint that an operation would succeed if that identifier were omitted. For instance, if an order contains ten DNS identifiers, and the new-order request returns a problem document with two subproblems, referencing two of those identifiers, the ACME client may choose to submit another order containing only the eight identifiers not listed in the problem document.</p>
 <pre>
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
@@ -864,7 +864,7 @@ Content-Type: application/problem+json
 {
     "type": "urn:ietf:params:acme:error:malformed",
     "detail": "Some of the identifiers requested were rejected",
-    "sub-problems": [
+    "subproblems": [
         {
             "type": "urn:ietf:params:acme:error:malformed",
             "detail": "Invalid underscore in DNS name \"_example.com\"",
@@ -910,13 +910,13 @@ Content-Type: application/problem+json
 <li>Challenge resources, representing a challenge to prove control of an identifier (<a href="#identifier-authorization" class="xref">Section 7.5</a>, <a href="#identifier-validation-challenges" class="xref">Section 8</a>)</li>
 <li>Certificate resources, representing issued certificates (<a href="#downloading-the-certificate" class="xref">Section 7.4.2</a>)</li>
 <li>A &#8220;directory&#8221; resource (<a href="#directory" class="xref">Section 7.1.1</a>)</li>
-<li>A &#8220;new-nonce&#8221; resource (<a href="#getting-a-nonce" class="xref">Section 7.2</a>)</li>
-<li>A &#8220;new-account&#8221; resource (<a href="#account-creation" class="xref">Section 7.3</a>)</li>
-<li>A &#8220;new-order&#8221; resource (<a href="#applying-for-certificate-issuance" class="xref">Section 7.4</a>)</li>
-<li>A &#8220;revoke-cert&#8221; resource (<a href="#certificate-revocation" class="xref">Section 7.6</a>)</li>
-<li>A &#8220;key-change&#8221; resource (<a href="#account-key-roll-over" class="xref">Section 7.3.6</a>)</li>
+<li>A &#8220;newNonce&#8221; resource (<a href="#getting-a-nonce" class="xref">Section 7.2</a>)</li>
+<li>A &#8220;newAccount&#8221; resource (<a href="#account-creation" class="xref">Section 7.3</a>)</li>
+<li>A &#8220;newOrder&#8221; resource (<a href="#applying-for-certificate-issuance" class="xref">Section 7.4</a>)</li>
+<li>A &#8220;revokeCert&#8221; resource (<a href="#certificate-revocation" class="xref">Section 7.6</a>)</li>
+<li>A &#8220;keyChange&#8221; resource (<a href="#account-key-roll-over" class="xref">Section 7.3.6</a>)</li>
 </ul>
-<p id="rfc.section.7.1.p.3">The server MUST provide &#8220;directory&#8221; and &#8220;new-nonce&#8221; resources.</p>
+<p id="rfc.section.7.1.p.3">The server MUST provide &#8220;directory&#8221; and &#8220;newNonce&#8221; resources.</p>
 <p id="rfc.section.7.1.p.4">ACME uses different URLs for different management functions. Each function is listed in a directory along with its corresponding URL, so clients only need to be configured with the directory URL.  These URLs are connected by a few different link relations <a href="#RFC5988" class="xref">[RFC5988]</a>.</p>
 <p id="rfc.section.7.1.p.5">The &#8220;up&#8221; link relation is used with challenge resources to indicate the authorization resource to which a challenge belongs.  It is also used from certificate resources to indicate a resource from which the client may fetch a chain of CA certificates that could be used to validate the certificate in the original resource.</p>
 <p id="rfc.section.7.1.p.6">The &#8220;index&#8221; link relation is present on all resources other than the directory and indicates the URL of the directory.</p>
@@ -930,7 +930,7 @@ Content-Type: application/problem+json
        |          |          |           |            |
        |          |          |           |            |
        V          V          V           V            V
- new-account  new-authz  new-order  revoke-cert  key-change
+  newAccount   newAuthz   newOrder   revokeCert   keyChange
        |          |          |
        |          |          |
        V          |          V
@@ -954,17 +954,17 @@ Content-Type: application/problem+json
 <tbody>
 <tr>
 <td class="left">Get a nonce</td>
-<td class="left">HEAD new-nonce</td>
+<td class="left">HEAD newNonce</td>
 <td class="left">204</td>
 </tr>
 <tr>
 <td class="left">Create account</td>
-<td class="left">POST new-account</td>
+<td class="left">POST newAccount</td>
 <td class="left">201 -&gt; account</td>
 </tr>
 <tr>
 <td class="left">Submit an order</td>
-<td class="left">POST new-order</td>
+<td class="left">POST newOrder</td>
 <td class="left">201 -&gt; order</td>
 </tr>
 <tr>
@@ -979,7 +979,7 @@ Content-Type: application/problem+json
 </tr>
 <tr>
 <td class="left">Finalize order</td>
-<td class="left">POST order finalize URL</td>
+<td class="left">POST order finalize</td>
 <td class="left">200</td>
 </tr>
 <tr>
@@ -1006,27 +1006,27 @@ Content-Type: application/problem+json
 </tr></thead>
 <tbody>
 <tr>
-<td class="left">new-nonce</td>
+<td class="left">newNonce</td>
 <td class="left">New nonce</td>
 </tr>
 <tr>
-<td class="left">new-account</td>
+<td class="left">newAccount</td>
 <td class="left">New account</td>
 </tr>
 <tr>
-<td class="left">new-order</td>
+<td class="left">newOrder</td>
 <td class="left">New order</td>
 </tr>
 <tr>
-<td class="left">new-authz</td>
+<td class="left">newAuthz</td>
 <td class="left">New authorization</td>
 </tr>
 <tr>
-<td class="left">revoke-cert</td>
+<td class="left">revokeCert</td>
 <td class="left">Revoke certificate</td>
 </tr>
 <tr>
-<td class="left">key-change</td>
+<td class="left">keyChange</td>
 <td class="left">Key change</td>
 </tr>
 </tbody>
@@ -1043,14 +1043,14 @@ Content-Type: application/problem+json
 <p></p>
 
 <dl>
-<dt>&#8220;terms-of-service&#8221; (optional, string):</dt>
+<dt>termsOfService (optional, string):</dt>
 <dd style="margin-left: 8">A URL identifying the current terms of service.</dd>
-<dt>&#8220;website&#8221; (optional, string):</dt>
+<dt>website (optional, string):</dt>
 <dd style="margin-left: 8">An HTTP or HTTPS URL locating a website providing more information about the ACME server.</dd>
-<dt>&#8220;caa-identities&#8221; (optional, array of string):</dt>
+<dt>caaIdentities (optional, array of string):</dt>
 <dd style="margin-left: 8">Each string MUST be a lowercase hostname which the ACME server recognizes as referring to itself for the purposes of CAA record validation as defined in <a href="#RFC6844" class="xref">[RFC6844]</a>.  This allows clients to determine the correct issuer domain name to use when configuring CAA records.</dd>
-<dt>&#8220;external-account-required&#8221; (optional, boolean):</dt>
-<dd style="margin-left: 8">If this field is present and set to &#8220;true&#8221;, then the CA requires that all new-account requests include an &#8220;external-account-binding&#8221; field associating the new account with an external account.</dd>
+<dt>externalAccountRequired (optional, boolean):</dt>
+<dd style="margin-left: 8">If this field is present and set to &#8220;true&#8221;, then the CA requires that all new-account requests include an &#8220;externalAccountBinding&#8221; field associating the new account with an external account.</dd>
 </dl>
 <p id="rfc.section.7.1.1.p.7">Clients access the directory by sending a GET request to the directory URL.</p>
 <pre>
@@ -1058,17 +1058,17 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "new-nonce": "https://example.com/acme/new-nonce",
-  "new-account": "https://example.com/acme/new-account",
-  "new-order": "https://example.com/acme/new-order",
-  "new-authz": "https://example.com/acme/new-authz",
-  "revoke-cert": "https://example.com/acme/revoke-cert",
-  "key-change": "https://example.com/acme/key-change",
+  "newNonce": "https://example.com/acme/new-nonce",
+  "newAccount": "https://example.com/acme/new-account",
+  "newOrder": "https://example.com/acme/new-order",
+  "newAuthz": "https://example.com/acme/new-authz",
+  "revokeCert": "https://example.com/acme/revoke-cert",
+  "keyChange": "https://example.com/acme/key-change",
   "meta": {
-    "terms-of-service": "https://example.com/acme/terms/2017-5-30",
+    "termsOfService": "https://example.com/acme/terms/2017-5-30",
     "website": "https://www.example.com/",
-    "caa-identities": ["example.com"],
-    "external-account-required": false
+    "caaIdentities": ["example.com"],
+    "externalAccountRequired": false
   }
 }
 </pre>
@@ -1083,7 +1083,7 @@ Content-Type: application/json
 <dd style="margin-left: 8">The status of this account. Possible values are: &#8220;valid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;.  The value &#8220;deactivated&#8221; should be used to indicate client-initiated deactivation whereas &#8220;revoked&#8221; should be used to indicate server-initiated deactivation.</dd>
 <dt>contact (optional, array of string):</dt>
 <dd style="margin-left: 8">An array of URLs that the server can use to contact the client for issues related to this account. For example, the server may wish to notify the client about server-initiated revocation or certificate expiration.</dd>
-<dt>terms-of-service-agreed (optional, boolean):</dt>
+<dt>termsOfServiceAgreed (optional, boolean):</dt>
 <dd style="margin-left: 8">Including this field in a new-account request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field is not updateable by the client.</dd>
 <dt>orders (required, string):</dt>
 <dd style="margin-left: 8">A URL from which a list of orders submitted by this account can be fetched via a GET request, as described in <a href="#orders-list" class="xref">Section 7.1.2.1</a>.</dd>
@@ -1095,7 +1095,7 @@ Content-Type: application/json
     "mailto:cert-admin@example.com",
     "mailto:admin@example.com"
   ],
-  "terms-of-service-agreed": true,
+  "termsOfServiceAgreed": true,
   "orders": "https://example.com/acme/acct/1/orders"
 }
 </pre>
@@ -1145,7 +1145,7 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;, rel="next"
 <dd style="margin-left: 8">The error that occurred while processing the order, if any.  This field is structured as a problem document <a href="#RFC7807" class="xref">[RFC7807]</a>.</dd>
 <dt>authorizations (required, array of string):</dt>
 <dd style="margin-left: 8">For pending orders, the authorizations that the client needs to complete before the requested certificate can be issued (see <a href="#identifier-authorization" class="xref">Section 7.5</a>).  For final orders (in the &#8220;valid&#8221; or &#8220;invalid&#8221; state), the authorizations that were completed.  Each entry is a URL from which an authorization can be fetched with a GET request.</dd>
-<dt>finalizeURL (requred, string):</dt>
+<dt>finalize (requred, string):</dt>
 <dd style="margin-left: 8">A URL that a CSR must be POSTed to once all of the order&#8217;s authorizations are satisfied to finalize the order. The result of a successful finalization will be the population of the certificate URL for the order.</dd>
 <dt>certificate (optional, string):</dt>
 <dd style="margin-left: 8">A URL for the certificate that has been issued in response to this order.</dd>
@@ -1168,7 +1168,7 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;, rel="next"
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/acct/1/order/1/finalize",
+  "finalize": "https://example.com/acme/acct/1/order/1/finalize",
 
   "certificate": "https://example.com/acme/cert/1234"
 }
@@ -1241,17 +1241,17 @@ Cache-Control: no-store
 <h1 id="rfc.section.7.3">
 <a href="#rfc.section.7.3">7.3.</a> <a href="#account-creation" id="account-creation">Account Creation</a>
 </h1>
-<p id="rfc.section.7.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URL.  The body of the request is a stub account object containing the &#8220;contact&#8221; field and optionally the &#8220;terms-of-service-agreed&#8221; field.</p>
+<p id="rfc.section.7.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URL.  The body of the request is a stub account object containing the &#8220;contact&#8221; field and optionally the &#8220;termsOfServiceAgreed&#8221; field.</p>
 <p></p>
 
 <dl>
 <dt>contact (optional, array of string):</dt>
 <dd style="margin-left: 8">Same meaning as the corresponding server field defined in <a href="#account-objects" class="xref">Section 7.1.2</a>
 </dd>
-<dt>terms-of-service-agreed (optional, boolean):</dt>
+<dt>termsOfServiceAgreed (optional, boolean):</dt>
 <dd style="margin-left: 8">Same meaning as the corresponding server field defined in <a href="#account-objects" class="xref">Section 7.1.2</a>
 </dd>
-<dt>only-return-existing (optional, boolean):</dt>
+<dt>onlyReturnExisting (optional, boolean):</dt>
 <dd style="margin-left: 8">If this field is present with the value &#8220;true&#8221;, then the server MUST NOT create a new account if one does not already exist.  This allows a client to look up an account URL based on an account key (see <a href="#finding-an-account-url-given-a-key" class="xref">Section 7.3.1</a>).</dd>
 </dl>
 <pre>
@@ -1267,7 +1267,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
-    "terms-of-service-agreed": true,
+    "termsOfServiceAgreed": true,
     "contact": [
       "mailto:cert-admin@example.com",
       "mailto:admin@example.com"
@@ -1280,7 +1280,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.7.3.p.4">In general, the server MUST ignore any fields in the request object that it does not recognize.  In particular, it MUST NOT reflect unrecognized fields in the resulting account object.  This allows clients to detect when servers do not support an extension field.</p>
 <p id="rfc.section.7.3.p.5">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URLs it MUST support the &#8220;mailto&#8221; scheme.  Clients MUST NOT provide a &#8220;mailto&#8221; URL in the &#8220;contact&#8221; field that contains <samp>hfields</samp> <a href="#RFC6068" class="xref">[RFC6068]</a>, or more than one <samp>addr-spec</samp> in the <samp>to</samp> component.  If a server encounters a &#8220;mailto&#8221; contact URL that does not meet these criteria, then it SHOULD reject it as invalid.</p>
 <p id="rfc.section.7.3.p.6">If the server rejects a contact URL for using an unsupported scheme it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description describing the error and what types of contact URLs the server considers acceptable. If the server rejects a contact URL for using a supported scheme but an invalid value then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
-<p id="rfc.section.7.3.p.7">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;terms-of-service&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;terms-of-service-agreed&#8221; set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
+<p id="rfc.section.7.3.p.7">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;termsOfService&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;termsOfServiceAgreed&#8221; set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
 <p id="rfc.section.7.3.p.8">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field.</p>
 <pre>
 HTTP/1.1 201 Created
@@ -1302,7 +1302,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 <a href="#rfc.section.7.3.1">7.3.1.</a> <a href="#finding-an-account-url-given-a-key" id="finding-an-account-url-given-a-key">Finding an Account URL Given a Key</a>
 </h1>
 <p id="rfc.section.7.3.1.p.1">If the server already has an account registered with the provided account key, then it MUST return a response with a 200 (OK) status code and provide the URL of that account in the Location header field.  This allows a client that has an account key but not the corresponding account URL to recover the account URL.</p>
-<p id="rfc.section.7.3.1.p.2">If a client wishes to find the URL for an existing account and does not want an account to be created if one does not already exist, then it SHOULD do so by sending a POST request to the new-account URL with a JWS whose payload has an &#8220;only-return-existing&#8221; field set to &#8220;true&#8221; ({&#8220;only-return-existing&#8221;: true}).  If a client sends such a request and an account does not exist, then the server MUST return an error response with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:accountDoesNotExist&#8221;.</p>
+<p id="rfc.section.7.3.1.p.2">If a client wishes to find the URL for an existing account and does not want an account to be created if one does not already exist, then it SHOULD do so by sending a POST request to the new-account URL with a JWS whose payload has an &#8220;onlyReturnExisting&#8221; field set to &#8220;true&#8221; ({&#8220;onlyReturnExisting&#8221;: true}).  If a client sends such a request and an account does not exist, then the server MUST return an error response with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:accountDoesNotExist&#8221;.</p>
 <h1 id="rfc.section.7.3.2">
 <a href="#rfc.section.7.3.2">7.3.2.</a> <a href="#account-update" id="account-update">Account Update</a>
 </h1>
@@ -1336,7 +1336,7 @@ Content-Type: application/jose+json
 <h1 id="rfc.section.7.3.4">
 <a href="#rfc.section.7.3.4">7.3.4.</a> <a href="#changes-of-terms-of-service" id="changes-of-terms-of-service">Changes of Terms of Service</a>
 </h1>
-<p id="rfc.section.7.3.4.p.1">As described above, a client can indicate its agreement with the CA&#8217;s terms of service by setting the &#8220;terms-of-service-agreed&#8221; field in its account object to &#8220;true&#8221;.</p>
+<p id="rfc.section.7.3.4.p.1">As described above, a client can indicate its agreement with the CA&#8217;s terms of service by setting the &#8220;termsOfServiceAgreed&#8221; field in its account object to &#8220;true&#8221;.</p>
 <p id="rfc.section.7.3.4.p.2">If the server has changed its terms of service since a client initially agreed, and the server is unwilling to process a request without explicit agreement to the new terms, then it MUST return an error response with status code 403 (Forbidden) and type &#8220;urn:ietf:params:acme:error:userActionRequired&#8221;.  This response MUST include a Link header with link relation &#8220;terms-of-service&#8221; and the latest terms-of-service URL.</p>
 <p id="rfc.section.7.3.4.p.3">The problem document returned with the error MUST also include an &#8220;instance&#8221; field, indicating a URL that the client should direct a human user to visit in order for instructions on how to agree to the terms.</p>
 <pre>
@@ -1355,7 +1355,7 @@ Content-Language: en
 <h1 id="rfc.section.7.3.5">
 <a href="#rfc.section.7.3.5">7.3.5.</a> <a href="#external-account-binding" id="external-account-binding">External Account Binding</a>
 </h1>
-<p id="rfc.section.7.3.5.p.1">The server MAY require a value for the &#8220;external-account-binding&#8221; field to be present in &#8220;new-account&#8221; requests.  This can be used to associate an ACME account with an existing account in a non-ACME system, such as a CA customer database.</p>
+<p id="rfc.section.7.3.5.p.1">The server MAY require a value for the &#8220;externalAccountBinding&#8221; field to be present in &#8220;newAccount&#8221; requests.  This can be used to associate an ACME account with an existing account in a non-ACME system, such as a CA customer database.</p>
 <p id="rfc.section.7.3.5.p.2">To enable ACME account binding, a CA needs to provide the ACME client with a MAC key and a key identifier, using some mechanism outside of ACME. The key identifier MUST be an ASCII string. The MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility between non-ACME provisioning systems and ACME clients.</p>
 <p id="rfc.section.7.3.5.p.3">The ACME client then computes a binding JWS to indicate the external account holder&#8217;s approval of the ACME account key.  The payload of this JWS is the account key being registered, in JWK form.  The protected header of the JWS MUST meet the following criteria:</p>
 <p></p>
@@ -1381,9 +1381,9 @@ Content-Type: application/jose+json
   }),
   "payload": base64url({
     "contact": ["mailto:example@anonymous.invalid"],
-    "terms-of-service-agreed": true,
+    "termsOfServiceAgreed": true,
 
-    "external-account-binding": {
+    "externalAccountBinding": {
       "protected": base64url({
         "alg": "HS256",
         "kid": /* key identifier from CA */,
@@ -1396,8 +1396,8 @@ Content-Type: application/jose+json
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 </pre>
-<p id="rfc.section.7.3.5.p.6">If a CA requires that new-account requests contain an &#8220;external-account-binding&#8221; field, then it MUST provide the value &#8220;true&#8221; in the &#8220;external-account-required&#8221; subfield of the &#8220;meta&#8221; field in the directory object.  If the CA receives a new-account request without an &#8220;external-account-binding&#8221; field, then it should reply with an error of type &#8220;externalAccountRequired&#8221;.</p>
-<p id="rfc.section.7.3.5.p.7">When a CA receives a new-account request containing an &#8220;external-account-binding&#8221; field, it decides whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;external-account-binding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
+<p id="rfc.section.7.3.5.p.6">If a CA requires that new-account requests contain an &#8220;externalAccountBinding&#8221; field, then it MUST provide the value &#8220;true&#8221; in the &#8220;externalAccountRequired&#8221; subfield of the &#8220;meta&#8221; field in the directory object.  If the CA receives a new-account request without an &#8220;externalAccountBinding&#8221; field, then it should reply with an error of type &#8220;externalAccountRequired&#8221;.</p>
+<p id="rfc.section.7.3.5.p.7">When a CA receives a new-account request containing an &#8220;externalAccountBinding&#8221; field, it decides whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;externalAccountBinding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
 <p></p>
 
 <ol>
@@ -1407,7 +1407,7 @@ Content-Type: application/jose+json
 <li>Verify that the MAC on the JWS verifies using that MAC key</li>
 <li>Verify that the payload of the JWS represents the same key as was used to verify the outer JWS (i.e., the &#8220;jwk&#8221; field of the outer JWS)</li>
 </ol>
-<p id="rfc.section.7.3.5.p.9">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key and MUST reflect the value of the &#8220;external-account-binding&#8221; field in the resulting account object.  If any of these checks fail, then the CA MUST reject the new-account request.</p>
+<p id="rfc.section.7.3.5.p.9">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key and MUST reflect the value of the &#8220;externalAccountBinding&#8221; field in the resulting account object.  If any of these checks fail, then the CA MUST reject the new-account request.</p>
 <h1 id="rfc.section.7.3.6">
 <a href="#rfc.section.7.3.6">7.3.6.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Roll-over</a>
 </h1>
@@ -1565,7 +1565,7 @@ Location: https://example.com/acme/order/asdf
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/order/asdf/finalize"
+  "finalize": "https://example.com/acme/order/asdf/finalize"
 }
 </pre>
 <p id="rfc.section.7.4.p.5">The order object returned by the server represents a promise that if the client fulfills the server&#8217;s requirements before the &#8220;expires&#8221; time, then the server will be willing to finalize the order upon request and issue the requested certificate.  In the order object, any authorization referenced in the &#8220;authorizations&#8221; array whose status is &#8220;pending&#8221; represents an authorization transaction that the client must complete before the server will issue the certificate (see <a href="#identifier-authorization" class="xref">Section 7.5</a>).  If the client fails to complete the required actions before the &#8220;expires&#8221; time, then the server SHOULD change the status of the order to &#8220;invalid&#8221; and MAY delete the order resource.</p>
@@ -1627,7 +1627,7 @@ Location: https://example.com/acme/order/asdf
     "https://example.com/acme/authz/2345"
   ],
 
-  "finalizeURL": "https://example.com/acme/order/asdf/finalize",
+  "finalize": "https://example.com/acme/order/asdf/finalize",
 
   "certificate": "https://example.com/acme/cert/asdf"
 }
@@ -1637,7 +1637,7 @@ Location: https://example.com/acme/order/asdf
 </h1>
 <p id="rfc.section.7.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to a certificate order.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any virtual servers are created and only create a certificate when a virtual server starts up.</p>
 <p id="rfc.section.7.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue certificates for an identifier.  In these cases, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already valid in any orders submitted by the client.</p>
-<p id="rfc.section.7.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the field &#8220;new-authz&#8221; with a URL for the new authorization resource.</p>
+<p id="rfc.section.7.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the field &#8220;newAuthz&#8221; with a URL for the new authorization resource.</p>
 <p id="rfc.section.7.4.1.p.4">To request authorization for an identifier, the client sends a POST request to the new-authorization resource specifying the identifier for which authorization is being requested.</p>
 <p></p>
 
@@ -2296,13 +2296,13 @@ Content-Type: application/jose+json
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">external-account-binding</td>
+<td class="left">externalAccountBinding</td>
 <td class="left">object</td>
 <td class="left">true</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">terms-of-service-agreed</td>
+<td class="left">termsOfServiceAgreed</td>
 <td class="left">boolean</td>
 <td class="left">true</td>
 <td class="left">RFC XXXX</td>
@@ -2375,7 +2375,7 @@ Content-Type: application/jose+json
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">finalizeURL</td>
+<td class="left">finalize</td>
 <td class="left">string</td>
 <td class="left">false</td>
 <td class="left">RFC XXXX</td>
@@ -2472,32 +2472,32 @@ Content-Type: application/jose+json
 </tr></thead>
 <tbody>
 <tr>
-<td class="left">new-nonce</td>
+<td class="left">newNonce</td>
 <td class="left">New nonce</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">new-account</td>
+<td class="left">newAccount</td>
 <td class="left">New account</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">new-order</td>
+<td class="left">newOrder</td>
 <td class="left">New order</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">new-authz</td>
+<td class="left">newAuthz</td>
 <td class="left">New authorization</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">revoke-cert</td>
+<td class="left">revokeCert</td>
 <td class="left">Revoke certificate</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">key-change</td>
+<td class="left">keyChange</td>
 <td class="left">Key change</td>
 <td class="left">RFC XXXX</td>
 </tr>
@@ -2530,7 +2530,7 @@ Content-Type: application/jose+json
 </tr></thead>
 <tbody>
 <tr>
-<td class="left">terms-of-service</td>
+<td class="left">termsOfService</td>
 <td class="left">string</td>
 <td class="left">RFC XXXX</td>
 </tr>
@@ -2540,12 +2540,12 @@ Content-Type: application/jose+json
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">caa-identities</td>
+<td class="left">caaIdentities</td>
 <td class="left">array of string</td>
 <td class="left">RFC XXXX</td>
 </tr>
 <tr>
-<td class="left">external-account-required</td>
+<td class="left">externalAccountRequired</td>
 <td class="left">boolean</td>
 <td class="left">RFC XXXX</td>
 </tr>

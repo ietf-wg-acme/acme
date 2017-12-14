@@ -5,10 +5,10 @@
 ACME Working Group                                             R. Barnes
 Internet-Draft                                                     Cisco
 Intended status: Standards Track                      J. Hoffman-Andrews
-Expires: June 16, 2018                                               EFF
+Expires: June 17, 2018                                               EFF
                                                                J. Kasten
                                                   University of Michigan
-                                                       December 13, 2017
+                                                       December 14, 2017
 
 
           Automatic Certificate Management Environment (ACME)
@@ -53,12 +53,12 @@ Status of This Memo
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 1]
+Barnes, et al.            Expires June 17, 2018                 [Page 1]
 
 Internet-Draft                    ACME                     December 2017
 
 
-   This Internet-Draft will expire on June 16, 2018.
+   This Internet-Draft will expire on June 17, 2018.
 
 Copyright Notice
 
@@ -92,7 +92,7 @@ Table of Contents
        6.4.2.  "nonce" (Nonce) JWS Header Parameter  . . . . . . . .  13
      6.5.  Rate Limits . . . . . . . . . . . . . . . . . . . . . . .  13
      6.6.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  13
-       6.6.1.  Sub-problems  . . . . . . . . . . . . . . . . . . . .  15
+       6.6.1.  Subproblems . . . . . . . . . . . . . . . . . . . . .  15
    7.  Certificate Management  . . . . . . . . . . . . . . . . . . .  16
      7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  17
        7.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  19
@@ -105,11 +105,11 @@ Table of Contents
        7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  29
        7.3.3.  Account Information . . . . . . . . . . . . . . . . .  30
        7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  30
-       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  31
+       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  30
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 2]
+Barnes, et al.            Expires June 17, 2018                 [Page 2]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -165,7 +165,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 3]
+Barnes, et al.            Expires June 17, 2018                 [Page 3]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -221,7 +221,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 4]
+Barnes, et al.            Expires June 17, 2018                 [Page 4]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -277,7 +277,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 5]
+Barnes, et al.            Expires June 17, 2018                 [Page 5]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -333,7 +333,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 6]
+Barnes, et al.            Expires June 17, 2018                 [Page 6]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -389,7 +389,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 7]
+Barnes, et al.            Expires June 17, 2018                 [Page 7]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -445,7 +445,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 8]
+Barnes, et al.            Expires June 17, 2018                 [Page 8]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -501,7 +501,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                 [Page 9]
+Barnes, et al.            Expires June 17, 2018                 [Page 9]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -557,7 +557,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 10]
+Barnes, et al.            Expires June 17, 2018                [Page 10]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -613,7 +613,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 11]
+Barnes, et al.            Expires June 17, 2018                [Page 11]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -669,7 +669,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 12]
+Barnes, et al.            Expires June 17, 2018                [Page 12]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -725,7 +725,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 13]
+Barnes, et al.            Expires June 17, 2018                [Page 13]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -758,7 +758,7 @@ Internet-Draft                    ACME                     December 2017
    |                         | unsupported protocol scheme             |
    |                         |                                         |
    | externalAccountRequired | The request must include a value for    |
-   |                         | the "external-account-binding" field    |
+   |                         | the "externalAccountBinding" field      |
    |                         |                                         |
    | accountDoesNotExist     | The request specified an account that   |
    |                         | does not exist                          |
@@ -781,7 +781,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 14]
+Barnes, et al.            Expires June 17, 2018                [Page 14]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -820,34 +820,34 @@ Internet-Draft                    ACME                     December 2017
    example, an "error of type 'badCSR'" refers to an error document with
    "type" value "urn:ietf:params:acme:error:badCSR".
 
-6.6.1.  Sub-problems
+6.6.1.  Subproblems
 
    Sometimes a CA may need to return multiple errors in response to a
    request.  Additionally, the CA may need to attribute errors to
    specific identifiers.  For instance, a new-order request may contain
    multiple identifiers for which the CA cannot issue.  In this
-   situation, an ACME problem document MAY contain the "sub-problems"
+   situation, an ACME problem document MAY contain the "subproblems"
    field, containing a JSON array of problem documents, each of which
    MAY contain an "identifier" field.  If present, the "identifier"
    field MUST contain an ACME identifier (Section 9.7.7).  The
    "identifier" field MUST NOT be present at the top level in ACME
-   problem documents.  It can only be present in sub-problems.  Sub-
-   problems need not all have the same type, and do not need to match
+   problem documents.  It can only be present in subproblems.
+   Subproblems need not all have the same type, and do not need to match
    the top level type.
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 15]
+Barnes, et al.            Expires June 17, 2018                [Page 15]
 
 Internet-Draft                    ACME                     December 2017
 
 
-   ACME clients may choose to use the "identifier" field of a sub-
-   problem as a hint that an operation would succeed if that identifier
-   were omitted.  For instance, if an order contains ten DNS
-   identifiers, and the new-order request returns a problem document
-   with two sub-problems, referencing two of those identifiers, the ACME
-   client may choose to submit another order containing only the eight
+   ACME clients may choose to use the "identifier" field of a subproblem
+   as a hint that an operation would succeed if that identifier were
+   omitted.  For instance, if an order contains ten DNS identifiers, and
+   the new-order request returns a problem document with two
+   subproblems, referencing two of those identifiers, the ACME client
+   may choose to submit another order containing only the eight
    identifiers not listed in the problem document.
 
 HTTP/1.1 403 Forbidden
@@ -856,7 +856,7 @@ Content-Type: application/problem+json
 {
     "type": "urn:ietf:params:acme:error:malformed",
     "detail": "Some of the identifiers requested were rejected",
-    "sub-problems": [
+    "subproblems": [
         {
             "type": "urn:ietf:params:acme:error:malformed",
             "detail": "Invalid underscore in DNS name \"_example.com\"",
@@ -893,7 +893,7 @@ Content-Type: application/problem+json
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 16]
+Barnes, et al.            Expires June 17, 2018                [Page 16]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -920,17 +920,17 @@ Internet-Draft                    ACME                     December 2017
 
    o  A "directory" resource (Section 7.1.1)
 
-   o  A "new-nonce" resource (Section 7.2)
+   o  A "newNonce" resource (Section 7.2)
 
-   o  A "new-account" resource (Section 7.3)
+   o  A "newAccount" resource (Section 7.3)
 
-   o  A "new-order" resource (Section 7.4)
+   o  A "newOrder" resource (Section 7.4)
 
-   o  A "revoke-cert" resource (Section 7.6)
+   o  A "revokeCert" resource (Section 7.6)
 
-   o  A "key-change" resource (Section 7.3.6)
+   o  A "keyChange" resource (Section 7.3.6)
 
-   The server MUST provide "directory" and "new-nonce" resources.
+   The server MUST provide "directory" and "newNonce" resources.
 
    ACME uses different URLs for different management functions.  Each
    function is listed in a directory along with its corresponding URL,
@@ -949,7 +949,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 17]
+Barnes, et al.            Expires June 17, 2018                [Page 17]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -967,7 +967,7 @@ Internet-Draft                    ACME                     December 2017
           |          |          |           |            |
           |          |          |           |            |
           V          V          V           V            V
-    new-account  new-authz  new-order  revoke-cert  key-change
+     newAccount   newAuthz   newOrder   revokeCert   keyChange
           |          |          |
           |          |          |
           V          |          V
@@ -1005,30 +1005,30 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 18]
+Barnes, et al.            Expires June 17, 2018                [Page 18]
 
 Internet-Draft                    ACME                     December 2017
 
 
-    +----------------------+-------------------------+----------------+
-    | Action               | Request                 | Response       |
-    +----------------------+-------------------------+----------------+
-    | Get a nonce          | HEAD new-nonce          | 204            |
-    |                      |                         |                |
-    | Create account       | POST new-account        | 201 -> account |
-    |                      |                         |                |
-    | Submit an order      | POST new-order          | 201 -> order   |
-    |                      |                         |                |
-    | Fetch challenges     | GET  authz              | 200            |
-    |                      |                         |                |
-    | Respond to challenge | POST challenge          | 200            |
-    |                      |                         |                |
-    | Finalize order       | POST order finalize URL | 200            |
-    |                      |                         |                |
-    | Poll for status      | GET  authz              | 200            |
-    |                      |                         |                |
-    | Check for new cert   | GET  cert               | 200            |
-    +----------------------+-------------------------+----------------+
+      +----------------------+---------------------+----------------+
+      | Action               | Request             | Response       |
+      +----------------------+---------------------+----------------+
+      | Get a nonce          | HEAD newNonce       | 204            |
+      |                      |                     |                |
+      | Create account       | POST newAccount     | 201 -> account |
+      |                      |                     |                |
+      | Submit an order      | POST newOrder       | 201 -> order   |
+      |                      |                     |                |
+      | Fetch challenges     | GET  authz          | 200            |
+      |                      |                     |                |
+      | Respond to challenge | POST challenge      | 200            |
+      |                      |                     |                |
+      | Finalize order       | POST order finalize | 200            |
+      |                      |                     |                |
+      | Poll for status      | GET  authz          | 200            |
+      |                      |                     |                |
+      | Check for new cert   | GET  cert           | 200            |
+      +----------------------+---------------------+----------------+
 
    The remainder of this section provides the details of how these
    resources are structured and how the ACME protocol makes use of them.
@@ -1041,27 +1041,27 @@ Internet-Draft                    ACME                     December 2017
    object, whose field names are drawn from the following table and
    whose values are the corresponding URLs.
 
-                   +-------------+--------------------+
-                   | Field       | URL in value       |
-                   +-------------+--------------------+
-                   | new-nonce   | New nonce          |
-                   |             |                    |
-                   | new-account | New account        |
-                   |             |                    |
-                   | new-order   | New order          |
-                   |             |                    |
-                   | new-authz   | New authorization  |
-                   |             |                    |
-                   | revoke-cert | Revoke certificate |
-                   |             |                    |
-                   | key-change  | Key change         |
-                   +-------------+--------------------+
+                    +------------+--------------------+
+                    | Field      | URL in value       |
+                    +------------+--------------------+
+                    | newNonce   | New nonce          |
+                    |            |                    |
+                    | newAccount | New account        |
+                    |            |                    |
+                    | newOrder   | New order          |
+                    |            |                    |
+                    | newAuthz   | New authorization  |
+                    |            |                    |
+                    | revokeCert | Revoke certificate |
+                    |            |                    |
+                    | keyChange  | Key change         |
+                    +------------+--------------------+
 
 
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 19]
+Barnes, et al.            Expires June 17, 2018                [Page 19]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1083,21 +1083,21 @@ Internet-Draft                    ACME                     December 2017
 
    The following metadata items are defined, all of which are OPTIONAL:
 
-   "terms-of-service" (optional, string):  A URL identifying the current
+   termsOfService (optional, string):  A URL identifying the current
       terms of service.
 
-   "website" (optional, string):  An HTTP or HTTPS URL locating a
-      website providing more information about the ACME server.
+   website (optional, string):  An HTTP or HTTPS URL locating a website
+      providing more information about the ACME server.
 
-   "caa-identities" (optional, array of string):  Each string MUST be a
+   caaIdentities (optional, array of string):  Each string MUST be a
       lowercase hostname which the ACME server recognizes as referring
       to itself for the purposes of CAA record validation as defined in
       [RFC6844].  This allows clients to determine the correct issuer
       domain name to use when configuring CAA records.
 
-   "external-account-required" (optional, boolean):  If this field is
+   externalAccountRequired (optional, boolean):  If this field is
       present and set to "true", then the CA requires that all new-
-      account requests include an "external-account-binding" field
+      account requests include an "externalAccountBinding" field
       associating the new account with an external account.
 
    Clients access the directory by sending a GET request to the
@@ -1117,7 +1117,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 20]
+Barnes, et al.            Expires June 17, 2018                [Page 20]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1126,17 +1126,17 @@ Internet-Draft                    ACME                     December 2017
    Content-Type: application/json
 
    {
-     "new-nonce": "https://example.com/acme/new-nonce",
-     "new-account": "https://example.com/acme/new-account",
-     "new-order": "https://example.com/acme/new-order",
-     "new-authz": "https://example.com/acme/new-authz",
-     "revoke-cert": "https://example.com/acme/revoke-cert",
-     "key-change": "https://example.com/acme/key-change",
+     "newNonce": "https://example.com/acme/new-nonce",
+     "newAccount": "https://example.com/acme/new-account",
+     "newOrder": "https://example.com/acme/new-order",
+     "newAuthz": "https://example.com/acme/new-authz",
+     "revokeCert": "https://example.com/acme/revoke-cert",
+     "keyChange": "https://example.com/acme/key-change",
      "meta": {
-       "terms-of-service": "https://example.com/acme/terms/2017-5-30",
+       "termsOfService": "https://example.com/acme/terms/2017-5-30",
        "website": "https://www.example.com/",
-       "caa-identities": ["example.com"],
-       "external-account-required": false
+       "caaIdentities": ["example.com"],
+       "externalAccountRequired": false
      }
    }
 
@@ -1156,10 +1156,10 @@ Internet-Draft                    ACME                     December 2017
       account.  For example, the server may wish to notify the client
       about server-initiated revocation or certificate expiration.
 
-   terms-of-service-agreed (optional, boolean):  Including this field in
-      a new-account request, with a value of true, indicates the
-      client's agreement with the terms of service.  This field is not
-      updateable by the client.
+   termsOfServiceAgreed (optional, boolean):  Including this field in a
+      new-account request, with a value of true, indicates the client's
+      agreement with the terms of service.  This field is not updateable
+      by the client.
 
    orders (required, string):  A URL from which a list of orders
       submitted by this account can be fetched via a GET request, as
@@ -1173,7 +1173,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 21]
+Barnes, et al.            Expires June 17, 2018                [Page 21]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1184,7 +1184,7 @@ Internet-Draft                    ACME                     December 2017
        "mailto:cert-admin@example.com",
        "mailto:admin@example.com"
      ],
-     "terms-of-service-agreed": true,
+     "termsOfServiceAgreed": true,
      "orders": "https://example.com/acme/acct/1/orders"
    }
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 22]
+Barnes, et al.            Expires June 17, 2018                [Page 22]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1261,9 +1261,9 @@ Internet-Draft                    ACME                     December 2017
       that were completed.  Each entry is a URL from which an
       authorization can be fetched with a GET request.
 
-   finalizeURL (requred, string):  A URL that a CSR must be POSTed to
-      once all of the order's authorizations are satisfied to finalize
-      the order.  The result of a successful finalization will be the
+   finalize (requred, string):  A URL that a CSR must be POSTed to once
+      all of the order's authorizations are satisfied to finalize the
+      order.  The result of a successful finalization will be the
       population of the certificate URL for the order.
 
    certificate (optional, string):  A URL for the certificate that has
@@ -1285,7 +1285,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 23]
+Barnes, et al.            Expires June 17, 2018                [Page 23]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1307,7 +1307,7 @@ Internet-Draft                    ACME                     December 2017
        "https://example.com/acme/authz/2345"
      ],
 
-     "finalizeURL": "https://example.com/acme/acct/1/order/1/finalize",
+     "finalize": "https://example.com/acme/acct/1/order/1/finalize",
 
      "certificate": "https://example.com/acme/cert/1234"
    }
@@ -1341,7 +1341,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 24]
+Barnes, et al.            Expires June 17, 2018                [Page 24]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1397,7 +1397,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 25]
+Barnes, et al.            Expires June 17, 2018                [Page 25]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1453,7 +1453,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 26]
+Barnes, et al.            Expires June 17, 2018                [Page 26]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1466,15 +1466,15 @@ Internet-Draft                    ACME                     December 2017
    A client creates a new account with the server by sending a POST
    request to the server's new-account URL.  The body of the request is
    a stub account object containing the "contact" field and optionally
-   the "terms-of-service-agreed" field.
+   the "termsOfServiceAgreed" field.
 
    contact (optional, array of string):  Same meaning as the
       corresponding server field defined in Section 7.1.2
 
-   terms-of-service-agreed (optional, boolean):  Same meaning as the
+   termsOfServiceAgreed (optional, boolean):  Same meaning as the
       corresponding server field defined in Section 7.1.2
 
-   only-return-existing (optional, boolean):  If this field is present
+   onlyReturnExisting (optional, boolean):  If this field is present
       with the value "true", then the server MUST NOT create a new
       account if one does not already exist.  This allows a client to
       look up an account URL based on an account key (see
@@ -1492,7 +1492,7 @@ Internet-Draft                    ACME                     December 2017
        "url": "https://example.com/acme/new-account"
      }),
      "payload": base64url({
-       "terms-of-service-agreed": true,
+       "termsOfServiceAgreed": true,
        "contact": [
          "mailto:cert-admin@example.com",
          "mailto:admin@example.com"
@@ -1509,7 +1509,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 27]
+Barnes, et al.            Expires June 17, 2018                [Page 27]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1536,39 +1536,17 @@ Internet-Draft                    ACME                     December 2017
 
    If the server wishes to present the client with terms under which the
    ACME service is to be used, it MUST indicate the URL where such terms
-   can be accessed in the "terms-of-service" subfield of the "meta"
-   field in the directory object, and the server MUST reject new-account
-   requests that do not have the "terms-of-service-agreed" set to
-   "true".  Clients SHOULD NOT automatically agree to terms by default.
-   Rather, they SHOULD require some user interaction for agreement to
-   terms.
+   can be accessed in the "termsOfService" subfield of the "meta" field
+   in the directory object, and the server MUST reject new-account
+   requests that do not have the "termsOfServiceAgreed" set to "true".
+   Clients SHOULD NOT automatically agree to terms by default.  Rather,
+   they SHOULD require some user interaction for agreement to terms.
 
    The server creates an account and stores the public key used to
    verify the JWS (i.e., the "jwk" element of the JWS header) to
    authenticate future requests from the account.  The server returns
    this account object in a 201 (Created) response, with the account URL
    in a Location header field.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 16, 2018                [Page 28]
-
-Internet-Draft                    ACME                     December 2017
-
 
    HTTP/1.1 201 Created
    Content-Type: application/json
@@ -1585,6 +1563,13 @@ Internet-Draft                    ACME                     December 2017
      ]
    }
 
+
+
+Barnes, et al.            Expires June 17, 2018                [Page 28]
+
+Internet-Draft                    ACME                     December 2017
+
+
 7.3.1.  Finding an Account URL Given a Key
 
    If the server already has an account registered with the provided
@@ -1596,9 +1581,9 @@ Internet-Draft                    ACME                     December 2017
    If a client wishes to find the URL for an existing account and does
    not want an account to be created if one does not already exist, then
    it SHOULD do so by sending a POST request to the new-account URL with
-   a JWS whose payload has an "only-return-existing" field set to "true"
-   ({"only-return-existing": true}).  If a client sends such a request
-   and an account does not exist, then the server MUST return an error
+   a JWS whose payload has an "onlyReturnExisting" field set to "true"
+   ({"onlyReturnExisting": true}).  If a client sends such a request and
+   an account does not exist, then the server MUST return an error
    response with status code 400 (Bad Request) and type
    "urn:ietf:params:acme:error:accountDoesNotExist".
 
@@ -1613,18 +1598,6 @@ Internet-Draft                    ACME                     December 2017
 
    For example, to update the contact information in the above account,
    the client could send the following request:
-
-
-
-
-
-
-
-
-Barnes, et al.            Expires June 16, 2018                [Page 29]
-
-Internet-Draft                    ACME                     December 2017
-
 
    POST /acme/acct/1 HTTP/1.1
    Host: example.com
@@ -1646,6 +1619,13 @@ Internet-Draft                    ACME                     December 2017
      "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
    }
 
+
+
+Barnes, et al.            Expires June 17, 2018                [Page 29]
+
+Internet-Draft                    ACME                     December 2017
+
+
 7.3.3.  Account Information
 
    Servers SHOULD NOT respond to GET requests for account resources as
@@ -1658,8 +1638,8 @@ Internet-Draft                    ACME                     December 2017
 7.3.4.  Changes of Terms of Service
 
    As described above, a client can indicate its agreement with the CA's
-   terms of service by setting the "terms-of-service-agreed" field in
-   its account object to "true".
+   terms of service by setting the "termsOfServiceAgreed" field in its
+   account object to "true".
 
    If the server has changed its terms of service since a client
    initially agreed, and the server is unwilling to process a request
@@ -1673,14 +1653,6 @@ Internet-Draft                    ACME                     December 2017
    "instance" field, indicating a URL that the client should direct a
    human user to visit in order for instructions on how to agree to the
    terms.
-
-
-
-
-Barnes, et al.            Expires June 16, 2018                [Page 30]
-
-Internet-Draft                    ACME                     December 2017
-
 
  HTTP/1.1 403 Forbidden
  Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
@@ -1696,10 +1668,19 @@ Internet-Draft                    ACME                     December 2017
 
 7.3.5.  External Account Binding
 
-   The server MAY require a value for the "external-account-binding"
-   field to be present in "new-account" requests.  This can be used to
+   The server MAY require a value for the "externalAccountBinding" field
+   to be present in "newAccount" requests.  This can be used to
    associate an ACME account with an existing account in a non-ACME
    system, such as a CA customer database.
+
+
+
+
+
+Barnes, et al.            Expires June 17, 2018                [Page 30]
+
+Internet-Draft                    ACME                     December 2017
+
 
    To enable ACME account binding, a CA needs to provide the ACME client
    with a MAC key and a key identifier, using some mechanism outside of
@@ -1733,7 +1714,26 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 31]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.            Expires June 17, 2018                [Page 31]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1751,9 +1751,9 @@ Internet-Draft                    ACME                     December 2017
      }),
      "payload": base64url({
        "contact": ["mailto:example@anonymous.invalid"],
-       "terms-of-service-agreed": true,
+       "termsOfServiceAgreed": true,
 
-       "external-account-binding": {
+       "externalAccountBinding": {
          "protected": base64url({
            "alg": "HS256",
            "kid": /* key identifier from CA */,
@@ -1766,17 +1766,17 @@ Internet-Draft                    ACME                     December 2017
      "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
    }
 
-   If a CA requires that new-account requests contain an "external-
-   account-binding" field, then it MUST provide the value "true" in the
-   "external-account-required" subfield of the "meta" field in the
+   If a CA requires that new-account requests contain an
+   "externalAccountBinding" field, then it MUST provide the value "true"
+   in the "externalAccountRequired" subfield of the "meta" field in the
    directory object.  If the CA receives a new-account request without
-   an "external-account-binding" field, then it should reply with an
-   error of type "externalAccountRequired".
+   an "externalAccountBinding" field, then it should reply with an error
+   of type "externalAccountRequired".
 
-   When a CA receives a new-account request containing an "external-
-   account-binding" field, it decides whether or not to verify the
-   binding.  If the CA does not verify the binding, then it MUST NOT
-   reflect the "external-account-binding" field in the resulting account
+   When a CA receives a new-account request containing an
+   "externalAccountBinding" field, it decides whether or not to verify
+   the binding.  If the CA does not verify the binding, then it MUST NOT
+   reflect the "externalAccountBinding" field in the resulting account
    object (if any).  To verify the account binding, the CA MUST take the
    following steps:
 
@@ -1789,7 +1789,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 32]
+Barnes, et al.            Expires June 17, 2018                [Page 32]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1803,7 +1803,7 @@ Internet-Draft                    ACME                     December 2017
    If all of these checks pass and the CA creates a new account, then
    the CA may consider the new account associated with the external
    account corresponding to the MAC key and MUST reflect the value of
-   the "external-account-binding" field in the resulting account object.
+   the "externalAccountBinding" field in the resulting account object.
    If any of these checks fail, then the CA MUST reject the new-account
    request.
 
@@ -1845,7 +1845,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 33]
+Barnes, et al.            Expires June 17, 2018                [Page 33]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1901,7 +1901,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 34]
+Barnes, et al.            Expires June 17, 2018                [Page 34]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -1957,7 +1957,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 35]
+Barnes, et al.            Expires June 17, 2018                [Page 35]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2013,7 +2013,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 36]
+Barnes, et al.            Expires June 17, 2018                [Page 36]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2069,7 +2069,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 37]
+Barnes, et al.            Expires June 17, 2018                [Page 37]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2095,7 +2095,7 @@ Internet-Draft                    ACME                     December 2017
        "https://example.com/acme/authz/2345"
      ],
 
-     "finalizeURL": "https://example.com/acme/order/asdf/finalize"
+     "finalize": "https://example.com/acme/order/asdf/finalize"
    }
 
    The order object returned by the server represents a promise that if
@@ -2125,7 +2125,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 38]
+Barnes, et al.            Expires June 17, 2018                [Page 38]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2181,7 +2181,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 39]
+Barnes, et al.            Expires June 17, 2018                [Page 39]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2207,7 +2207,7 @@ Internet-Draft                    ACME                     December 2017
        "https://example.com/acme/authz/2345"
      ],
 
-     "finalizeURL": "https://example.com/acme/order/asdf/finalize",
+     "finalize": "https://example.com/acme/order/asdf/finalize",
 
      "certificate": "https://example.com/acme/cert/asdf"
    }
@@ -2232,12 +2232,12 @@ Internet-Draft                    ACME                     December 2017
 
    If a CA wishes to allow pre-authorization within ACME, it can offer a
    "new authorization" resource in its directory by adding the field
-   "new-authz" with a URL for the new authorization resource.
+   "newAuthz" with a URL for the new authorization resource.
 
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 40]
+Barnes, et al.            Expires June 17, 2018                [Page 40]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2293,7 +2293,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 41]
+Barnes, et al.            Expires June 17, 2018                [Page 41]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2349,7 +2349,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 42]
+Barnes, et al.            Expires June 17, 2018                [Page 42]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2405,7 +2405,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 43]
+Barnes, et al.            Expires June 17, 2018                [Page 43]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2461,7 +2461,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 44]
+Barnes, et al.            Expires June 17, 2018                [Page 44]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2517,7 +2517,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 45]
+Barnes, et al.            Expires June 17, 2018                [Page 45]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2573,7 +2573,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 46]
+Barnes, et al.            Expires June 17, 2018                [Page 46]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2629,7 +2629,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 47]
+Barnes, et al.            Expires June 17, 2018                [Page 47]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2685,7 +2685,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 48]
+Barnes, et al.            Expires June 17, 2018                [Page 48]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2741,7 +2741,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 49]
+Barnes, et al.            Expires June 17, 2018                [Page 49]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2797,7 +2797,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 50]
+Barnes, et al.            Expires June 17, 2018                [Page 50]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2853,7 +2853,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 51]
+Barnes, et al.            Expires June 17, 2018                [Page 51]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2909,7 +2909,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 52]
+Barnes, et al.            Expires June 17, 2018                [Page 52]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -2965,7 +2965,7 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 53]
+Barnes, et al.            Expires June 17, 2018                [Page 53]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3021,7 +3021,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 54]
+Barnes, et al.            Expires June 17, 2018                [Page 54]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3077,7 +3077,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 55]
+Barnes, et al.            Expires June 17, 2018                [Page 55]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3133,7 +3133,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 56]
+Barnes, et al.            Expires June 17, 2018                [Page 56]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3189,7 +3189,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 57]
+Barnes, et al.            Expires June 17, 2018                [Page 57]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3245,7 +3245,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 58]
+Barnes, et al.            Expires June 17, 2018                [Page 58]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3301,7 +3301,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 59]
+Barnes, et al.            Expires June 17, 2018                [Page 59]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3357,7 +3357,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 60]
+Barnes, et al.            Expires June 17, 2018                [Page 60]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3413,7 +3413,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 61]
+Barnes, et al.            Expires June 17, 2018                [Page 61]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3426,21 +3426,21 @@ Internet-Draft                    ACME                     December 2017
    Initial contents: The fields and descriptions defined in
    Section 7.1.2.
 
-   +--------------------------+-------------+--------------+-----------+
-   | Field Name               | Field Type  | Configurable | Reference |
-   +--------------------------+-------------+--------------+-----------+
-   | status                   | string      | false        | RFC XXXX  |
-   |                          |             |              |           |
-   | contact                  | array of    | true         | RFC XXXX  |
-   |                          | string      |              |           |
-   |                          |             |              |           |
-   | external-account-binding | object      | true         | RFC XXXX  |
-   |                          |             |              |           |
-   | terms-of-service-agreed  | boolean     | true         | RFC XXXX  |
-   |                          |             |              |           |
-   | orders                   | array of    | false        | RFC XXXX  |
-   |                          | string      |              |           |
-   +--------------------------+-------------+--------------+-----------+
+   +------------------------+---------------+--------------+-----------+
+   | Field Name             | Field Type    | Configurable | Reference |
+   +------------------------+---------------+--------------+-----------+
+   | status                 | string        | false        | RFC XXXX  |
+   |                        |               |              |           |
+   | contact                | array of      | true         | RFC XXXX  |
+   |                        | string        |              |           |
+   |                        |               |              |           |
+   | externalAccountBinding | object        | true         | RFC XXXX  |
+   |                        |               |              |           |
+   | termsOfServiceAgreed   | boolean       | true         | RFC XXXX  |
+   |                        |               |              |           |
+   | orders                 | array of      | false        | RFC XXXX  |
+   |                        | string        |              |           |
+   +------------------------+---------------+--------------+-----------+
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -3469,7 +3469,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 62]
+Barnes, et al.            Expires June 17, 2018                [Page 62]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3489,7 +3489,7 @@ Internet-Draft                    ACME                     December 2017
       |                |                 |              |           |
       | authorizations | array of string | false        | RFC XXXX  |
       |                |                 |              |           |
-      | finalizeURL    | string          | false        | RFC XXXX  |
+      | finalize       | string          | false        | RFC XXXX  |
       |                |                 |              |           |
       | certificate    | string          | false        | RFC XXXX  |
       +----------------+-----------------+--------------+-----------+
@@ -3525,7 +3525,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 63]
+Barnes, et al.            Expires June 17, 2018                [Page 63]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3581,28 +3581,28 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 64]
+Barnes, et al.            Expires June 17, 2018                [Page 64]
 
 Internet-Draft                    ACME                     December 2017
 
 
-             +-------------+--------------------+-----------+
-             | Field Name  | Resource Type      | Reference |
-             +-------------+--------------------+-----------+
-             | new-nonce   | New nonce          | RFC XXXX  |
-             |             |                    |           |
-             | new-account | New account        | RFC XXXX  |
-             |             |                    |           |
-             | new-order   | New order          | RFC XXXX  |
-             |             |                    |           |
-             | new-authz   | New authorization  | RFC XXXX  |
-             |             |                    |           |
-             | revoke-cert | Revoke certificate | RFC XXXX  |
-             |             |                    |           |
-             | key-change  | Key change         | RFC XXXX  |
-             |             |                    |           |
-             | meta        | Metadata object    | RFC XXXX  |
-             +-------------+--------------------+-----------+
+              +------------+--------------------+-----------+
+              | Field Name | Resource Type      | Reference |
+              +------------+--------------------+-----------+
+              | newNonce   | New nonce          | RFC XXXX  |
+              |            |                    |           |
+              | newAccount | New account        | RFC XXXX  |
+              |            |                    |           |
+              | newOrder   | New order          | RFC XXXX  |
+              |            |                    |           |
+              | newAuthz   | New authorization  | RFC XXXX  |
+              |            |                    |           |
+              | revokeCert | Revoke certificate | RFC XXXX  |
+              |            |                    |           |
+              | keyChange  | Key change         | RFC XXXX  |
+              |            |                    |           |
+              | meta       | Metadata object    | RFC XXXX  |
+              +------------+--------------------+-----------+
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -3637,22 +3637,22 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 65]
+Barnes, et al.            Expires June 17, 2018                [Page 65]
 
 Internet-Draft                    ACME                     December 2017
 
 
-        +---------------------------+-----------------+-----------+
-        | Field Name                | Field Type      | Reference |
-        +---------------------------+-----------------+-----------+
-        | terms-of-service          | string          | RFC XXXX  |
-        |                           |                 |           |
-        | website                   | string          | RFC XXXX  |
-        |                           |                 |           |
-        | caa-identities            | array of string | RFC XXXX  |
-        |                           |                 |           |
-        | external-account-required | boolean         | RFC XXXX  |
-        +---------------------------+-----------------+-----------+
+         +-------------------------+-----------------+-----------+
+         | Field Name              | Field Type      | Reference |
+         +-------------------------+-----------------+-----------+
+         | termsOfService          | string          | RFC XXXX  |
+         |                         |                 |           |
+         | website                 | string          | RFC XXXX  |
+         |                         |                 |           |
+         | caaIdentities           | array of string | RFC XXXX  |
+         |                         |                 |           |
+         | externalAccountRequired | boolean         | RFC XXXX  |
+         +-------------------------+-----------------+-----------+
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -3693,7 +3693,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 66]
+Barnes, et al.            Expires June 17, 2018                [Page 66]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3749,7 +3749,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 67]
+Barnes, et al.            Expires June 17, 2018                [Page 67]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3805,7 +3805,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 68]
+Barnes, et al.            Expires June 17, 2018                [Page 68]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3861,7 +3861,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 69]
+Barnes, et al.            Expires June 17, 2018                [Page 69]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3917,7 +3917,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 70]
+Barnes, et al.            Expires June 17, 2018                [Page 70]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -3973,7 +3973,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 71]
+Barnes, et al.            Expires June 17, 2018                [Page 71]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4029,7 +4029,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 72]
+Barnes, et al.            Expires June 17, 2018                [Page 72]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4085,7 +4085,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 73]
+Barnes, et al.            Expires June 17, 2018                [Page 73]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4141,7 +4141,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 74]
+Barnes, et al.            Expires June 17, 2018                [Page 74]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4197,7 +4197,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 75]
+Barnes, et al.            Expires June 17, 2018                [Page 75]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4253,7 +4253,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 76]
+Barnes, et al.            Expires June 17, 2018                [Page 76]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4309,7 +4309,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 77]
+Barnes, et al.            Expires June 17, 2018                [Page 77]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4365,7 +4365,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 78]
+Barnes, et al.            Expires June 17, 2018                [Page 78]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4421,7 +4421,7 @@ Internet-Draft                    ACME                     December 2017
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 79]
+Barnes, et al.            Expires June 17, 2018                [Page 79]
 
 Internet-Draft                    ACME                     December 2017
 
@@ -4477,4 +4477,4 @@ Authors' Addresses
 
 
 
-Barnes, et al.            Expires June 16, 2018                [Page 80]
+Barnes, et al.            Expires June 17, 2018                [Page 80]
