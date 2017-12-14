@@ -489,27 +489,28 @@ information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Type                  | Description                                                                    |
-|:----------------------|:-------------------------------------------------------------------------------|
-| badCSR                | The CSR is unacceptable (e.g., due to a short key)                             |
-| badNonce              | The client sent an unacceptable anti-replay nonce                              |
-| badSignatureAlgorithm | The JWS was signed with an algorithm the server does not support               |
-| invalidContact        | A contact URL for an account was invalid                                       |
-| unsupportedContact    | A contact URL for an account used an unsupported protocol scheme               |
-| accountDoesNotExist   | The request specified an account that does not exist                           |
-| malformed             | The request message was malformed                                              |
-| rateLimited           | The request exceeds a rate limit                                               |
-| rejectedIdentifier    | The server will not issue for the identifier                                   |
-| serverInternal        | The server experienced an internal error                                       |
-| unauthorized          | The client lacks sufficient authorization                                      |
-| unsupportedIdentifier | Identifier is not supported, but may be in future                              |
-| userActionRequired    | Visit the "instance" URL and take actions specified there                      |
-| badRevocationReason   | The revocation reason provided is not allowed by the server	                 |
-| caa                   | Certification Authority Authorization (CAA) records forbid the CA from issuing |
-| dns                   | There was a problem with a DNS query                                           |
-| connection            | The server could not connect to validation target                              |
-| tls                   | The server received a TLS error during validation                              |
-| incorrectResponse     | Response received didn't match the challenge's requirements                    |
+| Type                    | Description                                                                    |
+|:------------------------|:-------------------------------------------------------------------------------|
+| badCSR                  | The CSR is unacceptable (e.g., due to a short key)                             |
+| badNonce                | The client sent an unacceptable anti-replay nonce                              |
+| badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support               |
+| invalidContact          | A contact URL for an account was invalid                                       |
+| unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
+| externalAccountRequired | The request must include a value for the "externalAccountBinding" field        |
+| accountDoesNotExist     | The request specified an account that does not exist                           |
+| malformed               | The request message was malformed                                              |
+| rateLimited             | The request exceeds a rate limit                                               |
+| rejectedIdentifier      | The server will not issue for the identifier                                   |
+| serverInternal          | The server experienced an internal error                                       |
+| unauthorized            | The client lacks sufficient authorization                                      |
+| unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
+| userActionRequired      | Visit the "instance" URL and take actions specified there                      |
+| badRevocationReason     | The revocation reason provided is not allowed by the server                    |
+| caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
+| dns                     | There was a problem with a DNS query                                           |
+| connection              | The server could not connect to validation target                              |
+| tls                     | The server received a TLS error during validation                              |
+| incorrectResponse       | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
@@ -698,18 +699,23 @@ the service provided by the ACME server.
 
 The following metadata items are defined, all of which are OPTIONAL:
 
-"termsOfService" (optional, string):
+termsOfService (optional, string):
 : A URL identifying the current terms of service.
 
-"website" (optional, string):
+website (optional, string):
 : An HTTP or HTTPS URL locating a website providing more
 information about the ACME server.
 
-"caaIdentities" (optional, array of string):
+caaIdentities (optional, array of string):
 : Each string MUST be a lowercase hostname which the ACME server recognizes as
 referring to itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
 use when configuring CAA records.
+
+externalAccountRequired (optional, boolean):
+: If this field is present and set to "true", then the CA requires that all
+new-account requests include an "externalAccountBinding" field associating the
+new account with an external account.
 
 Clients access the directory by sending a GET request to the directory URL.
 
@@ -727,7 +733,8 @@ Content-Type: application/json
   "meta": {
     "termsOfService": "https://example.com/acme/terms/2017-5-30",
     "website": "https://www.example.com/",
-    "caaIdentities": ["example.com"]
+    "caaIdentities": ["example.com"],
+    "externalAccountRequired": false
   }
 }
 ~~~~~~~~~~
@@ -1231,6 +1238,12 @@ Content-Type: application/jose+json
 }
 ~~~~~
 
+If a CA requires that new-account requests contain an "externalAccountBinding"
+field, then it MUST provide the value "true" in the "externalAccountRequired" subfield
+of the "meta" field in the directory object.  If the CA receives a
+new-account request without an "externalAccountBinding" field, then it should
+reply with an error of type "externalAccountRequired".
+
 When a CA receives a new-account request containing an
 "externalAccountBinding" field, it decides whether or not to verify the
 binding.  If the CA does not verify the binding, then it MUST NOT reflect the
@@ -1421,7 +1434,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-order"
   }),
   "payload": base64url({
-    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+    "identifiers": [{"type:"dns","value":"example.com"}],
     "notBefore": "2016-01-01T00:00:00Z",
     "notAfter": "2016-01-08T00:00:00Z"
   }),
@@ -1448,9 +1461,13 @@ Location: https://example.com/acme/order/asdf
   "status": "pending",
   "expires": "2016-01-01T00:00:00Z",
 
-  "csr": "jcRf4uXra7FGYW5ZMewvV...rhlnznwy8YbpMGqwidEXfE",
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
+
+  "identifiers": [
+    { "type:"dns", "value":"example.com" },
+    { "type:"dns", "value":"www.example.com" }
+  ],
 
   "authorizations": [
     "https://example.com/acme/authz/1234",
@@ -1481,6 +1498,25 @@ The CSR is sent in the base64url-encoded version of the DER format.  (Note:
 Because this field uses base64url, and does not include headers, it is different
 from PEM.).
 
+~~~~~~~~~~
+POST /acme/order/asdf/finalize HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "MSF2j2nawWHPxxkE3ZJtKQ",
+    "url": "https://example.com/acme/order/asdf/finalize"
+  }),
+  "payload": base64url({
+    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+  }),
+  "signature": "uOrUfIIk5RyQ...nw62Ay1cl6AB"
+}
+~~~~~~~~~~
+
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
 identifiers as the initial new-order request, either in the commonName portion
@@ -1510,6 +1546,34 @@ action the client should take:
 * "valid": The server has issued the certificate and provisioned its URL to the
   "certificate" field of the order.
 
+~~~~~~~~~~
+HTTP/1.1 200 Ok
+Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
+Location: https://example.com/acme/order/asdf
+
+{
+  "status": "valid",
+  "expires": "2016-01-01T00:00:00Z",
+
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z",
+
+  "identifiers": [
+    { "type:"dns", "value":"example.com" },
+    { "type:"dns", "value":"www.example.com" }
+  ],
+
+  "authorizations": [
+    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/authz/2345"
+  ],
+
+  "finalizeURL": "https://example.com/acme/order/asdf/finalize",
+
+  "certificate": "https://example.com/acme/cert/asdf"
+}
+~~~~~~~~~~
+
 ### Pre-Authorization
 
 The order process described above presumes that authorization objects are
@@ -1532,8 +1596,7 @@ URL for the new authorization resource.
 
 To request authorization for an identifier, the client sends a POST request to
 the new-authorization resource specifying the identifier for which authorization
-is being requested and how the server should behave with respect to existing
-authorizations for this identifier.
+is being requested.
 
 identifier (required, object):
 : The identifier that the account is authorized to represent:
@@ -2322,66 +2385,6 @@ If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
 
-## Out-of-Band Challenge
-
-There may be cases where a server cannot perform automated validation of an
-identifier, for example, if validation requires some manual steps.  In such
-cases, the server may provide an "out of band" (OOB) challenge to request that
-the client perform some action outside of ACME in order to validate possession
-of the identifier.
-
-The OOB challenge requests that the client have a human user visit a web page to
-receive instructions on how to validate possession of the identifier, by
-providing a URL for that web page.
-
-type (required, string):
-: The string "oob-01"
-
-href (required, string):
-: The URL to be visited.  The scheme of this URL MUST be "http" or "https".
-Note that this field is distinct from the "url" field of the challenge, which
-identifies the challenge itself.
-
-~~~~~~~~~~
-GET /acme/authz/1234/3 HTTP/1.1
-Host: example.com
-
-HTTP/1.1 200 OK
-{
-  "type": "oob-01",
-  "url": "https://example.com/acme/authz/1234/3",
-  "status": "pending",
-  "href": "https://example.com/out-of-band/validate/evaGxfADs6pSRb2LAv9IZ"
-}
-~~~~~~~~~~
-
-A client responds to this challenge by presenting the indicated URL for a human
-user to navigate to.  If the user chooses to complete this challenge (by visiting
-the website and completing its instructions), the client indicates this by
-sending a simple acknowledgement response to the server.  The payload of this
-response is an empty JSON object ("{}", or "e30" base64url-encoded).
-
-~~~~~~~~~~
-POST /acme/authz/1234/3
-Host: example.com
-Content-Type: application/jose+json
-
-{
-  "protected": base64url({
-    "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
-    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
-    "url": "https://example.com/acme/authz/1234/3"
-  }),
-  "payload": "e30",
-  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
-}
-~~~~~~~~~~
-
-On receiving a response, the server MUST verify that the value of the "type"
-field is "oob-01".  Otherwise, the steps the server takes to validate
-identifier possession are determined by the server's local policy.
-
 # IANA Considerations
 
 ## MIME Type: application/pem-certificate-chain
@@ -2500,8 +2503,9 @@ This document requests that IANA create the following new registries:
 2. ACME Order Object Fields ({{iana-order}})
 3. ACME Error Types ({{iana-error}})
 4. ACME Resource Types ({{iana-resource}})
-5. ACME Identifier Types ({{iana-identifier}})
-6. ACME Validation Methods ({{iana-validation}})
+5. ACME Directory Metadata Fields ({{iana-meta}})
+6. ACME Identifier Types ({{iana-identifier}})
+7. ACME Validation Methods ({{iana-validation}})
 
 All of these registries are under a heading of "Automated Certificate Management
 Environment (ACME) Protocol" and are administered under a Specification
@@ -2532,6 +2536,9 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 | termsOfServiceAgreed     | boolean         | true         | RFC XXXX  |
 | orders                   | array of string | false        | RFC XXXX  |
 
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
 ### Fields in Order Objects {#iana-order}
 
 This registry lists field names that are defined for use in ACME order
@@ -2560,6 +2567,9 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 | finalizeURL    | string               | false        | RFC XXXX  |
 | certificate    | string               | false        | RFC XXXX  |
 
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
 ### Fields in Authorization Objects {#iana-authz}
 
 This registry lists field names that are defined for use in ACME authorization
@@ -2583,6 +2593,9 @@ Initial contents: The fields and descriptions defined in {{authorization-objects
 | status      | string          | false        | RFC XXXX  |
 | expires     | string          | false        | RFC XXXX  |
 | challenges  | array of object | false        | RFC XXXX  |
+
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
 
 ### Error Types {#iana-error}
 
@@ -2620,6 +2633,31 @@ Initial contents:
 | newAuthz      | New authorization    | RFC XXXX  |
 | revokeCert    | Revoke certificate   | RFC XXXX  |
 | keyChange     | Key change           | RFC XXXX  |
+| meta           | Metadata object      | RFC XXXX  |
+
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
+### Fields in the "meta" Object within a Directory Object {#iana-meta}
+
+This registry lists field names that are defined for use in the JSON
+object included in the "meta" field of an ACME directory object.
+
+Template:
+
+* Field name: The string to be used as a field name in the JSON object
+* Field type: The type of value to be provided, e.g., string, boolean, array of
+  string
+* Reference: Where this field is defined
+
+Initial contents: The fields and descriptions defined in {{account-objects}}.
+
+| Field Name              | Field Type      | Reference |
+|:------------------------|:----------------|:----------|
+| termsOfService          | string          | RFC XXXX  |
+| website                 | string          | RFC XXXX  |
+| caaIdentities           | array of string | RFC XXXX  |
+| externalAccountRequired | boolean         | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
@@ -2665,7 +2703,6 @@ Initial Contents
 | http-01    | dns             | Y    | RFC XXXX  |
 | tls-sni-02 | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
-| oob-01     | dns             | Y    | RFC XXXX  |
 
 When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
@@ -2918,8 +2955,7 @@ perform all necessary checks before issuing.
 
 CAs using ACME to allow clients to agree to terms of service should keep in mind
 that ACME clients can automate this agreement, possibly not involving a human
-user.  If a CA wishes to have stronger evidence of user consent, it may present
-an out-of-band requirement or challenge to require human involvement.
+user.
 
 # Operational Considerations
 
