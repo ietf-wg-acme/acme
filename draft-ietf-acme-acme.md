@@ -21,6 +21,11 @@ author:
     org: EFF
     email: jsha@eff.org
  -
+    ins: D. McCarney
+    name: Daniel McCarney
+    org: Let's Encrypt
+    email: cpu@letsencrypt.org
+ -
     ins: J. Kasten
     name: James Kasten
     org: University of Michigan
