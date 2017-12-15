@@ -631,7 +631,7 @@ indicate HTTP link relations.
 ~~~~~~~~~~
                                directory
                                    |
-                                   +--> new-nonce
+                                   +--> newNonce
                                    |
        +----------+----------+-----+-----+------------+
        |          |          |           |            |
@@ -641,11 +641,11 @@ indicate HTTP link relations.
        |          |          |
        |          |          |
        V          |          V
-    account       |        order -----> cert
-                  |          |
+    account       |        order -----> finalize
+                  |          |   -----> cert
                   |          |
                   |          V
-                  +------> authz     
+                  +---> authorizations
                             | ^
                             | | "up"
                             V |
@@ -657,16 +657,17 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action               | Request             | Response        |
-|:---------------------|:--------------------|:----------------|
-| Get a nonce          | HEAD newNonce       | 204             |
-| Create account       | POST newAccount     | 201 -> account  |
-| Submit an order      | POST newOrder       | 201 -> order    |
-| Fetch challenges     | GET  authz          | 200             |
-| Respond to challenge | POST challenge      | 200             |
-| Finalize order       | POST order finalize | 200             |
-| Poll for status      | GET  authz          | 200             |
-| Check for new cert   | GET  cert           | 200             |
+| Action                | Request                   | Response       |
+|:----------------------|:--------------------------|:---------------|
+| Get directory         | GET  directory            | 200            |
+| Get nonce             | HEAD newNonce             | 204            |
+| Create account        | POST newAccount           | 201 -> account |
+| Submit order          | POST newOrder             | 201 -> order   |
+| Fetch challenges      | GET  order authorizations | 200            |
+| Respond to challenges | POST challenge urls       | 200            |
+| Finalize order        | POST order finalize       | 200            |
+| Poll for status       | GET  order                | 200            |
+| Download certificate  | GET  order cert           | 200            |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
