@@ -2053,7 +2053,7 @@ concatenating the token for the challenge with a key fingerprint, separated by a
 "." character:
 
 ~~~~~~~~~~
-  key-authorization = token || '.' || base64url(JWK_Thumbprint(accountKey))
+  keyAuthorization = token || '.' || base64url(JWK_Thumbprint(accountKey))
 ~~~~~~~~~~
 
 The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
