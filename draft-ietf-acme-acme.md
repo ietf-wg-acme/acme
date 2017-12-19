@@ -659,7 +659,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 
 | Action               | Request             | Response        |
 |:---------------------|:--------------------|:----------------|
-| Get a nonce          | HEAD newNonce       | 204             |
+| Get a nonce          | HEAD newNonce       | 200             |
 | Create account       | POST newAccount     | 201 -> account  |
 | Submit an order      | POST newOrder       | 201 -> order    |
 | Fetch challenges     | GET  authz          | 200             |
@@ -983,7 +983,7 @@ the server or if an existing nonce is no longer valid.
 
 To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
 on the server.  The server's response MUST include a Replay-Nonce header field
-containing a fresh nonce, and SHOULD have status code 204 (No Content).  The
+containing a fresh nonce, and SHOULD have status code 200 (OK).  The
 server SHOULD also respond to GET requests for this resource, returning an empty
 body (while still providing a Replay-Nonce header) with a 204 (No Content) status.
 
@@ -991,7 +991,7 @@ body (while still providing a Replay-Nonce header) with a 204 (No Content) statu
 HEAD /acme/new-nonce HTTP/1.1
 Host: example.com
 
-HTTP/1.1 204 No Content
+HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 ~~~~~~~~~~
@@ -1552,7 +1552,7 @@ action the client should take:
   "certificate" field of the order.
 
 ~~~~~~~~~~
-HTTP/1.1 200 Ok
+HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
 Location: https://example.com/acme/order/asdf
 
