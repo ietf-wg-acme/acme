@@ -660,7 +660,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 | Action                | Request                   | Response       |
 |:----------------------|:--------------------------|:---------------|
 | Get directory         | GET  directory            | 200            |
-| Get nonce             | HEAD newNonce             | 204            |
+| Get nonce             | HEAD newNonce             | 200            |
 | Create account        | POST newAccount           | 201 -> account |
 | Submit order          | POST newOrder             | 201 -> order   |
 | Fetch challenges      | GET  order authorizations | 200            |
@@ -984,7 +984,7 @@ the server or if an existing nonce is no longer valid.
 
 To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
 on the server.  The server's response MUST include a Replay-Nonce header field
-containing a fresh nonce, and SHOULD have status code 204 (No Content).  The
+containing a fresh nonce, and SHOULD have status code 200 (OK).  The
 server SHOULD also respond to GET requests for this resource, returning an empty
 body (while still providing a Replay-Nonce header) with a 204 (No Content) status.
 
@@ -992,7 +992,7 @@ body (while still providing a Replay-Nonce header) with a 204 (No Content) statu
 HEAD /acme/new-nonce HTTP/1.1
 Host: example.com
 
-HTTP/1.1 204 No Content
+HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 ~~~~~~~~~~
@@ -1553,7 +1553,7 @@ action the client should take:
   "certificate" field of the order.
 
 ~~~~~~~~~~
-HTTP/1.1 200 Ok
+HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
 Location: https://example.com/acme/order/asdf
 
@@ -2047,18 +2047,18 @@ need to specify which types of identifier they apply to.
 
 ## Key Authorizations
 
-Several of the challenges in this document make use of a key authorization
+All challenges defined in this document make use of a key authorization
 string.  A key authorization is a string that expresses a domain holder's
 authorization for a specified key to satisfy a specified challenge, by
 concatenating the token for the challenge with a key fingerprint, separated by a
 "." character:
 
 ~~~~~~~~~~
-key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
+  keyAuthorization = token || '.' || base64url(JWK_Thumbprint(accountKey))
 ~~~~~~~~~~
 
 The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
-using the SHA-256 digest [FIPS180-4].  As noted in JWA {{!RFC7518}} any prepended
+using the SHA-256 digest [FIPS180-4].  As noted in {{!RFC7518}} any prepended
 zero octets in the fields of a JWK object MUST be stripped before doing the computation.
 
 As specified in the individual challenges below, the token for a challenge is a
