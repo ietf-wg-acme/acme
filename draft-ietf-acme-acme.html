@@ -1947,11 +1947,11 @@ Content-Language: en
 <h1 id="rfc.section.8.1">
 <a href="#rfc.section.8.1">8.1.</a> <a href="#key-authorizations" id="key-authorizations">Key Authorizations</a>
 </h1>
-<p id="rfc.section.8.1.p.1">Several of the challenges in this document make use of a key authorization string.  A key authorization is a string that expresses a domain holder&#8217;s authorization for a specified key to satisfy a specified challenge, by concatenating the token for the challenge with a key fingerprint, separated by a &#8220;.&#8221; character:</p>
+<p id="rfc.section.8.1.p.1">All challenges defined in this document make use of a key authorization string.  A key authorization is a string that expresses a domain holder&#8217;s authorization for a specified key to satisfy a specified challenge, by concatenating the token for the challenge with a key fingerprint, separated by a &#8220;.&#8221; character:</p>
 <pre>
-key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
+  keyAuthorization = token || '.' || base64url(JWK_Thumbprint(accountKey))
 </pre>
-<p id="rfc.section.8.1.p.2">The &#8220;JWK_Thumbprint&#8221; step indicates the computation specified in <a href="#RFC7638" class="xref">[RFC7638]</a>, using the SHA-256 digest <a href="#FIPS180-4" class="xref">[FIPS180-4]</a>.  As noted in JWA <a href="#RFC7518" class="xref">[RFC7518]</a> any prepended zero octets in the fields of a JWK object MUST be stripped before doing the computation.</p>
+<p id="rfc.section.8.1.p.2">The &#8220;JWK_Thumbprint&#8221; step indicates the computation specified in <a href="#RFC7638" class="xref">[RFC7638]</a>, using the SHA-256 digest <a href="#FIPS180-4" class="xref">[FIPS180-4]</a>.  As noted in <a href="#RFC7518" class="xref">[RFC7518]</a> any prepended zero octets in the fields of a JWK object MUST be stripped before doing the computation.</p>
 <p id="rfc.section.8.1.p.3">As specified in the individual challenges below, the token for a challenge is a string comprised entirely of characters in the URL-safe base64 alphabet.  The &#8220;||&#8221; operator indicates concatenation of strings.</p>
 <h1 id="rfc.section.8.2">
 <a href="#rfc.section.8.2">8.2.</a> <a href="#retrying-challenges" id="retrying-challenges">Retrying Challenges</a>
