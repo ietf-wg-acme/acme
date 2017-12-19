@@ -2046,18 +2046,18 @@ need to specify which types of identifier they apply to.
 
 ## Key Authorizations
 
-Several of the challenges in this document make use of a key authorization
+All challenges defined in this document make use of a key authorization
 string.  A key authorization is a string that expresses a domain holder's
 authorization for a specified key to satisfy a specified challenge, by
 concatenating the token for the challenge with a key fingerprint, separated by a
 "." character:
 
 ~~~~~~~~~~
-key-authz = token || '.' || base64url(JWK_Thumbprint(accountKey))
+  keyAuthorization = token || '.' || base64url(JWK_Thumbprint(accountKey))
 ~~~~~~~~~~
 
 The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
-using the SHA-256 digest [FIPS180-4].  As noted in JWA {{!RFC7518}} any prepended
+using the SHA-256 digest [FIPS180-4].  As noted in {{!RFC7518}} any prepended
 zero octets in the fields of a JWK object MUST be stripped before doing the computation.
 
 As specified in the individual challenges below, the token for a challenge is a
