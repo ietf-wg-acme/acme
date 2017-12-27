@@ -967,8 +967,7 @@ name validation.
       "type": "http-01",
       "status": "valid",
       "token": "DGyRejmCefe7v4NfDGDKfA"
-      "validated": "2014-12-01T12:05:00Z",
-      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
+      "validated": "2014-12-01T12:05:00Z"
     }
   ]
 }
@@ -1798,9 +1797,7 @@ Content-Type: application/jose+json
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/1234/0"
   }),
-  "payload": base64url({
-    "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
-  }),
+  "payload": base64url({}),
   "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
 }
 ~~~~~~~~~~
@@ -1858,8 +1855,7 @@ HTTP/1.1 200 OK
       "url": "https://example.com/acme/authz/1234/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
-      "token": "IlirfxKKXAsHtmzK29Pj8A",
-      "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
+      "token": "IlirfxKKXAsHtmzK29Pj8A"
     }
   ]
 }
@@ -2136,7 +2132,7 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by constructing a key authorization from
+A client fulfills this challenge by constructing a key authorization from
 the "token" value provided in the challenge and the client's account key.  The
 client then provisions the key authorization as a resource on the HTTP server
 for the domain in question.
@@ -2154,13 +2150,8 @@ HTTP/1.1 200 OK
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
 ~~~~~~~~~~
 
-The client's response to the validation request indicates its agreement to this
-challenge by sending the server the key authorization covering the challenge's
-token and the client's account key.
-
-keyAuthorization (required, string):
-: The key authorization for this challenge.  This value MUST match the token
-from the challenge and the client's account key.
+A client responds with an empty object ({}) to acknowledge that the challenge
+can be validated by the server.
 
 ~~~~~~~~~~
 POST /acme/authz/1234/0
@@ -2174,17 +2165,13 @@ Content-Type: application/jose+json
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/authz/1234/0"
   }),
-  "payload": base64url({
-    "keyAuthorization": "evaGxfADs...62jcerQ"
-  }),
+  "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 ~~~~~~~~~~
 
-On receiving a response, the server MUST verify that the key authorization in
-the response matches the "token" value in the challenge and the client's account
-key.  If they do not match, then the server MUST return an HTTP error in
-response to the POST request in which the client sent the challenge.
+On receiving a response, the server constructs and stores the key authorization
+from the challenge "token" value and the current client account key.
 
 Given a challenge/response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
@@ -2199,7 +2186,7 @@ domain by verifying that the resource was provisioned as expected.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the HTTP server matches the key
-   authorization provided by the client in its response to the challenge.
+   authorization stored by the server.
 
 The server SHOULD follow redirects when dereferencing the URL.
 
@@ -2237,7 +2224,7 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by constructing a self-signed certificate
+A client fulfills this challenge by constructing a self-signed certificate
 which the client MUST provision at the domain name concerned in order to pass
 the challenge.
 
@@ -2258,12 +2245,8 @@ hexadecimal representation and y is the second half.
 The client MUST ensure that the certificate is served to TLS connections
 specifying a Server Name Indication (SNI) value of SAN A.
 
-The response to the TLS-SNI challenge simply acknowledges that the client is
-ready to fulfill this challenge.
-
-keyAuthorization (required, string):
-: The key authorization for this challenge.  This value MUST match the token
-from the challenge and the client's account key.
+A client responds with an empty object ({}) to acknowledge that the challenge
+can be validated by the server.
 
 ~~~~~~~~~~
 POST /acme/authz/1234/1
@@ -2277,17 +2260,13 @@ Content-Type: application/jose+json
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/authz/1234/1"
   }),
-  "payload": base64url({
-    "keyAuthorization": "evaGxfADs...62jcerQ"
-  }),
+  "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 ~~~~~~~~~~
 
-On receiving a response, the server MUST verify that the key authorization in
-the response matches the "token" value in the challenge and the client's account
-key.  If they do not match, then the server MUST return an HTTP error in
-response to the POST request in which the client sent the challenge.
+On receiving a response, the server constructs and stores the key authorization
+from the challenge "token" value and the current client account key.
 
 Given a challenge/response pair, the ACME server verifies the client's control
 of the domain by verifying that the TLS server was configured appropriately,
@@ -2335,7 +2314,7 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by constructing a key authorization from the
+A client fulfills this challenge by constructing a key authorization from the
 "token" value provided in the challenge and the client's account key.  The
 client then computes the SHA-256 digest [FIPS180-4] of the key authorization.
 
@@ -2350,12 +2329,8 @@ DNS record:
 _acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 ~~~~~~~~~~
 
-The response to the DNS challenge provides the computed key authorization to
-acknowledge that the client is ready to fulfill this challenge.
-
-keyAuthorization (required, string):
-: The key authorization for this challenge.  This value MUST match the token
-from the challenge and the client's account key.
+A client responds with an empty object ({}) to acknowledge that the challenge
+can be validated by the server.
 
 ~~~~~~~~~~
 POST /acme/authz/1234/2
@@ -2369,21 +2344,17 @@ Content-Type: application/jose+json
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/authz/1234/2"
   }),
-  "payload": base64url({
-    "keyAuthorization": "evaGxfADs...62jcerQ"
-  }),
+  "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 ~~~~~~~~~~
 
-On receiving a response, the server MUST verify that the key authorization in
-the response matches the "token" value in the challenge and the client's account
-key.  If they do not match, then the server MUST return an HTTP error in
-response to the POST request in which the client sent the challenge.
+On receiving a response, the server constructs and stores the key authorization
+from the challenge "token" value and the current client account key.
 
 To validate a DNS challenge, the server performs the following steps:
 
-1. Compute the SHA-256 digest [FIPS180-4] of the key authorization
+1. Compute the SHA-256 digest [FIPS180-4] of the stored key authorization
 2. Query for TXT records for the validation domain name
 3. Verify that the contents of one of the TXT records match the digest value
 
