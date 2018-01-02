@@ -886,10 +886,10 @@ certificate (optional, string):
 
 Any identifier of type "dns" in a new-order request MAY have a wildcard domain
 name as its value. A wildcard domain name consists of a single asterisk
-character followed by a single full stop character ("*.") followed by a domain
+character followed by a single full stop character ("\*.") followed by a domain
 name as defined for use in the Subject Alternate Name Extension by RFC 5280
 {{!RFC5280}}. An authorization returned by the server for a wildcard domain name
-identifier MUST NOT include the asterisk and full stop ("*.") prefix in the
+identifier MUST NOT include the asterisk and full stop ("\*.") prefix in the
 authorization identifier value.
 
 The elements of the "authorizations" and "identifiers" array are immutable once
