@@ -945,7 +945,7 @@ The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). If a domain name contains non-ASCII Unicode characters
 it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
 any identifier values that begin with the ASCII Compatible Encoding prefix
-"xn--" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
+"xn\-\-" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
 (with "*" as the first label) MUST NOT be included in authorization objects.
 
 {{identifier-validation-challenges}} describes a set of challenges for domain
