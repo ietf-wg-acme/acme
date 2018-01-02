@@ -897,7 +897,7 @@ set.  The server MUST NOT change the contents either array after they are
 created. If a client observes a change in the contents of either array, then it
 SHOULD consider the order invalid.
 
-The "authorizations" array in the challenge SHOULD reflect all authorizations
+The "authorizations" array of the order SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
 were fulfilled in earlier orders or in pre-authorization transactions.  For
 example, if a CA allows multiple orders to be fulfilled based on a single
