@@ -170,7 +170,7 @@ Barnes, et al.            Expires July 7, 2018                  [Page 3]
 Internet-Draft                    ACME                      January 2018
 
 
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  78
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  79
      13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  80
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  80
 
@@ -4204,6 +4204,8 @@ Internet-Draft                    ACME                      January 2018
 
    o  Jakub Warmuz, University of Oxford
 
+   o  Sophie Herold, Hemio
+
    This document draws on many concepts established by Eric Rescorla's
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
@@ -4246,10 +4248,8 @@ Internet-Draft                    ACME                      January 2018
               Timestamps", RFC 3339, DOI 10.17487/RFC3339, July 2002,
               <https://www.rfc-editor.org/info/rfc3339>.
 
-   [RFC3492]  Costello, A., "Punycode: A Bootstring encoding of Unicode
-              for Internationalized Domain Names in Applications
-              (IDNA)", RFC 3492, DOI 10.17487/RFC3492, March 2003,
-              <https://www.rfc-editor.org/info/rfc3492>.
+
+
 
 
 
@@ -4257,6 +4257,11 @@ Barnes, et al.            Expires July 7, 2018                 [Page 76]
 
 Internet-Draft                    ACME                      January 2018
 
+
+   [RFC3492]  Costello, A., "Punycode: A Bootstring encoding of Unicode
+              for Internationalized Domain Names in Applications
+              (IDNA)", RFC 3492, DOI 10.17487/RFC3492, March 2003,
+              <https://www.rfc-editor.org/info/rfc3492>.
 
    [RFC3629]  Yergeau, F., "UTF-8, a transformation format of ISO
               10646", STD 63, RFC 3629, DOI 10.17487/RFC3629, November
@@ -4300,11 +4305,6 @@ Internet-Draft                    ACME                      January 2018
               URI Scheme", RFC 6068, DOI 10.17487/RFC6068, October 2010,
               <https://www.rfc-editor.org/info/rfc6068>.
 
-   [RFC6570]  Gregorio, J., Fielding, R., Hadley, M., Nottingham, M.,
-              and D. Orchard, "URI Template", RFC 6570,
-              DOI 10.17487/RFC6570, March 2012,
-              <https://www.rfc-editor.org/info/rfc6570>.
-
 
 
 
@@ -4313,6 +4313,11 @@ Barnes, et al.            Expires July 7, 2018                 [Page 77]
 
 Internet-Draft                    ACME                      January 2018
 
+
+   [RFC6570]  Gregorio, J., Fielding, R., Hadley, M., Nottingham, M.,
+              and D. Orchard, "URI Template", RFC 6570,
+              DOI 10.17487/RFC6570, March 2012,
+              <https://www.rfc-editor.org/info/rfc6570>.
 
    [RFC6844]  Hallam-Baker, P. and R. Stradling, "DNS Certification
               Authority Authorization (CAA) Resource Record", RFC 6844,
@@ -4353,12 +4358,7 @@ Internet-Draft                    ACME                      January 2018
               RFC 8126, DOI 10.17487/RFC8126, June 2017,
               <https://www.rfc-editor.org/info/rfc8126>.
 
-13.2.  Informative References
 
-   [I-D.ietf-acme-caa]
-              Landau, H., "CAA Record Extensions for Account URI and
-              ACME Method Binding", draft-ietf-acme-caa-03 (work in
-              progress), August 2017.
 
 
 
@@ -4369,6 +4369,13 @@ Barnes, et al.            Expires July 7, 2018                 [Page 78]
 
 Internet-Draft                    ACME                      January 2018
 
+
+13.2.  Informative References
+
+   [I-D.ietf-acme-caa]
+              Landau, H., "CAA Record Extensions for Account URI and
+              ACME Method Binding", draft-ietf-acme-caa-03 (work in
+              progress), August 2017.
 
    [I-D.ietf-acme-ip]
               Shoemaker, R., "ACME IP Identifier Validation Extension",
@@ -4410,13 +4417,6 @@ Internet-Draft                    ACME                      January 2018
               (DTLS)", BCP 195, RFC 7525, DOI 10.17487/RFC7525, May
               2015, <https://www.rfc-editor.org/info/rfc7525>.
 
-   [W3C.CR-cors-20130129]
-              Kesteren, A., "Cross-Origin Resource Sharing", World Wide
-              Web Consortium CR CR-cors-20130129, January 2013,
-              <http://www.w3.org/TR/2013/CR-cors-20130129>.
-
-
-
 
 
 
@@ -4425,6 +4425,11 @@ Barnes, et al.            Expires July 7, 2018                 [Page 79]
 
 Internet-Draft                    ACME                      January 2018
 
+
+   [W3C.CR-cors-20130129]
+              Kesteren, A., "Cross-Origin Resource Sharing", World Wide
+              Web Consortium CR CR-cors-20130129, January 2013,
+              <http://www.w3.org/TR/2013/CR-cors-20130129>.
 
 13.3.  URIs
 
@@ -4454,11 +4459,6 @@ Authors' Addresses
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
 
 
 
