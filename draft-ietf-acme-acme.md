@@ -3066,6 +3066,7 @@ inception.
 * Alex Halderman, University of Michigan
 * Martin Thomson, Mozilla
 * Jakub Warmuz, University of Oxford
+* Sophie Herold, Hemio
 
 This document draws on many concepts established by Eric Rescorla's "Automated
 Certificate Issuance Protocol" draft.  Martin Thomson provided helpful guidance
