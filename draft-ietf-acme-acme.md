@@ -1007,7 +1007,7 @@ caching of this resource.
 
 A client creates a new account with the server by sending a POST request to the
 server's new-account URL.  The body of the request is a stub account object
-optionally containing "contact" and the "termsOfServiceAgreed" fields.
+optionally containing the "contact" and "termsOfServiceAgreed" fields.
 
 contact (optional, array of string):
 : Same meaning as the corresponding server field defined in {{account-objects}}
