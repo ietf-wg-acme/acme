@@ -337,6 +337,7 @@ authentication of requests.
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST NOT have the value "none" in its "alg" field
+* The JWS MUST NOT have a JWS Unprotected Header
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
@@ -3071,7 +3072,7 @@ This section is provided for reference in case ACME client or server designers
 wish to use JWS implementations that don't support both Flattened JSON and 
 General JSON JWS serializations. Note that this section does NOT include 
 information on the JWS Unprotected Header field because this field is NOT
-currently used in ACME. 
+used in ACME. 
 
 ## Compact to Flattened JSON
 
