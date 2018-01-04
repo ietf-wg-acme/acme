@@ -367,8 +367,9 @@ array of supported "alg" values.
 
 Conforming ACME implementations MUST process JWS objects using the
 Flattened JSON Serialization and SHOULD process JWS objects
-using the General JSON Serialization. Conforming ACME implementations MUST NOT
-process JWS objects using the Compact JWS Serialization. 
+using the General JSON Serialization. 
+Conforming ACME implementations MUST NOT process JWS objects using
+the Compact JWS Serialization. 
 
 Conforming ACME implementations MAY refuse to process JWS objects
 with multiple signatures.  If an implementation accepts
