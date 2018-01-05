@@ -699,6 +699,9 @@ should not clash with other services. For instance:
  * a host which only functions as an ACME server could place the directory
    under the path "/".
 
+If the ACME server does not implement pre-authorization (Section 7.4.1) it
+MUST omit the "newAuthz" field of the directory.
+
 The object MAY additionally contain a field "meta". If present, it MUST be a
 JSON object; each field in the object is an item of metadata relating to
 the service provided by the ACME server.
