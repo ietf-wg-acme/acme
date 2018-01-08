@@ -527,7 +527,7 @@ to error types, rather than the full URNs.  For example, an "error of type
 'badCSR'" refers to an error document with "type" value
 "urn:ietf:params:acme:error:badCSR".
 
-### Subproblems
+### Subproblems {#subproblems}
 
 Sometimes a CA may need to return multiple errors in response to a request.
 Additionally, the CA may need to attribute errors to specific
@@ -2026,14 +2026,13 @@ validated (optional, string):
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
-errors (optional, array of object):
-: Errors that occurred while the server was validating the challenge, if any,
-structured as problem documents {{!RFC7807}}. The server MUST NOT modify the
-array except by appending entries onto the end. The server can limit the size
-of this object by limiting the number of times it will try to validate a challenge.
+error (optional, object):
+: Error that occurred while the server was validating the challenge, if any,
+structured as a problem document {{!RFC7807}}. Multiple errors can be indicated
+by using subproblems {{subproblems}}.
 
 All additional fields are specified by the challenge type.  If the server sets a
-challenge's "status" to "invalid", it SHOULD also include the "errors" field to
+challenge's "status" to "invalid", it SHOULD also include the "error" field to
 help the client diagnose why the challenge failed.
 
 Different challenges allow the server to obtain proof of different aspects of
@@ -2088,9 +2087,9 @@ status of the challenge remains "pending"; it is only marked "invalid" once the
 server has given up.
 
 The server MUST provide information about its retry state to the client via the
-"errors" field in the challenge and the Retry-After HTTP header field in
+"error" field in the challenge and the Retry-After HTTP header field in
 response to requests to the challenge resource. The server MUST add an entry to
-the "errors" field in the challenge after each failed validation query. The
+the "error" field in the challenge after each failed validation query. The
 server SHOULD set the Retry-After header field to a time after the server's
 next validation query, since the status of the challenge will not change until
 that time.
