@@ -855,7 +855,7 @@ before the requested certificate can be issued (see
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
-finalize (requred, string):
+finalize (required, string):
 : A URL that a CSR must be POSTed to once all of the order's authorizations are
 satisfied to finalize the order. The result of a successful finalization will be
 the population of the certificate URL for the order.
