@@ -1760,7 +1760,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
       "token": "DGyRejmCefe7v4NfDGDKfA"
     },
     {
-      "type": "tls-sni-02",
+      "type": "tls-sni-03",
       "url": "https://example.com/acme/authz/1234/1",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     },
@@ -2209,17 +2209,18 @@ If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
 failed.
 
-## TLS with Server Name Indication (TLS SNI) Challenge
+## TLS with Server Name Indication (TLS SNI) Challenge {#tls-sni}
 
-The TLS with Server Name Indication (TLS SNI) validation method
-proves control over a domain name by requiring the client to configure a TLS
-server referenced by the DNS A and AAAA resource records for the domain name to respond to
-specific connection attempts utilizing the Server Name Indication extension
-{{!RFC6066}}. The server verifies the client's challenge by accessing the
-TLS server and verifying a particular certificate is presented.
+The TLS with Server Name Indication (TLS SNI) validation method proves control
+over a domain name by requiring the client to configure a TLS server referenced
+by the DNS A and AAAA resource records for the domain name to respond to
+specific connection attempts utilizing the Server Name Indication {{!RFC6066}}
+and Application-Layer Protocol Negotiation {{!RFC7301}} extensions. The server
+verifies the client's challenge by accessing the TLS server and verifying
+a particular certificate is presented.
 
 type (required, string):
-: The string "tls-sni-02"
+: The string "tls-sni-03"
 
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
@@ -2232,7 +2233,7 @@ Host: example.com
 
 HTTP/1.1 200 OK
 {
-  "type": "tls-sni-02",
+  "type": "tls-sni-03",
   "url": "https://example.com/acme/authz/1234/1",
   "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
@@ -2259,6 +2260,9 @@ hexadecimal representation and y is the second half.
 
 The client MUST ensure that the certificate is served to TLS connections
 specifying a Server Name Indication (SNI) value of SAN A.
+
+Both the client and the server MUST include an ALPN extension in the TLS
+handshake with "acme" as the only protocol.
 
 The response to the TLS-SNI challenge simply acknowledges that the client is
 ready to fulfill this challenge.
@@ -2297,15 +2301,19 @@ using these steps:
 
 1. Compute SAN A and SAN B in the same way as the client.
 2. Open a TLS connection to the domain name being validated, presenting SAN A in
-   the SNI field. This connection MUST be sent to TCP port 443 on the TLS server. In
-   the ClientHello initiating the TLS handshake, the server MUST include
-   a server\_name extension (i.e., SNI) containing SAN A. The server SHOULD
-   ensure that it does not reveal SAN B in any way when making the TLS
-   connection, such that the presentation of SAN B in the returned certificate
-   proves association with the client.
-3. Verify that the certificate contains a subjectAltName extension containing
-   dNSName entries of SAN A and SAN B and no other entries.
-   The comparison MUST be insensitive to case and ordering of names.
+   the SNI field. This connection MUST be sent to TCP port 443 on the TLS
+   server. In the ClientHello initiating the TLS handshake, the server MUST
+   include a server\_name extension (i.e., SNI) containing SAN A and an
+   application\_layer\_protocol\_negotiation extension indicating the "acme"
+   protocol. The server SHOULD ensure that it does not reveal SAN B in any way
+   when making the TLS connection, such that the presentation of SAN B in the
+   returned certificate proves association with the client.
+3. Verify that the ServerHello contains an
+   application\_layer\_protocol\_negotiation extension indicating only the
+   "acme" protocol.
+4. Verify that the certificate contains a subjectAltName extension containing
+   dNSName entries of SAN A and SAN B and no other entries.  The comparison MUST
+   be insensitive to case and ordering of names.
 
 If all of the above verifications succeed, then the validation is successful.
 Otherwise, the validation fails.
@@ -2477,6 +2485,18 @@ updated with the following additional value:
 *  Change Controller: IESG
 *  Specification Document(s): {{nonce-nonce-jws-header-parameter}} of
    RFC XXXX
+
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
+## ALPN Protocol
+
+The "Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry should
+be updated with the following additional value:
+
+* Protocol: ACME
+* Identification Sequence: acme
+* Reference: {{tls-sni}} of RFC XXXX
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
@@ -2709,7 +2729,7 @@ Initial Contents
 | Label      | Identifier Type | ACME | Reference |
 |:-----------|:----------------|:-----|:----------|
 | http-01    | dns             | Y    | RFC XXXX  |
-| tls-sni-02 | dns             | Y    | RFC XXXX  |
+| tls-sni-03 | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
 
 When evaluating a request for an assignment in this registry, the designated
@@ -3006,7 +3026,7 @@ platforms will choose a virtual host to be the "default", and route connections
 with unknown SNI values to that host.
 
 In such cases, the owner of the default virtual host can complete a TLS-based
-challenge (e.g., "tls-sni-02") for any domain with an A record that points to
+challenge (e.g., "tls-sni-03") for any domain with an A record that points to
 the hosting platform.  This could result in mis-issuance in cases where there
 are multiple hosts with different owners resident on the hosting platform.
 
@@ -3021,7 +3041,7 @@ certificate presented should be stable over small intervals.
 
 A CA can detect such a bounded default vhost by initiating TLS connections to
 the host with random SNI values within the namespace used for the TLS-based
-challenge (the "acme.invalid" namespace for "tls-sni-02").  If it receives the
+challenge (the "acme.invalid" namespace for "tls-sni-03").  If it receives the
 same certificate on two different connections, then it is very likely that the
 server is in a default virtual host configuration.  Conversely, if the TLS
 server returns an unrecognized_name alert, then this is an indication that the
@@ -3029,7 +3049,7 @@ server is not in a default virtual host configuration.
 
 ## Token Entropy
 
-The http-01, tls-sni-02 and dns-01 validation methods mandate the usage of
+The http-01, tls-sni-03, and dns-01 validation methods mandate the usage of
 a random token value to uniquely identify the challenge. The value of the token
 is required to contain at least 128 bits of entropy for the following security
 properties. First, the ACME client should not be able to influence the ACME
