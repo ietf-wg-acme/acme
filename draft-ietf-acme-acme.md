@@ -514,6 +514,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
 | dns                     | There was a problem with a DNS query                                           |
 | connection              | The server could not connect to validation target                              |
+| tls                     | The server received a TLS error during validation                              |
 | incorrectResponse       | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
