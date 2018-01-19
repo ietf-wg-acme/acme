@@ -23,19 +23,21 @@
     position: fixed;
     bottom: 0;
     right: 0;
-    right: calc(50vw - 525px);
+    right: calc(50vw - 550px);
     width: 300px;
     z-index: 1;
   }
   #rfc\.toc {
-    top: 15px;
+    top: 55px;
+    overflow: auto;
+    overscroll-behavior: contain;
   }
-  ul.toc, nav#rfc\.toc {
+  ul.toc, #rfc\.toc {
     overflow: auto;
     overscroll-behavior: contain;
   }
   body>ul.toc {
-    top: 80px;
+    top: 140px;
   }
 
   body {
@@ -44,11 +46,11 @@
 }
 
 body {
-  font: 15px "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font: 16px "Helvetica Neue",Helvetica,Arial,sans-serif;
   color: #333;
   font-size-adjust: 0.5;
-  line-height: 130%;
-  margin: 25px auto;
+  line-height: 24px;
+  margin: 75px auto;
   max-width: 724px;
 }
 
@@ -61,7 +63,7 @@ body {
   margin: 0.8em 0 0.3em;
 }
 .title { font-size: 36px; }
-h1 { font-size: 30px; }
+h1 { font-size: 36px; }
 h2 { font-size: 24px; }
 h3, h4 { font-size: 18px; }
 h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
@@ -124,10 +126,9 @@ table.header td {
   height: auto;
   line-height: 100%;
 }
-#rfc\.abstract+p {
-  font-size: 20px;
-  font-weight: 300;
-  line-height: 130%;
+#rfc\.abstract+p, #rfc\.abstract p {
+  font-size: 18px;
+  line-height: 27px%;
 }
 
 samp, tt, code, pre {
@@ -195,6 +196,9 @@ ul.empty li {
 hr {
   border: 0;
   border-top: 1px solid #eee;
+}
+hr.noprint {
+  display: none;
 }
 
 a {
@@ -361,7 +365,7 @@ address {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., McCarney, D., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2018-1-08" />
+  <meta name="dct.issued" scheme="ISO8601" content="2018-1-19" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -385,7 +389,7 @@ address {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: July 12, 2018</td>
+<td class="left">Expires: July 23, 2018</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -406,7 +410,7 @@ address {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">January 08, 2018</td>
+<td class="right">January 19, 2018</td>
 </tr>
 
     	
@@ -423,7 +427,7 @@ address {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on July 12, 2018.</p>
+<p>This Internet-Draft will expire on July 23, 2018.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -1946,10 +1950,10 @@ Content-Language: en
 <dd style="margin-left: 8">The status of this challenge.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
 <dt>validated (optional, string):</dt>
 <dd style="margin-left: 8">The time at which the server validated this challenge, encoded in the format specified in RFC 3339 <a href="#RFC3339" class="xref">[RFC3339]</a>.  This field is REQUIRED if the &#8220;status&#8221; field is &#8220;valid&#8221;.</dd>
-<dt>errors (optional, array of object):</dt>
-<dd style="margin-left: 8">Errors that occurred while the server was validating the challenge, if any, structured as problem documents <a href="#RFC7807" class="xref">[RFC7807]</a>. The server MUST NOT modify the array except by appending entries onto the end. The server can limit the size of this object by limiting the number of times it will try to validate a challenge.</dd>
+<dt>error (optional, object):</dt>
+<dd style="margin-left: 8">Error that occurred while the server was validating the challenge, if any, structured as a problem document <a href="#RFC7807" class="xref">[RFC7807]</a>. Multiple errors can be indicated by using subproblems <a href="#subproblems" class="xref">Section 6.6.1</a>.</dd>
 </dl>
-<p id="rfc.section.8.p.10">All additional fields are specified by the challenge type.  If the server sets a challenge&#8217;s &#8220;status&#8221; to &#8220;invalid&#8221;, it SHOULD also include the &#8220;errors&#8221; field to help the client diagnose why the challenge failed.</p>
+<p id="rfc.section.8.p.10">All additional fields are specified by the challenge type.  If the server sets a challenge&#8217;s &#8220;status&#8221; to &#8220;invalid&#8221;, it SHOULD also include the &#8220;error&#8221; field to help the client diagnose why the challenge failed.</p>
 <p id="rfc.section.8.p.11">Different challenges allow the server to obtain proof of different aspects of control over an identifier.  In some challenges, like HTTP, TLS SNI, and DNS, the client directly proves its ability to do certain things related to the identifier.  The choice of which challenges to offer to a client under which circumstances is a matter of server policy.</p>
 <p id="rfc.section.8.p.12">The identifier validation challenges described in this section all relate to validation of domain names.  If ACME is extended in the future to support other types of identifiers, there will need to be new challenge types, and they will need to specify which types of identifier they apply to.</p>
 <h1 id="rfc.section.8.1">
@@ -1966,7 +1970,7 @@ Content-Language: en
 </h1>
 <p id="rfc.section.8.2.p.1">ACME challenges typically require the client to set up some network-accessible resource that the server can query in order to validate that the client controls an identifier.  In practice it is not uncommon for the server&#8217;s queries to fail while a resource is being set up, e.g., due to information propagating across a cluster or firewall rules not being in place.</p>
 <p id="rfc.section.8.2.p.2">Clients SHOULD NOT respond to challenges until they believe that the server&#8217;s queries will succeed. If a server&#8217;s initial validation query fails, the server SHOULD retry the query after some time, in order to account for delay in setting up responses such as DNS records or HTTP resources. The precise retry schedule is up to the server, but server operators should keep in mind the operational scenarios that the schedule is trying to accommodate.  Given that retries are intended to address things like propagation delays in HTTP or DNS provisioning, there should not usually be any reason to retry more often than every 5 or 10 seconds. While the server is still trying, the status of the challenge remains &#8220;pending&#8221;; it is only marked &#8220;invalid&#8221; once the server has given up.</p>
-<p id="rfc.section.8.2.p.3">The server MUST provide information about its retry state to the client via the &#8220;errors&#8221; field in the challenge and the Retry-After HTTP header field in response to requests to the challenge resource. The server MUST add an entry to the &#8220;errors&#8221; field in the challenge after each failed validation query. The server SHOULD set the Retry-After header field to a time after the server&#8217;s next validation query, since the status of the challenge will not change until that time.</p>
+<p id="rfc.section.8.2.p.3">The server MUST provide information about its retry state to the client via the &#8220;error&#8221; field in the challenge and the Retry-After HTTP header field in response to requests to the challenge resource. The server MUST add an entry to the &#8220;error&#8221; field in the challenge after each failed validation query. The server SHOULD set the Retry-After header field to a time after the server&#8217;s next validation query, since the status of the challenge will not change until that time.</p>
 <p id="rfc.section.8.2.p.4">Clients can explicitly request a retry by re-sending their response to a challenge in a new POST request (with a new nonce, etc.). This allows clients to request a retry when the state has changed (e.g., after firewall rules have been updated). Servers SHOULD retry a request immediately on receiving such a POST request. In order to avoid denial-of-service attacks via client-initiated retries, servers SHOULD rate-limit such requests.</p>
 <h1 id="rfc.section.8.3">
 <a href="#rfc.section.8.3">8.3.</a> <a href="#http-challenge" id="http-challenge">HTTP Challenge</a>
@@ -3078,6 +3082,5 @@ Content-Type: application/jose+json
   </address>
 </div>
 
-  <div class="github-fork-ribbon-wrapper"><div class="github-fork-ribbon"><a href="https://github.com/ietf-wg-acme/acme">Fork me on GitHub</a></div></div>
 </body>
 </html>

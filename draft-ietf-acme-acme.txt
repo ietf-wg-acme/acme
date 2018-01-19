@@ -5,12 +5,12 @@
 ACME Working Group                                             R. Barnes
 Internet-Draft                                                     Cisco
 Intended status: Standards Track                      J. Hoffman-Andrews
-Expires: July 12, 2018                                               EFF
+Expires: July 23, 2018                                               EFF
                                                              D. McCarney
                                                            Let's Encrypt
                                                                J. Kasten
                                                   University of Michigan
-                                                        January 08, 2018
+                                                        January 19, 2018
 
 
           Automatic Certificate Management Environment (ACME)
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 1]
+Barnes, et al.            Expires July 23, 2018                 [Page 1]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -61,7 +61,7 @@ Internet-Draft                    ACME                      January 2018
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 12, 2018.
+   This Internet-Draft will expire on July 23, 2018.
 
 Copyright Notice
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 2]
+Barnes, et al.            Expires July 23, 2018                 [Page 2]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -127,7 +127,7 @@ Internet-Draft                    ACME                      January 2018
        7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  46
      7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  47
    8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  49
-     8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  51
+     8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  50
      8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  51
      8.3.  HTTP Challenge  . . . . . . . . . . . . . . . . . . . . .  52
      8.4.  TLS with Server Name Indication (TLS SNI) Challenge . . .  54
@@ -165,7 +165,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 3]
+Barnes, et al.            Expires July 23, 2018                 [Page 3]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -221,7 +221,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 4]
+Barnes, et al.            Expires July 23, 2018                 [Page 4]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -277,7 +277,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 5]
+Barnes, et al.            Expires July 23, 2018                 [Page 5]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -333,7 +333,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 6]
+Barnes, et al.            Expires July 23, 2018                 [Page 6]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -389,7 +389,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 7]
+Barnes, et al.            Expires July 23, 2018                 [Page 7]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -445,7 +445,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 8]
+Barnes, et al.            Expires July 23, 2018                 [Page 8]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -501,7 +501,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                 [Page 9]
+Barnes, et al.            Expires July 23, 2018                 [Page 9]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -557,7 +557,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 10]
+Barnes, et al.            Expires July 23, 2018                [Page 10]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -613,7 +613,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 11]
+Barnes, et al.            Expires July 23, 2018                [Page 11]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -669,7 +669,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 12]
+Barnes, et al.            Expires July 23, 2018                [Page 12]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -725,7 +725,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 13]
+Barnes, et al.            Expires July 23, 2018                [Page 13]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -781,7 +781,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 14]
+Barnes, et al.            Expires July 23, 2018                [Page 14]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -837,7 +837,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 15]
+Barnes, et al.            Expires July 23, 2018                [Page 15]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -893,7 +893,7 @@ Content-Type: application/problem+json
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 16]
+Barnes, et al.            Expires July 23, 2018                [Page 16]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -949,7 +949,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 17]
+Barnes, et al.            Expires July 23, 2018                [Page 17]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1005,7 +1005,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 18]
+Barnes, et al.            Expires July 23, 2018                [Page 18]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1061,7 +1061,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 19]
+Barnes, et al.            Expires July 23, 2018                [Page 19]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1117,7 +1117,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 20]
+Barnes, et al.            Expires July 23, 2018                [Page 20]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1173,7 +1173,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 21]
+Barnes, et al.            Expires July 23, 2018                [Page 21]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 22]
+Barnes, et al.            Expires July 23, 2018                [Page 22]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1285,7 +1285,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 23]
+Barnes, et al.            Expires July 23, 2018                [Page 23]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1341,7 +1341,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 24]
+Barnes, et al.            Expires July 23, 2018                [Page 24]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1397,7 +1397,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 25]
+Barnes, et al.            Expires July 23, 2018                [Page 25]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1453,7 +1453,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 26]
+Barnes, et al.            Expires July 23, 2018                [Page 26]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1509,7 +1509,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 27]
+Barnes, et al.            Expires July 23, 2018                [Page 27]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1565,7 +1565,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 28]
+Barnes, et al.            Expires July 23, 2018                [Page 28]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1621,7 +1621,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 29]
+Barnes, et al.            Expires July 23, 2018                [Page 29]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1677,7 +1677,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 30]
+Barnes, et al.            Expires July 23, 2018                [Page 30]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1733,7 +1733,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 31]
+Barnes, et al.            Expires July 23, 2018                [Page 31]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1789,7 +1789,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 32]
+Barnes, et al.            Expires July 23, 2018                [Page 32]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1845,7 +1845,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 33]
+Barnes, et al.            Expires July 23, 2018                [Page 33]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1901,7 +1901,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 34]
+Barnes, et al.            Expires July 23, 2018                [Page 34]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -1957,7 +1957,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 35]
+Barnes, et al.            Expires July 23, 2018                [Page 35]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2013,7 +2013,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 36]
+Barnes, et al.            Expires July 23, 2018                [Page 36]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2069,7 +2069,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 37]
+Barnes, et al.            Expires July 23, 2018                [Page 37]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2125,7 +2125,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 38]
+Barnes, et al.            Expires July 23, 2018                [Page 38]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2181,7 +2181,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 39]
+Barnes, et al.            Expires July 23, 2018                [Page 39]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2237,7 +2237,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 40]
+Barnes, et al.            Expires July 23, 2018                [Page 40]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2293,7 +2293,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 41]
+Barnes, et al.            Expires July 23, 2018                [Page 41]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2349,7 +2349,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 42]
+Barnes, et al.            Expires July 23, 2018                [Page 42]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2405,7 +2405,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 43]
+Barnes, et al.            Expires July 23, 2018                [Page 43]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2461,7 +2461,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 44]
+Barnes, et al.            Expires July 23, 2018                [Page 44]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2517,7 +2517,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 45]
+Barnes, et al.            Expires July 23, 2018                [Page 45]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2573,7 +2573,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 46]
+Barnes, et al.            Expires July 23, 2018                [Page 46]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2629,7 +2629,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 47]
+Barnes, et al.            Expires July 23, 2018                [Page 47]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2685,7 +2685,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 48]
+Barnes, et al.            Expires July 23, 2018                [Page 48]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2741,7 +2741,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 49]
+Barnes, et al.            Expires July 23, 2018                [Page 49]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -2766,16 +2766,14 @@ Internet-Draft                    ACME                      January 2018
       [RFC3339].  This field is REQUIRED if the "status" field is
       "valid".
 
-   errors (optional, array of object):  Errors that occurred while the
-      server was validating the challenge, if any, structured as problem
-      documents [RFC7807].  The server MUST NOT modify the array except
-      by appending entries onto the end.  The server can limit the size
-      of this object by limiting the number of times it will try to
-      validate a challenge.
+   error (optional, object):  Error that occurred while the server was
+      validating the challenge, if any, structured as a problem document
+      [RFC7807].  Multiple errors can be indicated by using subproblems
+      Section 6.6.1.
 
    All additional fields are specified by the challenge type.  If the
    server sets a challenge's "status" to "invalid", it SHOULD also
-   include the "errors" field to help the client diagnose why the
+   include the "error" field to help the client diagnose why the
    challenge failed.
 
    Different challenges allow the server to obtain proof of different
@@ -2791,22 +2789,19 @@ Internet-Draft                    ACME                      January 2018
    new challenge types, and they will need to specify which types of
    identifier they apply to.
 
-
-
-
-
-
-
-Barnes, et al.            Expires July 12, 2018                [Page 50]
-
-Internet-Draft                    ACME                      January 2018
-
-
 8.1.  Key Authorizations
 
    All challenges defined in this document make use of a key
    authorization string.  A key authorization is a string that expresses
    a domain holder's authorization for a specified key to satisfy a
+
+
+
+Barnes, et al.            Expires July 23, 2018                [Page 50]
+
+Internet-Draft                    ACME                      January 2018
+
+
    specified challenge, by concatenating the token for the challenge
    with a key fingerprint, separated by a "." character:
 
@@ -2845,24 +2840,24 @@ Internet-Draft                    ACME                      January 2018
    only marked "invalid" once the server has given up.
 
    The server MUST provide information about its retry state to the
-   client via the "errors" field in the challenge and the Retry-After
+   client via the "error" field in the challenge and the Retry-After
    HTTP header field in response to requests to the challenge resource.
-   The server MUST add an entry to the "errors" field in the challenge
+   The server MUST add an entry to the "error" field in the challenge
    after each failed validation query.  The server SHOULD set the Retry-
    After header field to a time after the server's next validation
-
-
-
-Barnes, et al.            Expires July 12, 2018                [Page 51]
-
-Internet-Draft                    ACME                      January 2018
-
-
    query, since the status of the challenge will not change until that
    time.
 
    Clients can explicitly request a retry by re-sending their response
    to a challenge in a new POST request (with a new nonce, etc.).  This
+
+
+
+Barnes, et al.            Expires July 23, 2018                [Page 51]
+
+Internet-Draft                    ACME                      January 2018
+
+
    allows clients to request a retry when the state has changed (e.g.,
    after firewall rules have been updated).  Servers SHOULD retry a
    request immediately on receiving such a POST request.  In order to
@@ -2905,20 +2900,20 @@ Internet-Draft                    ACME                      January 2018
    A client responds to this challenge by constructing a key
    authorization from the "token" value provided in the challenge and
    the client's account key.  The client then provisions the key
-
-
-
-
-Barnes, et al.            Expires July 12, 2018                [Page 52]
-
-Internet-Draft                    ACME                      January 2018
-
-
    authorization as a resource on the HTTP server for the domain in
    question.
 
    The path at which the resource is provisioned is comprised of the
    fixed prefix "/.well-known/acme-challenge/", followed by the "token"
+
+
+
+
+Barnes, et al.            Expires July 23, 2018                [Page 52]
+
+Internet-Draft                    ACME                      January 2018
+
+
    value in the challenge.  The value of the resource MUST be the ASCII
    representation of the key authorization.
 
@@ -2960,22 +2955,20 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
    the server MUST return an HTTP error in response to the POST request
    in which the client sent the challenge.
 
-
-
-
-
-
-Barnes, et al.            Expires July 12, 2018                [Page 53]
-
-Internet-Draft                    ACME                      January 2018
-
-
    Given a challenge/response pair, the server verifies the client's
    control of the domain by verifying that the resource was provisioned
    as expected.
 
    1.  Construct a URL by populating the URL template [RFC6570]
        "http://{domain}/.well-known/acme-challenge/{token}", where:
+
+
+
+
+Barnes, et al.            Expires July 23, 2018                [Page 53]
+
+Internet-Draft                    ACME                      January 2018
+
 
        *  the domain field is set to the domain name being verified; and
 
@@ -3021,7 +3014,14 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 54]
+
+
+
+
+
+
+
+Barnes, et al.            Expires July 23, 2018                [Page 54]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3077,7 +3077,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 55]
+Barnes, et al.            Expires July 23, 2018                [Page 55]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3133,7 +3133,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 56]
+Barnes, et al.            Expires July 23, 2018                [Page 56]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3189,7 +3189,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 57]
+Barnes, et al.            Expires July 23, 2018                [Page 57]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3245,7 +3245,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 58]
+Barnes, et al.            Expires July 23, 2018                [Page 58]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3301,7 +3301,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 59]
+Barnes, et al.            Expires July 23, 2018                [Page 59]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3357,7 +3357,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 60]
+Barnes, et al.            Expires July 23, 2018                [Page 60]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3413,7 +3413,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 61]
+Barnes, et al.            Expires July 23, 2018                [Page 61]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3469,7 +3469,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 62]
+Barnes, et al.            Expires July 23, 2018                [Page 62]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3525,7 +3525,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 63]
+Barnes, et al.            Expires July 23, 2018                [Page 63]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3581,7 +3581,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 64]
+Barnes, et al.            Expires July 23, 2018                [Page 64]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3637,7 +3637,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 65]
+Barnes, et al.            Expires July 23, 2018                [Page 65]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3693,7 +3693,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 66]
+Barnes, et al.            Expires July 23, 2018                [Page 66]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3749,7 +3749,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 67]
+Barnes, et al.            Expires July 23, 2018                [Page 67]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3805,7 +3805,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 68]
+Barnes, et al.            Expires July 23, 2018                [Page 68]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3861,7 +3861,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 69]
+Barnes, et al.            Expires July 23, 2018                [Page 69]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3917,7 +3917,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 70]
+Barnes, et al.            Expires July 23, 2018                [Page 70]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -3973,7 +3973,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 71]
+Barnes, et al.            Expires July 23, 2018                [Page 71]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4029,7 +4029,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 72]
+Barnes, et al.            Expires July 23, 2018                [Page 72]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4085,7 +4085,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 73]
+Barnes, et al.            Expires July 23, 2018                [Page 73]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4141,7 +4141,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 74]
+Barnes, et al.            Expires July 23, 2018                [Page 74]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4197,7 +4197,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 75]
+Barnes, et al.            Expires July 23, 2018                [Page 75]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4253,7 +4253,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 76]
+Barnes, et al.            Expires July 23, 2018                [Page 76]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4309,7 +4309,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 77]
+Barnes, et al.            Expires July 23, 2018                [Page 77]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4365,7 +4365,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 78]
+Barnes, et al.            Expires July 23, 2018                [Page 78]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4421,7 +4421,7 @@ Internet-Draft                    ACME                      January 2018
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 79]
+Barnes, et al.            Expires July 23, 2018                [Page 79]
 
 Internet-Draft                    ACME                      January 2018
 
@@ -4477,4 +4477,4 @@ Authors' Addresses
 
 
 
-Barnes, et al.            Expires July 12, 2018                [Page 80]
+Barnes, et al.            Expires July 23, 2018                [Page 80]
