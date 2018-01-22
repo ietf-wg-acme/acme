@@ -2605,6 +2605,8 @@ Initial Contents
 |:-----------|:----------------|:-----|:----------|
 | http-01    | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
+| tls-sni-01 | RESERVED        | N    | N/A       |
+| tls-sni-02 | RESERVED        | N    | N/A       |
 
 When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
