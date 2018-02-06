@@ -896,7 +896,7 @@ identifier MUST NOT include the asterisk and full stop ("\*.") prefix in the
 authorization identifier value.
 
 The elements of the "authorizations" and "identifiers" array are immutable once
-set.  The server MUST NOT change the contents either array after they are
+set.  The server MUST NOT change the contents of either array after they are
 created. If a client observes a change in the contents of either array, then it
 SHOULD consider the order invalid.
 
