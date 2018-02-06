@@ -337,6 +337,7 @@ authentication of requests.
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST NOT have the value "none" in its "alg" field
+* The JWS MUST NOT have a JWS Unprotected Header
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
@@ -365,7 +366,18 @@ and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
 document returned with the error MUST include an "algorithms" field with an
 array of supported "alg" values.
 
-In the examples below, JWS objects are shown in the JSON or flattened JSON
+Conforming ACME implementations MUST process JWS objects using the
+Flattened JSON Serialization and SHOULD process JWS objects
+using the General JSON Serialization. 
+Conforming ACME implementations MUST NOT process JWS objects using
+the Compact JWS Serialization. 
+
+Conforming ACME implementations MAY refuse to process JWS objects
+with multiple signatures.  If an implementation accepts
+multiple-signature JWS objects, it MUST validate at least one
+signature using the appropriate key.
+
+In the examples below, JWS objects are shown in the flattened JSON
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.
@@ -2916,6 +2928,109 @@ SHOULD verify that the file contains only encoded certificates.  If anything
 other than a certificate is found (i.e., if the string "-----BEGIN" is ever
 followed by anything other than "CERTIFICATE"), then the client MUST reject the
 file as invalid.
+
+# Appendix A. Converting Between JWS Serializations
+
+This section is provided for reference in case ACME client or server designers 
+wish to use JWS implementations that don't support both Flattened JSON and 
+General JSON JWS serializations. Note that this section does NOT include 
+information on the JWS Unprotected Header field because this field is NOT
+used in ACME. 
+
+## Compact to Flattened JSON
+
+This procedure converts a Compact JWS Serialization 
+into a Flattened JSON Serialization. 
+
+1. Split the Compact JWS Serialization into three parts, 
+   using a period (`.`) as the delimiter. 
+2. Create the Flattened JSON Serialization, which is a JSON object 
+   with the following properties:
+   - `protected`: The first part extracted from the compact serialization.
+   - `payload`: The second part extracted from the compact serialization. 
+   - `signature`: The third part extracted from the compact serialization. 
+
+## Flattened JSON to Compact
+
+This procedure converts a Flattened JSON Serialization 
+into a Compact JWS Serialization. 
+
+1. Extract the values of the following from the Flattened JSON Serialization:
+   - `protected`
+   - `payload`
+   - `signature`
+2. Concatenate the values of the following components into one string, 
+   using a period (`.`) as the delimiter, in the following order:
+   1. `protected`
+   2. `payload`
+   3. `signature`
+
+## Compact to General JSON
+
+1. Split the Compact JWS Serialization into three parts, 
+   using the period (`.`) as the delimiter. 
+2. Create the General JSON Serialization, 
+   which is a JSON object with the following properties:
+   - `payload`: The second part extracted from the Compact JWS Serialization. 
+   - `signatures`: An array with an object in it. 
+     The object in the array will have the following properties: 
+     - `protected`: The first part extracted from the compact serialization.
+     - `signature`: The third part extracted from the compact serialization. 
+
+## General JSON to Compact
+
+This process converts a General JSON Serialization into 
+one or more Compact JWS Serializations. 
+There will be one Compact JWS Serialization for each signer 
+in the General JSON Serialization. 
+
+1. Extract the value of the `payload` from the general JSON serialization.
+2. For each object in the `signatures` array of the general JSON serialization, 
+   create a compact JWS serialization using the following steps:
+   1. Extract the values of the `protected` and `signature` components.
+   2. Concatenate the values of the components into one string, 
+      using a period (`.`) as the delimiter, in the following order: 
+      1. `protected`
+      2. `payload` (from step 1)
+      3. `signature`
+
+## Flattened JSON to General JSON
+
+This process converts a Flattened JSON Serialization 
+into a General JSON Serialization. 
+
+1. Extract the values of the following components 
+   from the Flattened JSON Serialization:
+   - `protected`
+   - `payload`
+   - `signature`
+2. Construct a General JSON Serialization, 
+   which is a JSON object with the following properties:
+   - `payload`: The value of the `payload` field from the 
+       Flattened JSON Serialization.
+   - `signatures`: An array with a JSON object inside. 
+     The JSON object inside the array will have the following properties:
+     - `protected`: The value of the `protected` field 
+       from the flattened JSON serialization.
+     - `signature`: The value of the `signature` field 
+       from the flattened JSON serialization.
+
+## General JSON to Flattened JSON
+
+This process converts a General JSON Serialization into 
+one or more Flattened JSON Serializations. 
+There will be one Flattened JSON Serialization for each signer 
+in the General JSON Serialization. 
+
+1. Extract the value of the `payload` from the General JSON Serialization.
+2. For each object in the `signatures` array of the General JSON Serialization, 
+   create a Flattened JWS Serialization using the following steps:
+   1. Extract the values of the `protected` and `signature` components.
+   2. Create a Flattened JWS Serialization by creating a JSON object 
+      with the following fields: 
+      - `protected`
+      - `payload` (from step 1)
+      - `signature`
 
 # Acknowledgements
 
