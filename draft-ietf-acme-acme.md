@@ -369,10 +369,10 @@ array of supported "alg" values.
 ## JWS Serialization Formats
 
 The JSON Web Signature (JWS) specification {{!RFC7515}} contains 
-three different serialization formats. When sending JWS payloads, 
-ACME client and server implementations MUST 
-use the HTTP Content-Type {{!RFC7231}} header 
-to indicate what JWS serialization format is used. 
+multiple JWS serialization formats. When sending an ACME request 
+with a non-empty body, an ACME client implementation MUST use the 
+HTTP Content-Type {{!RFC7231}} header to indicate which JWS serialization format 
+is used for encapsulating the ACME request payload.
 The following Content-Type values may be used for this purpose:
 
  - "application/jose":
@@ -380,8 +380,8 @@ The following Content-Type values may be used for this purpose:
    - The JWS Payload MUST NOT be detached. 
    - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used. 
  - "application/jose+json":
-   - Either the JWS Flattened JSON {{!RFC7515}} 
-     or the JWS General JSON {{!RFC7515}} Serialization MUST be used. 
+   - Either the JWS Flattened JSON Serialization {{!RFC7515}} 
+     or the JWS General JSON Serialization {{!RFC7515}} MUST be used. 
    - The JWS Payload MUST NOT be detached. 
    - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
    - The JWS Unprotected Header {{!RFC7515}} SHOULD NOT be used. 
