@@ -527,7 +527,7 @@ to error types, rather than the full URNs.  For example, an "error of type
 'badCSR'" refers to an error document with "type" value
 "urn:ietf:params:acme:error:badCSR".
 
-### Subproblems
+### Subproblems {#subproblems}
 
 Sometimes a CA may need to return multiple errors in response to a request.
 Additionally, the CA may need to attribute errors to specific
@@ -699,6 +699,9 @@ should not clash with other services. For instance:
  * a host which only functions as an ACME server could place the directory
    under the path "/".
 
+If the ACME server does not implement pre-authorization (Section 7.4.1) it
+MUST omit the "newAuthz" field of the directory.
+
 The object MAY additionally contain a field "meta". If present, it MUST be a
 JSON object; each field in the object is an item of metadata relating to
 the service provided by the ACME server.
@@ -852,7 +855,7 @@ before the requested certificate can be issued (see
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
-finalize (requred, string):
+finalize (required, string):
 : A URL that a CSR must be POSTed to once all of the order's authorizations are
 satisfied to finalize the order. The result of a successful finalization will be
 the population of the certificate URL for the order.
@@ -886,18 +889,18 @@ certificate (optional, string):
 
 Any identifier of type "dns" in a new-order request MAY have a wildcard domain
 name as its value. A wildcard domain name consists of a single asterisk
-character followed by a single full stop character ("*.") followed by a domain
+character followed by a single full stop character ("\*.") followed by a domain
 name as defined for use in the Subject Alternate Name Extension by RFC 5280
 {{!RFC5280}}. An authorization returned by the server for a wildcard domain name
-identifier MUST NOT include the asterisk and full stop ("*.") prefix in the
+identifier MUST NOT include the asterisk and full stop ("\*.") prefix in the
 authorization identifier value.
 
 The elements of the "authorizations" and "identifiers" array are immutable once
-set.  The server MUST NOT change the contents either array after they are
+set.  The server MUST NOT change the contents of either array after they are
 created. If a client observes a change in the contents of either array, then it
 SHOULD consider the order invalid.
 
-The "authorizations" array in the challenge SHOULD reflect all authorizations
+The "authorizations" array of the order SHOULD reflect all authorizations
 that the CA takes into account in deciding to issue, even if some authorizations
 were fulfilled in earlier orders or in pre-authorization transactions.  For
 example, if a CA allows multiple orders to be fulfilled based on a single
@@ -945,7 +948,7 @@ The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). If a domain name contains non-ASCII Unicode characters
 it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
 any identifier values that begin with the ASCII Compatible Encoding prefix
-"xn--" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
+"xn\-\-" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
 (with "*" as the first label) MUST NOT be included in authorization objects.
 
 {{identifier-validation-challenges}} describes a set of challenges for domain
@@ -1006,8 +1009,7 @@ caching of this resource.
 
 A client creates a new account with the server by sending a POST request to the
 server's new-account URL.  The body of the request is a stub account object
-containing the "contact" field and optionally the "termsOfServiceAgreed"
-field.
+optionally containing the "contact" and "termsOfServiceAgreed" fields.
 
 contact (optional, array of string):
 : Same meaning as the corresponding server field defined in {{account-objects}}
@@ -1081,7 +1083,9 @@ agreement to terms.
 The server creates an account and stores the public key used to verify the
 JWS (i.e., the "jwk" element of the JWS header) to authenticate future requests
 from the account.  The server returns this account object in a 201 (Created)
-response, with the account URL in a Location header field.
+response, with the account URL in a Location header field. The account URL is
+used as the "kid" value in the JWS authenticating subsequent requests by this
+account (See {{request-authentication}}).
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
@@ -1119,7 +1123,7 @@ MUST return an error response with status code 400 (Bad Request) and type
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URL.  The server MUST ignore any
-updates to "order" fields or any other fields it does not recognize. If the server
+updates to the "orders" field or any other fields it does not recognize. If the server
 accepts the update, it MUST return a response with a 200 (OK) status code and the
 resulting account object.
 
@@ -1757,11 +1761,6 @@ Link: <https://example.com/acme/some-directory>;rel="index"
       "token": "DGyRejmCefe7v4NfDGDKfA"
     },
     {
-      "type": "tls-sni-02",
-      "url": "https://example.com/acme/authz/1234/1",
-      "token": "DGyRejmCefe7v4NfDGDKfA"
-    },
-    {
       "type": "dns-01",
       "url": "https://example.com/acme/authz/1234/2",
       "token": "DGyRejmCefe7v4NfDGDKfA"
@@ -2020,18 +2019,17 @@ validated (optional, string):
 format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
-errors (optional, array of object):
-: Errors that occurred while the server was validating the challenge, if any,
-structured as problem documents {{!RFC7807}}. The server MUST NOT modify the
-array except by appending entries onto the end. The server can limit the size
-of this object by limiting the number of times it will try to validate a challenge.
+error (optional, object):
+: Error that occurred while the server was validating the challenge, if any,
+structured as a problem document {{!RFC7807}}. Multiple errors can be indicated
+by using subproblems {{subproblems}}.
 
 All additional fields are specified by the challenge type.  If the server sets a
-challenge's "status" to "invalid", it SHOULD also include the "errors" field to
+challenge's "status" to "invalid", it SHOULD also include the "error" field to
 help the client diagnose why the challenge failed.
 
 Different challenges allow the server to obtain proof of different aspects of
-control over an identifier.  In some challenges, like HTTP, TLS SNI, and DNS, the
+control over an identifier.  In some challenges, like HTTP and DNS, the
 client directly proves its ability to do certain things related to the
 identifier.  The choice of which challenges to offer to a client under which
 circumstances is a matter of server policy.
@@ -2082,9 +2080,9 @@ status of the challenge remains "pending"; it is only marked "invalid" once the
 server has given up.
 
 The server MUST provide information about its retry state to the client via the
-"errors" field in the challenge and the Retry-After HTTP header field in
+"error" field in the challenge and the Retry-After HTTP header field in
 response to requests to the challenge resource. The server MUST add an entry to
-the "errors" field in the challenge after each failed validation query. The
+the "error" field in the challenge after each failed validation query. The
 server SHOULD set the Retry-After header field to a time after the server's
 next validation query, since the status of the challenge will not change until
 that time.
@@ -2193,99 +2191,6 @@ The server SHOULD follow redirects when dereferencing the URL.
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
 failed.
-
-## TLS with Server Name Indication (TLS SNI) Challenge
-
-The TLS with Server Name Indication (TLS SNI) validation method
-proves control over a domain name by requiring the client to configure a TLS
-server referenced by the DNS A and AAAA resource records for the domain name to respond to
-specific connection attempts utilizing the Server Name Indication extension
-{{!RFC6066}}. The server verifies the client's challenge by accessing the
-TLS server and verifying a particular certificate is presented.
-
-type (required, string):
-: The string "tls-sni-02"
-
-token (required, string):
-: A random value that uniquely identifies the challenge.  This value MUST have
-at least 128 bits of entropy. It MUST NOT contain any characters outside the
-base64url alphabet, including padding characters ("=").
-
-~~~~~~~~~~
-GET /acme/authz/1234/1 HTTP/1.1
-Host: example.com
-
-HTTP/1.1 200 OK
-{
-  "type": "tls-sni-02",
-  "url": "https://example.com/acme/authz/1234/1",
-  "status": "pending",
-  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
-}
-~~~~~~~~~~
-
-A client fulfills this challenge by constructing a self-signed certificate
-which the client MUST provision at the domain name concerned in order to pass
-the challenge.
-
-The certificate may be constructed arbitrarily, except that each certificate
-MUST have exactly two subjectAlternativeNames, SAN A and SAN B. Both MUST be
-dNSNames {{!RFC5280}}.
-
-SAN A MUST be constructed as follows: compute the SHA-256 digest [FIPS180-4] of
-the challenge token and encode it in lowercase hexadecimal form.
-The dNSName is "x.y.token.acme.invalid", where x is the first half of the
-hexadecimal representation and y is the second half.
-
-SAN B MUST be constructed as follows: compute the SHA-256 digest of
-the key authorization and encode it in lowercase hexadecimal
-form. The dNSName is "x.y.ka.acme.invalid" where x is the first half of the
-hexadecimal representation and y is the second half.
-
-The client MUST ensure that the certificate is served to TLS connections
-specifying a Server Name Indication (SNI) value of SAN A.
-
-A client responds with an empty object ({}) to acknowledge that the challenge
-can be validated by the server.
-
-~~~~~~~~~~
-POST /acme/authz/1234/1
-Host: example.com
-Content-Type: application/jose+json
-
-{
-  "protected": base64url({
-    "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
-    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
-    "url": "https://example.com/acme/authz/1234/1"
-  }),
-  "payload": base64url({}),
-  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
-}
-~~~~~~~~~~
-
-On receiving a response, the server constructs and stores the key authorization
-from the challenge "token" value and the current client account key.
-
-Given a challenge/response pair, the ACME server verifies the client's control
-of the domain by verifying that the TLS server was configured appropriately,
-using these steps:
-
-1. Compute SAN A and SAN B in the same way as the client.
-2. Open a TLS connection to the domain name being validated, presenting SAN A in
-   the SNI field. This connection MUST be sent to TCP port 443 on the TLS server. In
-   the ClientHello initiating the TLS handshake, the server MUST include
-   a server\_name extension (i.e., SNI) containing SAN A. The server SHOULD
-   ensure that it does not reveal SAN B in any way when making the TLS
-   connection, such that the presentation of SAN B in the returned certificate
-   proves association with the client.
-3. Verify that the certificate contains a subjectAltName extension containing
-   dNSName entries of SAN A and SAN B and no other entries.
-   The comparison MUST be insensitive to case and ordering of names.
-
-If all of the above verifications succeed, then the validation is successful.
-Otherwise, the validation fails.
 
 ## DNS Challenge
 
@@ -2678,8 +2583,9 @@ Initial Contents
 | Label      | Identifier Type | ACME | Reference |
 |:-----------|:----------------|:-----|:----------|
 | http-01    | dns             | Y    | RFC XXXX  |
-| tls-sni-02 | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
+| tls-sni-01 | RESERVED        | N    | N/A       |
+| tls-sni-02 | RESERVED        | N    | N/A       |
 
 When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
@@ -2797,14 +2703,13 @@ client to perform some action that only someone who effectively controls the
 identifier can perform.  For the challenges in this document, the actions are:
 
 * HTTP: Provision files under .well-known on a web server for the domain
-* TLS SNI: Configure a TLS server for the domain
 * DNS: Provision DNS resource records for the domain
 
 There are several ways that these assumptions can be violated, both by
 misconfiguration and by attacks.  For example, on a web server that allows
 non-administrative users to write to .well-known, any user can claim to own the
-web server's hostname by responding to an HTTP challenge, and likewise for TLS
-configuration and TLS SNI.  Similarly, if a server that can be used for ACME
+web server's hostname by responding to an HTTP challenge.  Similarly, if
+a server that can be used for ACME
 validation is compromised by a malicious actor, then that malicious actor can
 use that access to obtain certificates via ACME.
 
@@ -2825,8 +2730,8 @@ validation path will not be known to the primary server.
 The DNS is a common point of vulnerability for all of these challenges.  An
 entity that can provision false DNS records for a domain can attack the DNS
 challenge directly and can provision false A/AAAA records to direct the ACME
-server to send its TLS SNI or HTTP validation query to a remote server of the
-attacker's choosing.  There are a few different mitigations that ACME servers
+server to send its HTTP validation query to a remote server of the attacker's
+choosing.  There are a few different mitigations that ACME servers
 can apply:
 
 * Always querying the DNS using a DNSSEC-validating resolver (enhancing
@@ -2852,7 +2757,7 @@ performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
 particular case.
 
-It is RECOMMENDED that the server perform DNS queries and make HTTP and TLS
+It is RECOMMENDED that the server perform DNS queries and make HTTP 
 connections from various network perspectives, in order to make MitM attacks
 harder.
 
@@ -2961,44 +2866,9 @@ within their trusted network and use these resolvers both for both CAA record
 lookups and all record lookups in furtherance of a challenge scheme (A, AAAA,
 TXT, etc.).
 
-## Default Virtual Hosts
-
-In many cases, TLS-based services are deployed on hosted platforms that use
-the Server Name Indication (SNI) TLS extension to distinguish between
-different hosted services or "virtual hosts".  When a client initiates a
-TLS connection with an SNI value indicating a provisioned host, the hosting
-platform routes the connection to that host.
-
-When a connection comes in with an unknown SNI value, one might expect the
-hosting platform to terminate the TLS connection.  However, some hosting
-platforms will choose a virtual host to be the "default", and route connections
-with unknown SNI values to that host.
-
-In such cases, the owner of the default virtual host can complete a TLS-based
-challenge (e.g., "tls-sni-02") for any domain with an A record that points to
-the hosting platform.  This could result in mis-issuance in cases where there
-are multiple hosts with different owners resident on the hosting platform.
-
-A CA that accepts TLS-based proof of domain control should attempt to check
-whether a domain is hosted on a domain with a default virtual host before
-allowing an authorization request for this host to use a TLS-based challenge.
-Typically, systems with default virtual hosts do not allow the holder of the
-default virtual host to control what certificates are presented on a
-request-by-request basis.  Rather, the default virtual host can configure which
-certificate is presented in TLS on a fairly static basis, so that the
-certificate presented should be stable over small intervals.
-
-A CA can detect such a bounded default vhost by initiating TLS connections to
-the host with random SNI values within the namespace used for the TLS-based
-challenge (the "acme.invalid" namespace for "tls-sni-02").  If it receives the
-same certificate on two different connections, then it is very likely that the
-server is in a default virtual host configuration.  Conversely, if the TLS
-server returns an unrecognized_name alert, then this is an indication that the
-server is not in a default virtual host configuration.
-
 ## Token Entropy
 
-The http-01, tls-sni-02 and dns-01 validation methods mandate the usage of
+The http-01, and dns-01 validation methods mandate the usage of
 a random token value to uniquely identify the challenge. The value of the token
 is required to contain at least 128 bits of entropy for the following security
 properties. First, the ACME client should not be able to influence the ACME
@@ -3038,6 +2908,7 @@ inception.
 * Alex Halderman, University of Michigan
 * Martin Thomson, Mozilla
 * Jakub Warmuz, University of Oxford
+* Sophie Herold, Hemio
 
 This document draws on many concepts established by Eric Rescorla's "Automated
 Certificate Issuance Protocol" draft.  Martin Thomson provided helpful guidance
