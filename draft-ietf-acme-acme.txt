@@ -2674,7 +2674,7 @@ Internet-Draft                    ACME                        March 2018
    reason (optional, int):  One of the revocation reasonCodes defined in
       Section 5.3.1 of [RFC5280] to be used when generating OCSP
       responses and CRLs.  If this field is not set the server SHOULD
-      use the unspecified (0) reasonCode value when generating OCSP
+      omit the reasonCode CRL entry extension when generating OCSP
       responses and CRLs.  The server MAY disallow a subset of
       reasonCodes from being used by the user.  If a request contains a
       disallowed reasonCode the server MUST reject it with the error
