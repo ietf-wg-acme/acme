@@ -1000,6 +1000,17 @@ name validation.
 }
 ~~~~~~~~~~
 
+### Challenge Objects
+
+An ACME challenge object represents a server's offer to validate a
+client's possession of an identifier in a specific way.  Unlike the
+other objects listed above, there is not a single standard structure
+for a challenge object.  The contents of a challenge object depend
+on the validation mechanism being used.  The general structure of
+challenge objects and an initial set of challenges are described
+in {{identifier-validation-challenges}}.
+ 
+
 ## Getting a Nonce
 
 Before sending a POST request to the server, an ACME client needs to have a
