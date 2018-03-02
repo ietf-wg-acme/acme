@@ -341,19 +341,22 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
-  * "jwk" (JSON Web Key, only for requests to new-account and revoke-cert resources)
-  * "kid" (Key ID, for all other requests)
+  * "jwk" (JSON Web Key, for all requests not signed using an existing
+          account, e.g. newAccount)
+  * "kid" (Key ID, for all requests signed using an existing account)
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-url-integrity}} below)
 
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
 
-For new-account requests, and for revoke-cert requests authenticated by certificate
-key, there MUST be a "jwk" field.
+For newAccount requests, and for revokeCert requests authenticated by certificate
+key, there MUST be a "jwk" field. This field MUST contain the public key
+corresponding to the private key used to sign the JWS.
 
-For all other requests, there MUST be a "kid" field. This field must
-contain the account URL received by POSTing to the new-account resource.
+For all other requests, the request is signed using an existing account and
+there MUST be a "kid" field. This field MUST contain the account URL received by
+POSTing to the newAccount resource.
 
 Note that authentication via signed JWS request bodies implies that GET requests
 are not authenticated.  Servers MUST NOT respond to GET requests for resources
@@ -1918,7 +1921,7 @@ issuing certificates.
 ## Certificate Revocation
 
 To request that a certificate be revoked, the client sends a POST request to
-the ACME server's revoke-cert URL.  The body of the POST is a JWS object whose
+the ACME server's revokeCert URL.  The body of the POST is a JWS object whose
 JSON payload contains the certificate to be revoked:
 
 certificate (required, string):
@@ -1935,6 +1938,11 @@ used by the user. If a request contains a disallowed reasonCode the server MUST
 reject it with the error type "urn:ietf:params:acme:error:badRevocationReason".
 The problem document detail SHOULD indicate which reasonCodes are allowed.
 
+Revocation requests are different from other ACME requests in that they can be
+signed either with an account key pair or the key pair in the certificate.
+
+Example using an account key pair for the signature:
+
 ~~~~~~~~~~
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
@@ -1943,7 +1951,29 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": /* account key */,
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/revoke-cert"
+  }),
+  "payload": base64url({
+    "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+    "reason": 4
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
+}
+~~~~~~~~~~
+
+Example using the certificate key pair for the signature:
+
+~~~~~~~~~~
+POST /acme/revoke-cert HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "RS256",
+    "jwk": /* certificate's public key */,
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   }),
@@ -1955,8 +1985,6 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME requests in that they can be
-signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server MUST consider
 at least the following accounts authorized for a given certificate:
