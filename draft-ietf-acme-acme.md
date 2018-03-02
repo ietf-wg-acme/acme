@@ -843,8 +843,8 @@ the server requires the client to complete, and any certificates that have
 resulted from this order.
 
 status (required, string):
-: The status of this order.  Possible values are: "pending", "processing",
-"valid", and "invalid".
+: The status of this order.  Possible values are: "pending",
+"ready", "processing", "valid", and "invalid".
 
 expires (optional, string):
 : The timestamp after which the server will consider this order invalid, encoded
@@ -951,8 +951,8 @@ identifier (required, object):
   : The identifier itself.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "pending", "processing",
-"valid", "invalid" and "revoked".
+: The status of this authorization.  Possible values are: "pending",
+"valid", "invalid", "deactivated", and "revoked".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -1036,7 +1036,7 @@ the challenges listed in the authorization transitions to the
 state.  If there is an error while the authorization is still
 pending (e.g., the authorization times out), then the authorizatoin
 transitions to the "invalid" state.  Once the authorization is in
-the valid state, it can expire ("expired"), be deactivated by the
+the valid state, it can expire ("invalid"), be deactivated by the
 client ("deactivated", see {{deactivating-an-authorization}}),
 revoked by the server ("revoked").
 
@@ -1047,16 +1047,18 @@ Error        |  Challenge -> valid
    +---------+---------+
    |                   |
    V                   V
-invalid              valid
-                       |
+invalid <----------- valid
+            Time       |
+           after       |
+         "expires"     |
                        |
            +-----------+-----------+
-           |           |           |
-     Time  |           |           |
-    after  |    Client |    Server |
- "expires" |   deactiv.|    revoke |
-           V           V           V
-        expired   deactivated   revoked
+           |                       |
+           |                       |
+    Client |                Server |
+   deactiv.|                revoke |
+           V                       V
+      deactivated               revoked
 ~~~~~~~~~~
 
 Order objects are created in the "pending" state.  Once all of the
@@ -2165,8 +2167,8 @@ url (required, string):
 : The URL to which a response can be posted.
 
 status (required, string):
-: The status of this challenge.  Possible values are: "pending", "valid",
-and "invalid".
+: The status of this challenge.  Possible values are: "pending",
+"processing", "valid", and "invalid".
 
 validated (optional, string):
 : The time at which the server validated this challenge, encoded in the
