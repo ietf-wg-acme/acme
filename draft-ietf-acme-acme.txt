@@ -103,9 +103,9 @@ Table of Contents
        7.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  22
        7.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  23
        7.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  26
+       7.1.5.  Challenge Objects . . . . . . . . . . . . . . . . . .  27
      7.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  27
      7.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  28
-       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  30
 
 
 
@@ -114,10 +114,11 @@ Barnes, et al.          Expires September 3, 2018               [Page 2]
 Internet-Draft                    ACME                        March 2018
 
 
-       7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  30
+       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  30
+       7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  31
        7.3.3.  Account Information . . . . . . . . . . . . . . . . .  31
        7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  31
-       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  31
+       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  32
        7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  34
        7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  36
      7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  37
@@ -161,7 +162,6 @@ Internet-Draft                    ACME                        March 2018
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  73
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  73
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  73
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  76
 
 
 
@@ -170,6 +170,7 @@ Barnes, et al.          Expires September 3, 2018               [Page 3]
 Internet-Draft                    ACME                        March 2018
 
 
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  76
      13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  77
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  77
 
@@ -217,7 +218,6 @@ Internet-Draft                    ACME                        March 2018
    issued, these are all completely ad hoc procedures and are
    accomplished by getting the human user to follow interactive natural-
    language instructions from the CA rather than by machine-implemented
-   published protocols.  In many cases, the instructions are difficult
 
 
 
@@ -226,6 +226,7 @@ Barnes, et al.          Expires September 3, 2018               [Page 4]
 Internet-Draft                    ACME                        March 2018
 
 
+   published protocols.  In many cases, the instructions are difficult
    to follow and cause significant confusion.  Informal usability tests
    by the authors indicate that webmasters often need 1-3 hours to
    obtain and install a certificate for a domain.  Even in the best
@@ -272,7 +273,6 @@ Internet-Draft                    ACME                        March 2018
    circumstances, all steps in the request, verification, and issuance
    process can be represented and performed by Internet protocols with
    no out-of-band human intervention.
-
 
 
 
@@ -1478,6 +1478,16 @@ Internet-Draft                    ACME                        March 2018
      ]
    }
 
+7.1.5.  Challenge Objects
+
+   An ACME challenge object represents a server's offer to validate a
+   client's possession of an identifier in a specific way.  Unlike the
+   other objects listed above, there is not a single standard structure
+   for a challenge object.  The contents of a challenge object depend on
+   the validation method being used.  The general structure of challenge
+   objects and an initial set of validation methods are described in
+   Section 8.
+
 7.2.  Getting a Nonce
 
    Before sending a POST request to the server, an ACME client needs to
@@ -1494,6 +1504,16 @@ Internet-Draft                    ACME                        March 2018
    for this resource, returning an empty body (while still providing a
    Replay-Nonce header) with a 204 (No Content) status.
 
+
+
+
+
+
+Barnes, et al.          Expires September 3, 2018              [Page 27]
+
+Internet-Draft                    ACME                        March 2018
+
+
    HEAD /acme/new-nonce HTTP/1.1
    Host: example.com
 
@@ -1506,13 +1526,6 @@ Internet-Draft                    ACME                        March 2018
    errors.  The server MUST include a Cache-Control header field with
    the "no-store" directive in responses for the new-nonce resource, in
    order to prevent caching of this resource.
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 27]
-
-Internet-Draft                    ACME                        March 2018
-
 
 7.3.  Account Creation
 
@@ -1532,6 +1545,30 @@ Internet-Draft                    ACME                        March 2018
       account if one does not already exist.  This allows a client to
       look up an account URL based on an account key (see
       Section 7.3.1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 3, 2018              [Page 28]
+
+Internet-Draft                    ACME                        March 2018
+
 
    POST /acme/new-account HTTP/1.1
    Host: example.com
@@ -1562,14 +1599,6 @@ Internet-Draft                    ACME                        March 2018
 
    In general, the server MUST ignore any fields in the request object
    that it does not recognize.  In particular, it MUST NOT reflect
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 28]
-
-Internet-Draft                    ACME                        March 2018
-
-
    unrecognized fields in the resulting account object.  This allows
    clients to detect when servers do not support an extension field.
 
@@ -1587,6 +1616,15 @@ Internet-Draft                    ACME                        March 2018
    server considers acceptable.  If the server rejects a contact URL for
    using a supported scheme but an invalid value then the server MUST
    return an error of type "invalidContact".
+
+
+
+
+
+Barnes, et al.          Expires September 3, 2018              [Page 29]
+
+Internet-Draft                    ACME                        March 2018
+
 
    If the server wishes to present the client with terms under which the
    ACME service is to be used, it MUST indicate the URL where such terms
@@ -1619,13 +1657,6 @@ Internet-Draft                    ACME                        March 2018
      ]
    }
 
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 29]
-
-Internet-Draft                    ACME                        March 2018
-
-
 7.3.1.  Finding an Account URL Given a Key
 
    If the server already has an account registered with the provided
@@ -1642,6 +1673,14 @@ Internet-Draft                    ACME                        March 2018
    an account does not exist, then the server MUST return an error
    response with status code 400 (Bad Request) and type
    "urn:ietf:params:acme:error:accountDoesNotExist".
+
+
+
+
+Barnes, et al.          Expires September 3, 2018              [Page 30]
+
+Internet-Draft                    ACME                        March 2018
+
 
 7.3.2.  Account Update
 
@@ -1675,13 +1714,6 @@ Internet-Draft                    ACME                        March 2018
      "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
    }
 
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 30]
-
-Internet-Draft                    ACME                        March 2018
-
-
 7.3.3.  Account Information
 
    Servers SHOULD NOT respond to GET requests for account resources as
@@ -1696,6 +1728,15 @@ Internet-Draft                    ACME                        March 2018
    As described above, a client can indicate its agreement with the CA's
    terms of service by setting the "termsOfServiceAgreed" field in its
    account object to "true".
+
+
+
+
+
+Barnes, et al.          Expires September 3, 2018              [Page 31]
+
+Internet-Draft                    ACME                        March 2018
+
 
    If the server has changed its terms of service since a client
    initially agreed, and the server is unwilling to process a request
@@ -1729,15 +1770,6 @@ Internet-Draft                    ACME                        March 2018
    associate an ACME account with an existing account in a non-ACME
    system, such as a CA customer database.
 
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 31]
-
-Internet-Draft                    ACME                        March 2018
-
-
    To enable ACME account binding, a CA needs to provide the ACME client
    with a MAC key and a key identifier, using some mechanism outside of
    ACME.  The key identifier MUST be an ASCII string.  The MAC key
@@ -1755,44 +1787,17 @@ Internet-Draft                    ACME                        March 2018
 
    o  The "nonce" field MUST NOT be present
 
-   o  The "url" field MUST be set to the same value as the outer JWS
-
-   The "signature" field of the JWS will contain the MAC value computed
-   with the MAC key provided by the CA.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 Barnes, et al.          Expires September 3, 2018              [Page 32]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   o  The "url" field MUST be set to the same value as the outer JWS
+
+   The "signature" field of the JWS will contain the MAC value computed
+   with the MAC key provided by the CA.
 
    POST /acme/new-account HTTP/1.1
    Host: example.com
@@ -1838,17 +1843,17 @@ Internet-Draft                    ACME                        March 2018
 
    1.  Verify that the value of the field is a well-formed JWS
 
-   2.  Verify that the JWS protected meets the above criteria
-
-   3.  Retrieve the MAC key corresponding to the key identifier in the
-       "kid" field
-
 
 
 Barnes, et al.          Expires September 3, 2018              [Page 33]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   2.  Verify that the JWS protected meets the above criteria
+
+   3.  Retrieve the MAC key corresponding to the key identifier in the
+       "kid" field
 
    4.  Verify that the MAC on the JWS verifies using that MAC key
 
@@ -1893,11 +1898,6 @@ Internet-Draft                    ACME                        March 2018
       public key of the new key pair (i.e., the same value as the
       "newKey" field).
 
-   o  The inner JWS MUST have the same "url" header parameter as the
-      outer JWS.
-
-
-
 
 
 
@@ -1905,6 +1905,9 @@ Barnes, et al.          Expires September 3, 2018              [Page 34]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   o  The inner JWS MUST have the same "url" header parameter as the
+      outer JWS.
 
    o  The inner JWS is NOT REQUIRED to have a "nonce" header parameter.
       The server MUST ignore any value provided for the "nonce" header
@@ -1951,9 +1954,6 @@ Internet-Draft                    ACME                        March 2018
    2.  Check that the payload of the JWS is a well-formed JWS object
        (the "inner JWS").
 
-   3.  Check that the JWS protected header of the inner JWS has a "jwk"
-       field.
-
 
 
 
@@ -1961,6 +1961,9 @@ Barnes, et al.          Expires September 3, 2018              [Page 35]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   3.  Check that the JWS protected header of the inner JWS has a "jwk"
+       field.
 
    4.  Check that the inner JWS verifies using the key in its "jwk"
        field.
@@ -1998,9 +2001,6 @@ Internet-Draft                    ACME                        March 2018
    A client can deactivate an account by posting a signed update to the
    server with a status field of "deactivated."  Clients may wish to do
    this when the account key is compromised or decommissioned.
-
-
-
 
 
 
@@ -3628,7 +3628,7 @@ Internet-Draft                    ACME                        March 2018
    a clear, interoperable definition and does not overlap with existing
    validation methods.  That is, it should not be possible for a client
    and server to follow take the same set of actions to fulfill two
-   different validation mechanisms.
+   different validation methods.
 
    Validation methods do not have to be compatible with ACME in order to
    be registered.  For example, a CA might wish to register a validation

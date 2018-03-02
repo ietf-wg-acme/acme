@@ -305,6 +305,7 @@ address {
 <link href="#rfc.section.7.1.2" rel="Chapter" title="7.1.2 Account Objects">
 <link href="#rfc.section.7.1.3" rel="Chapter" title="7.1.3 Order Objects">
 <link href="#rfc.section.7.1.4" rel="Chapter" title="7.1.4 Authorization Objects">
+<link href="#rfc.section.7.1.5" rel="Chapter" title="7.1.5 Challenge Objects">
 <link href="#rfc.section.7.2" rel="Chapter" title="7.2 Getting a Nonce">
 <link href="#rfc.section.7.3" rel="Chapter" title="7.3 Account Creation">
 <link href="#rfc.section.7.3.1" rel="Chapter" title="7.3.1 Finding an Account URL Given a Key">
@@ -481,6 +482,8 @@ address {
 <li>7.1.3.   <a href="#rfc.section.7.1.3">Order Objects</a>
 </li>
 <li>7.1.4.   <a href="#rfc.section.7.1.4">Authorization Objects</a>
+</li>
+<li>7.1.5.   <a href="#rfc.section.7.1.5">Challenge Objects</a>
 </li>
 </ul><li>7.2.   <a href="#rfc.section.7.2">Getting a Nonce</a>
 </li>
@@ -1262,6 +1265,10 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;, rel="next"
   ]
 }
 </pre>
+<h1 id="rfc.section.7.1.5">
+<a href="#rfc.section.7.1.5">7.1.5.</a> <a href="#challenge-objects" id="challenge-objects">Challenge Objects</a>
+</h1>
+<p id="rfc.section.7.1.5.p.1">An ACME challenge object represents a server&#8217;s offer to validate a client&#8217;s possession of an identifier in a specific way.  Unlike the other objects listed above, there is not a single standard structure for a challenge object.  The contents of a challenge object depend on the validation method being used.  The general structure of challenge objects and an initial set of validation methods are described in <a href="#identifier-validation-challenges" class="xref">Section 8</a>.</p>
 <h1 id="rfc.section.7.2">
 <a href="#rfc.section.7.2">7.2.</a> <a href="#getting-a-nonce" id="getting-a-nonce">Getting a Nonce</a>
 </h1>
@@ -2595,7 +2602,7 @@ Content-Type: application/jose+json
 </tr>
 </tbody>
 </table>
-<p id="rfc.section.9.7.8.p.5">When evaluating a request for an assignment in this registry, the designated expert should ensure that the method being registered has a clear, interoperable definition and does not overlap with existing validation methods.  That is, it should not be possible for a client and server to follow take the same set of actions to fulfill two different validation mechanisms.</p>
+<p id="rfc.section.9.7.8.p.5">When evaluating a request for an assignment in this registry, the designated expert should ensure that the method being registered has a clear, interoperable definition and does not overlap with existing validation methods.  That is, it should not be possible for a client and server to follow take the same set of actions to fulfill two different validation methods.</p>
 <p id="rfc.section.9.7.8.p.6">Validation methods do not have to be compatible with ACME in order to be registered.  For example, a CA might wish to register a validation method in order to support its use with the ACME extensions to CAA <a href="#I-D.ietf-acme-caa" class="xref">[I-D.ietf-acme-caa]</a>.</p>
 <p id="rfc.section.9.7.8.p.7">[[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this document ]]</p>
 <h1 id="rfc.section.10">
