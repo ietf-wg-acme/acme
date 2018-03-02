@@ -341,19 +341,22 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
-  * "jwk" (JSON Web Key, only for requests to new-account and revoke-cert resources)
-  * "kid" (Key ID, for all other requests)
+  * "jwk" (JSON Web Key, for all requests not signed using an existing
+          account, e.g. newAccount)
+  * "kid" (Key ID, for all requests signed using an existing account)
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-url-integrity}} below)
 
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
 
-For new-account requests, and for revoke-cert requests authenticated by certificate
-key, there MUST be a "jwk" field.
+For newAccount requests, and for revokeCert requests authenticated by certificate
+key, there MUST be a "jwk" field. This field MUST contain the public key
+corresponding to the private key used to sign the JWS.
 
-For all other requests, there MUST be a "kid" field. This field must
-contain the account URL received by POSTing to the new-account resource.
+For all other requests, the request is signed using an existing account and
+there MUST be a "kid" field. This field MUST contain the account URL received by
+POSTing to the newAccount resource.
 
 Note that authentication via signed JWS request bodies implies that GET requests
 are not authenticated.  Servers MUST NOT respond to GET requests for resources
@@ -991,12 +994,21 @@ name validation.
       "type": "http-01",
       "status": "valid",
       "token": "DGyRejmCefe7v4NfDGDKfA"
-      "validated": "2014-12-01T12:05:00Z",
-      "keyAuthorization": "SXQe-2XODaDxNR...vb29HhjjLPSggwiE"
+      "validated": "2014-12-01T12:05:00Z"
     }
   ]
 }
 ~~~~~~~~~~
+
+### Challenge Objects
+
+An ACME challenge object represents a server's offer to validate a
+client's possession of an identifier in a specific way.  Unlike the
+other objects listed above, there is not a single standard structure
+for a challenge object.  The contents of a challenge object depend
+on the validation method being used.  The general structure of
+challenge objects and an initial set of validation methods are
+described in {{identifier-validation-challenges}}.
 
 ## Getting a Nonce
 
@@ -1818,9 +1830,7 @@ Content-Type: application/jose+json
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
     "url": "https://example.com/acme/authz/1234/0"
   }),
-  "payload": base64url({
-    "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
-  }),
+  "payload": base64url({}),
   "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
 }
 ~~~~~~~~~~
@@ -1878,8 +1888,7 @@ HTTP/1.1 200 OK
       "url": "https://example.com/acme/authz/1234/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
-      "token": "IlirfxKKXAsHtmzK29Pj8A",
-      "keyAuthorization": "IlirfxKKXA...vb29HhjjLPSggwiE"
+      "token": "IlirfxKKXAsHtmzK29Pj8A"
     }
   ]
 }
@@ -1922,7 +1931,7 @@ issuing certificates.
 ## Certificate Revocation
 
 To request that a certificate be revoked, the client sends a POST request to
-the ACME server's revoke-cert URL.  The body of the POST is a JWS object whose
+the ACME server's revokeCert URL.  The body of the POST is a JWS object whose
 JSON payload contains the certificate to be revoked:
 
 certificate (required, string):
@@ -1933,11 +1942,16 @@ it is different from PEM.)
 reason (optional, int):
 : One of the revocation reasonCodes defined in Section 5.3.1 of {{RFC5280}}
 to be used when generating OCSP responses and CRLs. If this field is not set
-the server SHOULD use the unspecified (0) reasonCode value when generating OCSP
+the server SHOULD omit the reasonCode CRL entry extension when generating OCSP
 responses and CRLs. The server MAY disallow a subset of reasonCodes from being
 used by the user. If a request contains a disallowed reasonCode the server MUST
 reject it with the error type "urn:ietf:params:acme:error:badRevocationReason".
 The problem document detail SHOULD indicate which reasonCodes are allowed.
+
+Revocation requests are different from other ACME requests in that they can be
+signed either with an account key pair or the key pair in the certificate.
+
+Example using an account key pair for the signature:
 
 ~~~~~~~~~~
 POST /acme/revoke-cert HTTP/1.1
@@ -1947,7 +1961,29 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": /* account key */,
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/revoke-cert"
+  }),
+  "payload": base64url({
+    "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+    "reason": 4
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
+}
+~~~~~~~~~~
+
+Example using the certificate key pair for the signature:
+
+~~~~~~~~~~
+POST /acme/revoke-cert HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "RS256",
+    "jwk": /* certificate's public key */,
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   }),
@@ -1959,8 +1995,6 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-Revocation requests are different from other ACME requests in that they can be
-signed either with an account key pair or the key pair in the certificate.
 Before revoking a certificate, the server MUST verify that the key used to sign
 the request is authorized to revoke the certificate.  The server MUST consider
 at least the following accounts authorized for a given certificate:
@@ -2155,7 +2189,7 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by constructing a key authorization from
+A client fulfills this challenge by constructing a key authorization from
 the "token" value provided in the challenge and the client's account key.  The
 client then provisions the key authorization as a resource on the HTTP server
 for the domain in question.
@@ -2173,13 +2207,8 @@ HTTP/1.1 200 OK
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
 ~~~~~~~~~~
 
-The client's response to the validation request indicates its agreement to this
-challenge by sending the server the key authorization covering the challenge's
-token and the client's account key.
-
-keyAuthorization (required, string):
-: The key authorization for this challenge.  This value MUST match the token
-from the challenge and the client's account key.
+A client responds with an empty object ({}) to acknowledge that the challenge
+can be validated by the server.
 
 ~~~~~~~~~~
 POST /acme/authz/1234/0
@@ -2193,17 +2222,13 @@ Content-Type: application/jose+json
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/authz/1234/0"
   }),
-  "payload": base64url({
-    "keyAuthorization": "evaGxfADs...62jcerQ"
-  }),
+  "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 ~~~~~~~~~~
 
-On receiving a response, the server MUST verify that the key authorization in
-the response matches the "token" value in the challenge and the client's account
-key.  If they do not match, then the server MUST return an HTTP error in
-response to the POST request in which the client sent the challenge.
+On receiving a response, the server constructs and stores the key authorization
+from the challenge "token" value and the current client account key.
 
 Given a challenge/response pair, the server verifies the client's control of the
 domain by verifying that the resource was provisioned as expected.
@@ -2218,7 +2243,7 @@ domain by verifying that the resource was provisioned as expected.
 4. Verify that the body of the response is well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the HTTP server matches the key
-   authorization provided by the client in its response to the challenge.
+   authorization stored by the server.
 
 The server SHOULD follow redirects when dereferencing the URL.
 
@@ -2253,7 +2278,7 @@ HTTP/1.1 200 OK
 }
 ~~~~~~~~~~
 
-A client responds to this challenge by constructing a key authorization from the
+A client fulfills this challenge by constructing a key authorization from the
 "token" value provided in the challenge and the client's account key.  The
 client then computes the SHA-256 digest [FIPS180-4] of the key authorization.
 
@@ -2268,12 +2293,8 @@ DNS record:
 _acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 ~~~~~~~~~~
 
-The response to the DNS challenge provides the computed key authorization to
-acknowledge that the client is ready to fulfill this challenge.
-
-keyAuthorization (required, string):
-: The key authorization for this challenge.  This value MUST match the token
-from the challenge and the client's account key.
+A client responds with an empty object ({}) to acknowledge that the challenge
+can be validated by the server.
 
 ~~~~~~~~~~
 POST /acme/authz/1234/2
@@ -2287,21 +2308,17 @@ Content-Type: application/jose+json
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/authz/1234/2"
   }),
-  "payload": base64url({
-    "keyAuthorization": "evaGxfADs...62jcerQ"
-  }),
+  "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 ~~~~~~~~~~
 
-On receiving a response, the server MUST verify that the key authorization in
-the response matches the "token" value in the challenge and the client's account
-key.  If they do not match, then the server MUST return an HTTP error in
-response to the POST request in which the client sent the challenge.
+On receiving a response, the server constructs and stores the key authorization
+from the challenge "token" value and the current client account key.
 
 To validate a DNS challenge, the server performs the following steps:
 
-1. Compute the SHA-256 digest [FIPS180-4] of the key authorization
+1. Compute the SHA-256 digest [FIPS180-4] of the stored key authorization
 2. Query for TXT records for the validation domain name
 3. Verify that the contents of one of the TXT records match the digest value
 
@@ -2633,7 +2650,7 @@ When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
 interoperable definition and does not overlap with existing validation methods.
 That is, it should not be possible for a client and server to follow take the
-same set of actions to fulfill two different validation mechanisms.
+same set of actions to fulfill two different validation methods.
 
 Validation methods do not have to be compatible with ACME in order to be
 registered.  For example, a CA might wish to register a validation method in
