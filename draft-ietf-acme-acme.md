@@ -1000,6 +1000,16 @@ name validation.
 }
 ~~~~~~~~~~
 
+### Challenge Objects
+
+An ACME challenge object represents a server's offer to validate a
+client's possession of an identifier in a specific way.  Unlike the
+other objects listed above, there is not a single standard structure
+for a challenge object.  The contents of a challenge object depend
+on the validation method being used.  The general structure of
+challenge objects and an initial set of validation methods are
+described in {{identifier-validation-challenges}}.
+
 ## Getting a Nonce
 
 Before sending a POST request to the server, an ACME client needs to have a
@@ -2640,7 +2650,7 @@ When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
 interoperable definition and does not overlap with existing validation methods.
 That is, it should not be possible for a client and server to follow take the
-same set of actions to fulfill two different validation mechanisms.
+same set of actions to fulfill two different validation methods.
 
 Validation methods do not have to be compatible with ACME in order to be
 registered.  For example, a CA might wish to register a validation method in
