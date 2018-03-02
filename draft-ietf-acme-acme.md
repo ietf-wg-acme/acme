@@ -373,7 +373,8 @@ multiple JWS serialization formats. When sending an ACME request
 with a non-empty body, an ACME client implementation MUST use the 
 HTTP Content-Type {{!RFC7231}} header to indicate which JWS serialization format 
 is used for encapsulating the ACME request payload.
-The following Content-Type values may be used for this purpose:
+Requests sent by clients MUST have one of the following content
+types:
 
  - "application/jose":
    - The JWS Compact Serialization {{!RFC7515}} MUST be used. 
@@ -390,6 +391,12 @@ In the examples below, JWS objects are shown in the General JSON or Flattened JS
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.
+
+If a server receives a request using a serialization it does not
+support, then it MUST send a response with HTTP status code 406
+(Unacceptable) and an Accept header field listing the content types
+that it supports.  The server's response SHOULD also provide an ACME
+error body of type "unsupportedSerialization".
 
 ## Request URL Integrity
 
@@ -515,28 +522,29 @@ information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Type                    | Description                                                                    |
-|:------------------------|:-------------------------------------------------------------------------------|
-| badCSR                  | The CSR is unacceptable (e.g., due to a short key)                             |
-| badNonce                | The client sent an unacceptable anti-replay nonce                              |
-| badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support               |
-| invalidContact          | A contact URL for an account was invalid                                       |
-| unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
-| externalAccountRequired | The request must include a value for the "externalAccountBinding" field        |
-| accountDoesNotExist     | The request specified an account that does not exist                           |
-| malformed               | The request message was malformed                                              |
-| rateLimited             | The request exceeds a rate limit                                               |
-| rejectedIdentifier      | The server will not issue for the identifier                                   |
-| serverInternal          | The server experienced an internal error                                       |
-| unauthorized            | The client lacks sufficient authorization                                      |
-| unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
-| userActionRequired      | Visit the "instance" URL and take actions specified there                      |
-| badRevocationReason     | The revocation reason provided is not allowed by the server                    |
-| caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
-| dns                     | There was a problem with a DNS query                                           |
-| connection              | The server could not connect to validation target                              |
-| tls                     | The server received a TLS error during validation                              |
-| incorrectResponse       | Response received didn't match the challenge's requirements                    |
+| Type                     | Description                                                                    |
+|:-------------------------|:-------------------------------------------------------------------------------|
+| badCSR                   | The CSR is unacceptable (e.g., due to a short key)                             |
+| badNonce                 | The client sent an unacceptable anti-replay nonce                              |
+| unsupportedSerialization | The JWS was encoded with a serialization the server does not support           |
+| badSignatureAlgorithm    | The JWS was signed with an algorithm the server does not support               |
+| invalidContact           | A contact URL for an account was invalid                                       |
+| unsupportedContact       | A contact URL for an account used an unsupported protocol scheme               |
+| externalAccountRequired  | The request must include a value for the "externalAccountBinding" field        |
+| accountDoesNotExist      | The request specified an account that does not exist                           |
+| malformed                | The request message was malformed                                              |
+| rateLimited              | The request exceeds a rate limit                                               |
+| rejectedIdentifier       | The server will not issue for the identifier                                   |
+| serverInternal           | The server experienced an internal error                                       |
+| unauthorized             | The client lacks sufficient authorization                                      |
+| unsupportedIdentifier    | Identifier is not supported, but may be in future                              |
+| userActionRequired       | Visit the "instance" URL and take actions specified there                      |
+| badRevocationReason      | The revocation reason provided is not allowed by the server                    |
+| caa                      | Certification Authority Authorization (CAA) records forbid the CA from issuing |
+| dns                      | There was a problem with a DNS query                                           |
+| connection               | The server could not connect to validation target                              |
+| tls                      | The server received a TLS error during validation                              |
+| incorrectResponse        | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
