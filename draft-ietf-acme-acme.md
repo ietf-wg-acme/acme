@@ -1000,6 +1000,111 @@ name validation.
 }
 ~~~~~~~~~~
 
+### Status Changes
+
+Each ACME object type goes through a simple state machine over its
+lifetime.  The "status" field of the object indicates which state
+the object is currently in.
+
+Challenge objects are created in the "pending" state.  They
+transition to the "processing" state when the client responds to the
+challenge (see {{responding-to-challenges}}) and the server begins
+attempting to validate that the client has completed the challenge.
+If validation is successful, the challenge moves to the "valid"
+state; if there is an error, the challenge moves to the "invalid"
+state.
+
+~~~~~~~~~~
+         pending
+            | 
+            | Receive
+            | response
+            V
+        processing
+            |
+Successful  |   Failed
+validation  |   validation
+  +---------+---------+
+  |                   |
+  V                   V
+valid              invalid
+~~~~~~~~~~
+
+Authorization objects are created in the "pending" state.  If one of
+the challenges listed in the authorization transitions to the
+"valid" state, then the authorization also changes to the "valid"
+state.  If there is an error while the authorization is still
+pending (e.g., the authorization times out), then the authorizatoin
+transitions to the "invalid" state.  Once the authorization is in
+the valid state, it can expire ("expired"), be deactivated by the
+client ("deactivated", see {{deactivating-an-authorization}}),
+revoked by the server ("revoked").
+
+~~~~~~~~~~
+          pending
+             |
+Error        |  Challenge -> valid
+   +---------+---------+
+   |                   |
+   V                   V
+invalid              valid
+                       |
+                       |
+           +-----------+-----------+
+           |           |           |
+     Time  |           |           |
+    after  |    Client |    Server |
+ "expires" |   deactiv.|    revoke |
+           V           V           V
+        expired   deactivated   revoked
+~~~~~~~~~~
+
+Order objects are created in the "pending" state.  Once all of the
+authorizations listed in the order object are in the "valid" state,
+the order transitions to the "ready" state.  The order moves to the
+"processing" state after the client submits a request to the order's
+"finalize" URL and the CA begins the issuance process for the
+certificate.  Once the certificate is issued, the order enters the
+"valid" state.  If a fatal error occurs at any of these stages, the
+order moves to the "invalid" state.
+
+~~~~~~~~~~
+ pending --------------+
+    |                  |
+    | All authz        |
+    | "valid"          |
+    V                  |
+  ready ---------------+
+    |                  |
+    | Receive          |
+    | finalize         |
+    | request          |
+    V                  |
+processing ------------+
+    |                  |
+    | Certificate      | Fatal
+    | issued           | error
+    V                  V
+  valid             invalid
+~~~~~~~~~~
+
+Account objects are created in the "valid" state, since no further
+action is required to create an account after a successful
+newAccount request.  If the account is deactivated by the client  or
+revoked by the server, it moves to the corresponding state. 
+
+~~~~~~~~~~
+                  valid
+                    |
+                    |
+        +-----------+-----------+
+ Client |                Server |
+deactiv.|                revoke |
+        V                       V
+   deactivated               revoked
+~~~~~~~~~~
+
+
 ## Getting a Nonce
 
 Before sending a POST request to the server, an ACME client needs to have a
