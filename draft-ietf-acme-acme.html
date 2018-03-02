@@ -716,16 +716,16 @@ address {
 <li>The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its &#8220;alg&#8221; field</li>
 <li>The JWS Protected Header MUST include the following fields: <ul>
 <li>&#8220;alg&#8221; (Algorithm)</li>
-<li>&#8220;jwk&#8221; (JSON Web Key, only for requests to new-account and revoke-cert resources)</li>
-<li>&#8220;kid&#8221; (Key ID, for all other requests)</li>
+<li>&#8220;jwk&#8221; (JSON Web Key, for all requests not signed using an existing account, e.g. newAccount)</li>
+<li>&#8220;kid&#8221; (Key ID, for all requests signed using an existing account)</li>
 <li>&#8220;nonce&#8221; (defined in <a href="#replay-protection" class="xref">Section 6.5</a> below)</li>
 <li>&#8220;url&#8221; (defined in <a href="#request-url-integrity" class="xref">Section 6.4</a> below)</li>
 </ul>
 </li>
 </ul>
 <p id="rfc.section.6.2.p.4">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
-<p id="rfc.section.6.2.p.5">For new-account requests, and for revoke-cert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field.</p>
-<p id="rfc.section.6.2.p.6">For all other requests, there MUST be a &#8220;kid&#8221; field. This field must contain the account URL received by POSTing to the new-account resource.</p>
+<p id="rfc.section.6.2.p.5">For newAccount requests, and for revokeCert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field. This field MUST contain the public key corresponding to the private key used to sign the JWS.</p>
+<p id="rfc.section.6.2.p.6">For all other requests, the request is signed using an existing account and there MUST be a &#8220;kid&#8221; field. This field MUST contain the account URL received by POSTing to the newAccount resource.</p>
 <p id="rfc.section.6.2.p.7">Note that authentication via signed JWS request bodies implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.  Account resources are the only sensitive resources defined in this specification.</p>
 <p id="rfc.section.6.2.p.8">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221;.  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.</p>
 <h1 id="rfc.section.6.3">
@@ -1873,7 +1873,7 @@ Content-Type: application/jose+json
 <h1 id="rfc.section.7.6">
 <a href="#rfc.section.7.6">7.6.</a> <a href="#certificate-revocation" id="certificate-revocation">Certificate Revocation</a>
 </h1>
-<p id="rfc.section.7.6.p.1">To request that a certificate be revoked, the client sends a POST request to the ACME server&#8217;s revoke-cert URL.  The body of the POST is a JWS object whose JSON payload contains the certificate to be revoked:</p>
+<p id="rfc.section.7.6.p.1">To request that a certificate be revoked, the client sends a POST request to the ACME server&#8217;s revokeCert URL.  The body of the POST is a JWS object whose JSON payload contains the certificate to be revoked:</p>
 <p></p>
 
 <dl>
@@ -1882,6 +1882,8 @@ Content-Type: application/jose+json
 <dt>reason (optional, int):</dt>
 <dd style="margin-left: 8">One of the revocation reasonCodes defined in Section 5.3.1 of <a href="#RFC5280" class="xref">[RFC5280]</a> to be used when generating OCSP responses and CRLs. If this field is not set the server SHOULD use the unspecified (0) reasonCode value when generating OCSP responses and CRLs. The server MAY disallow a subset of reasonCodes from being used by the user. If a request contains a disallowed reasonCode the server MUST reject it with the error type &#8220;urn:ietf:params:acme:error:badRevocationReason&#8221;.  The problem document detail SHOULD indicate which reasonCodes are allowed.</dd>
 </dl>
+<p id="rfc.section.7.6.p.3">Revocation requests are different from other ACME requests in that they can be signed either with an account key pair or the key pair in the certificate.</p>
+<p id="rfc.section.7.6.p.4">Example using an account key pair for the signature:</p>
 <pre>
 POST /acme/revoke-cert HTTP/1.1
 Host: example.com
@@ -1890,7 +1892,27 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "jwk": /* account key */,
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/revoke-cert"
+  }),
+  "payload": base64url({
+    "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+    "reason": 4
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
+}
+</pre>
+<p id="rfc.section.7.6.p.5">Example using the certificate key pair for the signature:</p>
+<pre>
+POST /acme/revoke-cert HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "RS256",
+    "jwk": /* certificate's public key */,
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   }),
@@ -1901,15 +1923,15 @@ Content-Type: application/jose+json
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.7.6.p.3">Revocation requests are different from other ACME requests in that they can be signed either with an account key pair or the key pair in the certificate.  Before revoking a certificate, the server MUST verify that the key used to sign the request is authorized to revoke the certificate.  The server MUST consider at least the following accounts authorized for a given certificate:</p>
+<p id="rfc.section.7.6.p.6">Before revoking a certificate, the server MUST verify that the key used to sign the request is authorized to revoke the certificate.  The server MUST consider at least the following accounts authorized for a given certificate:</p>
 <p></p>
 
 <ul>
 <li>the account that issued the certificate.</li>
 <li>an account that holds authorizations for all of the identifiers in the certificate.</li>
 </ul>
-<p id="rfc.section.7.6.p.5">The server MUST also consider a revocation request valid if it is signed with the private key corresponding to the public key in the certificate.</p>
-<p id="rfc.section.7.6.p.6">If the revocation succeeds, the server responds with status code 200 (OK).  If the revocation fails, the server returns an error.</p>
+<p id="rfc.section.7.6.p.8">The server MUST also consider a revocation request valid if it is signed with the private key corresponding to the public key in the certificate.</p>
+<p id="rfc.section.7.6.p.9">If the revocation succeeds, the server responds with status code 200 (OK).  If the revocation fails, the server returns an error.</p>
 <pre>
 HTTP/1.1 200 OK
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
