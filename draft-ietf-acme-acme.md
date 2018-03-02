@@ -1010,6 +1010,9 @@ Challenge objects are created in the "pending" state.  They
 transition to the "processing" state when the client responds to the
 challenge (see {{responding-to-challenges}}) and the server begins
 attempting to validate that the client has completed the challenge.
+Note that within the "processing" state, the server may attempt to
+validate the challenge multiple times (see {{retrying-challenges}}).
+Likewise, client requests for retries do not cause a state change.
 If validation is successful, the challenge moves to the "valid"
 state; if there is an error, the challenge moves to the "invalid"
 state.
@@ -1020,7 +1023,11 @@ state.
             | Receive
             | response
             V
-        processing
+        processing <-+
+            |   |    | Server retry or
+            |   |    | client retry request
+            |   +----+
+            |
             |
 Successful  |   Failed
 validation  |   validation
@@ -2232,7 +2239,7 @@ scenarios that the schedule is trying to accommodate.  Given that retries are
 intended to address things like propagation delays in HTTP or DNS provisioning,
 there should not usually be any reason to retry more often than every 5 or 10
 seconds. While the server is still trying, the
-status of the challenge remains "pending"; it is only marked "invalid" once the
+status of the challenge remains "processing"; it is only marked "invalid" once the
 server has given up.
 
 The server MUST provide information about its retry state to the client via the
