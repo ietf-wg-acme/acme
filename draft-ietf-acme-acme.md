@@ -337,6 +337,7 @@ authentication of requests.
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST NOT have the value "none" in its "alg" field
+* The JWS MUST NOT have multiple signatures. 
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
@@ -365,7 +366,27 @@ and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
 document returned with the error MUST include an "algorithms" field with an
 array of supported "alg" values.
 
-In the examples below, JWS objects are shown in the JSON or flattened JSON
+## JWS Serialization Formats
+
+The JSON Web Signature (JWS) specification {{!RFC7515}} contains 
+multiple JWS serialization formats. When sending an ACME request 
+with a non-empty body, an ACME client implementation MUST use the 
+HTTP Content-Type {{!RFC7231}} header to indicate which JWS serialization format 
+is used for encapsulating the ACME request payload.
+The following Content-Type values may be used for this purpose:
+
+ - "application/jose":
+   - The JWS Compact Serialization {{!RFC7515}} MUST be used. 
+   - The JWS Payload MUST NOT be detached. 
+   - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used. 
+ - "application/jose+json":
+   - Either the JWS Flattened JSON Serialization {{!RFC7515}} 
+     or the JWS General JSON Serialization {{!RFC7515}} MUST be used. 
+   - The JWS Payload MUST NOT be detached. 
+   - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
+   - The JWS Unprotected Header {{!RFC7515}} SHOULD NOT be used. 
+
+In the examples below, JWS objects are shown in the General JSON or Flattened JSON
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.
