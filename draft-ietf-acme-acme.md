@@ -376,18 +376,47 @@ multiple JWS serialization formats. When sending an ACME request
 with a non-empty body, an ACME client implementation MUST use the 
 HTTP Content-Type {{!RFC7231}} header to indicate which JWS serialization format 
 is used for encapsulating the ACME request payload.
-The following Content-Type values may be used for this purpose:
+
+The list below describes the currently defined Content-Type header 
+values for indicating which JWS serialization format is used,
+along with the associated requirements. 
+A "root JWS" is the JWS used to encapsulate 
+the entire ACME request payload, and a "nested JWS" 
+is a JWS contained within the ACME request payload
+(such as the "externalAccountBinding" described in 
+{{external-account-binding}} 
+or the "key-change" object described in {{account-key-roll-over}}). 
+One of the following Content-Type header values MUST be used to indicate 
+the JWS serialization format:
 
  - "application/jose":
-   - The JWS Compact Serialization {{!RFC7515}} MUST be used. 
-   - The JWS Payload MUST NOT be detached. 
-   - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used. 
+   - Each root JWS MUST meet the following criteria:
+     - The JWS Compact Serialization {{!RFC7515}} MUST be used. 
+     - The JWS Payload MUST NOT be detached. 
+     - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
+   - Each nested JWS MUST be a JSON string that meets the following criteria:
+     - The JWS Compact Serialization {{!RFC7515}} MUST be used. 
+     - The JWS Payload MUST NOT be detached. 
+     - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
  - "application/jose+json":
-   - Either the JWS Flattened JSON Serialization {{!RFC7515}} 
-     or the JWS General JSON Serialization {{!RFC7515}} MUST be used. 
-   - The JWS Payload MUST NOT be detached. 
-   - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
-   - The JWS Unprotected Header {{!RFC7515}} SHOULD NOT be used. 
+   - Each root JWS MUST meet the following criteria:
+     - Either the JWS Flattened JSON Serialization {{!RFC7515}} 
+       or the JWS General JSON Serialization {{!RFC7515}} MUST be used. 
+     - The JWS Payload MUST NOT be detached. 
+     - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
+     - The JWS Unprotected Header {{!RFC7515}} SHOULD NOT be used. 
+   - Each nested JWS MUST be a JSON object that meets the following criteria:
+     - Either the JWS Flattened JSON Serialization {{!RFC7515}} 
+       or the JWS General JSON Serialization {{!RFC7515}} MUST be used. 
+     - The JWS Payload MUST NOT be detached. 
+     - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
+     - The JWS Unprotected Header {{!RFC7515}} SHOULD NOT be used. 
+
+If a server receives a request using a serialization it does not
+support, then it MUST send a response with HTTP status code 406
+(Unacceptable) and an Accept header field listing the content types
+that it supports.  The server's response SHOULD also provide an ACME
+error body of type "unsupportedSerialization".
 
 In the examples below, JWS objects are shown in the General JSON or Flattened JSON
 serialization, with the protected header and payload expressed as
@@ -518,28 +547,29 @@ information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Type                    | Description                                                                    |
-|:------------------------|:-------------------------------------------------------------------------------|
-| badCSR                  | The CSR is unacceptable (e.g., due to a short key)                             |
-| badNonce                | The client sent an unacceptable anti-replay nonce                              |
-| badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support               |
-| invalidContact          | A contact URL for an account was invalid                                       |
-| unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
-| externalAccountRequired | The request must include a value for the "externalAccountBinding" field        |
-| accountDoesNotExist     | The request specified an account that does not exist                           |
-| malformed               | The request message was malformed                                              |
-| rateLimited             | The request exceeds a rate limit                                               |
-| rejectedIdentifier      | The server will not issue for the identifier                                   |
-| serverInternal          | The server experienced an internal error                                       |
-| unauthorized            | The client lacks sufficient authorization                                      |
-| unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
-| userActionRequired      | Visit the "instance" URL and take actions specified there                      |
-| badRevocationReason     | The revocation reason provided is not allowed by the server                    |
-| caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
-| dns                     | There was a problem with a DNS query                                           |
-| connection              | The server could not connect to validation target                              |
-| tls                     | The server received a TLS error during validation                              |
-| incorrectResponse       | Response received didn't match the challenge's requirements                    |
+| Type                     | Description                                                                    |
+|:-------------------------|:-------------------------------------------------------------------------------|
+| badCSR                   | The CSR is unacceptable (e.g., due to a short key)                             |
+| badNonce                 | The client sent an unacceptable anti-replay nonce                              |
+| unsupportedSerialization | The JWS was encoded with a serializaation that the server does not support     |
+| badSignatureAlgorithm    | The JWS was signed with an algorithm the server does not support               |
+| invalidContact           | A contact URL for an account was invalid                                       |
+| unsupportedContact       | A contact URL for an account used an unsupported protocol scheme               |
+| externalAccountRequired  | The request must include a value for the "externalAccountBinding" field        |
+| accountDoesNotExist      | The request specified an account that does not exist                           |
+| malformed                | The request message was malformed                                              |
+| rateLimited              | The request exceeds a rate limit                                               |
+| rejectedIdentifier       | The server will not issue for the identifier                                   |
+| serverInternal           | The server experienced an internal error                                       |
+| unauthorized             | The client lacks sufficient authorization                                      |
+| unsupportedIdentifier    | Identifier is not supported, but may be in future                              |
+| userActionRequired       | Visit the "instance" URL and take actions specified there                      |
+| badRevocationReason      | The revocation reason provided is not allowed by the server                    |
+| caa                      | Certification Authority Authorization (CAA) records forbid the CA from issuing |
+| dns                      | There was a problem with a DNS query                                           |
+| connection               | The server could not connect to validation target                              |
+| tls                      | The server received a TLS error during validation                              |
+| incorrectResponse        | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
@@ -2447,10 +2477,18 @@ This document requests that IANA create the following new registries:
 5. ACME Directory Metadata Fields ({{iana-meta}})
 6. ACME Identifier Types ({{iana-identifier}})
 7. ACME Validation Methods ({{iana-validation}})
+8. ACME JWS Serialization Formats ({{iana-jws-serialization-formats}})
 
 All of these registries are under a heading of "Automated Certificate Management
 Environment (ACME) Protocol" and are administered under a Specification
 Required policy {{!RFC8126}}.
+
+In each of these registries, the "nested JWS" field type 
+means that the value corresponds to a "nested JWS" as defined in 
+{{iana-jws-serialization-formats}} and {{jws-serialization-formats}}. 
+That is, the type of a "nested JWS" field will depend
+on the JWS serialization format 
+(from {{iana-jws-serialization-formats}}) used.
 
 ### Fields in Account Objects {#iana-account}
 
@@ -2462,20 +2500,20 @@ Template:
 
 * Field name: The string to be used as a field name in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
-  string
+  string, nested JWS
 * Client configurable: Boolean indicating whether the server should accept
   values provided by the client
 * Reference: Where this field is defined
 
 Initial contents: The fields and descriptions defined in {{account-objects}}.
 
-| Field Name               | Field Type      | Configurable | Reference |
-|:-------------------------|:----------------|:-------------|:----------|
-| status                   | string          | false        | RFC XXXX  |
-| contact                  | array of string | true         | RFC XXXX  |
-| externalAccountBinding   | object          | true         | RFC XXXX  |
-| termsOfServiceAgreed     | boolean         | true         | RFC XXXX  |
-| orders                   | array of string | false        | RFC XXXX  |
+| Field Name               | Field Type       | Configurable | Reference |
+|:-------------------------|:-----------------|:-------------|:----------|
+| status                   | string           | false        | RFC XXXX  |
+| contact                  | array of string  | true         | RFC XXXX  |
+| externalAccountBinding   | nested JWS       | true         | RFC XXXX  |
+| termsOfServiceAgreed     | boolean          | true         | RFC XXXX  |
+| orders                   | array of string  | false        | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
@@ -2568,12 +2606,12 @@ Initial contents:
 
 | Field Name     | Resource Type        | Reference |
 |:---------------|:---------------------|:----------|
-| newNonce      | New nonce            | RFC XXXX  |
-| newAccount    | New account          | RFC XXXX  |
-| newOrder      | New order            | RFC XXXX  |
-| newAuthz      | New authorization    | RFC XXXX  |
-| revokeCert    | Revoke certificate   | RFC XXXX  |
-| keyChange     | Key change           | RFC XXXX  |
+| newNonce       | New nonce            | RFC XXXX  |
+| newAccount     | New account          | RFC XXXX  |
+| newOrder       | New order            | RFC XXXX  |
+| newAuthz       | New authorization    | RFC XXXX  |
+| revokeCert     | Revoke certificate   | RFC XXXX  |
+| keyChange      | Key change           | RFC XXXX  |
 | meta           | Metadata object      | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
@@ -2656,6 +2694,38 @@ Validation methods do not have to be compatible with ACME in order to be
 registered.  For example, a CA might wish to register a validation method in
 order to support its use with the ACME extensions to CAA
 {{?I-D.ietf-acme-caa}}.
+
+\[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
+document ]]
+
+### ACME JWS Serialization Formats {#iana-jws-serialization-formats}
+
+This registry lists the HTTP media types
+(as described in Section 3.1.1.1 of {{!RFC7231}}) 
+that can be used to indicate which JWS serialization format is used. 
+Each entry must specify the serialization requirements for a "root JWS" 
+used to encapsulate an entire ACME request payload,
+along with the serialization requirements for each "nested JWS" 
+that appears within the ACME request payload
+(such as the "externalAccountBinding" described in 
+{{external-account-binding}} 
+or the "key-change" object described in {{account-key-roll-over}}).
+
+Template:
+
+ * Label: The name of the media type
+ * Root JWS Requirements: The requirements for a root JWS
+   (a JWS used to encapsulate an entire ACME request payload)
+ * Nested JWS Requirements: The requirements for a nested JWS
+   (a JWS used within an ACME request payload)
+ * Reference: Where the media type is defined
+
+Initial Contents
+
+| Label                 | Root JWS Requirements                                                         | Nested JWS Requirements                  | Reference |
+|:----------------------|:------------------------------------------------------------------------------|:-----------------------------------------|:----------|
+| application/jose      | JWS Compact Serialization; encoded and attached JWS Payload                   | JSON string; root JWS requirements apply | RFC XXXX  |
+| application/jose+json | JWS Flattened or General JSON Serialization; encoded and attached JWS Payload | JSON object; root JWS requirements apply | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
