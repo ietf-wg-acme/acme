@@ -33,7 +33,7 @@ meaning of the specification), you can either:
 GitHub. However, you **must notify the mailing list** when creating such issues,
 providing a link to the issue in the message body.
 
-  Note that **github issues are not for substantial discussions**; the only
+  Note that **GitHub issues are not for substantial discussions**; the only
   appropriate place to discuss design issues is on the mailing list itself.
 
 
