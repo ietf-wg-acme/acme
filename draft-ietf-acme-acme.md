@@ -87,7 +87,7 @@ certificates, a typical user experience is something like:
    * Put a CA-provided challenge at a specific place on the web server.
    * Put a CA-provided challenge in a DNS record corresponding to the target
      domain.
-   * Receive CA-provided challenge at a (hopefully) administrator-controlled email
+   * Receive a CA-provided challenge at a (hopefully) administrator-controlled email
      address corresponding to the domain and then respond to it on the CA's web
      page.
 * Download the issued certificate and install it on their Web Server.
@@ -153,7 +153,7 @@ deploying an HTTPS server using ACME, the experience would be something like thi
 * The operator selects a CA.
 * In the background, the ACME client contacts the CA and requests that it
   issue a certificate for the intended domain name(s).
-* The CA verifies that the client controls the requested domain name(s) by 
+* The CA verifies that the client controls the requested domain name(s) by
   having the ACME client perform some action related to the domain name(s).
 * Once the CA is satisfied, it issues the certificate and the ACME client
   automatically downloads and installs it, potentially notifying the operator
@@ -176,7 +176,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
 NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
 document are to be interpreted as described in RFC 2119 {{!RFC2119}}.
 
-The two main roles in ACME are “client” and “server”.  The ACME client uses the
+The two main roles in ACME are "client" and "server".  The ACME client uses the
 protocol to request certificate management actions, such as issuance or
 revocation.  An ACME client may run on a web server, mail server, or some other
 server system which requires valid TLS certificates.  Or, it may run on a separate
@@ -193,9 +193,9 @@ from the client.
 # Protocol Overview
 
 ACME allows a client to request certificate management actions using a set of
-JavaScript Object Notation (JSON) messages carried over HTTPS.  
+JavaScript Object Notation (JSON) messages carried over HTTPS.
 Issuance using ACME resembles a traditional CA's issuance process, in which a user creates an account,
-requests a certificate, and proves control of the domains in that certificate in
+requests a certificate, and proves control of the domain(s) in that certificate in
 order for the CA to sign the requested certificate.
 
 The first phase of ACME is for the client to request an account with the
@@ -306,7 +306,7 @@ HTTPS client when validating challenges via HTTP.
 
 ACME servers SHOULD follow the recommendations of {{?RFC7525}} when configuring
 their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
-to send early data (0xRTT).  This is safe because the ACME protocol itself
+to send early data (0-RTT).  This is safe because the ACME protocol itself
 includes anti-replay protections (see {{replay-protection}}).
 
 ACME clients SHOULD send a User-Agent header in accordance with
@@ -319,7 +319,7 @@ ACME clients SHOULD send an Accept-Language header in accordance with
 ACME servers that are intended to be generally accessible need to use
 Cross-Origin Resource Sharing (CORS) in order to be accessible from
 browser-based clients {{?W3C.CR-cors-20130129}}.  Such servers SHOULD set the
-Access-Control-Allow-Origin header field to the value "*".
+Access-Control-Allow-Origin header field to the value "\*".
 
 Binary fields in the JSON objects used by ACME are encoded using base64url
 encoding described in {{!RFC4648}} Section 5, according to the profile specified
@@ -337,7 +337,7 @@ authentication of requests.
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST NOT have the value "none" in its "alg" field
-* The JWS MUST NOT have multiple signatures. 
+* The JWS MUST NOT have multiple signatures.
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
@@ -371,23 +371,23 @@ array of supported "alg" values.
 
 ## JWS Serialization Formats
 
-The JSON Web Signature (JWS) specification {{!RFC7515}} contains 
-multiple JWS serialization formats. When sending an ACME request 
-with a non-empty body, an ACME client implementation MUST use the 
-HTTP Content-Type {{!RFC7231}} header to indicate which JWS serialization format 
+The JSON Web Signature (JWS) specification {{!RFC7515}} contains
+multiple JWS serialization formats. When sending an ACME request
+with a non-empty body, an ACME client implementation MUST use the
+HTTP Content-Type {{!RFC7231}} header to indicate which JWS serialization format
 is used for encapsulating the ACME request payload.
 The following Content-Type values may be used for this purpose:
 
  - "application/jose":
-   - The JWS Compact Serialization {{!RFC7515}} MUST be used. 
-   - The JWS Payload MUST NOT be detached. 
-   - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used. 
- - "application/jose+json":
-   - Either the JWS Flattened JSON Serialization {{!RFC7515}} 
-     or the JWS General JSON Serialization {{!RFC7515}} MUST be used. 
-   - The JWS Payload MUST NOT be detached. 
+   - The JWS Compact Serialization {{!RFC7515}} MUST be used.
+   - The JWS Payload MUST NOT be detached.
    - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
-   - The JWS Unprotected Header {{!RFC7515}} SHOULD NOT be used. 
+ - "application/jose+json":
+   - Either the JWS Flattened JSON Serialization {{!RFC7515}}
+     or the JWS General JSON Serialization {{!RFC7515}} MUST be used.
+   - The JWS Payload MUST NOT be detached.
+   - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
+   - The JWS Unprotected Header {{!RFC7515}} SHOULD NOT be used.
 
 In the examples below, JWS objects are shown in the General JSON or Flattened JSON
 serialization, with the protected header and payload expressed as
@@ -705,12 +705,12 @@ the following table and whose values are the corresponding URLs.
 
 | Field          | URL in value         |
 |:---------------|:---------------------|
-| newNonce      | New nonce            |
-| newAccount    | New account          |
-| newOrder      | New order            |
-| newAuthz      | New authorization    |
-| revokeCert    | Revoke certificate   |
-| keyChange     | Key change           |
+| newNonce       | New nonce            |
+| newAccount     | New account          |
+| newOrder       | New order            |
+| newAuthz       | New authorization    |
+| revokeCert     | Revoke certificate   |
+| keyChange      | Key change           |
 
 There is no constraint on the URL of the directory except that it
 should be different from the other ACME server resources' URLs, and that it
@@ -973,7 +973,7 @@ domain name (type: "dns"). If a domain name contains non-ASCII Unicode character
 it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
 any identifier values that begin with the ASCII Compatible Encoding prefix
 "xn\-\-" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
-(with "*" as the first label) MUST NOT be included in authorization objects.
+(with "\*" as the first label) MUST NOT be included in authorization objects.
 
 {{identifier-validation-challenges}} describes a set of challenges for domain
 name validation.
@@ -993,7 +993,7 @@ name validation.
       "url": "https://example.com/acme/authz/1234/0",
       "type": "http-01",
       "status": "valid",
-      "token": "DGyRejmCefe7v4NfDGDKfA"
+      "token": "DGyRejmCefe7v4NfDGDKfA",
       "validated": "2014-12-01T12:05:00Z"
     }
   ]
@@ -1050,7 +1050,6 @@ contact (optional, array of string):
 
 termsOfServiceAgreed (optional, boolean):
 : Same meaning as the corresponding server field defined in {{account-objects}}
-
 
 onlyReturnExisting (optional, boolean):
 : If this field is present with the value "true", then the server MUST NOT
@@ -1110,7 +1109,7 @@ If the server wishes to present the client with terms under which the ACME
 service is to be used, it MUST indicate the URL where such terms can be accessed
 in the "termsOfService" subfield of the "meta" field in the directory object,
 and the server MUST reject new-account requests that do not have the
-"termsOfServiceAgreed" set to "true".  Clients SHOULD NOT automatically agree
+"termsOfServiceAgreed" field set to "true".  Clients SHOULD NOT automatically agree
 to terms by default.  Rather, they SHOULD require some user interaction for
 agreement to terms.
 
@@ -1191,7 +1190,7 @@ Content-Type: application/jose+json
 
 Servers SHOULD NOT respond to GET requests for account resources as these
 requests are not authenticated.  If a client wishes to query the server for
-information about its account (e.g., to examine the "contact" or "certificates"
+information about its account (e.g., to examine the "contact" or "orders"
 fields), then it SHOULD do so by sending a POST request with an empty update.
 That is, it should send a JWS whose payload is an empty object ({}).
 
@@ -1284,7 +1283,7 @@ Content-Type: application/jose+json
 If a CA requires that new-account requests contain an "externalAccountBinding"
 field, then it MUST provide the value "true" in the "externalAccountRequired" subfield
 of the "meta" field in the directory object.  If the CA receives a
-new-account request without an "externalAccountBinding" field, then it should
+new-account request without an "externalAccountBinding" field, then it SHOULD
 reply with an error of type "externalAccountRequired".
 
 When a CA receives a new-account request containing an
@@ -1294,7 +1293,7 @@ binding.  If the CA does not verify the binding, then it MUST NOT reflect the
 verify the account binding, the CA MUST take the following steps:
 
 1. Verify that the value of the field is a well-formed JWS
-2. Verify that the JWS protected meets the above criteria
+2. Verify that the JWS protected field meets the above criteria
 3. Retrieve the MAC key corresponding to the key identifier in the "kid" field
 4. Verify that the MAC on the JWS verifies using that MAC key
 5. Verify that the payload of the JWS represents the same key as was used to
@@ -1317,7 +1316,7 @@ To change the key associated with an account, the client first constructs a
 key-change object describing the change that it would like the server to make:
 
 account (required, string):
-: The URL for account being modified.  The content of this field MUST be the
+: The URL for the account being modified.  The content of this field MUST be the
 exact string provided in the Location header field in response to the
 new-account request that created the account.
 
@@ -1385,9 +1384,9 @@ addition to the typical JWS validation:
    (as described above).
 6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
-   the account matching the old key
+   the account matching the old key.
 8. Check that the "newKey" field of the key-change object also verifies the
-    inner JWS.
+   inner JWS.
 9. Check that no account exists whose account key is the same as the key in the
    "newKey" field.
 
@@ -1458,11 +1457,11 @@ identifiers (required, array of object):
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
-format defined in {{!RFC3339}}
+format defined in {{!RFC3339}}.
 
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
-format defined in {{!RFC3339}}
+format defined in {{!RFC3339}}.
 
 ~~~~~~~~~~
 POST /acme/new-order HTTP/1.1
@@ -1554,7 +1553,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/order/asdf/finalize"
   }),
   "payload": base64url({
-    "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+    "csr": "MIIBPTCBxAIBADBFMQ...FS6aKdZeGsysoCo4H9P",
   }),
   "signature": "uOrUfIIk5RyQ...nw62Ay1cl6AB"
 }
@@ -1680,7 +1679,7 @@ is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden)
 error, with a problem document describing the reason for the rejection.
 
 If the server is willing to proceed, it builds a pending authorization object
-from the inputs submitted by the client.
+from the inputs submitted by the client:
 
 * "identifier" the identifier submitted by the client
 * "status" MUST be "pending" unless the server has out-of-band information
@@ -1751,7 +1750,6 @@ to manage certificates for a given identifier.  This process assures the
 server of two things:
 
 1. That the client controls the private key of the account key pair, and
-
 2. That the client controls the identifier in question.
 
 This process may be repeated to associate multiple identifiers to a key pair
@@ -1862,7 +1860,7 @@ seeing an HTTP or DNS request from the server), the client SHOULD NOT begin
 polling until it has seen the validation request from the server.
 
 To check on the status of an authorization, the client sends a GET request to
-the authorization URL, and the server responds with the current  authorization
+the authorization URL, and the server responds with the current authorization
 object. In responding to poll requests while the validation is still in
 progress, the server MUST return a 200 (OK) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
@@ -1872,6 +1870,7 @@ GET /acme/authz/1234 HTTP/1.1
 Host: example.com
 
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "status": "valid",
@@ -1884,7 +1883,7 @@ HTTP/1.1 200 OK
 
   "challenges": [
     {
-      "type": "http-01"
+      "type": "http-01",
       "url": "https://example.com/acme/authz/1234/0",
       "status": "valid",
       "validated": "2014-12-01T12:05:00Z",
@@ -2000,7 +1999,6 @@ the request is authorized to revoke the certificate.  The server MUST consider
 at least the following accounts authorized for a given certificate:
 
 * the account that issued the certificate.
-
 * an account that holds authorizations for all of the identifiers in the
   certificate.
 
@@ -2128,7 +2126,7 @@ propagating across a cluster or firewall rules not being in place.
 
 Clients SHOULD NOT respond to challenges until they believe that the server's
 queries will succeed. If a server's initial validation query fails, the server
-SHOULD retry the query after some time, in order to account for delay in setting 
+SHOULD retry the query after some time, in order to account for delay in setting
 up responses such as DNS records or HTTP resources. The precise retry schedule
 is up to the server, but server operators should keep in mind the operational
 scenarios that the schedule is trying to accommodate.  Given that retries are
@@ -2181,6 +2179,8 @@ GET /acme/authz/1234/0 HTTP/1.1
 Host: example.com
 
 HTTP/1.1 200 OK
+Content-Type: application/json
+
 {
   "type": "http-01",
   "url": "https://example.com/acme/authz/0",
@@ -2204,6 +2204,8 @@ GET /.well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
 Host: example.org
 
 HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
 ~~~~~~~~~~
 
@@ -2270,6 +2272,8 @@ GET /acme/authz/1234/2 HTTP/1.1
 Host: example.com
 
 HTTP/1.1 200 OK
+Content-Type: application/json
+
 {
   "type": "dns-01",
   "url": "https://example.com/acme/authz/1234/2",
@@ -2284,7 +2288,7 @@ client then computes the SHA-256 digest [FIPS180-4] of the key authorization.
 
 The record provisioned to the DNS contains the base64url encoding of this digest.  The
 client constructs the validation domain name by prepending the label
-"_acme-challenge" to the domain name being validated, then provisions a TXT
+"\_acme-challenge" to the domain name being validated, then provisions a TXT
 record with the digest value under that name. For example, if the domain name
 being validated is "example.org", then the client would provision the following
 DNS record:
@@ -2389,12 +2393,12 @@ value:
 The "JSON Web Signature and Encryption Header Parameters" registry should be
 updated with the following additional value:
 
-*  Header Parameter Name: "url"
-*  Header Parameter Description: URL
-*  Header Parameter Usage Location(s): JWE, JWS
-*  Change Controller: IESG
-*  Specification Document(s): {{url-url-jws-header-parameter}} of
-   RFC XXXX
+* Header Parameter Name: "url"
+* Header Parameter Description: URL
+* Header Parameter Usage Location(s): JWE, JWS
+* Change Controller: IESG
+* Specification Document(s): {{url-url-jws-header-parameter}} of
+  RFC XXXX
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
@@ -2404,12 +2408,12 @@ document ]]
 The "JSON Web Signature and Encryption Header Parameters" registry should be
 updated with the following additional value:
 
-*  Header Parameter Name: "nonce"
-*  Header Parameter Description: Nonce
-*  Header Parameter Usage Location(s): JWE, JWS
-*  Change Controller: IESG
-*  Specification Document(s): {{nonce-nonce-jws-header-parameter}} of
-   RFC XXXX
+* Header Parameter Name: "nonce"
+* Header Parameter Description: Nonce
+* Header Parameter Usage Location(s): JWE, JWS
+* Change Controller: IESG
+* Specification Document(s): {{nonce-nonce-jws-header-parameter}} of
+  RFC XXXX
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
@@ -2568,12 +2572,12 @@ Initial contents:
 
 | Field Name     | Resource Type        | Reference |
 |:---------------|:---------------------|:----------|
-| newNonce      | New nonce            | RFC XXXX  |
-| newAccount    | New account          | RFC XXXX  |
-| newOrder      | New order            | RFC XXXX  |
-| newAuthz      | New authorization    | RFC XXXX  |
-| revokeCert    | Revoke certificate   | RFC XXXX  |
-| keyChange     | Key change           | RFC XXXX  |
+| newNonce       | New nonce            | RFC XXXX  |
+| newAccount     | New account          | RFC XXXX  |
+| newOrder       | New order            | RFC XXXX  |
+| newAuthz       | New authorization    | RFC XXXX  |
+| revokeCert     | Revoke certificate   | RFC XXXX  |
+| keyChange      | Key change           | RFC XXXX  |
 | meta           | Metadata object      | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
@@ -2649,7 +2653,7 @@ Initial Contents
 When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
 interoperable definition and does not overlap with existing validation methods.
-That is, it should not be possible for a client and server to follow take the
+That is, it should not be possible for a client and server to follow the
 same set of actions to fulfill two different validation methods.
 
 Validation methods do not have to be compatible with ACME in order to be
@@ -2816,7 +2820,7 @@ performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
 particular case.
 
-It is RECOMMENDED that the server perform DNS queries and make HTTP 
+It is RECOMMENDED that the server perform DNS queries and make HTTP
 connections from various network perspectives, in order to make MitM attacks
 harder.
 
@@ -2881,7 +2885,7 @@ perform, for example:
 * Has the client agreed to a subscriber agreement?
 * Is the claimed identifier syntactically valid?
 * For domain names:
-  * If the leftmost label is a '*', then have the appropriate checks been
+  * If the leftmost label is a '\*', then have the appropriate checks been
     applied?
   * Is the name on the Public Suffix List?
   * Is the name a high-value name?
@@ -2951,7 +2955,7 @@ certificate URL.
 
 When processing an file of type "application/pem-certificate-chain", a client
 SHOULD verify that the file contains only encoded certificates.  If anything
-other than a certificate is found (i.e., if the string "-----BEGIN" is ever
+other than a certificate is found (i.e., if the string "\-\-\-\-\-BEGIN" is ever
 followed by anything other than "CERTIFICATE"), then the client MUST reject the
 file as invalid.
 
