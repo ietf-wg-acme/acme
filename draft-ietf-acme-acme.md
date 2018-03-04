@@ -389,7 +389,7 @@ The following Content-Type values may be used for this purpose:
    - The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used.
    - The JWS Unprotected Header {{!RFC7515}} SHOULD NOT be used. 
 
-In the examples below, JWS objects are shown in the General JSON or Flattened JSON
+In the examples below, JWS objects are shown in the Flattened JSON
 serialization, with the protected header and payload expressed as
 base64url(content) instead of the actual base64-encoded value, so that the content
 is readable.
