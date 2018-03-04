@@ -217,15 +217,16 @@ private key to prove that the client controls it.
 ~~~~~~~~~~
 
 
-Once an account is registered, there are three major steps the client needs to take to
+Once an account is registered, there are four major steps the client needs to take to
 get a certificate:
 
 1. Submit an order for a certificate to be issued
 2. Prove control of any identifiers requested in the certificate
-3. Await issuance and download the issued certificate
+3. Finalize the order by submitting a CSR
+4. Await issuance and download the issued certificate
 
-The client's order for a certificate describes the desired certificate using a
-PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that
+The client's order for a certificate describes the desired identifiers
+plus a few additional fields that
 capture semantics that are not supported in the CSR format.  If the server is
 willing to consider issuing such a certificate, it responds with a list of
 requirements that the client must satisfy before the certificate will be issued.
@@ -236,13 +237,16 @@ are many different ways to validate possession of different types of
 identifiers, the server will choose from an extensible set of challenges that
 are appropriate for the identifier being claimed.  The client responds with a
 set of responses that tell the server which challenges the client has completed.
-The server then validates that the client has completed the challenges. 
+The server then validates that the client has completed the challenges.
 
 Once the validation process is complete and the server is satisfied that the
-client has met its requirements, the server will issue the requested certificate
-and make it available to the client.
+client has met its requirements, the client finalizes the order by submitting
+a PKCS#10 Certificate Signing Request (CSR). The server will issue the requested
+certificate and make it available to the client.
 
 ~~~~~~~~~~
+      Client                                                   Server
+
       Order
       Signature                     ------->
                                     <-------  Required Authorizations
@@ -251,6 +255,11 @@ and make it available to the client.
       Signature                     ------->
 
                           <~~~~~~~~Validation~~~~~~~~>
+
+      CSR
+      Signature                     ------->
+
+                          <~~~~~~Await issuance~~~~~~>
 
                                     <-------             Certificate
 ~~~~~~~~~~
