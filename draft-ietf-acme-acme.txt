@@ -90,15 +90,15 @@ Table of Contents
      6.2.  Request Authentication  . . . . . . . . . . . . . . . . .  10
      6.3.  JWS Serialization Formats . . . . . . . . . . . . . . . .  11
      6.4.  Request URL Integrity . . . . . . . . . . . . . . . . . .  12
-       6.4.1.  "url" (URL) JWS Header Parameter  . . . . . . . . . .  12
-     6.5.  Replay protection . . . . . . . . . . . . . . . . . . . .  12
+       6.4.1.  "url" (URL) JWS Header Parameter  . . . . . . . . . .  13
+     6.5.  Replay protection . . . . . . . . . . . . . . . . . . . .  13
        6.5.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  13
        6.5.2.  "nonce" (Nonce) JWS Header Parameter  . . . . . . . .  14
      6.6.  Rate Limits . . . . . . . . . . . . . . . . . . . . . . .  14
      6.7.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  14
        6.7.1.  Subproblems . . . . . . . . . . . . . . . . . . . . .  16
    7.  Certificate Management  . . . . . . . . . . . . . . . . . . .  17
-     7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  17
+     7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  18
        7.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  20
        7.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  22
        7.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  23
@@ -376,16 +376,16 @@ Internet-Draft                    ACME                        March 2018
 
                                        <-------                 Account
 
-   Once an account is registered, there are three major steps the client
+   Once an account is registered, there are four major steps the client
    needs to take to get a certificate:
 
    1.  Submit an order for a certificate to be issued
 
    2.  Prove control of any identifiers requested in the certificate
 
-   3.  Await issuance and download the issued certificate
+   3.  Finalize the order by submitting a CSR
 
-
+   4.  Await issuance and download the issued certificate
 
 
 
@@ -395,11 +395,11 @@ Internet-Draft                    ACME                        March 2018
 
 
    The client's order for a certificate describes the desired
-   certificate using a PKCS#10 Certificate Signing Request (CSR) plus a
-   few additional fields that capture semantics that are not supported
-   in the CSR format.  If the server is willing to consider issuing such
-   a certificate, it responds with a list of requirements that the
-   client must satisfy before the certificate will be issued.
+   identifiers plus a few additional fields that capture semantics that
+   are not supported in the CSR format.  If the server is willing to
+   consider issuing such a certificate, it responds with a list of
+   requirements that the client must satisfy before the certificate will
+   be issued.
 
    For example, in most cases, the server will require the client to
    demonstrate that it controls the identifiers in the requested
@@ -412,8 +412,12 @@ Internet-Draft                    ACME                        March 2018
    the challenges.
 
    Once the validation process is complete and the server is satisfied
-   that the client has met its requirements, the server will issue the
-   requested certificate and make it available to the client.
+   that the client has met its requirements, the client finalizes the
+   order by submitting a PKCS#10 Certificate Signing Request (CSR).  The
+   server will issue the requested certificate and make it available to
+   the client.
+
+         Client                                                   Server
 
          Order
          Signature                     ------->
@@ -424,10 +428,27 @@ Internet-Draft                    ACME                        March 2018
 
                              <~~~~~~~~Validation~~~~~~~~>
 
+         CSR
+         Signature                     ------->
+
+                             <~~~~~~Await issuance~~~~~~>
+
                                        <-------             Certificate
 
    To revoke a certificate, the client sends a signed revocation request
    indicating the certificate to be revoked:
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 5, 2018               [Page 8]
+
+Internet-Draft                    ACME                        March 2018
+
 
          Client                                                 Server
 
@@ -442,14 +463,6 @@ Internet-Draft                    ACME                        March 2018
    identifiers.  For example, all of the identifier validation
    challenges described in Section 8 below address validation of domain
    names.  The use of ACME for other identifiers will require further
-
-
-
-Barnes, et al.          Expires September 5, 2018               [Page 8]
-
-Internet-Draft                    ACME                        March 2018
-
-
    specification in order to describe how these identifiers are encoded
    in the protocol and what types of validation challenges the server
    might require.
@@ -485,6 +498,14 @@ Internet-Draft                    ACME                        March 2018
    ACME servers SHOULD follow the recommendations of [RFC7525] when
    configuring their TLS implementations.  ACME servers that support TLS
    1.3 MAY allow clients to send early data (0-RTT).  This is safe
+
+
+
+Barnes, et al.          Expires September 5, 2018               [Page 9]
+
+Internet-Draft                    ACME                        March 2018
+
+
    because the ACME protocol itself includes anti-replay protections
    (see Section 6.5).
 
@@ -498,14 +519,6 @@ Internet-Draft                    ACME                        March 2018
 
    ACME servers that are intended to be generally accessible need to use
    Cross-Origin Resource Sharing (CORS) in order to be accessible from
-
-
-
-Barnes, et al.          Expires September 5, 2018               [Page 9]
-
-Internet-Draft                    ACME                        March 2018
-
-
    browser-based clients [W3C.CR-cors-20130129].  Such servers SHOULD
    set the Access-Control-Allow-Origin header field to the value "*".
 
@@ -540,6 +553,15 @@ Internet-Draft                    ACME                        March 2018
       *  "jwk" (JSON Web Key, for all requests not signed using an
          existing account, e.g. newAccount)
 
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 10]
+
+Internet-Draft                    ACME                        March 2018
+
+
       *  "kid" (Key ID, for all requests signed using an existing
          account)
 
@@ -554,13 +576,6 @@ Internet-Draft                    ACME                        March 2018
    certificate key, there MUST be a "jwk" field.  This field MUST
    contain the public key corresponding to the private key used to sign
    the JWS.
-
-
-
-Barnes, et al.          Expires September 5, 2018              [Page 10]
-
-Internet-Draft                    ACME                        March 2018
-
 
    For all other requests, the request is signed using an existing
    account and there MUST be a "kid" field.  This field MUST contain the
@@ -595,6 +610,14 @@ Internet-Draft                    ACME                        March 2018
 
       *  The JWS Payload MUST NOT be detached.
 
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 11]
+
+Internet-Draft                    ACME                        March 2018
+
+
       *  The JWS Unencoded Payload Option [RFC7797] MUST NOT be used.
 
    o  "application/jose+json":
@@ -610,14 +633,6 @@ Internet-Draft                    ACME                        March 2018
 
    In the examples below, JWS objects are shown in the General JSON or
    Flattened JSON serialization, with the protected header and payload
-
-
-
-Barnes, et al.          Expires September 5, 2018              [Page 11]
-
-Internet-Draft                    ACME                        March 2018
-
-
    expressed as base64url(content) instead of the actual base64-encoded
    value, so that the content is readable.
 
@@ -651,6 +666,14 @@ Internet-Draft                    ACME                        March 2018
    provided to clients and having the resource check that requests have
    the same string in their "url" header parameter.
 
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 12]
+
+Internet-Draft                    ACME                        March 2018
+
+
 6.4.1.  "url" (URL) JWS Header Parameter
 
    The "url" header parameter specifies the URL [RFC3986] to which this
@@ -665,14 +688,6 @@ Internet-Draft                    ACME                        March 2018
    is based on the server maintaining a list of nonces that it has
    issued to clients, and requiring any signed request from the client
    to carry such a nonce.
-
-
-
-
-Barnes, et al.          Expires September 5, 2018              [Page 12]
-
-Internet-Draft                    ACME                        March 2018
-
 
    An ACME server provides nonces to clients using the Replay-Nonce
    header field, as specified in Section 6.5.1 below.  The server MUST
@@ -706,6 +721,15 @@ Internet-Draft                    ACME                        March 2018
    that the server can use to detect unauthorized replay in future
    client requests.  The server MUST generate the value provided in
    Replay-Nonce in such a way that they are unique to each message, with
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 13]
+
+Internet-Draft                    ACME                        March 2018
+
+
    high probability.  For instance, it is acceptable to generate Replay-
    Nonces randomly.
 
@@ -719,16 +743,6 @@ Internet-Draft                    ACME                        March 2018
 
    The Replay-Nonce header field SHOULD NOT be included in HTTP request
    messages.
-
-
-
-
-
-
-Barnes, et al.          Expires September 5, 2018              [Page 13]
-
-Internet-Draft                    ACME                        March 2018
-
 
 6.5.2.  "nonce" (Nonce) JWS Header Parameter
 
@@ -764,6 +778,14 @@ Internet-Draft                    ACME                        March 2018
    challenge objects as defined in Section 8.  ACME servers can return
    responses with an HTTP error response code (4XX or 5XX).  For
    example: If the client submits a request using a method not allowed
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 14]
+
+Internet-Draft                    ACME                        March 2018
+
+
    in this document, then the server MAY return status code 405 (Method
    Not Allowed).
 
@@ -778,14 +800,6 @@ Internet-Draft                    ACME                        March 2018
    +-------------------------+-----------------------------------------+
    | badCSR                  | The CSR is unacceptable (e.g., due to a |
    |                         | short key)                              |
-
-
-
-Barnes, et al.          Expires September 5, 2018              [Page 14]
-
-Internet-Draft                    ACME                        March 2018
-
-
    |                         |                                         |
    | badNonce                | The client sent an unacceptable anti-   |
    |                         | replay nonce                            |
@@ -820,6 +834,14 @@ Internet-Draft                    ACME                        March 2018
    |                         |                                         |
    | unsupportedIdentifier   | Identifier is not supported, but may be |
    |                         | in future                               |
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 15]
+
+Internet-Draft                    ACME                        March 2018
+
+
    |                         |                                         |
    | userActionRequired      | Visit the "instance" URL and take       |
    |                         | actions specified there                 |
@@ -834,14 +856,6 @@ Internet-Draft                    ACME                        March 2018
    | dns                     | There was a problem with a DNS query    |
    |                         |                                         |
    | connection              | The server could not connect to         |
-
-
-
-Barnes, et al.          Expires September 5, 2018              [Page 15]
-
-Internet-Draft                    ACME                        March 2018
-
-
    |                         | validation target                       |
    |                         |                                         |
    | tls                     | The server received a TLS error during  |
@@ -877,6 +891,13 @@ Internet-Draft                    ACME                        March 2018
    Subproblems need not all have the same type, and do not need to match
    the top level type.
 
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 16]
+
+Internet-Draft                    ACME                        March 2018
+
+
    ACME clients may choose to use the "identifier" field of a subproblem
    as a hint that an operation would succeed if that identifier were
    omitted.  For instance, if an order contains ten DNS identifiers, and
@@ -884,19 +905,6 @@ Internet-Draft                    ACME                        March 2018
    subproblems, referencing two of those identifiers, the ACME client
    may choose to submit another order containing only the eight
    identifiers not listed in the problem document.
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires September 5, 2018              [Page 16]
-
-Internet-Draft                    ACME                        March 2018
-
 
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
@@ -939,6 +947,13 @@ Content-Type: application/problem+json
 
    o  Certificate Revocation
 
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 17]
+
+Internet-Draft                    ACME                        March 2018
+
+
 7.1.  Resources
 
    ACME is structured as a REST application with the following types of
@@ -946,13 +961,6 @@ Content-Type: application/problem+json
 
    o  Account resources, representing information about an account
       (Section 7.1.2, Section 7.3)
-
-
-
-Barnes, et al.          Expires September 5, 2018              [Page 17]
-
-Internet-Draft                    ACME                        March 2018
-
 
    o  Order resources, representing an account's requests to issue
       certificates (Section 7.1.3)
@@ -994,14 +1002,6 @@ Internet-Draft                    ACME                        March 2018
    The "index" link relation is present on all resources other than the
    directory and indicates the URL of the directory.
 
-   The following diagram illustrates the relations between resources on
-   an ACME server.  For the most part, these relations are expressed by
-   URLs provided as strings in the resources' JSON representations.
-   Lines with labels in quotes indicate HTTP link relations.
-
-
-
-
 
 
 
@@ -1009,6 +1009,11 @@ Barnes, et al.          Expires September 5, 2018              [Page 18]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   The following diagram illustrates the relations between resources on
+   an ACME server.  For the most part, these relations are expressed by
+   URLs provided as strings in the resources' JSON representations.
+   Lines with labels in quotes indicate HTTP link relations.
 
                                   directory
                                       |
@@ -1037,11 +1042,6 @@ Internet-Draft                    ACME                        March 2018
    an identifier, issue a certificate, and fetch an updated certificate
    some time after issuance.  The "->" is a mnemonic for a Location
    header pointing to a created resource.
-
-
-
-
-
 
 
 

@@ -655,18 +655,21 @@ address {
 
                                     &lt;-------                 Account
 </pre>
-<p id="rfc.section.4.p.3">Once an account is registered, there are three major steps the client needs to take to get a certificate:</p>
+<p id="rfc.section.4.p.3">Once an account is registered, there are four major steps the client needs to take to get a certificate:</p>
 <p></p>
 
 <ol>
 <li>Submit an order for a certificate to be issued</li>
 <li>Prove control of any identifiers requested in the certificate</li>
+<li>Finalize the order by submitting a CSR</li>
 <li>Await issuance and download the issued certificate</li>
 </ol>
-<p id="rfc.section.4.p.5">The client&#8217;s order for a certificate describes the desired certificate using a PKCS#10 Certificate Signing Request (CSR) plus a few additional fields that capture semantics that are not supported in the CSR format.  If the server is willing to consider issuing such a certificate, it responds with a list of requirements that the client must satisfy before the certificate will be issued.</p>
+<p id="rfc.section.4.p.5">The client&#8217;s order for a certificate describes the desired identifiers plus a few additional fields that capture semantics that are not supported in the CSR format.  If the server is willing to consider issuing such a certificate, it responds with a list of requirements that the client must satisfy before the certificate will be issued.</p>
 <p id="rfc.section.4.p.6">For example, in most cases, the server will require the client to demonstrate that it controls the identifiers in the requested certificate.  Because there are many different ways to validate possession of different types of identifiers, the server will choose from an extensible set of challenges that are appropriate for the identifier being claimed.  The client responds with a set of responses that tell the server which challenges the client has completed.  The server then validates that the client has completed the challenges.</p>
-<p id="rfc.section.4.p.7">Once the validation process is complete and the server is satisfied that the client has met its requirements, the server will issue the requested certificate and make it available to the client.</p>
+<p id="rfc.section.4.p.7">Once the validation process is complete and the server is satisfied that the client has met its requirements, the client finalizes the order by submitting a PKCS#10 Certificate Signing Request (CSR). The server will issue the requested certificate and make it available to the client.</p>
 <pre>
+      Client                                                   Server
+
       Order
       Signature                     -------&gt;
                                     &lt;-------  Required Authorizations
@@ -675,6 +678,11 @@ address {
       Signature                     -------&gt;
 
                           &lt;~~~~~~~~Validation~~~~~~~~&gt;
+
+      CSR
+      Signature                     -------&gt;
+
+                          &lt;~~~~~~Await issuance~~~~~~&gt;
 
                                     &lt;-------             Certificate
 </pre>
