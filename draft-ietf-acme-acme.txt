@@ -5,12 +5,12 @@
 ACME Working Group                                             R. Barnes
 Internet-Draft                                                     Cisco
 Intended status: Standards Track                      J. Hoffman-Andrews
-Expires: September 3, 2018                                           EFF
+Expires: September 5, 2018                                           EFF
                                                              D. McCarney
                                                            Let's Encrypt
                                                                J. Kasten
                                                   University of Michigan
-                                                          March 02, 2018
+                                                          March 04, 2018
 
 
           Automatic Certificate Management Environment (ACME)
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 1]
+Barnes, et al.          Expires September 5, 2018               [Page 1]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -61,7 +61,7 @@ Internet-Draft                    ACME                        March 2018
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 3, 2018.
+   This Internet-Draft will expire on September 5, 2018.
 
 Copyright Notice
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 2]
+Barnes, et al.          Expires September 5, 2018               [Page 2]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -144,35 +144,35 @@ Internet-Draft                    ACME                        March 2018
        9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  60
        9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  61
        9.7.3.  Fields in Authorization Objects . . . . . . . . . . .  62
-       9.7.4.  Error Types . . . . . . . . . . . . . . . . . . . . .  62
+       9.7.4.  Error Types . . . . . . . . . . . . . . . . . . . . .  63
        9.7.5.  Resource Types  . . . . . . . . . . . . . . . . . . .  63
-       9.7.6.  Fields in the "meta" Object within a Directory Object  63
-       9.7.7.  Identifier Types  . . . . . . . . . . . . . . . . . .  64
+       9.7.6.  Fields in the "meta" Object within a Directory Object  64
+       9.7.7.  Identifier Types  . . . . . . . . . . . . . . . . . .  65
        9.7.8.  Validation Methods  . . . . . . . . . . . . . . . . .  65
    10. Security Considerations . . . . . . . . . . . . . . . . . . .  66
-     10.1.  Threat Model . . . . . . . . . . . . . . . . . . . . . .  66
-     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  67
+     10.1.  Threat Model . . . . . . . . . . . . . . . . . . . . . .  67
+     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  68
      10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  70
-     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  70
+     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  71
      10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  71
    11. Operational Considerations  . . . . . . . . . . . . . . . . .  72
      11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  72
-     11.2.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  72
-     11.3.  Malformed Certificate Chains . . . . . . . . . . . . . .  72
+     11.2.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  73
+     11.3.  Malformed Certificate Chains . . . . . . . . . . . . . .  73
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  73
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  73
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  73
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  74
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  74
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 3]
+Barnes, et al.          Expires September 5, 2018               [Page 3]
 
 Internet-Draft                    ACME                        March 2018
 
 
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  76
-     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  77
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  77
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  77
+     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  78
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  78
 
 1.  Introduction
 
@@ -207,7 +207,7 @@ Internet-Draft                    ACME                        March 2018
       *  Put a CA-provided challenge in a DNS record corresponding to
          the target domain.
 
-      *  Receive CA-provided challenge at a (hopefully) administrator-
+      *  Receive a CA-provided challenge at a (hopefully) administrator-
          controlled email address corresponding to the domain and then
          respond to it on the CA's web page.
 
@@ -221,7 +221,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 4]
+Barnes, et al.          Expires September 5, 2018               [Page 4]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -277,7 +277,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 5]
+Barnes, et al.          Expires September 5, 2018               [Page 5]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -333,7 +333,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 6]
+Barnes, et al.          Expires September 5, 2018               [Page 6]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -355,11 +355,10 @@ Internet-Draft                    ACME                        March 2018
 
    ACME allows a client to request certificate management actions using
    a set of JavaScript Object Notation (JSON) messages carried over
-   HTTPS.
-   Issuance using ACME resembles a traditional CA's issuance process, in
-   which a user creates an account, requests a certificate, and proves
-   control of the domains in that certificate in order for the CA to
-   sign the requested certificate.
+   HTTPS.  Issuance using ACME resembles a traditional CA's issuance
+   process, in which a user creates an account, requests a certificate,
+   and proves control of the domain(s) in that certificate in order for
+   the CA to sign the requested certificate.
 
    The first phase of ACME is for the client to request an account with
    the ACME server.  The client generates an asymmetric key pair and
@@ -389,7 +388,8 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 7]
+
+Barnes, et al.          Expires September 5, 2018               [Page 7]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -445,7 +445,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 8]
+Barnes, et al.          Expires September 5, 2018               [Page 8]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -484,7 +484,7 @@ Internet-Draft                    ACME                        March 2018
 
    ACME servers SHOULD follow the recommendations of [RFC7525] when
    configuring their TLS implementations.  ACME servers that support TLS
-   1.3 MAY allow clients to send early data (0xRTT).  This is safe
+   1.3 MAY allow clients to send early data (0-RTT).  This is safe
    because the ACME protocol itself includes anti-replay protections
    (see Section 6.5).
 
@@ -501,7 +501,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018               [Page 9]
+Barnes, et al.          Expires September 5, 2018               [Page 9]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -557,7 +557,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 10]
+Barnes, et al.          Expires September 5, 2018              [Page 10]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -613,7 +613,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 11]
+Barnes, et al.          Expires September 5, 2018              [Page 11]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -669,7 +669,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 12]
+Barnes, et al.          Expires September 5, 2018              [Page 12]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -725,7 +725,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 13]
+Barnes, et al.          Expires September 5, 2018              [Page 13]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -781,7 +781,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 14]
+Barnes, et al.          Expires September 5, 2018              [Page 14]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -837,7 +837,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 15]
+Barnes, et al.          Expires September 5, 2018              [Page 15]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -893,7 +893,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 16]
+Barnes, et al.          Expires September 5, 2018              [Page 16]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -949,7 +949,7 @@ Content-Type: application/problem+json
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 17]
+Barnes, et al.          Expires September 5, 2018              [Page 17]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1005,7 +1005,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 18]
+Barnes, et al.          Expires September 5, 2018              [Page 18]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1061,7 +1061,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 19]
+Barnes, et al.          Expires September 5, 2018              [Page 19]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1117,7 +1117,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 20]
+Barnes, et al.          Expires September 5, 2018              [Page 20]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1173,7 +1173,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 21]
+Barnes, et al.          Expires September 5, 2018              [Page 21]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 22]
+Barnes, et al.          Expires September 5, 2018              [Page 22]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1285,7 +1285,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 23]
+Barnes, et al.          Expires September 5, 2018              [Page 23]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1341,7 +1341,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 24]
+Barnes, et al.          Expires September 5, 2018              [Page 24]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1397,7 +1397,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 25]
+Barnes, et al.          Expires September 5, 2018              [Page 25]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1453,7 +1453,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 26]
+Barnes, et al.          Expires September 5, 2018              [Page 26]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1472,7 +1472,7 @@ Internet-Draft                    ACME                        March 2018
          "url": "https://example.com/acme/authz/1234/0",
          "type": "http-01",
          "status": "valid",
-         "token": "DGyRejmCefe7v4NfDGDKfA"
+         "token": "DGyRejmCefe7v4NfDGDKfA",
          "validated": "2014-12-01T12:05:00Z"
        }
      ]
@@ -1509,7 +1509,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 27]
+Barnes, et al.          Expires September 5, 2018              [Page 27]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1565,7 +1565,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 28]
+Barnes, et al.          Expires September 5, 2018              [Page 28]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1621,7 +1621,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 29]
+Barnes, et al.          Expires September 5, 2018              [Page 29]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1630,9 +1630,10 @@ Internet-Draft                    ACME                        March 2018
    ACME service is to be used, it MUST indicate the URL where such terms
    can be accessed in the "termsOfService" subfield of the "meta" field
    in the directory object, and the server MUST reject new-account
-   requests that do not have the "termsOfServiceAgreed" set to "true".
-   Clients SHOULD NOT automatically agree to terms by default.  Rather,
-   they SHOULD require some user interaction for agreement to terms.
+   requests that do not have the "termsOfServiceAgreed" field set to
+   "true".  Clients SHOULD NOT automatically agree to terms by default.
+   Rather, they SHOULD require some user interaction for agreement to
+   terms.
 
    The server creates an account and stores the public key used to
    verify the JWS (i.e., the "jwk" element of the JWS header) to
@@ -1676,8 +1677,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-
-Barnes, et al.          Expires September 3, 2018              [Page 30]
+Barnes, et al.          Expires September 5, 2018              [Page 30]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1719,9 +1719,9 @@ Internet-Draft                    ACME                        March 2018
    Servers SHOULD NOT respond to GET requests for account resources as
    these requests are not authenticated.  If a client wishes to query
    the server for information about its account (e.g., to examine the
-   "contact" or "certificates" fields), then it SHOULD do so by sending
-   a POST request with an empty update.  That is, it should send a JWS
-   whose payload is an empty object ({}).
+   "contact" or "orders" fields), then it SHOULD do so by sending a POST
+   request with an empty update.  That is, it should send a JWS whose
+   payload is an empty object ({}).
 
 7.3.4.  Changes of Terms of Service
 
@@ -1733,7 +1733,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 31]
+Barnes, et al.          Expires September 5, 2018              [Page 31]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1789,7 +1789,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 32]
+Barnes, et al.          Expires September 5, 2018              [Page 32]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1831,7 +1831,7 @@ Internet-Draft                    ACME                        March 2018
    "externalAccountBinding" field, then it MUST provide the value "true"
    in the "externalAccountRequired" subfield of the "meta" field in the
    directory object.  If the CA receives a new-account request without
-   an "externalAccountBinding" field, then it should reply with an error
+   an "externalAccountBinding" field, then it SHOULD reply with an error
    of type "externalAccountRequired".
 
    When a CA receives a new-account request containing an
@@ -1845,12 +1845,12 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 33]
+Barnes, et al.          Expires September 5, 2018              [Page 33]
 
 Internet-Draft                    ACME                        March 2018
 
 
-   2.  Verify that the JWS protected meets the above criteria
+   2.  Verify that the JWS protected field meets the above criteria
 
    3.  Retrieve the MAC key corresponding to the key identifier in the
        "kid" field
@@ -1878,8 +1878,8 @@ Internet-Draft                    ACME                        March 2018
    constructs a key-change object describing the change that it would
    like the server to make:
 
-   account (required, string):  The URL for account being modified.  The
-      content of this field MUST be the exact string provided in the
+   account (required, string):  The URL for the account being modified.
+      The content of this field MUST be the exact string provided in the
       Location header field in response to the new-account request that
       created the account.
 
@@ -1901,7 +1901,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 34]
+Barnes, et al.          Expires September 5, 2018              [Page 34]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1957,7 +1957,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 35]
+Barnes, et al.          Expires September 5, 2018              [Page 35]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -1975,7 +1975,7 @@ Internet-Draft                    ACME                        March 2018
        the same.
 
    7.  Check that the "account" field of the key-change object contains
-       the URL for the account matching the old key
+       the URL for the account matching the old key.
 
    8.  Check that the "newKey" field of the key-change object also
        verifies the inner JWS.
@@ -2013,7 +2013,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 36]
+Barnes, et al.          Expires September 5, 2018              [Page 36]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2069,16 +2069,16 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 37]
+Barnes, et al.          Expires September 5, 2018              [Page 37]
 
 Internet-Draft                    ACME                        March 2018
 
 
    notBefore (optional, string):  The requested value of the notBefore
-      field in the certificate, in the date format defined in [RFC3339]
+      field in the certificate, in the date format defined in [RFC3339].
 
    notAfter (optional, string):  The requested value of the notAfter
-      field in the certificate, in the date format defined in [RFC3339]
+      field in the certificate, in the date format defined in [RFC3339].
 
    POST /acme/new-order HTTP/1.1
    Host: example.com
@@ -2125,7 +2125,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 38]
+Barnes, et al.          Expires September 5, 2018              [Page 38]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2181,7 +2181,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 39]
+Barnes, et al.          Expires September 5, 2018              [Page 39]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2198,7 +2198,7 @@ Internet-Draft                    ACME                        March 2018
        "url": "https://example.com/acme/order/asdf/finalize"
      }),
      "payload": base64url({
-       "csr": "5jNudRx6Ye4HzKEqT5...FS6aKdZeGsysoCo4H9P",
+       "csr": "MIIBPTCBxAIBADBFMQ...FS6aKdZeGsysoCo4H9P",
      }),
      "signature": "uOrUfIIk5RyQ...nw62Ay1cl6AB"
    }
@@ -2237,7 +2237,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 40]
+Barnes, et al.          Expires September 5, 2018              [Page 40]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2293,7 +2293,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 41]
+Barnes, et al.          Expires September 5, 2018              [Page 41]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2339,7 +2339,7 @@ Internet-Draft                    ACME                        March 2018
    the rejection.
 
    If the server is willing to proceed, it builds a pending
-   authorization object from the inputs submitted by the client.
+   authorization object from the inputs submitted by the client:
 
    o  "identifier" the identifier submitted by the client
 
@@ -2349,7 +2349,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 42]
+Barnes, et al.          Expires September 5, 2018              [Page 42]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2405,7 +2405,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 43]
+Barnes, et al.          Expires September 5, 2018              [Page 43]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2461,7 +2461,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 44]
+Barnes, et al.          Expires September 5, 2018              [Page 44]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2517,7 +2517,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 45]
+Barnes, et al.          Expires September 5, 2018              [Page 45]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2573,7 +2573,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 46]
+Barnes, et al.          Expires September 5, 2018              [Page 46]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2586,6 +2586,7 @@ Internet-Draft                    ACME                        March 2018
    Host: example.com
 
    HTTP/1.1 200 OK
+   Content-Type: application/json
 
    {
      "status": "valid",
@@ -2598,7 +2599,7 @@ Internet-Draft                    ACME                        March 2018
 
      "challenges": [
        {
-         "type": "http-01"
+         "type": "http-01",
          "url": "https://example.com/acme/authz/1234/0",
          "status": "valid",
          "validated": "2014-12-01T12:05:00Z",
@@ -2628,8 +2629,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-
-Barnes, et al.          Expires September 3, 2018              [Page 47]
+Barnes, et al.          Expires September 5, 2018              [Page 47]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2685,7 +2685,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 48]
+Barnes, et al.          Expires September 5, 2018              [Page 48]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2741,7 +2741,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 49]
+Barnes, et al.          Expires September 5, 2018              [Page 49]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2797,7 +2797,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 50]
+Barnes, et al.          Expires September 5, 2018              [Page 50]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2853,7 +2853,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 51]
+Barnes, et al.          Expires September 5, 2018              [Page 51]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2909,7 +2909,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 52]
+Barnes, et al.          Expires September 5, 2018              [Page 52]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2965,7 +2965,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 53]
+Barnes, et al.          Expires September 5, 2018              [Page 53]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2974,6 +2974,8 @@ Internet-Draft                    ACME                        March 2018
    Host: example.com
 
    HTTP/1.1 200 OK
+   Content-Type: application/json
+
    {
      "type": "http-01",
      "url": "https://example.com/acme/authz/0",
@@ -2995,6 +2997,8 @@ GET /.well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
 Host: example.org
 
 HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+
 LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
 
    A client responds with an empty object ({}) to acknowledge that the
@@ -3015,16 +3019,16 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
      "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
    }
 
-   On receiving a response, the server constructs and stores the key
-   authorization from the challenge "token" value and the current client
-   account key.
 
 
-
-Barnes, et al.          Expires September 3, 2018              [Page 54]
+Barnes, et al.          Expires September 5, 2018              [Page 54]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   On receiving a response, the server constructs and stores the key
+   authorization from the challenge "token" value and the current client
+   account key.
 
    Given a challenge/response pair, the server verifies the client's
    control of the domain by verifying that the resource was provisioned
@@ -3073,11 +3077,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 55]
+Barnes, et al.          Expires September 5, 2018              [Page 55]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3086,6 +3086,8 @@ Internet-Draft                    ACME                        March 2018
    Host: example.com
 
    HTTP/1.1 200 OK
+   Content-Type: application/json
+
    {
      "type": "dns-01",
      "url": "https://example.com/acme/authz/1234/2",
@@ -3126,17 +3128,19 @@ Internet-Draft                    ACME                        March 2018
      "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
    }
 
-   On receiving a response, the server constructs and stores the key
-   authorization from the challenge "token" value and the current client
-   account key.
 
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 56]
+
+Barnes, et al.          Expires September 5, 2018              [Page 56]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   On receiving a response, the server constructs and stores the key
+   authorization from the challenge "token" value and the current client
+   account key.
 
    To validate a DNS challenge, the server performs the following steps:
 
@@ -3182,18 +3186,18 @@ Internet-Draft                    ACME                        March 2018
 
    Additional information:
 
-   File contains one or more certificates encoded with the PEM textual
-   encoding, according to RFC 7468 [RFC7468].  In order to provide easy
-   interoperation with TLS, the first certificate MUST be an end-entity
-   certificate.  Each following certificate SHOULD directly certify one
 
 
 
-Barnes, et al.          Expires September 3, 2018              [Page 57]
+Barnes, et al.          Expires September 5, 2018              [Page 57]
 
 Internet-Draft                    ACME                        March 2018
 
 
+   File contains one or more certificates encoded with the PEM textual
+   encoding, according to RFC 7468 [RFC7468].  In order to provide easy
+   interoperation with TLS, the first certificate MUST be an end-entity
+   certificate.  Each following certificate SHOULD directly certify one
    preceding it.  Because certificate validation requires that trust
    anchors be distributed independently, a certificate that specifies a
    trust anchor MAY be omitted from the chain, provided that supported
@@ -3238,17 +3242,16 @@ Internet-Draft                    ACME                        March 2018
 
    o  Specification Document(s): Section 6.4.1 of RFC XXXX
 
-   [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
-   to this document ]]
 
 
 
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 58]
+Barnes, et al.          Expires September 5, 2018              [Page 58]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
+   to this document ]]
 
 9.5.  "nonce" JWS Header Parameter
 
@@ -3296,15 +3299,14 @@ Internet-Draft                    ACME                        March 2018
 
    3.  ACME Error Types (Section 9.7.4)
 
-   4.  ACME Resource Types (Section 9.7.5)
 
 
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 59]
+Barnes, et al.          Expires September 5, 2018              [Page 59]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   4.  ACME Resource Types (Section 9.7.5)
 
    5.  ACME Directory Metadata Fields (Section 9.7.6)
 
@@ -3338,6 +3340,28 @@ Internet-Draft                    ACME                        March 2018
    Initial contents: The fields and descriptions defined in
    Section 7.1.2.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 60]
+
+Internet-Draft                    ACME                        March 2018
+
+
    +------------------------+---------------+--------------+-----------+
    | Field Name             | Field Type    | Configurable | Reference |
    +------------------------+---------------+--------------+-----------+
@@ -3353,14 +3377,6 @@ Internet-Draft                    ACME                        March 2018
    | orders                 | array of      | false        | RFC XXXX  |
    |                        | string        |              |           |
    +------------------------+---------------+--------------+-----------+
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 60]
-
-Internet-Draft                    ACME                        March 2018
-
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -3387,6 +3403,21 @@ Internet-Draft                    ACME                        March 2018
    Initial contents: The fields and descriptions defined in
    Section 7.1.3.
 
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 61]
+
+Internet-Draft                    ACME                        March 2018
+
+
       +----------------+-----------------+--------------+-----------+
       | Field Name     | Field Type      | Configurable | Reference |
       +----------------+-----------------+--------------+-----------+
@@ -3410,14 +3441,6 @@ Internet-Draft                    ACME                        March 2018
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 61]
-
-Internet-Draft                    ACME                        March 2018
-
-
 9.7.3.  Fields in Authorization Objects
 
    This registry lists field names that are defined for use in ACME
@@ -3439,6 +3462,17 @@ Internet-Draft                    ACME                        March 2018
 
    Initial contents: The fields and descriptions defined in
    Section 7.1.4.
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 62]
+
+Internet-Draft                    ACME                        March 2018
+
 
         +------------+-----------------+--------------+-----------+
         | Field Name | Field Type      | Configurable | Reference |
@@ -3467,13 +3501,6 @@ Internet-Draft                    ACME                        March 2018
 
    o  Description: A human-readable description of the error
 
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 62]
-
-Internet-Draft                    ACME                        March 2018
-
-
    o  Reference: Where the error is defined
 
    Initial contents: The types and descriptions in the table in
@@ -3495,6 +3522,13 @@ Internet-Draft                    ACME                        March 2018
    o  Reference: Where the resource type is defined
 
    Initial contents:
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 63]
+
+Internet-Draft                    ACME                        March 2018
+
 
               +------------+--------------------+-----------+
               | Field Name | Resource Type      | Reference |
@@ -3522,14 +3556,6 @@ Internet-Draft                    ACME                        March 2018
    This registry lists field names that are defined for use in the JSON
    object included in the "meta" field of an ACME directory object.
 
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 63]
-
-Internet-Draft                    ACME                        March 2018
-
-
    Template:
 
    o  Field name: The string to be used as a field name in the JSON
@@ -3542,6 +3568,23 @@ Internet-Draft                    ACME                        March 2018
 
    Initial contents: The fields and descriptions defined in
    Section 7.1.2.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 64]
+
+Internet-Draft                    ACME                        March 2018
+
 
          +-------------------------+-----------------+-----------+
          | Field Name              | Field Type      | Reference |
@@ -3578,14 +3621,6 @@ Internet-Draft                    ACME                        March 2018
                            | dns   | RFC XXXX  |
                            +-------+-----------+
 
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 64]
-
-Internet-Draft                    ACME                        March 2018
-
-
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
 
@@ -3598,6 +3633,14 @@ Internet-Draft                    ACME                        March 2018
    registry.
 
    Template:
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 65]
+
+Internet-Draft                    ACME                        March 2018
+
 
    o  Label: The identifier for this validation method
 
@@ -3627,20 +3670,13 @@ Internet-Draft                    ACME                        March 2018
    designated expert should ensure that the method being registered has
    a clear, interoperable definition and does not overlap with existing
    validation methods.  That is, it should not be possible for a client
-   and server to follow take the same set of actions to fulfill two
-   different validation methods.
+   and server to follow the same set of actions to fulfill two different
+   validation methods.
 
    Validation methods do not have to be compatible with ACME in order to
    be registered.  For example, a CA might wish to register a validation
    method in order to support its use with the ACME extensions to CAA
    [I-D.ietf-acme-caa].
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 65]
-
-Internet-Draft                    ACME                        March 2018
-
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -3654,6 +3690,13 @@ Internet-Draft                    ACME                        March 2018
    authorized entities can manage certificates.  ACME identifies clients
    by their account keys, so this overall goal breaks down into two more
    precise goals:
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 66]
+
+Internet-Draft                    ACME                        March 2018
+
 
    1.  Only an entity that controls an identifier can get an
        authorization for that identifier
@@ -3678,25 +3721,6 @@ Internet-Draft                    ACME                        March 2018
    o  A validation channel, over which the ACME server performs
       additional requests to validate a client's control of an
       identifier
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 66]
-
-Internet-Draft                    ACME                        March 2018
-
 
    +------------+
    |    ACME    |     ACME Channel
@@ -3723,6 +3747,13 @@ Internet-Draft                    ACME                        March 2018
    (noted below) when an attacker can exploit both the ACME channel and
    one of the others.
 
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 67]
+
+Internet-Draft                    ACME                        March 2018
+
+
    On the ACME channel, in addition to network layer attackers, we also
    need to account for man-in-the-middle (MitM) attacks at the
    application layer, and for abusive use of the protocol itself.
@@ -3745,14 +3776,6 @@ Internet-Draft                    ACME                        March 2018
    Validation responses need to be bound to an account key pair in order
    to avoid situations where an ACME MitM can switch out a legitimate
    domain holder's account key for one of his choosing, e.g.:
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 67]
-
-Internet-Draft                    ACME                        March 2018
-
 
    o  Legitimate domain holder registers account key pair A
 
@@ -3779,6 +3802,14 @@ Internet-Draft                    ACME                        March 2018
 
    All of the challenges above have a binding between the account
    private key and the validation query made by the server, via the key
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 68]
+
+Internet-Draft                    ACME                        March 2018
+
+
    authorization.  The key authorization reflects the account public
    key, is provided to the server in the validation response over the
    validation channel and signed afterwards by the corresponding private
@@ -3801,14 +3832,6 @@ Internet-Draft                    ACME                        March 2018
    HTTP challenge.  Similarly, if a server that can be used for ACME
    validation is compromised by a malicious actor, then that malicious
    actor can use that access to obtain certificates via ACME.
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 68]
-
-Internet-Draft                    ACME                        March 2018
-
 
    The use of hosting providers is a particular risk for ACME
    validation.  If the owner of the domain has outsourced operation of
@@ -3836,6 +3859,13 @@ Internet-Draft                    ACME                        March 2018
    o  Always querying the DNS using a DNSSEC-validating resolver
       (enhancing security for zones that are DNSSEC-enabled)
 
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 69]
+
+Internet-Draft                    ACME                        March 2018
+
+
    o  Querying the DNS from multiple vantage points to address local
       attackers
 
@@ -3857,15 +3887,6 @@ Internet-Draft                    ACME                        March 2018
 
    An active attacker on the validation channel can subvert the ACME
    process, by performing normal ACME transactions and providing a
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 69]
-
-Internet-Draft                    ACME                        March 2018
-
-
    validation response for his own account key.  The risks due to
    hosting providers noted above are a particular case.
 
@@ -3893,6 +3914,14 @@ Internet-Draft                    ACME                        March 2018
    body validation, can be addressed using HTTP request limiting.  For
    validation and certificate requests, there are other identifiers on
    which rate limits can be keyed.  For example, the server might limit
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 70]
+
+Internet-Draft                    ACME                        March 2018
+
+
    the rate at which any individual account key can issue certificates
    or the rate at which validation can be requested within a given
    subtree of the DNS.  And in order to prevent attackers from
@@ -3914,13 +3943,6 @@ Internet-Draft                    ACME                        March 2018
    implementations enable an attacker to extract this information from
    any web server that is accessible to the ACME server, even if it is
    not accessible to the ACME client.
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 70]
-
-Internet-Draft                    ACME                        March 2018
-
 
    It might seem that the risk of SSRF through this channel is limited
    by the fact that the attacker can only control the domain of the URL,
@@ -3948,6 +3970,14 @@ Internet-Draft                    ACME                        March 2018
 
    o  For domain names:
 
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 71]
+
+Internet-Draft                    ACME                        March 2018
+
+
       *  If the leftmost label is a '*', then have the appropriate
          checks been applied?
 
@@ -3970,13 +4000,6 @@ Internet-Draft                    ACME                        March 2018
    CAs using ACME to allow clients to agree to terms of service should
    keep in mind that ACME clients can automate this agreement, possibly
    not involving a human user.
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 71]
-
-Internet-Draft                    ACME                        March 2018
-
 
 11.  Operational Considerations
 
@@ -4003,6 +4026,14 @@ Internet-Draft                    ACME                        March 2018
 
    An ACME-based CA must use only a resolver if it trusts the resolver
    and every component of the network route by which it is accessed.  It
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 72]
+
+Internet-Draft                    ACME                        March 2018
+
+
    is therefore RECOMMENDED that ACME-based CAs operate their own
    DNSSEC-validating resolvers within their trusted network and use
    these resolvers both for both CAA record lookups and all record
@@ -4026,14 +4057,6 @@ Internet-Draft                    ACME                        March 2018
    ACME provides certificate chains in the widely-used format known
    colloquially as PEM (though it may diverge from the actual Privacy
    Enhanced Mail specifications [RFC1421], as noted in [RFC7468]).  Some
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 72]
-
-Internet-Draft                    ACME                        March 2018
-
-
    current software will allow the configuration of a private key and a
    certificate in one PEM file, by concatenating the textual encodings
    of the two objects.  In the context of ACME, such software might be
@@ -4045,7 +4068,7 @@ Internet-Draft                    ACME                        March 2018
    When processing an file of type "application/pem-certificate-chain",
    a client SHOULD verify that the file contains only encoded
    certificates.  If anything other than a certificate is found (i.e.,
-   if the string "---BEGIN" is ever followed by anything other than
+   if the string "-----BEGIN" is ever followed by anything other than
    "CERTIFICATE"), then the client MUST reject the file as invalid.
 
 12.  Acknowledgements
@@ -4059,6 +4082,13 @@ Internet-Draft                    ACME                        March 2018
    o  Eric Rescorla, Mozilla
 
    o  Seth Schoen, EFF
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 73]
+
+Internet-Draft                    ACME                        March 2018
+
 
    o  Alex Halderman, University of Michigan
 
@@ -4081,14 +4111,6 @@ Internet-Draft                    ACME                        March 2018
               Secure Hash Standard", March 2012,
               <http://csrc.nist.gov/publications/fips/fips180-4/
               fips-180-4.pdf>.
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 73]
-
-Internet-Draft                    ACME                        March 2018
-
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -4114,6 +4136,16 @@ Internet-Draft                    ACME                        March 2018
               DOI 10.17487/RFC2986, November 2000,
               <https://www.rfc-editor.org/info/rfc2986>.
 
+
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 74]
+
+Internet-Draft                    ACME                        March 2018
+
+
    [RFC3339]  Klyne, G. and C. Newman, "Date and Time on the Internet:
               Timestamps", RFC 3339, DOI 10.17487/RFC3339, July 2002,
               <https://www.rfc-editor.org/info/rfc3339>.
@@ -4135,16 +4167,6 @@ Internet-Draft                    ACME                        March 2018
    [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <https://www.rfc-editor.org/info/rfc4648>.
-
-
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 74]
-
-Internet-Draft                    ACME                        March 2018
-
 
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
@@ -4170,6 +4192,16 @@ Internet-Draft                    ACME                        March 2018
               URI Scheme", RFC 6068, DOI 10.17487/RFC6068, October 2010,
               <https://www.rfc-editor.org/info/rfc6068>.
 
+
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 75]
+
+Internet-Draft                    ACME                        March 2018
+
+
    [RFC6570]  Gregorio, J., Fielding, R., Hadley, M., Nottingham, M.,
               and D. Orchard, "URI Template", RFC 6570,
               DOI 10.17487/RFC6570, March 2012,
@@ -4192,15 +4224,6 @@ Internet-Draft                    ACME                        March 2018
    [RFC7468]  Josefsson, S. and S. Leonard, "Textual Encodings of PKIX,
               PKCS, and CMS Structures", RFC 7468, DOI 10.17487/RFC7468,
               April 2015, <https://www.rfc-editor.org/info/rfc7468>.
-
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 75]
-
-Internet-Draft                    ACME                        March 2018
-
 
    [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
               Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
@@ -4227,6 +4250,14 @@ Internet-Draft                    ACME                        March 2018
               RFC 8126, DOI 10.17487/RFC8126, June 2017,
               <https://www.rfc-editor.org/info/rfc8126>.
 
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 76]
+
+Internet-Draft                    ACME                        March 2018
+
+
 13.2.  Informative References
 
    [I-D.ietf-acme-caa]
@@ -4247,16 +4278,6 @@ Internet-Draft                    ACME                        March 2018
               Vixie, P. and D. Dagon, "Use of Bit 0x20 in DNS Labels to
               Improve Transaction Identity", draft-vixie-dnsext-
               dns0x20-00 (work in progress), March 2008.
-
-
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 76]
-
-Internet-Draft                    ACME                        March 2018
-
 
    [RFC1421]  Linn, J., "Privacy Enhancement for Internet Electronic
               Mail: Part I: Message Encryption and Authentication
@@ -4284,6 +4305,15 @@ Internet-Draft                    ACME                        March 2018
               (DTLS)", BCP 195, RFC 7525, DOI 10.17487/RFC7525, May
               2015, <https://www.rfc-editor.org/info/rfc7525>.
 
+
+
+
+
+Barnes, et al.          Expires September 5, 2018              [Page 77]
+
+Internet-Draft                    ACME                        March 2018
+
+
    [W3C.CR-cors-20130129]
               Kesteren, A., "Cross-Origin Resource Sharing", World Wide
               Web Consortium CR CR-cors-20130129, January 2013,
@@ -4305,13 +4335,6 @@ Authors' Addresses
    EFF
 
    Email: jsha@eff.org
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 77]
-
-Internet-Draft                    ACME                        March 2018
 
 
    Daniel McCarney
@@ -4342,27 +4365,4 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires September 3, 2018              [Page 78]
+Barnes, et al.          Expires September 5, 2018              [Page 78]
