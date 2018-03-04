@@ -1189,7 +1189,7 @@ Content-Type: application/jose+json
 
 ### Account Information
 
-Servers SHOULD NOT respond to GET requests for account resources as these
+Servers MUST NOT respond to GET requests for account resources as these
 requests are not authenticated.  If a client wishes to query the server for
 information about its account (e.g., to examine the "contact" or "certificates"
 fields), then it SHOULD do so by sending a POST request with an empty update.
