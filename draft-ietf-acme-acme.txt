@@ -1716,7 +1716,7 @@ Internet-Draft                    ACME                        March 2018
 
 7.3.3.  Account Information
 
-   Servers SHOULD NOT respond to GET requests for account resources as
+   Servers MUST NOT respond to GET requests for account resources as
    these requests are not authenticated.  If a client wishes to query
    the server for information about its account (e.g., to examine the
    "contact" or "orders" fields), then it SHOULD do so by sending a POST

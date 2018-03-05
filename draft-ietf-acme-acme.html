@@ -1385,7 +1385,7 @@ Content-Type: application/jose+json
 <h1 id="rfc.section.7.3.3">
 <a href="#rfc.section.7.3.3">7.3.3.</a> <a href="#account-information" id="account-information">Account Information</a>
 </h1>
-<p id="rfc.section.7.3.3.p.1">Servers SHOULD NOT respond to GET requests for account resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;orders&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is an empty object ({}).</p>
+<p id="rfc.section.7.3.3.p.1">Servers MUST NOT respond to GET requests for account resources as these requests are not authenticated.  If a client wishes to query the server for information about its account (e.g., to examine the &#8220;contact&#8221; or &#8220;orders&#8221; fields), then it SHOULD do so by sending a POST request with an empty update.  That is, it should send a JWS whose payload is an empty object ({}).</p>
 <h1 id="rfc.section.7.3.4">
 <a href="#rfc.section.7.3.4">7.3.4.</a> <a href="#changes-of-terms-of-service" id="changes-of-terms-of-service">Changes of Terms of Service</a>
 </h1>
