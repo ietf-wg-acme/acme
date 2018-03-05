@@ -1770,6 +1770,14 @@ To request authorization for an identifier, the client sends a POST request to
 the new-authorization resource specifying the identifier for which authorization
 is being requested.
 
+Any identifier of type "dns" in a pre-authorization request MAY have a wildcard
+domain name as its value. A wildcard domain name consists of a single asterisk
+character followed by a single full stop character ("\*.") followed by a domain
+name as defined for use in the Subject Alternate Name Extension by RFC 5280
+{{!RFC5280}}. An authorization returned by the server for a wildcard domain name
+identifier MUST NOT include the asterisk and full stop ("\*.") prefix in the
+authorization identifier value.
+
 identifier (required, object):
 : The identifier to appear in the resulting authorization object
 (see {{authorization-objects}})
