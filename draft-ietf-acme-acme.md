@@ -1133,6 +1133,12 @@ deactiv.|                revoke |
    deactivated               revoked
 ~~~~~~~~~~
 
+Note that some of these states may not ever appear in a "status"
+field, depending on server behavior.  For example, a server that
+issues synchronously will never show an order in the "processing"
+state.  A server that deletes expired authorizations immediately
+will never show an authorization in the "expired" state.
+
 
 ## Getting a Nonce
 
