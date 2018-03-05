@@ -3,7 +3,7 @@
 Occasionally, you will want to submit versions of your draft to the official
 IETF repository.  The following process makes this easy.
 
-Make a submission version of your draft.  The makefile uses git tags to work out
+Make a submission version of your draft.  The Makefile uses git tags to work out
 what version to create.  It looks for the last version number you have tagged
 the draft with and calculates the next version.  When there are no tags, it
 generates a `-00` version.
