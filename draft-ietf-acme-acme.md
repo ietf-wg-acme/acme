@@ -119,11 +119,10 @@ certificates attesting to telephone numbers {{?I-D.ietf-acme-telephone}}.
 
 ACME can also be used to automate some aspects of certificate management even
 where non-automated processes are still needed.  For example, the external
-account binding feature (see {{external-account-binding}}) can be used to
-associate authorizations with an account that were not validated through the
-ACME authorization process.  This allows ACME to address issuance scenarios that
-cannot yet be fully automated, such as the issuance of Extended Validation
-certificates.
+account binding feature (see {{external-account-binding}}) can allow an ACME
+account to use authorizations that have been granted to an external, non-ACME
+account.  This allows ACME to address issuance scenarios that cannot yet be
+fully automated, such as the issuance of Extended Validation certificates.
 
 
 # Deployment Model and Operator Experience
