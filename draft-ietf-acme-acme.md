@@ -1706,10 +1706,10 @@ action the client should take:
   pending.
 
 * "ready": The server agrees that the requirements have been
-  fulfilled, and is awaiting on finalization.  Submit a finalization
+  fulfilled, and is awaiting finalization.  Submit a finalization
   request.
 
-* "processing": The certificate is being issued.  Retry after the
+* "processing": The certificate is being issued. Send a GET request after the
   time given in the "Retry-After" header field of the response, if
   any.
 
