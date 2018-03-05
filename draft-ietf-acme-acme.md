@@ -836,8 +836,8 @@ the server requires the client to complete, and any certificates that have
 resulted from this order.
 
 status (required, string):
-: The status of this order.  Possible values are: "pending", "processing",
-"valid", and "invalid".
+: The status of this order.  Possible values are: "pending",
+"ready", "processing", "valid", and "invalid".
 
 expires (optional, string):
 : The timestamp after which the server will consider this order invalid, encoded
@@ -945,8 +945,8 @@ identifier (required, object):
   : The identifier itself.
 
 status (required, string):
-: The status of this authorization.  Possible values are: "pending", "processing",
-"valid", "invalid" and "revoked".
+: The status of this authorization.  Possible values are: "pending",
+"valid", "invalid", "deactivated", and "revoked".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -1013,6 +1013,128 @@ for a challenge object.  The contents of a challenge object depend
 on the validation method being used.  The general structure of
 challenge objects and an initial set of validation methods are
 described in {{identifier-validation-challenges}}.
+
+### Status Changes
+
+Each ACME object type goes through a simple state machine over its
+lifetime.  The "status" field of the object indicates which state
+the object is currently in.
+
+Challenge objects are created in the "pending" state.  They
+transition to the "processing" state when the client responds to the
+challenge (see {{responding-to-challenges}}) and the server begins
+attempting to validate that the client has completed the challenge.
+Note that within the "processing" state, the server may attempt to
+validate the challenge multiple times (see {{retrying-challenges}}).
+Likewise, client requests for retries do not cause a state change.
+If validation is successful, the challenge moves to the "valid"
+state; if there is an error, the challenge moves to the "invalid"
+state.
+
+~~~~~~~~~~
+         pending
+            |
+            | Receive
+            | response
+            V
+        processing <-+
+            |   |    | Server retry or
+            |   |    | client retry request
+            |   +----+
+            |
+            |
+Successful  |   Failed
+validation  |   validation
+  +---------+---------+
+  |                   |
+  V                   V
+valid              invalid
+~~~~~~~~~~
+
+Authorization objects are created in the "pending" state.  If one of
+the challenges listed in the authorization transitions to the
+"valid" state, then the authorization also changes to the "valid"
+state.  If there is an error while the authorization is still
+pending, then the authorization transitions to the "invalid" state.
+Once the authorization is in the valid state, it can expire
+("expired"), be deactivated by the client ("deactivated", see
+{{deactivating-an-authorization}}), or revoked by the server
+("revoked").
+
+~~~~~~~~~~
+          pending --------------------+
+             |                        |
+             |                        |
+ Error       |  Challenge valid       |
+   +---------+---------+              |
+   |                   |              |
+   V                   V              |
+invalid              valid            |
+                       |              |
+                       |              |
+                       |              |
+        +--------------+--------------+
+        |              |              |
+        |              |              |
+ Server |       Client |   Time after |
+ revoke |   deactivate |    "expires" |
+        V              V              V
+     revoked      deactivated      expired
+~~~~~~~~~~
+
+Order objects are created in the "pending" state.  Once all of the
+authorizations listed in the order object are in the "valid" state,
+the order transitions to the "ready" state.  The order moves to the
+"processing" state after the client submits a request to the order's
+"finalize" URL and the CA begins the issuance process for the
+certificate.  Once the certificate is issued, the order enters the
+"valid" state.  If an error occurs at any of these stages, the
+order moves to the "invalid" state.  The order also moves to the
+"invalid" state if it expires, or one of its authorizations enters a
+final state other than "valid" ("expired", "revoked", "deactivated").
+
+~~~~~~~~~~
+ pending --------------+
+    |                  |
+    | All authz        |
+    | "valid"          |
+    V                  |
+  ready ---------------+
+    |                  |
+    | Receive          |
+    | finalize         |
+    | request          |
+    V                  |
+processing ------------+
+    |                  |
+    | Certificate      | Error or
+    | issued           | Authorization failure
+    V                  V
+  valid             invalid
+~~~~~~~~~~
+
+Account objects are created in the "valid" state, since no further
+action is required to create an account after a successful
+newAccount request.  If the account is deactivated by the client  or
+revoked by the server, it moves to the corresponding state.
+
+~~~~~~~~~~
+                  valid
+                    |
+                    |
+        +-----------+-----------+
+ Client |                Server |
+deactiv.|                revoke |
+        V                       V
+   deactivated               revoked
+~~~~~~~~~~
+
+Note that some of these states may not ever appear in a "status"
+field, depending on server behavior.  For example, a server that
+issues synchronously will never show an order in the "processing"
+state.  A server that deletes expired authorizations immediately
+will never show an authorization in the "expired" state.
+
 
 ## Getting a Nonce
 
@@ -1585,12 +1707,16 @@ action the client should take:
   requirements.  Check the "authorizations" array for entries that are still
   pending.
 
-* "processing": The server agrees that the requirements have been fulfilled, and
-  is in the process of generating the certificate.  Retry after the time given
-  in the "Retry-After" header field of the response, if any.
+* "ready": The server agrees that the requirements have been
+  fulfilled, and is awaiting finalization.  Submit a finalization
+  request.
+
+* "processing": The certificate is being issued. Send a GET request after the
+  time given in the "Retry-After" header field of the response, if
+  any.
 
 * "valid": The server has issued the certificate and provisioned its URL to the
-  "certificate" field of the order.
+  "certificate" field of the order.  Download the certificate.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
@@ -2076,8 +2202,8 @@ url (required, string):
 : The URL to which a response can be posted.
 
 status (required, string):
-: The status of this challenge.  Possible values are: "pending", "valid",
-and "invalid".
+: The status of this challenge.  Possible values are: "pending",
+"processing", "valid", and "invalid".
 
 validated (optional, string):
 : The time at which the server validated this challenge, encoded in the
@@ -2141,7 +2267,7 @@ scenarios that the schedule is trying to accommodate.  Given that retries are
 intended to address things like propagation delays in HTTP or DNS provisioning,
 there should not usually be any reason to retry more often than every 5 or 10
 seconds. While the server is still trying, the
-status of the challenge remains "pending"; it is only marked "invalid" once the
+status of the challenge remains "processing"; it is only marked "invalid" once the
 server has given up.
 
 The server MUST provide information about its retry state to the client via the
