@@ -305,6 +305,7 @@ address {
 <link href="#rfc.section.7.1.3" rel="Chapter" title="7.1.3 Order Objects">
 <link href="#rfc.section.7.1.4" rel="Chapter" title="7.1.4 Authorization Objects">
 <link href="#rfc.section.7.1.5" rel="Chapter" title="7.1.5 Challenge Objects">
+<link href="#rfc.section.7.1.6" rel="Chapter" title="7.1.6 Status Changes">
 <link href="#rfc.section.7.2" rel="Chapter" title="7.2 Getting a Nonce">
 <link href="#rfc.section.7.3" rel="Chapter" title="7.3 Account Creation">
 <link href="#rfc.section.7.3.1" rel="Chapter" title="7.3.1 Finding an Account URL Given a Key">
@@ -481,6 +482,8 @@ address {
 <li>7.1.4.   <a href="#rfc.section.7.1.4">Authorization Objects</a>
 </li>
 <li>7.1.5.   <a href="#rfc.section.7.1.5">Challenge Objects</a>
+</li>
+<li>7.1.6.   <a href="#rfc.section.7.1.6">Status Changes</a>
 </li>
 </ul><li>7.2.   <a href="#rfc.section.7.2">Getting a Nonce</a>
 </li>
@@ -1156,7 +1159,7 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;, rel="next"
 
 <dl>
 <dt>status (required, string):</dt>
-<dd style="margin-left: 8">The status of this order.  Possible values are: &#8220;pending&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
+<dd style="margin-left: 8">The status of this order.  Possible values are: &#8220;pending&#8221;, &#8220;ready&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
 <dt>expires (optional, string):</dt>
 <dd style="margin-left: 8">The timestamp after which the server will consider this order invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339" class="xref">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;pending&#8221; or &#8220;valid&#8221; in the status field.</dd>
 <dt>identifiers (required, array of object):</dt>
@@ -1225,7 +1228,7 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;, rel="next"
 <p> </p>
 </dd>
 <dt>status (required, string):</dt>
-<dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;pending&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, &#8220;invalid&#8221; and &#8220;revoked&#8221;.</dd>
+<dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, &#8220;invalid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;.</dd>
 <dt>expires (optional, string):</dt>
 <dd style="margin-left: 8">The timestamp after which the server will consider this authorization invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339" class="xref">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;valid&#8221; in the &#8220;status&#8221; field.</dd>
 <dt>challenges (required, array of objects):</dt>
@@ -1262,6 +1265,83 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;, rel="next"
 <a href="#rfc.section.7.1.5">7.1.5.</a> <a href="#challenge-objects" id="challenge-objects">Challenge Objects</a>
 </h1>
 <p id="rfc.section.7.1.5.p.1">An ACME challenge object represents a server&#8217;s offer to validate a client&#8217;s possession of an identifier in a specific way.  Unlike the other objects listed above, there is not a single standard structure for a challenge object.  The contents of a challenge object depend on the validation method being used.  The general structure of challenge objects and an initial set of validation methods are described in <a href="#identifier-validation-challenges" class="xref">Section 8</a>.</p>
+<h1 id="rfc.section.7.1.6">
+<a href="#rfc.section.7.1.6">7.1.6.</a> <a href="#status-changes" id="status-changes">Status Changes</a>
+</h1>
+<p id="rfc.section.7.1.6.p.1">Each ACME object type goes through a simple state machine over its lifetime.  The &#8220;status&#8221; field of the object indicates which state the object is currently in.</p>
+<p id="rfc.section.7.1.6.p.2">Challenge objects are created in the &#8220;pending&#8221; state.  They transition to the &#8220;processing&#8221; state when the client responds to the challenge (see <a href="#responding-to-challenges" class="xref">Section 7.5.1</a>) and the server begins attempting to validate that the client has completed the challenge.  Note that within the &#8220;processing&#8221; state, the server may attempt to validate the challenge multiple times (see <a href="#retrying-challenges" class="xref">Section 8.2</a>).  Likewise, client requests for retries do not cause a state change.  If validation is successful, the challenge moves to the &#8220;valid&#8221; state; if there is an error, the challenge moves to the &#8220;invalid&#8221; state.</p>
+<pre>
+         pending
+            |
+            | Receive
+            | response
+            V
+        processing &lt;-+
+            |   |    | Server retry or
+            |   |    | client retry request
+            |   +----+
+            |
+            |
+Successful  |   Failed
+validation  |   validation
+  +---------+---------+
+  |                   |
+  V                   V
+valid              invalid
+</pre>
+<p id="rfc.section.7.1.6.p.3">Authorization objects are created in the &#8220;pending&#8221; state.  If one of the challenges listed in the authorization transitions to the &#8220;valid&#8221; state, then the authorization also changes to the &#8220;valid&#8221; state.  If there is an error while the authorization is still pending, then the authorization transitions to the &#8220;invalid&#8221; state.  Once the authorization is in the valid state, it can expire (&#8220;expired&#8221;), be deactivated by the client (&#8220;deactivated&#8221;, see <a href="#deactivating-an-authorization" class="xref">Section 7.5.2</a>), or revoked by the server (&#8220;revoked&#8221;).</p>
+<pre>
+          pending --------------------+
+             |                        |
+             |                        |
+ Error       |  Challenge valid       |
+   +---------+---------+              |
+   |                   |              |
+   V                   V              |
+invalid              valid            |
+                       |              |
+                       |              |
+                       |              |
+        +--------------+--------------+
+        |              |              |
+        |              |              |
+ Server |       Client |   Time after |
+ revoke |   deactivate |    "expires" |
+        V              V              V
+     revoked      deactivated      expired
+</pre>
+<p id="rfc.section.7.1.6.p.4">Order objects are created in the &#8220;pending&#8221; state.  Once all of the authorizations listed in the order object are in the &#8220;valid&#8221; state, the order transitions to the &#8220;ready&#8221; state.  The order moves to the &#8220;processing&#8221; state after the client submits a request to the order&#8217;s &#8220;finalize&#8221; URL and the CA begins the issuance process for the certificate.  Once the certificate is issued, the order enters the &#8220;valid&#8221; state.  If an error occurs at any of these stages, the order moves to the &#8220;invalid&#8221; state.  The order also moves to the &#8220;invalid&#8221; state if it expires, or one of its authorizations enters a final state other than &#8220;valid&#8221; (&#8220;expired&#8221;, &#8220;revoked&#8221;, &#8220;deactivated&#8221;).</p>
+<pre>
+ pending --------------+
+    |                  |
+    | All authz        |
+    | "valid"          |
+    V                  |
+  ready ---------------+
+    |                  |
+    | Receive          |
+    | finalize         |
+    | request          |
+    V                  |
+processing ------------+
+    |                  |
+    | Certificate      | Error or
+    | issued           | Authorization failure
+    V                  V
+  valid             invalid
+</pre>
+<p id="rfc.section.7.1.6.p.5">Account objects are created in the &#8220;valid&#8221; state, since no further action is required to create an account after a successful newAccount request.  If the account is deactivated by the client  or revoked by the server, it moves to the corresponding state.</p>
+<pre>
+                  valid
+                    |
+                    |
+        +-----------+-----------+
+ Client |                Server |
+deactiv.|                revoke |
+        V                       V
+   deactivated               revoked
+</pre>
+<p id="rfc.section.7.1.6.p.6">Note that some of these states may not ever appear in a &#8220;status&#8221; field, depending on server behavior.  For example, a server that issues synchronously will never show an order in the &#8220;processing&#8221; state.  A server that deletes expired authorizations immediately will never show an authorization in the &#8220;expired&#8221; state.</p>
 <h1 id="rfc.section.7.2">
 <a href="#rfc.section.7.2">7.2.</a> <a href="#getting-a-nonce" id="getting-a-nonce">Getting a Nonce</a>
 </h1>
@@ -1638,8 +1718,9 @@ Content-Type: application/jose+json
 <ul>
 <li>&#8220;invalid&#8221;: The certificate will not be issued.  Consider this order process abandoned.</li>
 <li>&#8220;pending&#8221;: The server does not believe that the client has fulfilled the requirements.  Check the &#8220;authorizations&#8221; array for entries that are still pending.</li>
-<li>&#8220;processing&#8221;: The server agrees that the requirements have been fulfilled, and is in the process of generating the certificate.  Retry after the time given in the &#8220;Retry-After&#8221; header field of the response, if any.</li>
-<li>&#8220;valid&#8221;: The server has issued the certificate and provisioned its URL to the &#8220;certificate&#8221; field of the order.</li>
+<li>&#8220;ready&#8221;: The server agrees that the requirements have been fulfilled, and is awaiting finalization.  Submit a finalization request.</li>
+<li>&#8220;processing&#8221;: The certificate is being issued. Send a GET request after the time given in the &#8220;Retry-After&#8221; header field of the response, if any.</li>
+<li>&#8220;valid&#8221;: The server has issued the certificate and provisioned its URL to the &#8220;certificate&#8221; field of the order.  Download the certificate.</li>
 </ul>
 <pre>
 HTTP/1.1 200 OK
@@ -1976,7 +2057,7 @@ Content-Language: en
 <dt>url (required, string):</dt>
 <dd style="margin-left: 8">The URL to which a response can be posted.</dd>
 <dt>status (required, string):</dt>
-<dd style="margin-left: 8">The status of this challenge.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
+<dd style="margin-left: 8">The status of this challenge.  Possible values are: &#8220;pending&#8221;, &#8220;processing&#8221;, &#8220;valid&#8221;, and &#8220;invalid&#8221;.</dd>
 <dt>validated (optional, string):</dt>
 <dd style="margin-left: 8">The time at which the server validated this challenge, encoded in the format specified in RFC 3339 <a href="#RFC3339" class="xref">[RFC3339]</a>.  This field is REQUIRED if the &#8220;status&#8221; field is &#8220;valid&#8221;.</dd>
 <dt>error (optional, object):</dt>
@@ -1998,7 +2079,7 @@ Content-Language: en
 <a href="#rfc.section.8.2">8.2.</a> <a href="#retrying-challenges" id="retrying-challenges">Retrying Challenges</a>
 </h1>
 <p id="rfc.section.8.2.p.1">ACME challenges typically require the client to set up some network-accessible resource that the server can query in order to validate that the client controls an identifier.  In practice it is not uncommon for the server&#8217;s queries to fail while a resource is being set up, e.g., due to information propagating across a cluster or firewall rules not being in place.</p>
-<p id="rfc.section.8.2.p.2">Clients SHOULD NOT respond to challenges until they believe that the server&#8217;s queries will succeed. If a server&#8217;s initial validation query fails, the server SHOULD retry the query after some time, in order to account for delay in setting up responses such as DNS records or HTTP resources. The precise retry schedule is up to the server, but server operators should keep in mind the operational scenarios that the schedule is trying to accommodate.  Given that retries are intended to address things like propagation delays in HTTP or DNS provisioning, there should not usually be any reason to retry more often than every 5 or 10 seconds. While the server is still trying, the status of the challenge remains &#8220;pending&#8221;; it is only marked &#8220;invalid&#8221; once the server has given up.</p>
+<p id="rfc.section.8.2.p.2">Clients SHOULD NOT respond to challenges until they believe that the server&#8217;s queries will succeed. If a server&#8217;s initial validation query fails, the server SHOULD retry the query after some time, in order to account for delay in setting up responses such as DNS records or HTTP resources. The precise retry schedule is up to the server, but server operators should keep in mind the operational scenarios that the schedule is trying to accommodate.  Given that retries are intended to address things like propagation delays in HTTP or DNS provisioning, there should not usually be any reason to retry more often than every 5 or 10 seconds. While the server is still trying, the status of the challenge remains &#8220;processing&#8221;; it is only marked &#8220;invalid&#8221; once the server has given up.</p>
 <p id="rfc.section.8.2.p.3">The server MUST provide information about its retry state to the client via the &#8220;error&#8221; field in the challenge and the Retry-After HTTP header field in response to requests to the challenge resource. The server MUST add an entry to the &#8220;error&#8221; field in the challenge after each failed validation query. The server SHOULD set the Retry-After header field to a time after the server&#8217;s next validation query, since the status of the challenge will not change until that time.</p>
 <p id="rfc.section.8.2.p.4">Clients can explicitly request a retry by re-sending their response to a challenge in a new POST request (with a new nonce, etc.). This allows clients to request a retry when the state has changed (e.g., after firewall rules have been updated). Servers SHOULD retry a request immediately on receiving such a POST request. In order to avoid denial-of-service attacks via client-initiated retries, servers SHOULD rate-limit such requests.</p>
 <h1 id="rfc.section.8.3">

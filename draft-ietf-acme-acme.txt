@@ -103,9 +103,9 @@ Table of Contents
        7.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  23
        7.1.4.  Authorization Objects . . . . . . . . . . . . . . . .  26
        7.1.5.  Challenge Objects . . . . . . . . . . . . . . . . . .  27
-     7.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  27
-     7.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  28
-       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  30
+       7.1.6.  Status Changes  . . . . . . . . . . . . . . . . . . .  27
+     7.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  30
+     7.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  31
 
 
 
@@ -114,54 +114,54 @@ Barnes, et al.          Expires September 6, 2018               [Page 2]
 Internet-Draft                    ACME                        March 2018
 
 
-       7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  31
-       7.3.3.  Account Information . . . . . . . . . . . . . . . . .  31
-       7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  31
-       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  32
-       7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  34
-       7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  36
-     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  37
-       7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  41
-       7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  43
-     7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  44
-       7.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  45
-       7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  47
-     7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  48
-   8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  50
-     8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  52
-     8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  52
-     8.3.  HTTP Challenge  . . . . . . . . . . . . . . . . . . . . .  53
-     8.4.  DNS Challenge . . . . . . . . . . . . . . . . . . . . . .  55
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  57
-     9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  57
-     9.2.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  58
-     9.3.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  58
-     9.4.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  58
-     9.5.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  59
-     9.6.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  59
-     9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  59
-       9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  60
-       9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  61
-       9.7.3.  Fields in Authorization Objects . . . . . . . . . . .  62
-       9.7.4.  Error Types . . . . . . . . . . . . . . . . . . . . .  63
-       9.7.5.  Resource Types  . . . . . . . . . . . . . . . . . . .  63
-       9.7.6.  Fields in the "meta" Object within a Directory Object  64
-       9.7.7.  Identifier Types  . . . . . . . . . . . . . . . . . .  65
-       9.7.8.  Validation Methods  . . . . . . . . . . . . . . . . .  65
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  66
-     10.1.  Threat Model . . . . . . . . . . . . . . . . . . . . . .  67
-     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  68
-     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  70
-     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  71
-     10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  71
-   11. Operational Considerations  . . . . . . . . . . . . . . . . .  72
-     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  72
-     11.2.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  73
-     11.3.  Malformed Certificate Chains . . . . . . . . . . . . . .  73
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  73
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  74
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  74
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  77
+       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  33
+       7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  33
+       7.3.3.  Account Information . . . . . . . . . . . . . . . . .  34
+       7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  34
+       7.3.5.  External Account Binding  . . . . . . . . . . . . . .  35
+       7.3.6.  Account Key Roll-over . . . . . . . . . . . . . . . .  37
+       7.3.7.  Account Deactivation  . . . . . . . . . . . . . . . .  39
+     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  40
+       7.4.1.  Pre-Authorization . . . . . . . . . . . . . . . . . .  44
+       7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  46
+     7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  47
+       7.5.1.  Responding to Challenges  . . . . . . . . . . . . . .  48
+       7.5.2.  Deactivating an Authorization . . . . . . . . . . . .  50
+     7.6.  Certificate Revocation  . . . . . . . . . . . . . . . . .  51
+   8.  Identifier Validation Challenges  . . . . . . . . . . . . . .  53
+     8.1.  Key Authorizations  . . . . . . . . . . . . . . . . . . .  55
+     8.2.  Retrying Challenges . . . . . . . . . . . . . . . . . . .  55
+     8.3.  HTTP Challenge  . . . . . . . . . . . . . . . . . . . . .  56
+     8.4.  DNS Challenge . . . . . . . . . . . . . . . . . . . . . .  58
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  60
+     9.1.  MIME Type: application/pem-certificate-chain  . . . . . .  60
+     9.2.  Well-Known URI for the HTTP Challenge . . . . . . . . . .  61
+     9.3.  Replay-Nonce HTTP Header  . . . . . . . . . . . . . . . .  61
+     9.4.  "url" JWS Header Parameter  . . . . . . . . . . . . . . .  61
+     9.5.  "nonce" JWS Header Parameter  . . . . . . . . . . . . . .  62
+     9.6.  URN Sub-namespace for ACME (urn:ietf:params:acme) . . . .  62
+     9.7.  New Registries  . . . . . . . . . . . . . . . . . . . . .  62
+       9.7.1.  Fields in Account Objects . . . . . . . . . . . . . .  63
+       9.7.2.  Fields in Order Objects . . . . . . . . . . . . . . .  64
+       9.7.3.  Fields in Authorization Objects . . . . . . . . . . .  65
+       9.7.4.  Error Types . . . . . . . . . . . . . . . . . . . . .  66
+       9.7.5.  Resource Types  . . . . . . . . . . . . . . . . . . .  66
+       9.7.6.  Fields in the "meta" Object within a Directory Object  67
+       9.7.7.  Identifier Types  . . . . . . . . . . . . . . . . . .  68
+       9.7.8.  Validation Methods  . . . . . . . . . . . . . . . . .  68
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  69
+     10.1.  Threat Model . . . . . . . . . . . . . . . . . . . . . .  70
+     10.2.  Integrity of Authorizations  . . . . . . . . . . . . . .  71
+     10.3.  Denial-of-Service Considerations . . . . . . . . . . . .  73
+     10.4.  Server-Side Request Forgery  . . . . . . . . . . . . . .  74
+     10.5.  CA Policy Considerations . . . . . . . . . . . . . . . .  74
+   11. Operational Considerations  . . . . . . . . . . . . . . . . .  75
+     11.1.  DNS security . . . . . . . . . . . . . . . . . . . . . .  75
+     11.2.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  76
+     11.3.  Malformed Certificate Chains . . . . . . . . . . . . . .  76
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  76
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  77
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  77
 
 
 
@@ -170,8 +170,9 @@ Barnes, et al.          Expires September 6, 2018               [Page 3]
 Internet-Draft                    ACME                        March 2018
 
 
-     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  78
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  78
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  80
+     13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  81
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  81
 
 1.  Introduction
 
@@ -217,7 +218,6 @@ Internet-Draft                    ACME                        March 2018
    issued, these are all completely ad hoc procedures and are
    accomplished by getting the human user to follow interactive natural-
    language instructions from the CA rather than by machine-implemented
-   published protocols.  In many cases, the instructions are difficult
 
 
 
@@ -226,6 +226,7 @@ Barnes, et al.          Expires September 6, 2018               [Page 4]
 Internet-Draft                    ACME                        March 2018
 
 
+   published protocols.  In many cases, the instructions are difficult
    to follow and cause significant confusion.  Informal usability tests
    by the authors indicate that webmasters often need 1-3 hours to
    obtain and install a certificate for a domain.  Even in the best
@@ -272,7 +273,6 @@ Internet-Draft                    ACME                        March 2018
    circumstances, all steps in the request, verification, and issuance
    process can be represented and performed by Internet protocols with
    no out-of-band human intervention.
-
 
 
 
@@ -1280,8 +1280,8 @@ Internet-Draft                    ACME                        March 2018
    certificate, the authorizations that the server requires the client
    to complete, and any certificates that have resulted from this order.
 
-   status (required, string):  The status of this order.  Possible
-      values are: "pending", "processing", "valid", and "invalid".
+
+
 
 
 
@@ -1289,6 +1289,10 @@ Barnes, et al.          Expires September 6, 2018              [Page 23]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   status (required, string):  The status of this order.  Possible
+      values are: "pending", "ready", "processing", "valid", and
+      "invalid".
 
    expires (optional, string):  The timestamp after which the server
       will consider this order invalid, encoded in the format specified
@@ -1326,10 +1330,6 @@ Internet-Draft                    ACME                        March 2018
 
    certificate (optional, string):  A URL for the certificate that has
       been issued in response to this order.
-
-
-
-
 
 
 
@@ -1421,7 +1421,7 @@ Internet-Draft                    ACME                        March 2018
       value (required, string):  The identifier itself.
 
    status (required, string):  The status of this authorization.
-      Possible values are: "pending", "processing", "valid", "invalid"
+      Possible values are: "pending", "valid", "invalid", "deactivated",
       and "revoked".
 
    expires (optional, string):  The timestamp after which the server
@@ -1499,12 +1499,12 @@ Internet-Draft                    ACME                        March 2018
    objects and an initial set of validation methods are described in
    Section 8.
 
-7.2.  Getting a Nonce
+7.1.6.  Status Changes
 
-   Before sending a POST request to the server, an ACME client needs to
-   have a fresh anti-replay nonce to put in the "nonce" header of the
-   JWS.  In most cases, the client will have gotten a nonce from a
-   previous request.  However, the client might sometimes need to get a
+   Each ACME object type goes through a simple state machine over its
+   lifetime.  The "status" field of the object indicates which state the
+   object is currently in.
+
 
 
 
@@ -1514,6 +1514,144 @@ Barnes, et al.          Expires September 6, 2018              [Page 27]
 Internet-Draft                    ACME                        March 2018
 
 
+   Challenge objects are created in the "pending" state.  They
+   transition to the "processing" state when the client responds to the
+   challenge (see Section 7.5.1) and the server begins attempting to
+   validate that the client has completed the challenge.  Note that
+   within the "processing" state, the server may attempt to validate the
+   challenge multiple times (see Section 8.2).  Likewise, client
+   requests for retries do not cause a state change.  If validation is
+   successful, the challenge moves to the "valid" state; if there is an
+   error, the challenge moves to the "invalid" state.
+
+            pending
+               |
+               | Receive
+               | response
+               V
+           processing <-+
+               |   |    | Server retry or
+               |   |    | client retry request
+               |   +----+
+               |
+               |
+   Successful  |   Failed
+   validation  |   validation
+     +---------+---------+
+     |                   |
+     V                   V
+   valid              invalid
+
+   Authorization objects are created in the "pending" state.  If one of
+   the challenges listed in the authorization transitions to the "valid"
+   state, then the authorization also changes to the "valid" state.  If
+   there is an error while the authorization is still pending, then the
+   authorization transitions to the "invalid" state.  Once the
+   authorization is in the valid state, it can expire ("expired"), be
+   deactivated by the client ("deactivated", see Section 7.5.2), or
+   revoked by the server ("revoked").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 28]
+
+Internet-Draft                    ACME                        March 2018
+
+
+             pending --------------------+
+                |                        |
+                |                        |
+    Error       |  Challenge valid       |
+      +---------+---------+              |
+      |                   |              |
+      V                   V              |
+   invalid              valid            |
+                          |              |
+                          |              |
+                          |              |
+           +--------------+--------------+
+           |              |              |
+           |              |              |
+    Server |       Client |   Time after |
+    revoke |   deactivate |    "expires" |
+           V              V              V
+        revoked      deactivated      expired
+
+   Order objects are created in the "pending" state.  Once all of the
+   authorizations listed in the order object are in the "valid" state,
+   the order transitions to the "ready" state.  The order moves to the
+   "processing" state after the client submits a request to the order's
+   "finalize" URL and the CA begins the issuance process for the
+   certificate.  Once the certificate is issued, the order enters the
+   "valid" state.  If an error occurs at any of these stages, the order
+   moves to the "invalid" state.  The order also moves to the "invalid"
+   state if it expires, or one of its authorizations enters a final
+   state other than "valid" ("expired", "revoked", "deactivated").
+
+    pending --------------+
+       |                  |
+       | All authz        |
+       | "valid"          |
+       V                  |
+     ready ---------------+
+       |                  |
+       | Receive          |
+       | finalize         |
+       | request          |
+       V                  |
+   processing ------------+
+       |                  |
+       | Certificate      | Error or
+       | issued           | Authorization failure
+       V                  V
+     valid             invalid
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 29]
+
+Internet-Draft                    ACME                        March 2018
+
+
+   Account objects are created in the "valid" state, since no further
+   action is required to create an account after a successful newAccount
+   request.  If the account is deactivated by the client or revoked by
+   the server, it moves to the corresponding state.
+
+                     valid
+                       |
+                       |
+           +-----------+-----------+
+    Client |                Server |
+   deactiv.|                revoke |
+           V                       V
+      deactivated               revoked
+
+   Note that some of these states may not ever appear in a "status"
+   field, depending on server behavior.  For example, a server that
+   issues synchronously will never show an order in the "processing"
+   state.  A server that deletes expired authorizations immediately will
+   never show an authorization in the "expired" state.
+
+7.2.  Getting a Nonce
+
+   Before sending a POST request to the server, an ACME client needs to
+   have a fresh anti-replay nonce to put in the "nonce" header of the
+   JWS.  In most cases, the client will have gotten a nonce from a
+   previous request.  However, the client might sometimes need to get a
    new nonce, e.g., on its first request to the server or if an existing
    nonce is no longer valid.
 
@@ -1537,6 +1675,13 @@ Internet-Draft                    ACME                        March 2018
    the "no-store" directive in responses for the new-nonce resource, in
    order to prevent caching of this resource.
 
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 30]
+
+Internet-Draft                    ACME                        March 2018
+
+
 7.3.  Account Creation
 
    A client creates a new account with the server by sending a POST
@@ -1555,20 +1700,6 @@ Internet-Draft                    ACME                        March 2018
       account if one does not already exist.  This allows a client to
       look up an account URL based on an account key (see
       Section 7.3.1).
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 28]
-
-Internet-Draft                    ACME                        March 2018
-
 
    POST /acme/new-account HTTP/1.1
    Host: example.com
@@ -1599,6 +1730,14 @@ Internet-Draft                    ACME                        March 2018
 
    In general, the server MUST ignore any fields in the request object
    that it does not recognize.  In particular, it MUST NOT reflect
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 31]
+
+Internet-Draft                    ACME                        March 2018
+
+
    unrecognized fields in the resulting account object.  This allows
    clients to detect when servers do not support an extension field.
 
@@ -1617,15 +1756,6 @@ Internet-Draft                    ACME                        March 2018
    using a supported scheme but an invalid value then the server MUST
    return an error of type "invalidContact".
 
-
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 29]
-
-Internet-Draft                    ACME                        March 2018
-
-
    If the server wishes to present the client with terms under which the
    ACME service is to be used, it MUST indicate the URL where such terms
    can be accessed in the "termsOfService" subfield of the "meta" field
@@ -1642,6 +1772,27 @@ Internet-Draft                    ACME                        March 2018
    in a Location header field.  The account URL is used as the "kid"
    value in the JWS authenticating subsequent requests by this account
    (See Section 6.2).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 32]
+
+Internet-Draft                    ACME                        March 2018
+
 
    HTTP/1.1 201 Created
    Content-Type: application/json
@@ -1675,13 +1826,6 @@ Internet-Draft                    ACME                        March 2018
    response with status code 400 (Bad Request) and type
    "urn:ietf:params:acme:error:accountDoesNotExist".
 
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 30]
-
-Internet-Draft                    ACME                        March 2018
-
-
 7.3.2.  Account Update
 
    If the client wishes to update this information in the future, it
@@ -1693,6 +1837,18 @@ Internet-Draft                    ACME                        March 2018
 
    For example, to update the contact information in the above account,
    the client could send the following request:
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 33]
+
+Internet-Draft                    ACME                        March 2018
+
 
    POST /acme/acct/1 HTTP/1.1
    Host: example.com
@@ -1729,15 +1885,6 @@ Internet-Draft                    ACME                        March 2018
    terms of service by setting the "termsOfServiceAgreed" field in its
    account object to "true".
 
-
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 31]
-
-Internet-Draft                    ACME                        March 2018
-
-
    If the server has changed its terms of service since a client
    initially agreed, and the server is unwilling to process a request
    without explicit agreement to the new terms, then it MUST return an
@@ -1750,6 +1897,14 @@ Internet-Draft                    ACME                        March 2018
    "instance" field, indicating a URL that the client should direct a
    human user to visit in order for instructions on how to agree to the
    terms.
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 34]
+
+Internet-Draft                    ACME                        March 2018
+
 
  HTTP/1.1 403 Forbidden
  Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
@@ -1787,17 +1942,25 @@ Internet-Draft                    ACME                        March 2018
 
    o  The "nonce" field MUST NOT be present
 
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 32]
-
-Internet-Draft                    ACME                        March 2018
-
-
    o  The "url" field MUST be set to the same value as the outer JWS
 
    The "signature" field of the JWS will contain the MAC value computed
    with the MAC key provided by the CA.
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 35]
+
+Internet-Draft                    ACME                        March 2018
+
 
    POST /acme/new-account HTTP/1.1
    Host: example.com
@@ -1843,17 +2006,17 @@ Internet-Draft                    ACME                        March 2018
 
    1.  Verify that the value of the field is a well-formed JWS
 
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 33]
-
-Internet-Draft                    ACME                        March 2018
-
-
    2.  Verify that the JWS protected field meets the above criteria
 
    3.  Retrieve the MAC key corresponding to the key identifier in the
        "kid" field
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 36]
+
+Internet-Draft                    ACME                        March 2018
+
 
    4.  Verify that the MAC on the JWS verifies using that MAC key
 
@@ -1898,16 +2061,18 @@ Internet-Draft                    ACME                        March 2018
       public key of the new key pair (i.e., the same value as the
       "newKey" field).
 
+   o  The inner JWS MUST have the same "url" header parameter as the
+      outer JWS.
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 34]
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 37]
 
 Internet-Draft                    ACME                        March 2018
 
-
-   o  The inner JWS MUST have the same "url" header parameter as the
-      outer JWS.
 
    o  The inner JWS is NOT REQUIRED to have a "nonce" header parameter.
       The server MUST ignore any value provided for the "nonce" header
@@ -1954,16 +2119,16 @@ Internet-Draft                    ACME                        March 2018
    2.  Check that the payload of the JWS is a well-formed JWS object
        (the "inner JWS").
 
+   3.  Check that the JWS protected header of the inner JWS has a "jwk"
+       field.
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 35]
+
+Barnes, et al.          Expires September 6, 2018              [Page 38]
 
 Internet-Draft                    ACME                        March 2018
 
-
-   3.  Check that the JWS protected header of the inner JWS has a "jwk"
-       field.
 
    4.  Check that the inner JWS verifies using the key in its "jwk"
        field.
@@ -2013,7 +2178,10 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 36]
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 39]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2069,7 +2237,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 37]
+Barnes, et al.          Expires September 6, 2018              [Page 40]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2125,7 +2293,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 38]
+Barnes, et al.          Expires September 6, 2018              [Page 41]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2181,7 +2349,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 39]
+Barnes, et al.          Expires September 6, 2018              [Page 42]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2227,20 +2395,24 @@ Internet-Draft                    ACME                        March 2018
       fulfilled the requirements.  Check the "authorizations" array for
       entries that are still pending.
 
-   o  "processing": The server agrees that the requirements have been
-      fulfilled, and is in the process of generating the certificate.
-      Retry after the time given in the "Retry-After" header field of
-      the response, if any.
+   o  "ready": The server agrees that the requirements have been
+      fulfilled, and is awaiting finalization.  Submit a finalization
+      request.
 
-   o  "valid": The server has issued the certificate and provisioned its
-      URL to the "certificate" field of the order.
+   o  "processing": The certificate is being issued.  Send a GET request
+      after the time given in the "Retry-After" header field of the
+      response, if any.
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 40]
+Barnes, et al.          Expires September 6, 2018              [Page 43]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   o  "valid": The server has issued the certificate and provisioned its
+      URL to the "certificate" field of the order.  Download the
+      certificate.
 
    HTTP/1.1 200 OK
    Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
@@ -2286,17 +2458,17 @@ Internet-Draft                    ACME                        March 2018
    these authorizations and reflect them as already valid in any orders
    submitted by the client.
 
-   If a CA wishes to allow pre-authorization within ACME, it can offer a
-   "new authorization" resource in its directory by adding the field
-   "newAuthz" with a URL for the new authorization resource.
 
 
 
-
-Barnes, et al.          Expires September 6, 2018              [Page 41]
+Barnes, et al.          Expires September 6, 2018              [Page 44]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   If a CA wishes to allow pre-authorization within ACME, it can offer a
+   "new authorization" resource in its directory by adding the field
+   "newAuthz" with a URL for the new authorization resource.
 
    To request authorization for an identifier, the client sends a POST
    request to the new-authorization resource specifying the identifier
@@ -2342,17 +2514,18 @@ Internet-Draft                    ACME                        March 2018
    If the server is willing to proceed, it builds a pending
    authorization object from the inputs submitted by the client:
 
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 45]
+
+Internet-Draft                    ACME                        March 2018
+
+
    o  "identifier" the identifier submitted by the client
 
    o  "status" MUST be "pending" unless the server has out-of-band
       information about the client's authorization status
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 42]
-
-Internet-Draft                    ACME                        March 2018
-
 
    o  "challenges" as selected by the server's policy for this
       identifier
@@ -2396,20 +2569,21 @@ Internet-Draft                    ACME                        March 2018
    [Other certificate contents]
    -----END CERTIFICATE-----
 
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 46]
+
+Internet-Draft                    ACME                        March 2018
+
+
    A certificate resource represents a single, immutable certificate.
    If the client wishes to obtain a renewed certificate, the client
    initiates a new order process to request one.
 
    Because certificate resources are immutable once issuance is
    complete, the server MAY enable the caching of the resource by adding
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 43]
-
-Internet-Draft                    ACME                        March 2018
-
-
    Expires and Cache-Control headers specifying a point in time in the
    distant future.  These headers have no relation to the certificate's
    period of validity.
@@ -2455,13 +2629,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-
-
-
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 44]
+Barnes, et al.          Expires September 6, 2018              [Page 47]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2517,7 +2685,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 45]
+Barnes, et al.          Expires September 6, 2018              [Page 48]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2573,7 +2741,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 46]
+Barnes, et al.          Expires September 6, 2018              [Page 49]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2629,7 +2797,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 47]
+Barnes, et al.          Expires September 6, 2018              [Page 50]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2685,7 +2853,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 48]
+Barnes, et al.          Expires September 6, 2018              [Page 51]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2741,7 +2909,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 49]
+Barnes, et al.          Expires September 6, 2018              [Page 52]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2797,7 +2965,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 50]
+Barnes, et al.          Expires September 6, 2018              [Page 53]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2830,7 +2998,7 @@ Internet-Draft                    ACME                        March 2018
    url (required, string):  The URL to which a response can be posted.
 
    status (required, string):  The status of this challenge.  Possible
-      values are: "pending", "valid", and "invalid".
+      values are: "pending", "processing", "valid", and "invalid".
 
    validated (optional, string):  The time at which the server validated
       this challenge, encoded in the format specified in RFC 3339
@@ -2853,7 +3021,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 51]
+Barnes, et al.          Expires September 6, 2018              [Page 54]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -2909,12 +3077,12 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 52]
+Barnes, et al.          Expires September 6, 2018              [Page 55]
 
 Internet-Draft                    ACME                        March 2018
 
 
-   still trying, the status of the challenge remains "pending"; it is
+   still trying, the status of the challenge remains "processing"; it is
    only marked "invalid" once the server has given up.
 
    The server MUST provide information about its retry state to the
@@ -2965,7 +3133,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 53]
+Barnes, et al.          Expires September 6, 2018              [Page 56]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3021,7 +3189,7 @@ LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9f
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 54]
+Barnes, et al.          Expires September 6, 2018              [Page 57]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3077,7 +3245,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 55]
+Barnes, et al.          Expires September 6, 2018              [Page 58]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3133,7 +3301,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 56]
+Barnes, et al.          Expires September 6, 2018              [Page 59]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3189,7 +3357,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 57]
+Barnes, et al.          Expires September 6, 2018              [Page 60]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3245,7 +3413,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 58]
+Barnes, et al.          Expires September 6, 2018              [Page 61]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3301,7 +3469,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 59]
+Barnes, et al.          Expires September 6, 2018              [Page 62]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3357,7 +3525,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 60]
+Barnes, et al.          Expires September 6, 2018              [Page 63]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3413,7 +3581,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 61]
+Barnes, et al.          Expires September 6, 2018              [Page 64]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3469,7 +3637,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 62]
+Barnes, et al.          Expires September 6, 2018              [Page 65]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3525,7 +3693,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 63]
+Barnes, et al.          Expires September 6, 2018              [Page 66]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3581,7 +3749,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 64]
+Barnes, et al.          Expires September 6, 2018              [Page 67]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3637,7 +3805,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 65]
+Barnes, et al.          Expires September 6, 2018              [Page 68]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3693,7 +3861,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 66]
+Barnes, et al.          Expires September 6, 2018              [Page 69]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3749,7 +3917,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 67]
+Barnes, et al.          Expires September 6, 2018              [Page 70]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3805,7 +3973,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 68]
+Barnes, et al.          Expires September 6, 2018              [Page 71]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3861,7 +4029,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 69]
+Barnes, et al.          Expires September 6, 2018              [Page 72]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3917,7 +4085,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 70]
+Barnes, et al.          Expires September 6, 2018              [Page 73]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -3973,7 +4141,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 71]
+Barnes, et al.          Expires September 6, 2018              [Page 74]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -4029,7 +4197,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 72]
+Barnes, et al.          Expires September 6, 2018              [Page 75]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -4085,7 +4253,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 73]
+Barnes, et al.          Expires September 6, 2018              [Page 76]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -4141,7 +4309,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 74]
+Barnes, et al.          Expires September 6, 2018              [Page 77]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -4197,7 +4365,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 75]
+Barnes, et al.          Expires September 6, 2018              [Page 78]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -4253,7 +4421,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 76]
+Barnes, et al.          Expires September 6, 2018              [Page 79]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -4309,7 +4477,7 @@ Internet-Draft                    ACME                        March 2018
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 77]
+Barnes, et al.          Expires September 6, 2018              [Page 80]
 
 Internet-Draft                    ACME                        March 2018
 
@@ -4365,4 +4533,4 @@ Authors' Addresses
 
 
 
-Barnes, et al.          Expires September 6, 2018              [Page 78]
+Barnes, et al.          Expires September 6, 2018              [Page 81]
