@@ -1037,7 +1037,7 @@ state.
 
 ~~~~~~~~~~
          pending
-            | 
+            |
             | Receive
             | response
             V
@@ -1059,31 +1059,31 @@ Authorization objects are created in the "pending" state.  If one of
 the challenges listed in the authorization transitions to the
 "valid" state, then the authorization also changes to the "valid"
 state.  If there is an error while the authorization is still
-pending, then the authorizatoin transitions to the "invalid" state.
+pending, then the authorization transitions to the "invalid" state.
 Once the authorization is in the valid state, it can expire
-("invalid"), be deactivated by the client ("deactivated", see
+("expired"), be deactivated by the client ("deactivated", see
 {{deactivating-an-authorization}}), or revoked by the server
 ("revoked").
 
 ~~~~~~~~~~
-          pending
-             |
-Error        |  Challenge -> valid
-   +---------+---------+
-   |                   |
-   V                   V
-invalid <----------- valid
-            Time       |
-           after       |
-         "expires"     |
-                       |
-           +-----------+-----------+
-           |                       |
-           |                       |
-    Server |                Client |
-    revoke |            deactivate |
-           V                       V
-        revoked               deactivated
+          pending --------------------+
+             |                        |
+             |                        |
+ Error       |  Challenge valid       |
+   +---------+---------+              |
+   |                   |              |
+   V                   V              |
+invalid              valid            |
+                       |              |
+                       |              |
+                       |              |
+        +--------------+--------------+
+        |              |              |
+        |              |              |
+ Server |       Client |   Time after |
+ revoke |   deactivate |    "expires" |
+        V              V              V
+     revoked      deactivated      expired
 ~~~~~~~~~~
 
 Order objects are created in the "pending" state.  Once all of the
@@ -1095,7 +1095,7 @@ certificate.  Once the certificate is issued, the order enters the
 "valid" state.  If an error occurs at any of these stages, the
 order moves to the "invalid" state.  The order also moves to the
 "invalid" state if it expires, or one of its authorizations enters a
-final state other than "valid" ("invalid", "revoked", "deactivated")
+final state other than "valid" ("expired", "revoked", "deactivated").
 
 ~~~~~~~~~~
  pending --------------+
@@ -1110,8 +1110,8 @@ final state other than "valid" ("invalid", "revoked", "deactivated")
     | request          |
     V                  |
 processing ------------+
-    |                  | Fatal error or
-    | Certificate      | Expiration or
+    |                  |
+    | Certificate      | Error or
     | issued           | Authorization failure
     V                  V
   valid             invalid
@@ -1120,7 +1120,7 @@ processing ------------+
 Account objects are created in the "valid" state, since no further
 action is required to create an account after a successful
 newAccount request.  If the account is deactivated by the client  or
-revoked by the server, it moves to the corresponding state. 
+revoked by the server, it moves to the corresponding state.
 
 ~~~~~~~~~~
                   valid
