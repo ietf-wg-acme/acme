@@ -1041,11 +1041,11 @@ Authorization objects are created in the "pending" state.  If one of
 the challenges listed in the authorization transitions to the
 "valid" state, then the authorization also changes to the "valid"
 state.  If there is an error while the authorization is still
-pending (e.g., the authorization times out), then the authorizatoin
-transitions to the "invalid" state.  Once the authorization is in
-the valid state, it can expire ("invalid"), be deactivated by the
-client ("deactivated", see {{deactivating-an-authorization}}),
-revoked by the server ("revoked").
+pending, then the authorizatoin transitions to the "invalid" state.
+Once the authorization is in the valid state, it can expire
+("invalid"), be deactivated by the client ("deactivated", see
+{{deactivating-an-authorization}}), or revoked by the server
+("revoked").
 
 ~~~~~~~~~~
           pending
@@ -1062,10 +1062,10 @@ invalid <----------- valid
            +-----------+-----------+
            |                       |
            |                       |
-    Client |                Server |
-   deactiv.|                revoke |
+    Server |                Client |
+    revoke |            deactivate |
            V                       V
-      deactivated               revoked
+        revoked               deactivated
 ~~~~~~~~~~
 
 Order objects are created in the "pending" state.  Once all of the
@@ -1074,8 +1074,10 @@ the order transitions to the "ready" state.  The order moves to the
 "processing" state after the client submits a request to the order's
 "finalize" URL and the CA begins the issuance process for the
 certificate.  Once the certificate is issued, the order enters the
-"valid" state.  If a fatal error occurs at any of these stages, the
-order moves to the "invalid" state.
+"valid" state.  If an error occurs at any of these stages, the
+order moves to the "invalid" state.  The order also moves to the
+"invalid" state if it expires, or one of its authorizations enters a
+final state other than "valid" ("invalid", "revoked", "deactivated")
 
 ~~~~~~~~~~
  pending --------------+
@@ -1090,9 +1092,9 @@ order moves to the "invalid" state.
     | request          |
     V                  |
 processing ------------+
-    |                  |
-    | Certificate      | Fatal
-    | issued           | error
+    |                  | Fatal error or
+    | Certificate      | Expiration or
+    | issued           | Authorization failure
     V                  V
   valid             invalid
 ~~~~~~~~~~
