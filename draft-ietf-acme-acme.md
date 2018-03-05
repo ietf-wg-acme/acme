@@ -716,7 +716,7 @@ should not clash with other services. For instance:
  * a host which only functions as an ACME server could place the directory
    under the path "/".
 
-If the ACME server does not implement pre-authorization (Section 7.4.1) it
+If the ACME server does not implement pre-authorization ({{pre-authorization}}) it
 MUST omit the "newAuthz" field of the directory.
 
 The object MAY additionally contain a field "meta". If present, it MUST be a
@@ -1645,13 +1645,8 @@ the new-authorization resource specifying the identifier for which authorization
 is being requested.
 
 identifier (required, object):
-: The identifier that the account is authorized to represent:
-
-  type (required, string):
-  : The type of identifier.
-
-  value (required, string):
-  : The identifier itself.
+: The identifier to appear in the resulting authorization object
+(see {{authorization-objects}})
 
 ~~~~~~~~~~
 POST /acme/new-authz HTTP/1.1
@@ -1674,6 +1669,11 @@ Content-Type: application/jose+json
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
 ~~~~~~~~~~
+
+Note that because the identifier in a pre-authorization request is
+the exact identifier to be included in the authorization object,
+pre-authorization cannot be used to authorize issuance with wildcard
+DNS identifiers.
 
 Before processing the authorization request, the server SHOULD determine whether
 it is willing to issue certificates for the identifier.  For example, the server
