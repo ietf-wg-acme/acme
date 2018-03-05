@@ -1705,12 +1705,16 @@ action the client should take:
   requirements.  Check the "authorizations" array for entries that are still
   pending.
 
-* "processing": The server agrees that the requirements have been fulfilled, and
-  is in the process of generating the certificate.  Retry after the time given
-  in the "Retry-After" header field of the response, if any.
+* "ready": The server agrees that the requirements have been
+  fulfilled, and is awaiting on finalization.  Submit a finalization
+  request.
+
+* "processing": The certificate is being issued.  Retry after the
+  time given in the "Retry-After" header field of the response, if
+  any.
 
 * "valid": The server has issued the certificate and provisioned its URL to the
-  "certificate" field of the order.
+  "certificate" field of the order.  Download the certificate.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
