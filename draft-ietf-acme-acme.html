@@ -1068,7 +1068,7 @@ Content-Type: application/problem+json
 <li>a host which functions as both an ACME and a Web server may want to keep the root path &#8220;/&#8221; for an HTML &#8220;front page&#8221;, and place the ACME directory under the path &#8220;/acme&#8221;.</li>
 <li>a host which only functions as an ACME server could place the directory under the path &#8220;/&#8221;.</li>
 </ul>
-<p id="rfc.section.7.1.1.p.4">If the ACME server does not implement pre-authorization (Section 7.4.1) it MUST omit the &#8220;newAuthz&#8221; field of the directory.</p>
+<p id="rfc.section.7.1.1.p.4">If the ACME server does not implement pre-authorization (<a href="#pre-authorization" class="xref">Section 7.4.1</a>) it MUST omit the &#8220;newAuthz&#8221; field of the directory.</p>
 <p id="rfc.section.7.1.1.p.5">The object MAY additionally contain a field &#8220;meta&#8221;. If present, it MUST be a JSON object; each field in the object is an item of metadata relating to the service provided by the ACME server.</p>
 <p id="rfc.section.7.1.1.p.6">The following metadata items are defined, all of which are OPTIONAL:</p>
 <p></p>
@@ -1679,14 +1679,7 @@ Location: https://example.com/acme/order/asdf
 
 <dl>
 <dt>identifier (required, object):</dt>
-<dd style="margin-left: 8">The identifier that the account is authorized to represent: <dl>
-<dt>type (required, string):</dt>
-<dd style="margin-left: 8">The type of identifier.</dd>
-<dt>value (required, string):</dt>
-<dd style="margin-left: 8">The identifier itself.</dd>
-</dl>
-<p> </p>
-</dd>
+<dd style="margin-left: 8">The identifier to appear in the resulting authorization object (see <a href="#authorization-objects" class="xref">Section 7.1.4</a>)</dd>
 </dl>
 <pre>
 POST /acme/new-authz HTTP/1.1
@@ -1709,8 +1702,9 @@ Content-Type: application/jose+json
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
 </pre>
-<p id="rfc.section.7.4.1.p.6">Before processing the authorization request, the server SHOULD determine whether it is willing to issue certificates for the identifier.  For example, the server should check that the identifier is of a supported type.  Servers might also check names against a blacklist of known high-value identifiers.  If the server is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden) error, with a problem document describing the reason for the rejection.</p>
-<p id="rfc.section.7.4.1.p.7">If the server is willing to proceed, it builds a pending authorization object from the inputs submitted by the client:</p>
+<p id="rfc.section.7.4.1.p.6">Note that because the identifier in a pre-authorization request is the exact identifier to be included in the authorization object, pre-authorization cannot be used to authorize issuance with wildcard DNS identifiers.</p>
+<p id="rfc.section.7.4.1.p.7">Before processing the authorization request, the server SHOULD determine whether it is willing to issue certificates for the identifier.  For example, the server should check that the identifier is of a supported type.  Servers might also check names against a blacklist of known high-value identifiers.  If the server is unwilling to issue for the identifier, it SHOULD return a 403 (Forbidden) error, with a problem document describing the reason for the rejection.</p>
+<p id="rfc.section.7.4.1.p.8">If the server is willing to proceed, it builds a pending authorization object from the inputs submitted by the client:</p>
 <p></p>
 
 <ul>
@@ -1718,7 +1712,7 @@ Content-Type: application/jose+json
 <li>&#8220;status&#8221; MUST be &#8220;pending&#8221; unless the server has out-of-band information about the client&#8217;s authorization status</li>
 <li>&#8220;challenges&#8221; as selected by the server&#8217;s policy for this identifier</li>
 </ul>
-<p id="rfc.section.7.4.1.p.9">The server allocates a new URL for this authorization, and returns a 201 (Created) response, with the authorization URL in the Location header field, and the JSON authorization object in the body.  The client then follows the process described in <a href="#identifier-authorization" class="xref">Section 7.5</a> to complete the authorization process.</p>
+<p id="rfc.section.7.4.1.p.10">The server allocates a new URL for this authorization, and returns a 201 (Created) response, with the authorization URL in the Location header field, and the JSON authorization object in the body.  The client then follows the process described in <a href="#identifier-authorization" class="xref">Section 7.5</a> to complete the authorization process.</p>
 <h1 id="rfc.section.7.4.2">
 <a href="#rfc.section.7.4.2">7.4.2.</a> <a href="#downloading-the-certificate" id="downloading-the-certificate">Downloading the Certificate</a>
 </h1>

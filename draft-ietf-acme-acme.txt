@@ -2302,12 +2302,8 @@ Internet-Draft                    ACME                        March 2018
    request to the new-authorization resource specifying the identifier
    for which authorization is being requested.
 
-   identifier (required, object):  The identifier that the account is
-      authorized to represent:
-
-      type (required, string):  The type of identifier.
-
-      value (required, string):  The identifier itself.
+   identifier (required, object):  The identifier to appear in the
+      resulting authorization object (see Section 7.1.4)
 
    POST /acme/new-authz HTTP/1.1
    Host: example.com
@@ -2329,6 +2325,11 @@ Internet-Draft                    ACME                        March 2018
      "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
    }
 
+   Note that because the identifier in a pre-authorization request is
+   the exact identifier to be included in the authorization object, pre-
+   authorization cannot be used to authorize issuance with wildcard DNS
+   identifiers.
+
    Before processing the authorization request, the server SHOULD
    determine whether it is willing to issue certificates for the
    identifier.  For example, the server should check that the identifier
@@ -2345,7 +2346,6 @@ Internet-Draft                    ACME                        March 2018
 
    o  "status" MUST be "pending" unless the server has out-of-band
       information about the client's authorization status
-
 
 
 
