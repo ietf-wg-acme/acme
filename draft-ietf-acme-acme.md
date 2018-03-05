@@ -925,7 +925,8 @@ character followed by a single full stop character ("\*.") followed by a domain
 name as defined for use in the Subject Alternate Name Extension by RFC 5280
 {{!RFC5280}}. An authorization returned by the server for a wildcard domain name
 identifier MUST NOT include the asterisk and full stop ("\*.") prefix in the
-authorization identifier value.
+authorization identifier value. The returned authorization MUST include the
+optional "wildcard" field, with a value of true.
 
 The elements of the "authorizations" and "identifiers" array are immutable once
 set.  The server MUST NOT change the contents of either array after they are
@@ -976,12 +977,20 @@ one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.  For final authorizations, it contains
 the challenges that were successfully completed.
 
+wildcard (optional, boolean):
+: For authorizations created as a result of a newOrder request containing a DNS
+identifier with a value that contained a wildcard prefix this field MUST be
+present, and true.
+
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). If a domain name contains non-ASCII Unicode characters
 it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
 any identifier values that begin with the ASCII Compatible Encoding prefix
 "xn\-\-" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
-(with "\*" as the first label) MUST NOT be included in authorization objects.
+(with "\*" as the first label) MUST NOT be included in authorization objects. If
+an authorization object conveys authorization for the base domain of a newOrder
+DNS type identifier with a wildcard prefix then the optional authorizations
+"wildcard" field MUST be present with a value of true.
 
 {{identifier-validation-challenges}} describes a set of challenges for domain
 name validation.
@@ -1004,7 +1013,9 @@ name validation.
       "token": "DGyRejmCefe7v4NfDGDKfA",
       "validated": "2014-12-01T12:05:00Z"
     }
-  ]
+  ],
+
+  "wildcard": false
 }
 ~~~~~~~~~~
 
@@ -1805,7 +1816,9 @@ Link: <https://example.com/acme/some-directory>;rel="index"
       "url": "https://example.com/acme/authz/1234/2",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
-  ]
+  ],
+
+  "wildcard": false
 }
 ~~~~~~~~~~
 
@@ -1897,7 +1910,9 @@ Content-Type: application/json
       "validated": "2014-12-01T12:05:00Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     }
-  ]
+  ],
+
+  "wildcard": false
 }
 ~~~~~~~~~~
 
@@ -2546,6 +2561,7 @@ Initial contents: The fields and descriptions defined in {{authorization-objects
 | status      | string          | false        | RFC XXXX  |
 | expires     | string          | false        | RFC XXXX  |
 | challenges  | array of object | false        | RFC XXXX  |
+| wildcard    | boolean         | false        | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
