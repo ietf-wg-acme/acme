@@ -88,17 +88,16 @@ Table of Contents
    6.  Message Transport . . . . . . . . . . . . . . . . . . . . . .   9
      6.1.  HTTPS Requests  . . . . . . . . . . . . . . . . . . . . .   9
      6.2.  Request Authentication  . . . . . . . . . . . . . . . . .  10
-     6.3.  JWS Serialization Formats . . . . . . . . . . . . . . . .  11
-     6.4.  Request URL Integrity . . . . . . . . . . . . . . . . . .  12
-       6.4.1.  "url" (URL) JWS Header Parameter  . . . . . . . . . .  13
-     6.5.  Replay protection . . . . . . . . . . . . . . . . . . . .  13
-       6.5.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  13
-       6.5.2.  "nonce" (Nonce) JWS Header Parameter  . . . . . . . .  14
-     6.6.  Rate Limits . . . . . . . . . . . . . . . . . . . . . . .  14
-     6.7.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  14
-       6.7.1.  Subproblems . . . . . . . . . . . . . . . . . . . . .  16
+     6.3.  Request URL Integrity . . . . . . . . . . . . . . . . . .  12
+       6.3.1.  "url" (URL) JWS Header Parameter  . . . . . . . . . .  12
+     6.4.  Replay protection . . . . . . . . . . . . . . . . . . . .  12
+       6.4.1.  Replay-Nonce  . . . . . . . . . . . . . . . . . . . .  13
+       6.4.2.  "nonce" (Nonce) JWS Header Parameter  . . . . . . . .  14
+     6.5.  Rate Limits . . . . . . . . . . . . . . . . . . . . . . .  14
+     6.6.  Errors  . . . . . . . . . . . . . . . . . . . . . . . . .  14
+       6.6.1.  Subproblems . . . . . . . . . . . . . . . . . . . . .  16
    7.  Certificate Management  . . . . . . . . . . . . . . . . . . .  17
-     7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  18
+     7.1.  Resources . . . . . . . . . . . . . . . . . . . . . . . .  17
        7.1.1.  Directory . . . . . . . . . . . . . . . . . . . . . .  20
        7.1.2.  Account Objects . . . . . . . . . . . . . . . . . . .  22
        7.1.3.  Order Objects . . . . . . . . . . . . . . . . . . . .  23
@@ -106,6 +105,7 @@ Table of Contents
        7.1.5.  Challenge Objects . . . . . . . . . . . . . . . . . .  27
      7.2.  Getting a Nonce . . . . . . . . . . . . . . . . . . . . .  27
      7.3.  Account Creation  . . . . . . . . . . . . . . . . . . . .  28
+       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  30
 
 
 
@@ -114,7 +114,6 @@ Barnes, et al.          Expires September 6, 2018               [Page 2]
 Internet-Draft                    ACME                        March 2018
 
 
-       7.3.1.  Finding an Account URL Given a Key  . . . . . . . . .  30
        7.3.2.  Account Update  . . . . . . . . . . . . . . . . . . .  31
        7.3.3.  Account Information . . . . . . . . . . . . . . . . .  31
        7.3.4.  Changes of Terms of Service . . . . . . . . . . . . .  31
@@ -162,6 +161,7 @@ Internet-Draft                    ACME                        March 2018
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  73
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  74
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  74
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  77
 
 
 
@@ -170,7 +170,6 @@ Barnes, et al.          Expires September 6, 2018               [Page 3]
 Internet-Draft                    ACME                        March 2018
 
 
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  77
      13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  78
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  78
 
@@ -218,6 +217,7 @@ Internet-Draft                    ACME                        March 2018
    issued, these are all completely ad hoc procedures and are
    accomplished by getting the human user to follow interactive natural-
    language instructions from the CA rather than by machine-implemented
+   published protocols.  In many cases, the instructions are difficult
 
 
 
@@ -226,7 +226,6 @@ Barnes, et al.          Expires September 6, 2018               [Page 4]
 Internet-Draft                    ACME                        March 2018
 
 
-   published protocols.  In many cases, the instructions are difficult
    to follow and cause significant confusion.  Informal usability tests
    by the authors indicate that webmasters often need 1-3 hours to
    obtain and install a certificate for a domain.  Even in the best
@@ -273,6 +272,7 @@ Internet-Draft                    ACME                        March 2018
    circumstances, all steps in the request, verification, and issuance
    process can be represented and performed by Internet protocols with
    no out-of-band human intervention.
+
 
 
 
@@ -507,7 +507,7 @@ Internet-Draft                    ACME                        March 2018
 
 
    because the ACME protocol itself includes anti-replay protections
-   (see Section 6.5).
+   (see Section 6.4).
 
    ACME clients SHOULD send a User-Agent header in accordance with
    [RFC7231], including the name and version of the ACME software in
@@ -539,20 +539,20 @@ Internet-Draft                    ACME                        March 2018
    JWS objects sent in ACME requests MUST meet the following additional
    criteria:
 
+   o  The JWS MUST be in the Flattened JSON Serialization [RFC7515]
+
    o  The JWS MUST NOT have the value "none" in its "alg" field
 
-   o  The JWS MUST NOT have multiple signatures.
+   o  The JWS MUST NOT have multiple signatures
+
+   o  The JWS Unencoded Payload Option [RFC7797] MUST NOT be used
+
+   o  The JWS Unprotected Header [RFC7515] MUST NOT be used
 
    o  The JWS MUST NOT have a Message Authentication Code (MAC)-based
       algorithm in its "alg" field
 
-   o  The JWS Protected Header MUST include the following fields:
-
-      *  "alg" (Algorithm)
-
-      *  "jwk" (JSON Web Key, for all requests not signed using an
-         existing account, e.g. newAccount)
-
+   o  The JWS The JWS Payload MUST NOT be detached
 
 
 
@@ -562,12 +562,19 @@ Barnes, et al.          Expires September 6, 2018              [Page 10]
 Internet-Draft                    ACME                        March 2018
 
 
+   o  The JWS Protected Header MUST include the following fields:
+
+      *  "alg" (Algorithm)
+
+      *  "jwk" (JSON Web Key, for all requests not signed using an
+         existing account, e.g. newAccount)
+
       *  "kid" (Key ID, for all requests signed using an existing
          account)
 
-      *  "nonce" (defined in Section 6.5 below)
+      *  "nonce" (defined in Section 6.4 below)
 
-      *  "url" (defined in Section 6.4 below)
+      *  "url" (defined in Section 6.3 below)
 
    The "jwk" and "kid" fields are mutually exclusive.  Servers MUST
    reject requests that contain both.
@@ -594,21 +601,14 @@ Internet-Draft                    ACME                        March 2018
    document returned with the error MUST include an "algorithms" field
    with an array of supported "alg" values.
 
-6.3.  JWS Serialization Formats
+   Because client requests in ACME carry JWS objects in the Flattened
+   JSON Serialization, they must have the "Content-Type" header field
+   set to "application/jose+json".  If a request does not meet this
+   requirement, then the server MUST return a response with status code
+   415 (Unsupported Media Type).
 
-   The JSON Web Signature (JWS) specification [RFC7515] contains
-   multiple JWS serialization formats.  When sending an ACME request
-   with a non-empty body, an ACME client implementation MUST use the
-   HTTP Content-Type [RFC7231] header to indicate which JWS
-   serialization format is used for encapsulating the ACME request
-   payload.  The following Content-Type values may be used for this
-   purpose:
 
-   o  "application/jose":
 
-      *  The JWS Compact Serialization [RFC7515] MUST be used.
-
-      *  The JWS Payload MUST NOT be detached.
 
 
 
@@ -618,25 +618,7 @@ Barnes, et al.          Expires September 6, 2018              [Page 11]
 Internet-Draft                    ACME                        March 2018
 
 
-      *  The JWS Unencoded Payload Option [RFC7797] MUST NOT be used.
-
-   o  "application/jose+json":
-
-      *  Either the JWS Flattened JSON Serialization [RFC7515] or the
-         JWS General JSON Serialization [RFC7515] MUST be used.
-
-      *  The JWS Payload MUST NOT be detached.
-
-      *  The JWS Unencoded Payload Option [RFC7797] MUST NOT be used.
-
-      *  The JWS Unprotected Header [RFC7515] SHOULD NOT be used.
-
-   In the examples below, JWS objects are shown in the Flattened JSON
-   serialization, with the protected header and payload expressed as
-   base64url(content) instead of the actual base64-encoded value, so
-   that the content is readable.
-
-6.4.  Request URL Integrity
+6.3.  Request URL Integrity
 
    It is common in deployment for the entity terminating TLS for HTTPS
    to be different from the entity operating the logical HTTPS server,
@@ -666,22 +648,14 @@ Internet-Draft                    ACME                        March 2018
    provided to clients and having the resource check that requests have
    the same string in their "url" header parameter.
 
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 12]
-
-Internet-Draft                    ACME                        March 2018
-
-
-6.4.1.  "url" (URL) JWS Header Parameter
+6.3.1.  "url" (URL) JWS Header Parameter
 
    The "url" header parameter specifies the URL [RFC3986] to which this
    JWS object is directed.  The "url" header parameter MUST be carried
    in the protected header of the JWS.  The value of the "url" header
    parameter MUST be a string representing the URL.
 
-6.5.  Replay protection
+6.4.  Replay protection
 
    In order to protect ACME resources from any possible replay attacks,
    ACME requests have a mandatory anti-replay mechanism.  This mechanism
@@ -690,13 +664,22 @@ Internet-Draft                    ACME                        March 2018
    to carry such a nonce.
 
    An ACME server provides nonces to clients using the Replay-Nonce
-   header field, as specified in Section 6.5.1 below.  The server MUST
+   header field, as specified in Section 6.4.1 below.  The server MUST
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 12]
+
+Internet-Draft                    ACME                        March 2018
+
+
    include a Replay-Nonce header field in every successful response to a
    POST request and SHOULD provide it in error responses as well.
 
    Every JWS sent by an ACME client MUST include, in its protected
    header, the "nonce" header parameter, with contents as defined in
-   Section 6.5.2 below.  As part of JWS verification, the ACME server
+   Section 6.4.2 below.  As part of JWS verification, the ACME server
    MUST verify that the value of the "nonce" header is a value that the
    server previously provided in a Replay-Nonce header field.  Once a
    nonce value has appeared in an ACME request, the server MUST consider
@@ -715,21 +698,12 @@ Internet-Draft                    ACME                        March 2018
    value for each response, keep a list of issued nonces, and strike
    nonces from this list as they are used.
 
-6.5.1.  Replay-Nonce
+6.4.1.  Replay-Nonce
 
    The "Replay-Nonce" header field includes a server-generated value
    that the server can use to detect unauthorized replay in future
    client requests.  The server MUST generate the value provided in
    Replay-Nonce in such a way that they are unique to each message, with
-
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 13]
-
-Internet-Draft                    ACME                        March 2018
-
-
    high probability.  For instance, it is acceptable to generate Replay-
    Nonces randomly.
 
@@ -744,7 +718,19 @@ Internet-Draft                    ACME                        March 2018
    The Replay-Nonce header field SHOULD NOT be included in HTTP request
    messages.
 
-6.5.2.  "nonce" (Nonce) JWS Header Parameter
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 13]
+
+Internet-Draft                    ACME                        March 2018
+
+
+6.4.2.  "nonce" (Nonce) JWS Header Parameter
 
    The "nonce" header parameter provides a unique value that enables the
    verifier of a JWS to recognize when replay has occurred.  The "nonce"
@@ -756,7 +742,7 @@ Internet-Draft                    ACME                        March 2018
    according to this encoding, then the verifier MUST reject the JWS as
    malformed.
 
-6.6.  Rate Limits
+6.5.  Rate Limits
 
    Creation of resources can be rate limited by ACME servers to ensure
    fair usage and prevent abuse.  Once the rate limit is exceeded, the
@@ -772,20 +758,12 @@ Internet-Draft                    ACME                        March 2018
    "Link" header pointing to documentation about the specific rate limit
    that was hit, using the "help" link relation type.
 
-6.7.  Errors
+6.6.  Errors
 
    Errors can be reported in ACME both at the HTTP layer and within
    challenge objects as defined in Section 8.  ACME servers can return
    responses with an HTTP error response code (4XX or 5XX).  For
    example: If the client submits a request using a method not allowed
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 14]
-
-Internet-Draft                    ACME                        March 2018
-
-
    in this document, then the server MAY return status code 405 (Method
    Not Allowed).
 
@@ -800,6 +778,14 @@ Internet-Draft                    ACME                        March 2018
    +-------------------------+-----------------------------------------+
    | badCSR                  | The CSR is unacceptable (e.g., due to a |
    |                         | short key)                              |
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 14]
+
+Internet-Draft                    ACME                        March 2018
+
+
    |                         |                                         |
    | badNonce                | The client sent an unacceptable anti-   |
    |                         | replay nonce                            |
@@ -834,14 +820,6 @@ Internet-Draft                    ACME                        March 2018
    |                         |                                         |
    | unsupportedIdentifier   | Identifier is not supported, but may be |
    |                         | in future                               |
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 15]
-
-Internet-Draft                    ACME                        March 2018
-
-
    |                         |                                         |
    | userActionRequired      | Visit the "instance" URL and take       |
    |                         | actions specified there                 |
@@ -856,6 +834,14 @@ Internet-Draft                    ACME                        March 2018
    | dns                     | There was a problem with a DNS query    |
    |                         |                                         |
    | connection              | The server could not connect to         |
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 15]
+
+Internet-Draft                    ACME                        March 2018
+
+
    |                         | validation target                       |
    |                         |                                         |
    | tls                     | The server received a TLS error during  |
@@ -876,7 +862,7 @@ Internet-Draft                    ACME                        March 2018
    example, an "error of type 'badCSR'" refers to an error document with
    "type" value "urn:ietf:params:acme:error:badCSR".
 
-6.7.1.  Subproblems
+6.6.1.  Subproblems
 
    Sometimes a CA may need to return multiple errors in response to a
    request.  Additionally, the CA may need to attribute errors to
@@ -891,13 +877,6 @@ Internet-Draft                    ACME                        March 2018
    Subproblems need not all have the same type, and do not need to match
    the top level type.
 
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 16]
-
-Internet-Draft                    ACME                        March 2018
-
-
    ACME clients may choose to use the "identifier" field of a subproblem
    as a hint that an operation would succeed if that identifier were
    omitted.  For instance, if an order contains ten DNS identifiers, and
@@ -905,6 +884,19 @@ Internet-Draft                    ACME                        March 2018
    subproblems, referencing two of those identifiers, the ACME client
    may choose to submit another order containing only the eight
    identifiers not listed in the problem document.
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 16]
+
+Internet-Draft                    ACME                        March 2018
+
 
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
@@ -947,13 +939,6 @@ Content-Type: application/problem+json
 
    o  Certificate Revocation
 
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 17]
-
-Internet-Draft                    ACME                        March 2018
-
-
 7.1.  Resources
 
    ACME is structured as a REST application with the following types of
@@ -961,6 +946,13 @@ Internet-Draft                    ACME                        March 2018
 
    o  Account resources, representing information about an account
       (Section 7.1.2, Section 7.3)
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 17]
+
+Internet-Draft                    ACME                        March 2018
+
 
    o  Order resources, representing an account's requests to issue
       certificates (Section 7.1.3)
@@ -1002,6 +994,14 @@ Internet-Draft                    ACME                        March 2018
    The "index" link relation is present on all resources other than the
    directory and indicates the URL of the directory.
 
+   The following diagram illustrates the relations between resources on
+   an ACME server.  For the most part, these relations are expressed by
+   URLs provided as strings in the resources' JSON representations.
+   Lines with labels in quotes indicate HTTP link relations.
+
+
+
+
 
 
 
@@ -1009,11 +1009,6 @@ Barnes, et al.          Expires September 6, 2018              [Page 18]
 
 Internet-Draft                    ACME                        March 2018
 
-
-   The following diagram illustrates the relations between resources on
-   an ACME server.  For the most part, these relations are expressed by
-   URLs provided as strings in the resources' JSON representations.
-   Lines with labels in quotes indicate HTTP link relations.
 
                                   directory
                                       |
@@ -1042,6 +1037,11 @@ Internet-Draft                    ACME                        March 2018
    an identifier, issue a certificate, and fetch an updated certificate
    some time after issuance.  The "->" is a mnemonic for a Location
    header pointing to a created resource.
+
+
+
+
+
 
 
 
@@ -1375,7 +1375,8 @@ Internet-Draft                    ACME                        March 2018
    Subject Alternate Name Extension by RFC 5280 [RFC5280].  An
    authorization returned by the server for a wildcard domain name
    identifier MUST NOT include the asterisk and full stop ("*.") prefix
-   in the authorization identifier value.
+   in the authorization identifier value.  The returned authorization
+   MUST include the optional "wildcard" field, with a value of true.
 
    The elements of the "authorizations" and "identifiers" array are
    immutable once set.  The server MUST NOT change the contents of
@@ -1389,7 +1390,6 @@ Internet-Draft                    ACME                        March 2018
    pre-authorization transactions.  For example, if a CA allows multiple
    orders to be fulfilled based on a single authorization transaction,
    then it SHOULD reflect that authorization in all of the orders.
-
 
 
 
@@ -1440,16 +1440,16 @@ Internet-Draft                    ACME                        March 2018
       authorizations, it contains the challenges that were successfully
       completed.
 
+   wildcard (optional, boolean):  For authorizations created as a result
+      of a newOrder request containing a DNS identifier with a value
+      that contained a wildcard prefix this field MUST be present, and
+      true.
+
    The only type of identifier defined by this specification is a fully-
    qualified domain name (type: "dns").  If a domain name contains non-
    ASCII Unicode characters it MUST be encoded using the rules defined
    in [RFC3492].  Servers MUST verify any identifier values that begin
    with the ASCII Compatible Encoding prefix "xn--" as defined in
-   [RFC5890] are properly encoded.  Wildcard domain names (with "*" as
-   the first label) MUST NOT be included in authorization objects.
-
-   Section 8 describes a set of challenges for domain name validation.
-
 
 
 
@@ -1457,6 +1457,15 @@ Barnes, et al.          Expires September 6, 2018              [Page 26]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   [RFC5890] are properly encoded.  Wildcard domain names (with "*" as
+   the first label) MUST NOT be included in authorization objects.  If
+   an authorization object conveys authorization for the base domain of
+   a newOrder DNS type identifier with a wildcard prefix then the
+   optional authorizations "wildcard" field MUST be present with a value
+   of true.
+
+   Section 8 describes a set of challenges for domain name validation.
 
    {
      "status": "valid",
@@ -1475,7 +1484,9 @@ Internet-Draft                    ACME                        March 2018
          "token": "DGyRejmCefe7v4NfDGDKfA",
          "validated": "2014-12-01T12:05:00Z"
        }
-     ]
+     ],
+
+     "wildcard": false
    }
 
 7.1.5.  Challenge Objects
@@ -1494,6 +1505,15 @@ Internet-Draft                    ACME                        March 2018
    have a fresh anti-replay nonce to put in the "nonce" header of the
    JWS.  In most cases, the client will have gotten a nonce from a
    previous request.  However, the client might sometimes need to get a
+
+
+
+
+Barnes, et al.          Expires September 6, 2018              [Page 27]
+
+Internet-Draft                    ACME                        March 2018
+
+
    new nonce, e.g., on its first request to the server or if an existing
    nonce is no longer valid.
 
@@ -1503,16 +1523,6 @@ Internet-Draft                    ACME                        March 2018
    status code 200 (OK).  The server SHOULD also respond to GET requests
    for this resource, returning an empty body (while still providing a
    Replay-Nonce header) with a 204 (No Content) status.
-
-
-
-
-
-
-Barnes, et al.          Expires September 6, 2018              [Page 27]
-
-Internet-Draft                    ACME                        March 2018
-
 
    HEAD /acme/new-nonce HTTP/1.1
    Host: example.com
@@ -1545,16 +1555,6 @@ Internet-Draft                    ACME                        March 2018
       account if one does not already exist.  This allows a client to
       look up an account URL based on an account key (see
       Section 7.3.1).
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2493,7 +2493,9 @@ Internet-Draft                    ACME                        March 2018
          "url": "https://example.com/acme/authz/1234/2",
          "token": "DGyRejmCefe7v4NfDGDKfA"
        }
-     ]
+     ],
+
+     "wildcard": false
    }
 
 7.5.1.  Responding to Challenges
@@ -2511,8 +2513,6 @@ Internet-Draft                    ACME                        March 2018
 
    For example, if the client were to respond to the "http-01" challenge
    in the above authorization, it would send the following request:
-
-
 
 
 
@@ -2605,7 +2605,9 @@ Internet-Draft                    ACME                        March 2018
          "validated": "2014-12-01T12:05:00Z",
          "token": "IlirfxKKXAsHtmzK29Pj8A"
        }
-     ]
+     ],
+
+     "wildcard": false
    }
 
 7.5.2.  Deactivating an Authorization
@@ -2615,8 +2617,6 @@ Internet-Draft                    ACME                        March 2018
    deactivates each authorization associated with it by sending POST
    requests with the static object {"status": "deactivated"} to each
    authorization URL.
-
-
 
 
 
@@ -2840,7 +2840,7 @@ Internet-Draft                    ACME                        March 2018
    error (optional, object):  Error that occurred while the server was
       validating the challenge, if any, structured as a problem document
       [RFC7807].  Multiple errors can be indicated by using subproblems
-      Section 6.7.1.
+      Section 6.6.1.
 
    All additional fields are specified by the challenge type.  If the
    server sets a challenge's "status" to "invalid", it SHOULD also
@@ -3224,7 +3224,7 @@ Internet-Draft                    ACME                        March 2018
         +-------------------+----------+----------+---------------+
         | Header Field Name | Protocol | Status   | Reference     |
         +-------------------+----------+----------+---------------+
-        | Replay-Nonce      | http     | standard | Section 6.5.1 |
+        | Replay-Nonce      | http     | standard | Section 6.4.1 |
         +-------------------+----------+----------+---------------+
 
 9.4.  "url" JWS Header Parameter
@@ -3240,7 +3240,7 @@ Internet-Draft                    ACME                        March 2018
 
    o  Change Controller: IESG
 
-   o  Specification Document(s): Section 6.4.1 of RFC XXXX
+   o  Specification Document(s): Section 6.3.1 of RFC XXXX
 
 
 
@@ -3266,7 +3266,7 @@ Internet-Draft                    ACME                        March 2018
 
    o  Change Controller: IESG
 
-   o  Specification Document(s): Section 6.5.2 of RFC XXXX
+   o  Specification Document(s): Section 6.4.2 of RFC XXXX
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
    to this document ]]
@@ -3484,6 +3484,8 @@ Internet-Draft                    ACME                        March 2018
         | expires    | string          | false        | RFC XXXX  |
         |            |                 |              |           |
         | challenges | array of object | false        | RFC XXXX  |
+        |            |                 |              |           |
+        | wildcard   | boolean         | false        | RFC XXXX  |
         +------------+-----------------+--------------+-----------+
 
    [[ RFC EDITOR: Please replace XXXX above with the RFC number assigned
@@ -3504,7 +3506,7 @@ Internet-Draft                    ACME                        March 2018
    o  Reference: Where the error is defined
 
    Initial contents: The types and descriptions in the table in
-   Section 6.7 above, with the Reference field set to point to this
+   Section 6.6 above, with the Reference field set to point to this
    specification.
 
 9.7.5.  Resource Types
@@ -3521,14 +3523,14 @@ Internet-Draft                    ACME                        March 2018
 
    o  Reference: Where the resource type is defined
 
-   Initial contents:
-
 
 
 Barnes, et al.          Expires September 6, 2018              [Page 63]
 
 Internet-Draft                    ACME                        March 2018
 
+
+   Initial contents:
 
               +------------+--------------------+-----------+
               | Field Name | Resource Type      | Reference |
@@ -3568,8 +3570,6 @@ Internet-Draft                    ACME                        March 2018
 
    Initial contents: The fields and descriptions defined in
    Section 7.1.2.
-
-
 
 
 
