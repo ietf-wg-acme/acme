@@ -350,7 +350,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used
 * The JWS Unprotected Header {{!RFC7515}} MUST NOT be used
 * The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
-* The JWS The JWS Payload MUST NOT be detached
+* The JWS Payload MUST NOT be detached
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
   * "jwk" (JSON Web Key, for all requests not signed using an existing
