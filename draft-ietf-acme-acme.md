@@ -1602,7 +1602,6 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-order"
   }),
   "payload": base64url({
-    "identifiers": [{"type": "dns","value": "example.com"}],
     "identifiers": [
       { "type": "dns", "value": "example.com" }
     ],
