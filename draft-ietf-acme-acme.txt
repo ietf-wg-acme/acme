@@ -1261,7 +1261,7 @@ Internet-Draft                    ACME                        March 2018
 
    HTTP/1.1 200 OK
    Content-Type: application/json
-   Link: <https://example.com/acme/acct/1/orders?cursor=2>, rel="next"
+   Link: <https://example.com/acme/acct/1/orders?cursor=2>;rel="next"
 
    {
      "orders": [
@@ -1422,7 +1422,7 @@ Internet-Draft                    ACME                        March 2018
 
    status (required, string):  The status of this authorization.
       Possible values are: "pending", "valid", "invalid", "deactivated",
-      and "revoked".
+      "expired", and "revoked".
 
    expires (optional, string):  The timestamp after which the server
       will consider this authorization invalid, encoded in the format

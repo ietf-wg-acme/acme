@@ -1146,7 +1146,7 @@ Content-Type: application/json
 <pre>
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;, rel="next"
+Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;;rel="next"
 
 {
   "orders": [
@@ -1234,7 +1234,7 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;, rel="next"
 <p> </p>
 </dd>
 <dt>status (required, string):</dt>
-<dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, &#8220;invalid&#8221;, &#8220;deactivated&#8221;, and &#8220;revoked&#8221;.</dd>
+<dd style="margin-left: 8">The status of this authorization.  Possible values are: &#8220;pending&#8221;, &#8220;valid&#8221;, &#8220;invalid&#8221;, &#8220;deactivated&#8221;, &#8220;expired&#8221;, and &#8220;revoked&#8221;.</dd>
 <dt>expires (optional, string):</dt>
 <dd style="margin-left: 8">The timestamp after which the server will consider this authorization invalid, encoded in the format specified in RFC 3339 <a href="#RFC3339" class="xref">[RFC3339]</a>.  This field is REQUIRED for objects with &#8220;valid&#8221; in the &#8220;status&#8221; field.</dd>
 <dt>challenges (required, array of objects):</dt>
