@@ -815,7 +815,7 @@ relation indicating where further entries can be acquired.
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/acct/1/orders?cursor=2>, rel="next"
+Link: <https://example.com/acme/acct/1/orders?cursor=2>;rel="next"
 
 {
   "orders": [
@@ -946,7 +946,7 @@ identifier (required, object):
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending",
-"valid", "invalid", "deactivated", and "revoked".
+"valid", "invalid", "deactivated", "expired", and "revoked".
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
