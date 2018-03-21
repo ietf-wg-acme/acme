@@ -815,7 +815,7 @@ relation indicating where further entries can be acquired.
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/acct/1/orders?cursor=2>, rel="next"
+Link: <https://example.com/acme/acct/1/orders?cursor=2>;rel="next"
 
 {
   "orders": [
