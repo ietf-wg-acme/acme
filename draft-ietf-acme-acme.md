@@ -1265,7 +1265,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
     "mailto:admin@example.com"
   ],
 
-  "orders": "https://example.com/acme/orders/acct/1"
+  "orders": "https://example.com/acme/acct/1/orders"
 }
 ~~~~~~~~~~
 
