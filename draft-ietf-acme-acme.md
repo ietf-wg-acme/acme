@@ -1700,7 +1700,7 @@ of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
 requesting a subjectAltName extension.
 
 A request to finalize an order will result in error if the order indicated does
-not have status "pending", if the CSR and order identifiers differ, or if the
+not have status "ready", if the CSR and order identifiers differ, or if the
 account is not authorized for the identifiers indicated in the CSR.
 
 A valid request to finalize an order will return the order to be finalized.
