@@ -682,9 +682,10 @@ certificate, and fetch an updated certificate some time after issuance.  The
 | Submit order          | POST newOrder             | 201 -> order   |
 | Fetch challenges      | GET  order authorizations | 200            |
 | Respond to challenges | POST challenge urls       | 200            |
+| Poll for status       | GET  order                | 200            |
 | Finalize order        | POST order finalize       | 200            |
 | Poll for status       | GET  order                | 200            |
-| Download certificate  | GET  order cert           | 200            |
+| Download certificate  | GET  order certificate    | 200            |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
