@@ -317,9 +317,10 @@ their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
 to send early data (0-RTT).  This is safe because the ACME protocol itself
 includes anti-replay protections (see {{replay-protection}}).
 
-ACME clients SHOULD send a User-Agent header in accordance with
-{{!RFC7231}}, including the name and version of the ACME software in
-addition to the name and version of the underlying HTTP client software.
+ACME clients MUST send a User-Agent header, in accordance with
+{{!RFC7231}}. this header SHOULD include the name and version of the
+ACME software in addition to the name and version of the underlying
+HTTP client software.
 
 ACME clients SHOULD send an Accept-Language header in accordance with
 {{!RFC7231}} to enable localization of error messages.
@@ -3051,6 +3052,27 @@ user.
 There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
+
+## Key Selection
+
+ACME relies on two different classes of key pair:
+
+* Account key pairs, which are used to authenticate account holders
+* Certificate key pairs, which are used to sign and verify CSRs (and whose
+  public keys are included in certificates)
+
+Of these two types of key pair, account key pairs are far more dangerous.  While
+the compromise of a certificate key pair allows the attacker to impersonate the
+entities named in the certificate for the lifetime of the certificate, the
+compromise of an account key pair allows the attacker to take full control of
+the victim's ACME account -- potentially causing unintended issuance or
+revocation.
+
+For this reason, it is RECOMMENDED that account key pairs be used for no other
+purpose besides ACME authentication.  For example, the public key of an account
+key pair SHOULD NOT be included in a certificate.  ACME clients and servers
+SHOULD verify that a CSR submitted in a finalize request does not contain a
+public key for any known account key pair.
 
 ## DNS security
 
