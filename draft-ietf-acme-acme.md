@@ -869,7 +869,7 @@ This field is structured as a problem document {{!RFC7807}}.
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
 before the requested certificate can be issued (see
-{{identifier-authorization}}).  For final orders (in the "valid" or "invalid" state), the authorizations that
+{{identifier-authorization}}). The authorizations required are dictated by server policy and there may not be a 1:1 relationshop between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
