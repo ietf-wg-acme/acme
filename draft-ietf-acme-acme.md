@@ -961,7 +961,9 @@ challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill
 one of these challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.  For final authorizations, it contains
-the challenges that were successfully completed.
+the challenges that were successfully completed. Clients SHOULD NOT make any
+assumptions about the sort order of "challenges" elements returned from the
+server.
 
 wildcard (optional, boolean):
 : For authorizations created as a result of a newOrder request containing a DNS
@@ -1663,7 +1665,9 @@ requested certificate.  In the order object, any authorization referenced in the
 transaction that the client must complete before the server will issue the
 certificate (see {{identifier-authorization}}).  If the client fails to complete
 the required actions before the "expires" time, then the server SHOULD change
-the status of the order to "invalid" and MAY delete the order resource.
+the status of the order to "invalid" and MAY delete the order resource. Clients
+SHOULD NOT make any assumptions about the sort order of "identifiers" or
+"authorizations" elements in the returned order object.
 
 Once the client believes it has fulfilled the server's requirements, it should
 send a POST request to the order resource's finalize URL. The POST body MUST
