@@ -960,8 +960,7 @@ order to prove possession of the identifier.  For final authorizations (in the "
 challenges that were used.  Each array entry is an object with parameters
 required to validate the challenge.  A client should attempt to fulfill
 one of these challenges, and a server should consider any one of the challenges
-sufficient to make the authorization valid.  For final authorizations, it contains
-the challenges that were successfully completed.
+sufficient to make the authorization valid.
 
 wildcard (optional, boolean):
 : For authorizations created as a result of a newOrder request containing a DNS
