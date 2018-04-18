@@ -2588,11 +2588,12 @@ This document requests that IANA create the following new registries:
 
 1. ACME Account Object Fields ({{iana-account}})
 2. ACME Order Object Fields ({{iana-order}})
-3. ACME Error Types ({{iana-error}})
-4. ACME Resource Types ({{iana-resource}})
-5. ACME Directory Metadata Fields ({{iana-meta}})
-6. ACME Identifier Types ({{iana-identifier}})
-7. ACME Validation Methods ({{iana-validation}})
+3. ACME Authorization Object Fields ({{iana-authz}})
+4. ACME Error Types ({{iana-error}})
+5. ACME Resource Types ({{iana-resource}})
+6. ACME Directory Metadata Fields ({{iana-meta}})
+7. ACME Identifier Types ({{iana-identifier}})
+8. ACME Validation Methods ({{iana-validation}})
 
 All of these registries are under a heading of "Automated Certificate Management
 Environment (ACME) Protocol" and are administered under a Specification
