@@ -344,9 +344,10 @@ ul.toc li {
 <link href="#rfc.section.10.4" rel="Chapter" title="10.4 Server-Side Request Forgery">
 <link href="#rfc.section.10.5" rel="Chapter" title="10.5 CA Policy Considerations">
 <link href="#rfc.section.11" rel="Chapter" title="11 Operational Considerations">
-<link href="#rfc.section.11.1" rel="Chapter" title="11.1 DNS security">
-<link href="#rfc.section.11.2" rel="Chapter" title="11.2 Token Entropy">
-<link href="#rfc.section.11.3" rel="Chapter" title="11.3 Malformed Certificate Chains">
+<link href="#rfc.section.11.1" rel="Chapter" title="11.1 Key Selection">
+<link href="#rfc.section.11.2" rel="Chapter" title="11.2 DNS security">
+<link href="#rfc.section.11.3" rel="Chapter" title="11.3 Token Entropy">
+<link href="#rfc.section.11.4" rel="Chapter" title="11.4 Malformed Certificate Chains">
 <link href="#rfc.section.12" rel="Chapter" title="12 Acknowledgements">
 <link href="#rfc.references" rel="Chapter" title="13 References">
 <link href="#rfc.references.1" rel="Chapter" title="13.1 Normative References">
@@ -567,11 +568,13 @@ ul.toc li {
 </li>
 </ul><li>11.   <a href="#rfc.section.11">Operational Considerations</a>
 </li>
-<ul><li>11.1.   <a href="#rfc.section.11.1">DNS security</a>
+<ul><li>11.1.   <a href="#rfc.section.11.1">Key Selection</a>
 </li>
-<li>11.2.   <a href="#rfc.section.11.2">Token Entropy</a>
+<li>11.2.   <a href="#rfc.section.11.2">DNS security</a>
 </li>
-<li>11.3.   <a href="#rfc.section.11.3">Malformed Certificate Chains</a>
+<li>11.3.   <a href="#rfc.section.11.3">Token Entropy</a>
+</li>
+<li>11.4.   <a href="#rfc.section.11.4">Malformed Certificate Chains</a>
 </li>
 </ul><li>12.   <a href="#rfc.section.12">Acknowledgements</a>
 </li>
@@ -704,7 +707,7 @@ ul.toc li {
 <p id="rfc.section.6.1.p.1">Each ACME function is accomplished by the client sending a sequence of HTTPS requests to the server, carrying JSON messages <a href="#RFC2818" class="xref">[RFC2818]</a><a href="#RFC7159" class="xref">[RFC7159]</a>.  Use of HTTPS is REQUIRED. Each subsection of <a href="#certificate-management" class="xref">Section 7</a> below describes the message formats used by the function and the order in which messages are sent.</p>
 <p id="rfc.section.6.1.p.2">In most HTTPS transactions used by ACME, the ACME client is the HTTPS client and the ACME server is the HTTPS server. The ACME server acts as an HTTP and HTTPS client when validating challenges via HTTP.</p>
 <p id="rfc.section.6.1.p.3">ACME servers SHOULD follow the recommendations of <a href="#RFC7525" class="xref">[RFC7525]</a> when configuring their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients to send early data (0-RTT).  This is safe because the ACME protocol itself includes anti-replay protections (see <a href="#replay-protection" class="xref">Section 6.4</a>).</p>
-<p id="rfc.section.6.1.p.4">ACME clients SHOULD send a User-Agent header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a>, including the name and version of the ACME software in addition to the name and version of the underlying HTTP client software.</p>
+<p id="rfc.section.6.1.p.4">ACME clients MUST send a User-Agent header, in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a>. This header SHOULD include the name and version of the ACME software in addition to the name and version of the underlying HTTP client software.</p>
 <p id="rfc.section.6.1.p.5">ACME clients SHOULD send an Accept-Language header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a> to enable localization of error messages.</p>
 <p id="rfc.section.6.1.p.6">ACME servers that are intended to be generally accessible need to use Cross-Origin Resource Sharing (CORS) in order to be accessible from browser-based clients <a href="#W3C.CR-cors-20130129" class="xref">[W3C.CR-cors-20130129]</a>.  Such servers SHOULD set the Access-Control-Allow-Origin header field to the value &#8220;*&#8221;.</p>
 <p id="rfc.section.6.1.p.7">Binary fields in the JSON objects used by ACME are encoded using base64url encoding described in <a href="#RFC4648" class="xref">[RFC4648]</a> Section 5, according to the profile specified in JSON Web Signature <a href="#RFC7515" class="xref">[RFC7515]</a> Section 2. This encoding uses a URL safe character set. Trailing &#8216;=&#8217; characters MUST be stripped.</p>
@@ -2815,20 +2818,40 @@ Content-Type: application/jose+json
 </h1>
 <p id="rfc.section.11.p.1">There are certain factors that arise in operational reality that operators of ACME-based CAs will need to keep in mind when configuring their services.  For example:</p>
 <h1 id="rfc.section.11.1">
-<a href="#rfc.section.11.1">11.1.</a> <a href="#dns-security" id="dns-security">DNS security</a>
+<a href="#rfc.section.11.1">11.1.</a> <a href="#key-selection" id="key-selection">Key Selection</a>
 </h1>
-<p id="rfc.section.11.1.p.1">As noted above, DNS forgery attacks against the ACME server can result in the server making incorrect decisions about domain control and thus mis-issuing certificates. Servers SHOULD perform DNS queries over TCP, which provides better resistance to some forgery attacks than DNS over UDP.</p>
-<p id="rfc.section.11.1.p.2">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
-<p id="rfc.section.11.1.p.3">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
+<p id="rfc.section.11.1.p.1">ACME relies on two different classes of key pair:</p>
+<p></p>
+
+<ul>
+<li>Account key pairs, which are used to authenticate account holders</li>
+<li>Certificate key pairs, which are used to sign and verify CSRs (and whose public keys are included in certificates)</li>
+</ul>
+<p id="rfc.section.11.1.p.3">Compromise of the private key of an account key pair has more serious consequences than compromise of a private key corresponding to a certificate.  While the compromise of a certificate key pair allows the attacker to impersonate the entities named in the certificate for the lifetime of the certificate, the compromise of an account key pair allows the attacker to take full control of the victim&#8217;s ACME account, and take any action that the legitimate account holder could take within the scope of ACME:</p>
+<p></p>
+
+<ol>
+<li>Issuing certificates using existing authorizations</li>
+<li>Revoking existing certificates</li>
+<li>Accessing and changing account information (e.g., contacts)</li>
+<li>Changing the account key pair for the account, locking out the legitimate account holder</li>
+</ol>
+<p id="rfc.section.11.1.p.5">For this reason, it is RECOMMENDED that account key pairs be used for no other purpose besides ACME authentication.  For example, the public key of an account key pair SHOULD NOT be included in a certificate.  ACME clients and servers SHOULD verify that a CSR submitted in a finalize request does not contain a public key for any known account key pair.  In particular, when a server receives a finalize request, it MUST verify that the public key in a CSR is not the same as the public key of the account key pair used to authenticate that request.</p>
 <h1 id="rfc.section.11.2">
-<a href="#rfc.section.11.2">11.2.</a> <a href="#token-entropy" id="token-entropy">Token Entropy</a>
+<a href="#rfc.section.11.2">11.2.</a> <a href="#dns-security" id="dns-security">DNS security</a>
 </h1>
-<p id="rfc.section.11.2.p.1">The http-01, and dns-01 validation methods mandate the usage of a random token value to uniquely identify the challenge. The value of the token is required to contain at least 128 bits of entropy for the following security properties. First, the ACME client should not be able to influence the ACME server&#8217;s choice of token as this may allow an attacker to reuse a domain owner&#8217;s previous challenge responses for a new validation request. Secondly, the entropy requirement prevents ACME clients from implementing a &#8220;naive&#8221; validation server that automatically replies to challenges without participating in the creation of the initial authorization request.</p>
+<p id="rfc.section.11.2.p.1">As noted above, DNS forgery attacks against the ACME server can result in the server making incorrect decisions about domain control and thus mis-issuing certificates. Servers SHOULD perform DNS queries over TCP, which provides better resistance to some forgery attacks than DNS over UDP.</p>
+<p id="rfc.section.11.2.p.2">An ACME-based CA will often need to make DNS queries, e.g., to validate control of DNS names.  Because the security of such validations ultimately depends on the authenticity of DNS data, every possible precaution should be taken to secure DNS queries done by the CA. It is therefore RECOMMENDED that ACME-based CAs make all DNS queries via DNSSEC-validating stub or recursive resolvers. This provides additional protection to domains which choose to make use of DNSSEC.</p>
+<p id="rfc.section.11.2.p.3">An ACME-based CA must use only a resolver if it trusts the resolver and every component of the network route by which it is accessed. It is therefore RECOMMENDED that ACME-based CAs operate their own DNSSEC-validating resolvers within their trusted network and use these resolvers both for both CAA record lookups and all record lookups in furtherance of a challenge scheme (A, AAAA, TXT, etc.).</p>
 <h1 id="rfc.section.11.3">
-<a href="#rfc.section.11.3">11.3.</a> <a href="#malformed-certificate-chains" id="malformed-certificate-chains">Malformed Certificate Chains</a>
+<a href="#rfc.section.11.3">11.3.</a> <a href="#token-entropy" id="token-entropy">Token Entropy</a>
 </h1>
-<p id="rfc.section.11.3.p.1">ACME provides certificate chains in the widely-used format known colloquially as PEM (though it may diverge from the actual Privacy Enhanced Mail specifications <a href="#RFC1421" class="xref">[RFC1421]</a>, as noted in <a href="#RFC7468" class="xref">[RFC7468]</a>). Some current software will allow the configuration of a private key and a certificate in one PEM file, by concatenating the textual encodings of the two objects. In the context of ACME, such software might be vulnerable to &#8220;key replacement&#8221; attacks. A malicious ACME server could cause a client to use a private key of its choosing by including the key in the PEM file returned in response to a query for a certificate URL.</p>
-<p id="rfc.section.11.3.p.2">When processing an file of type &#8220;application/pem-certificate-chain&#8221;, a client SHOULD verify that the file contains only encoded certificates.  If anything other than a certificate is found (i.e., if the string &#8220;-----BEGIN&#8221; is ever followed by anything other than &#8220;CERTIFICATE&#8221;), then the client MUST reject the file as invalid.</p>
+<p id="rfc.section.11.3.p.1">The http-01, and dns-01 validation methods mandate the usage of a random token value to uniquely identify the challenge. The value of the token is required to contain at least 128 bits of entropy for the following security properties. First, the ACME client should not be able to influence the ACME server&#8217;s choice of token as this may allow an attacker to reuse a domain owner&#8217;s previous challenge responses for a new validation request. Secondly, the entropy requirement prevents ACME clients from implementing a &#8220;naive&#8221; validation server that automatically replies to challenges without participating in the creation of the initial authorization request.</p>
+<h1 id="rfc.section.11.4">
+<a href="#rfc.section.11.4">11.4.</a> <a href="#malformed-certificate-chains" id="malformed-certificate-chains">Malformed Certificate Chains</a>
+</h1>
+<p id="rfc.section.11.4.p.1">ACME provides certificate chains in the widely-used format known colloquially as PEM (though it may diverge from the actual Privacy Enhanced Mail specifications <a href="#RFC1421" class="xref">[RFC1421]</a>, as noted in <a href="#RFC7468" class="xref">[RFC7468]</a>). Some current software will allow the configuration of a private key and a certificate in one PEM file, by concatenating the textual encodings of the two objects. In the context of ACME, such software might be vulnerable to &#8220;key replacement&#8221; attacks. A malicious ACME server could cause a client to use a private key of its choosing by including the key in the PEM file returned in response to a query for a certificate URL.</p>
+<p id="rfc.section.11.4.p.2">When processing an file of type &#8220;application/pem-certificate-chain&#8221;, a client SHOULD verify that the file contains only encoded certificates.  If anything other than a certificate is found (i.e., if the string &#8220;-----BEGIN&#8221; is ever followed by anything other than &#8220;CERTIFICATE&#8221;), then the client MUST reject the file as invalid.</p>
 <h1 id="rfc.section.12">
 <a href="#rfc.section.12">12.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a>
 </h1>
