@@ -317,9 +317,10 @@ their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
 to send early data (0-RTT).  This is safe because the ACME protocol itself
 includes anti-replay protections (see {{replay-protection}}).
 
-ACME clients SHOULD send a User-Agent header in accordance with
-{{!RFC7231}}, including the name and version of the ACME software in
-addition to the name and version of the underlying HTTP client software.
+ACME clients MUST send a User-Agent header, in accordance with
+{{!RFC7231}}. This header SHOULD include the name and version of the
+ACME software in addition to the name and version of the underlying
+HTTP client software.
 
 ACME clients SHOULD send an Accept-Language header in accordance with
 {{!RFC7231}} to enable localization of error messages.
@@ -3051,6 +3052,37 @@ user.
 There are certain factors that arise in operational reality that operators of
 ACME-based CAs will need to keep in mind when configuring their services.
 For example:
+
+## Key Selection
+
+ACME relies on two different classes of key pair:
+
+* Account key pairs, which are used to authenticate account holders
+* Certificate key pairs, which are used to sign and verify CSRs (and whose
+  public keys are included in certificates)
+
+Compromise of the private key of an account key pair has more serious consequences than
+compromise of a private key corresponding to a certificate.  While
+the compromise of a certificate key pair allows the attacker to impersonate the
+entities named in the certificate for the lifetime of the certificate, the
+compromise of an account key pair allows the attacker to take full control of
+the victim's ACME account, and take any action that the legitimate
+account holder could take within the scope of ACME:
+
+1. Issuing certificates using existing authorizations
+2. Revoking existing certificates
+3. Accessing and changing account information (e.g., contacts)
+4. Changing the account key pair for the account, locking out the
+   legitimate account holder
+
+For this reason, it is RECOMMENDED that account key pairs be used for no other
+purpose besides ACME authentication.  For example, the public key of an account
+key pair SHOULD NOT be included in a certificate.  ACME clients and servers
+SHOULD verify that a CSR submitted in a finalize request does not contain a
+public key for any known account key pair.  In particular, when a server
+receives a finalize request, it MUST verify that the public key in a CSR is not
+the same as the public key of the account key pair used to authenticate that
+request.
 
 ## DNS security
 
