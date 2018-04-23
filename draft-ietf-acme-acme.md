@@ -870,7 +870,7 @@ This field is structured as a problem document {{!RFC7807}}.
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
 before the requested certificate can be issued (see
-{{identifier-authorization}}).  For final orders (in the "valid" or "invalid" state), the authorizations that
+{{identifier-authorization}}). The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
@@ -1663,7 +1663,9 @@ requested certificate.  In the order object, any authorization referenced in the
 transaction that the client must complete before the server will issue the
 certificate (see {{identifier-authorization}}).  If the client fails to complete
 the required actions before the "expires" time, then the server SHOULD change
-the status of the order to "invalid" and MAY delete the order resource.
+the status of the order to "invalid" and MAY delete the order resource. Clients
+SHOULD NOT make any assumptions about the sort order of "identifiers" or
+"authorizations" elements in the returned order object.
 
 Once the client believes it has fulfilled the server's requirements, it should
 send a POST request to the order resource's finalize URL. The POST body MUST
