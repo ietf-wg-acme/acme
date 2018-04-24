@@ -514,26 +514,27 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
 | Type                    | Description                                                                    |
 |:------------------------|:-------------------------------------------------------------------------------|
+| accountDoesNotExist     | The request specified an account that does not exist                           |
 | badCSR                  | The CSR is unacceptable (e.g., due to a short key)                             |
 | badNonce                | The client sent an unacceptable anti-replay nonce                              |
+| badRevocationReason     | The revocation reason provided is not allowed by the server                    |
 | badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support               |
-| invalidContact          | A contact URL for an account was invalid                                       |
-| unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
+| caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
+| compound                | Specific error conditions are indicated in the "subproblems" array.            |
+| connection              | The server could not connect to validation target                              |
+| dns                     | There was a problem with a DNS query                                           |
 | externalAccountRequired | The request must include a value for the "externalAccountBinding" field        |
-| accountDoesNotExist     | The request specified an account that does not exist                           |
+| incorrectResponse       | Response received didn't match the challenge's requirements                    |
+| invalidContact          | A contact URL for an account was invalid                                       |
 | malformed               | The request message was malformed                                              |
 | rateLimited             | The request exceeds a rate limit                                               |
 | rejectedIdentifier      | The server will not issue for the identifier                                   |
 | serverInternal          | The server experienced an internal error                                       |
+| tls                     | The server received a TLS error during validation                              |
 | unauthorized            | The client lacks sufficient authorization                                      |
+| unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
 | unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
 | userActionRequired      | Visit the "instance" URL and take actions specified there                      |
-| badRevocationReason     | The revocation reason provided is not allowed by the server                    |
-| caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
-| dns                     | There was a problem with a DNS query                                           |
-| connection              | The server could not connect to validation target                              |
-| tls                     | The server received a TLS error during validation                              |
-| incorrectResponse       | Response received didn't match the challenge's requirements                    |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
@@ -659,11 +660,11 @@ indicate HTTP link relations.
        |          |          |
        |          |          |
        V          |          V
-    account       |        order -----> finalize
-                  |          |   -----> cert
-                  |          |
+    account       |        order --+--> finalize
+                  |          |     |
+                  |          |     +--> cert
                   |          V
-                  +---> authorizations
+                  +---> authorization
                             | ^
                             | | "up"
                             V |
@@ -1364,7 +1365,7 @@ The server MAY require a value for the "externalAccountBinding" field to be
 present in "newAccount" requests.  This can be used to associate an ACME account with an
 existing account in a non-ACME system, such as a CA customer database.
 
-To enable ACME account binding, a CA needs to provide the ACME client with a
+To enable ACME account binding, the CA operating the ACME server needs to provide the ACME client with a
 MAC key and a key identifier, using some mechanism outside of ACME. The key
 identifier MUST be an ASCII string. The MAC key SHOULD be provided in
 base64url-encoded form, to maximize compatibility between non-ACME provisioning systems
@@ -2506,7 +2507,7 @@ Additional information:
 File contains one or more certificates encoded with the PEM textual encoding, according to
 RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
 certificate MUST be an end-entity certificate. Each following certificate
-SHOULD directly certify one preceding it. Because certificate validation
+SHOULD directly certify the one preceding it. Because certificate validation
 requires that trust anchors be distributed independently, a certificate
 that specifies a trust anchor MAY be omitted from the chain, provided
 that supported peers are known to possess any omitted certificates.
@@ -2794,8 +2795,8 @@ Initial Contents
 |:-----------|:----------------|:-----|:----------|
 | http-01    | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
-| tls-sni-01 | RESERVED        | N    | N/A       |
-| tls-sni-02 | RESERVED        | N    | N/A       |
+| tls-sni-01 | RESERVED        | N    | RFC XXXX  |
+| tls-sni-02 | RESERVED        | N    | RFC XXXX  |
 
 When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
