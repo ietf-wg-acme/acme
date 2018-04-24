@@ -360,7 +360,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., McCarney, D., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2018-04-23" />
+  <meta name="dct.issued" scheme="ISO8601" content="2018-04-24" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -384,7 +384,7 @@ ul.toc li {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: October 25, 2018</td>
+<td class="left">Expires: October 26, 2018</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -405,7 +405,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">April 23, 2018</td>
+<td class="right">April 24, 2018</td>
 </tr>
 
     	
@@ -422,7 +422,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on October 25, 2018.</p>
+<p>This Internet-Draft will expire on October 26, 2018.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -794,6 +794,10 @@ ul.toc li {
 </tr></thead>
 <tbody>
 <tr>
+<td class="left">accountDoesNotExist</td>
+<td class="left">The request specified an account that does not exist</td>
+</tr>
+<tr>
 <td class="left">badCSR</td>
 <td class="left">The CSR is unacceptable (e.g., due to a short key)</td>
 </tr>
@@ -802,24 +806,40 @@ ul.toc li {
 <td class="left">The client sent an unacceptable anti-replay nonce</td>
 </tr>
 <tr>
+<td class="left">badRevocationReason</td>
+<td class="left">The revocation reason provided is not allowed by the server</td>
+</tr>
+<tr>
 <td class="left">badSignatureAlgorithm</td>
 <td class="left">The JWS was signed with an algorithm the server does not support</td>
 </tr>
 <tr>
-<td class="left">invalidContact</td>
-<td class="left">A contact URL for an account was invalid</td>
+<td class="left">caa</td>
+<td class="left">Certification Authority Authorization (CAA) records forbid the CA from issuing</td>
 </tr>
 <tr>
-<td class="left">unsupportedContact</td>
-<td class="left">A contact URL for an account used an unsupported protocol scheme</td>
+<td class="left">compound</td>
+<td class="left">Specific error conditions are indicated in the &#8220;subproblems&#8221; array.</td>
+</tr>
+<tr>
+<td class="left">connection</td>
+<td class="left">The server could not connect to validation target</td>
+</tr>
+<tr>
+<td class="left">dns</td>
+<td class="left">There was a problem with a DNS query</td>
 </tr>
 <tr>
 <td class="left">externalAccountRequired</td>
 <td class="left">The request must include a value for the &#8220;externalAccountBinding&#8221; field</td>
 </tr>
 <tr>
-<td class="left">accountDoesNotExist</td>
-<td class="left">The request specified an account that does not exist</td>
+<td class="left">incorrectResponse</td>
+<td class="left">Response received didn&#8217;t match the challenge&#8217;s requirements</td>
+</tr>
+<tr>
+<td class="left">invalidContact</td>
+<td class="left">A contact URL for an account was invalid</td>
 </tr>
 <tr>
 <td class="left">malformed</td>
@@ -838,8 +858,16 @@ ul.toc li {
 <td class="left">The server experienced an internal error</td>
 </tr>
 <tr>
+<td class="left">tls</td>
+<td class="left">The server received a TLS error during validation</td>
+</tr>
+<tr>
 <td class="left">unauthorized</td>
 <td class="left">The client lacks sufficient authorization</td>
+</tr>
+<tr>
+<td class="left">unsupportedContact</td>
+<td class="left">A contact URL for an account used an unsupported protocol scheme</td>
 </tr>
 <tr>
 <td class="left">unsupportedIdentifier</td>
@@ -848,30 +876,6 @@ ul.toc li {
 <tr>
 <td class="left">userActionRequired</td>
 <td class="left">Visit the &#8220;instance&#8221; URL and take actions specified there</td>
-</tr>
-<tr>
-<td class="left">badRevocationReason</td>
-<td class="left">The revocation reason provided is not allowed by the server</td>
-</tr>
-<tr>
-<td class="left">caa</td>
-<td class="left">Certification Authority Authorization (CAA) records forbid the CA from issuing</td>
-</tr>
-<tr>
-<td class="left">dns</td>
-<td class="left">There was a problem with a DNS query</td>
-</tr>
-<tr>
-<td class="left">connection</td>
-<td class="left">The server could not connect to validation target</td>
-</tr>
-<tr>
-<td class="left">tls</td>
-<td class="left">The server received a TLS error during validation</td>
-</tr>
-<tr>
-<td class="left">incorrectResponse</td>
-<td class="left">Response received didn&#8217;t match the challenge&#8217;s requirements</td>
 </tr>
 </tbody>
 </table>
@@ -959,11 +963,11 @@ Content-Type: application/problem+json
        |          |          |
        |          |          |
        V          |          V
-    account       |        order -----&gt; finalize
-                  |          |   -----&gt; cert
-                  |          |
+    account       |        order --+--&gt; finalize
+                  |          |     |
+                  |          |     +--&gt; cert
                   |          V
-                  +---&gt; authorizations
+                  +---&gt; authorization
                             | ^
                             | | "up"
                             V |
@@ -1480,7 +1484,7 @@ Content-Language: en
 <a href="#rfc.section.7.3.5">7.3.5.</a> <a href="#external-account-binding" id="external-account-binding">External Account Binding</a>
 </h1>
 <p id="rfc.section.7.3.5.p.1">The server MAY require a value for the &#8220;externalAccountBinding&#8221; field to be present in &#8220;newAccount&#8221; requests.  This can be used to associate an ACME account with an existing account in a non-ACME system, such as a CA customer database.</p>
-<p id="rfc.section.7.3.5.p.2">To enable ACME account binding, a CA needs to provide the ACME client with a MAC key and a key identifier, using some mechanism outside of ACME. The key identifier MUST be an ASCII string. The MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility between non-ACME provisioning systems and ACME clients.</p>
+<p id="rfc.section.7.3.5.p.2">To enable ACME account binding, the CA operating the ACME server needs to provide the ACME client with a MAC key and a key identifier, using some mechanism outside of ACME. The key identifier MUST be an ASCII string. The MAC key SHOULD be provided in base64url-encoded form, to maximize compatibility between non-ACME provisioning systems and ACME clients.</p>
 <p id="rfc.section.7.3.5.p.3">The ACME client then computes a binding JWS to indicate the external account holder&#8217;s approval of the ACME account key.  The payload of this JWS is the account key being registered, in JWK form.  The protected header of the JWS MUST meet the following criteria:</p>
 <p></p>
 
@@ -2237,7 +2241,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.9.1.p.9">Published specification: draft-ietf-acme-acme [[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]</p>
 <p id="rfc.section.9.1.p.10">Applications which use this media type: Any MIME-compliant transport</p>
 <p id="rfc.section.9.1.p.11">Additional information:</p>
-<p id="rfc.section.9.1.p.12">File contains one or more certificates encoded with the PEM textual encoding, according to RFC 7468 <a href="#RFC7468" class="xref">[RFC7468]</a>.  In order to provide easy interoperation with TLS, the first certificate MUST be an end-entity certificate. Each following certificate SHOULD directly certify one preceding it. Because certificate validation requires that trust anchors be distributed independently, a certificate that specifies a trust anchor MAY be omitted from the chain, provided that supported peers are known to possess any omitted certificates.</p>
+<p id="rfc.section.9.1.p.12">File contains one or more certificates encoded with the PEM textual encoding, according to RFC 7468 <a href="#RFC7468" class="xref">[RFC7468]</a>.  In order to provide easy interoperation with TLS, the first certificate MUST be an end-entity certificate. Each following certificate SHOULD directly certify the one preceding it. Because certificate validation requires that trust anchors be distributed independently, a certificate that specifies a trust anchor MAY be omitted from the chain, provided that supported peers are known to possess any omitted certificates.</p>
 <h1 id="rfc.section.9.2">
 <a href="#rfc.section.9.2">9.2.</a> <a href="#well-known-uri-for-the-http-challenge" id="well-known-uri-for-the-http-challenge">Well-Known URI for the HTTP Challenge</a>
 </h1>
@@ -2684,13 +2688,13 @@ Content-Type: application/jose+json
 <td class="left">tls-sni-01</td>
 <td class="left">RESERVED</td>
 <td class="left">N</td>
-<td class="left">N/A</td>
+<td class="left">RFC XXXX</td>
 </tr>
 <tr>
 <td class="left">tls-sni-02</td>
 <td class="left">RESERVED</td>
 <td class="left">N</td>
-<td class="left">N/A</td>
+<td class="left">RFC XXXX</td>
 </tr>
 </tbody>
 </table>
