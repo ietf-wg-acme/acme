@@ -659,11 +659,11 @@ indicate HTTP link relations.
        |          |          |
        |          |          |
        V          |          V
-    account       |        order -----> finalize
-                  |          |   -----> cert
-                  |          |
+    account       |        order --+--> finalize
+                  |          |     |
+                  |          |     +--> cert
                   |          V
-                  +---> authorizations
+                  +---> authorization
                             | ^
                             | | "up"
                             V |
@@ -1364,7 +1364,7 @@ The server MAY require a value for the "externalAccountBinding" field to be
 present in "newAccount" requests.  This can be used to associate an ACME account with an
 existing account in a non-ACME system, such as a CA customer database.
 
-To enable ACME account binding, a CA needs to provide the ACME client with a
+To enable ACME account binding, the CA operating the ACME server needs to provide the ACME client with a
 MAC key and a key identifier, using some mechanism outside of ACME. The key
 identifier MUST be an ASCII string. The MAC key SHOULD be provided in
 base64url-encoded form, to maximize compatibility between non-ACME provisioning systems
@@ -2506,7 +2506,7 @@ Additional information:
 File contains one or more certificates encoded with the PEM textual encoding, according to
 RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
 certificate MUST be an end-entity certificate. Each following certificate
-SHOULD directly certify one preceding it. Because certificate validation
+SHOULD directly certify the one preceding it. Because certificate validation
 requires that trust anchors be distributed independently, a certificate
 that specifies a trust anchor MAY be omitted from the chain, provided
 that supported peers are known to possess any omitted certificates.
@@ -2794,8 +2794,8 @@ Initial Contents
 |:-----------|:----------------|:-----|:----------|
 | http-01    | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
-| tls-sni-01 | RESERVED        | N    | N/A       |
-| tls-sni-02 | RESERVED        | N    | N/A       |
+| tls-sni-01 | RESERVED        | N    | RFC XXXX  |
+| tls-sni-02 | RESERVED        | N    | RFC XXXX  |
 
 When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
