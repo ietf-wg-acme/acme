@@ -543,7 +543,6 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | rateLimited             | The request exceeds a rate limit                                               |
 | rejectedIdentifier      | The server will not issue for the identifier                                   |
 | serverInternal          | The server experienced an internal error                                       |
-| tls                     | The server received a TLS error during validation                              |
 | unauthorized            | The client lacks sufficient authorization                                      |
 | unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
 | unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
