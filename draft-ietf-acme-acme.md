@@ -1325,10 +1325,9 @@ MUST return an error response with status code 400 (Bad Request) and type
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URL.  The server MUST ignore any
-updates to the "orders" field or any other fields it does not recognize. If the server
+updates to the "orders" field, "termsOfServiceAgreed" field (see {{changes-of-terms-of-service}}), or any other fields it does not recognize. If the server
 accepts the update, it MUST return a response with a 200 (OK) status code and the
 resulting account object.
-
 
 For example, to update the contact information in the above account, the client
 could send the following request:
