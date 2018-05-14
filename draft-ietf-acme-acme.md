@@ -1308,9 +1308,9 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
 ### Finding an Account URL Given a Key
 
-If the server already has an account registered with the provided account key,
+If the server receives a newAccount request signed with a key for which it already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URL of
-that account in the Location header field.  This allows a client that has
+that account in the Location header field.  The body of this response is the account value as it existed on the server before this request; any fields in the request object MUST be ignored.  This allows a client that has
 an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to find the URL for an existing account and does not want an
