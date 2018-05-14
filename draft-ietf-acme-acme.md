@@ -349,7 +349,9 @@ Access-Control-Allow-Origin header field to the value "\*".
 Binary fields in the JSON objects used by ACME are encoded using base64url
 encoding described in {{!RFC4648}} Section 5, according to the profile specified
 in JSON Web Signature {{!RFC7515}} Section 2. This encoding uses a URL safe
-character set. Trailing '=' characters MUST be stripped.
+character set. Trailing '=' characters MUST be stripped. Encoded
+values that include trailing '=' characters MUST be rejected as
+improperly encoded.
 
 ## Request Authentication
 
