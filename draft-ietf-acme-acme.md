@@ -1735,13 +1735,24 @@ Content-Type: application/jose+json
 
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
-identifiers as the initial new-order request, either in the commonName portion
+identifiers as the initial new-order request.  Identifiers of type "dns" MUST apper in either in the commonName portion
 of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
-requesting a subjectAltName extension.
+requesting a subjectAltName extension.  Specifications that define
+new identifier types must specify where in the certificate these
+identifiers can appear.
 
-A request to finalize an order will result in error if the order indicated does
-not have status "ready", if the CSR and order identifiers differ, or if the
-account is not authorized for the identifiers indicated in the CSR.
+A request to finalize an order will result in error if the CA is unwilling to issue a certificate corresponding to the submitted CSR.  For example:
+
+* If the order indicated does not have status "ready"
+* If the CSR and order identifiers differ
+* If the account is not authorized for the identifiers indicated in the CSR
+* If the CSR requests extensions that the CA is not willing to include
+
+In such cases, the problem document returned by the server SHOULD
+use error code "badCSR", and describe specific reasons the CSR was
+rejected in its "details" field.  After returning such an error, the
+server SHOULD leave the order in the "ready" state, to allow the
+client to submit a new finalize request with an amended CSR.
 
 A valid request to finalize an order will return the order to be finalized.
 The client should begin polling the order by sending a GET request to the order
