@@ -1182,7 +1182,7 @@ the server or if an existing nonce is no longer valid.
 To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
 on the server.  The server's response MUST include a Replay-Nonce header field
 containing a fresh nonce, and SHOULD have status code 200 (OK).  The
-server SHOULD also respond to GET requests for this resource, returning an empty
+server MUST also respond to GET requests for this resource, returning an empty
 body (while still providing a Replay-Nonce header) with a 204 (No Content) status.
 
 ~~~~~~~~~~
