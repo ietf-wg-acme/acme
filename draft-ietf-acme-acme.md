@@ -209,15 +209,19 @@ in another system. The creation request is signed with the generated
 private key to prove that the client controls it.
 
 ~~~~~~~~~~
-      Client                                                  Server
+      Client                                                   Server
 
-      Contact Information
-      ToS Agreement
-      Additional Data
+      [Contact Information]
+      [ToS Agreement]
+      [Additional Data]
       Signature                     ------->
+                                                          Account URL
+                                    <-------           Account Object
 
-                                    <-------                 Account
+
+                [] Information covered by request signatures
 ~~~~~~~~~~
+{: title="Account Creation"}
 
 
 Once an account is registered, there are four major steps the client needs to take to
@@ -250,22 +254,27 @@ certificate and make it available to the client.
 ~~~~~~~~~~
       Client                                                   Server
 
-      Order
+      [Order]
       Signature                     ------->
                                     <-------  Required Authorizations
 
-      Responses
+      [Responses]
       Signature                     ------->
 
                           <~~~~~~~~Validation~~~~~~~~>
 
-      CSR
+      [CSR]
       Signature                     ------->
+                                    <-------          Acknowledgement
 
                           <~~~~~~Await issuance~~~~~~>
 
-                                    <-------             Certificate
+      GET request                   ------->
+                                    <-------              Certificate
+
+                [] Information covered by request signatures
 ~~~~~~~~~~
+{: title="Certificate Issuance"}
 
 To revoke a certificate, the client sends a signed revocation request indicating
 the certificate to be revoked:
@@ -273,11 +282,14 @@ the certificate to be revoked:
 ~~~~~~~~~~
       Client                                                 Server
 
-      Revocation request
+      [Revocation request]
       Signature                    -------->
 
                                    <--------                 Result
+
+                [] Information covered by request signatures
 ~~~~~~~~~~
+{: title="Certificate Revocation"}
 
 Note that while ACME is defined with enough flexibility to handle different
 types of identifiers in principle, the primary use case addressed by this
@@ -671,6 +683,7 @@ indicate HTTP link relations.
                             V |
                           challenge
 ~~~~~~~~~~
+{: title="ACME Resource and Relationships"}
 
 The following table illustrates a typical sequence of requests required to
 establish a new account with the server, prove control of an identifier, issue a
@@ -1069,6 +1082,7 @@ validation  |   validation
   V                   V
 valid              invalid
 ~~~~~~~~~~
+{: title="State Transitions for Challenge Objects"}
 
 Authorization objects are created in the "pending" state.  If one of
 the challenges listed in the authorization transitions to the
@@ -1100,6 +1114,7 @@ invalid              valid            |
         V              V              V
      revoked      deactivated      expired
 ~~~~~~~~~~
+{: title="State Transitions for Authorization Objects"}
 
 Order objects are created in the "pending" state.  Once all of the
 authorizations listed in the order object are in the "valid" state,
@@ -1131,6 +1146,7 @@ processing ------------+
     V                  V
   valid             invalid
 ~~~~~~~~~~
+{: title="State Transitions for Order Objects"}
 
 Account objects are created in the "valid" state, since no further
 action is required to create an account after a successful
@@ -1147,6 +1163,7 @@ deactiv.|                revoke |
         V                       V
    deactivated               revoked
 ~~~~~~~~~~
+{: title="State Transitions for Account Objects"}
 
 Note that some of these states may not ever appear in a "status"
 field, depending on server behavior.  For example, a server that
@@ -2878,6 +2895,7 @@ interacting with other Internet hosts along two "channels":
 |   Server   |  Validation Channel
 +------------+
 ~~~~~~~~~~
+{: title="Communications Channels Used by ACME"}
 
 In practice, the risks to these channels are not entirely separate, but they are
 different in most cases.  Each channel, for example, uses a
@@ -2955,6 +2973,8 @@ Holder                  MitM                  Server
   |                      |                      | fulfilled by B.
   |                      |                      |
 ~~~~~
+{: title="Man-in-the-Middle Attack Exploiting a Validation Method without
+Account Key Binding"}
 
 All of the challenges above have a binding between the account private key and
 the validation query made by the server, via the key authorization. The key
