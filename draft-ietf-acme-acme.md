@@ -1493,7 +1493,7 @@ oldKey (required, JWK):
 : The JWK representation of the old key
 
 The client then encapsulates the key-change object in an "inner" JWS, signed with the
-requested new account key (i.e., the key matching the "newKey" value).
+requested new account key.
 This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.
 
