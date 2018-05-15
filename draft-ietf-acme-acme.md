@@ -177,7 +177,7 @@ from much of the time-consuming work described in the previous section.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
 NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in RFC 8147 {{!RFC8147}}.
+document are to be interpreted as described in RFC 2119 {{!RFC2119}}.
 
 The two main roles in ACME are "client" and "server".  The ACME client uses the
 protocol to request certificate management actions, such as issuance or
