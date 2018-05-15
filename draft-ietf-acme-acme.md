@@ -684,7 +684,7 @@ indicate HTTP link relations.
                             V |
                           challenge
 ~~~~~~~~~~
-{: title="ACME Resource and Relationships"}
+{: title="ACME Resources and Relationships"}
 
 The following table illustrates a typical sequence of requests required to
 establish a new account with the server, prove control of an identifier, issue a
@@ -868,7 +868,7 @@ identifiers (required, array of object):
 
   type (required, string):
   : The type of identifier.  This document defines the "dns"
-  identifier type.  See the registry defined in {{iana-identifiers}}
+  identifier type.  See the registry defined in {{iana-identifier}}
   for any others.
 
   value (required, string):
@@ -952,7 +952,7 @@ client is required to take action.  There are several reasons that
 the referenced authorizations may already be valid:
 
 * The client completed the authorization as part of a previous order
-* The client previously pre-authorized the identifier (see {{preauthorization}})
+* The client previously pre-authorized the identifier (see {{pre-authorization}})
 * The server granted the client authorization based on an external account
 
 Clients should check the "status" field of an order to determine
