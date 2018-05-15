@@ -1482,19 +1482,19 @@ order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
 To change the key associated with an account, the client first constructs a
-key-change object describing the change that it would like the server to make:
+key-change object describing the account to be updated and its account key:
 
 account (required, string):
 : The URL for the account being modified.  The content of this field MUST be the
 exact string provided in the Location header field in response to the
 new-account request that created the account.
 
-newKey (required, JWK):
-: The JWK representation of the new key
+oldKey (required, JWK):
+: The JWK representation of the old key
 
 The client then encapsulates the key-change object in an "inner" JWS, signed with the
-requested new account key (i.e., the key matching the "newKey" value).  This JWS
-then becomes the payload for the "outer" JWS that is the body of the ACME
+requested new account key (i.e., the key matching the "newKey" value).
+This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.
 
 The outer JWS MUST meet the normal requirements for an ACME JWS (see
@@ -1502,7 +1502,7 @@ The outer JWS MUST meet the normal requirements for an ACME JWS (see
 with the following differences:
 
 * The inner JWS MUST have a "jwk" header parameter, containing the public key of
-  the new key pair (i.e., the same value as the "newKey" field).
+  the new key pair.
 * The inner JWS MUST have the same "url" header parameter as the outer JWS.
 * The inner JWS is NOT REQUIRED to have a "nonce" header parameter.  The server
   MUST ignore any value provided for the "nonce" header parameter.
@@ -1510,7 +1510,10 @@ with the following differences:
 This transaction has signatures from both the old and new keys so that the
 server can verify that the holders of the two keys both agree to the change.
 The signatures are nested to preserve the property that all signatures on POST
-messages are signed by exactly one key.
+messages are signed by exactly one key.  The "inner" JWS effectively
+represents a request by the holder of the new key to take over the
+account form the holder of the old key.  The "outer" JWS represents
+the current account holder's assent to this request.
 
 ~~~~~~~~~~
 POST /acme/key-change HTTP/1.1
@@ -1532,7 +1535,7 @@ Content-Type: application/jose+json
     }),
     "payload": base64url({
       "account": "https://example.com/acme/acct/1",
-      "newKey": /* new key */
+      "oldKey": /* old key */
     }),
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
   }),
@@ -1553,11 +1556,12 @@ addition to the typical JWS validation:
    (as described above).
 6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
-   the account matching the old key.
-8. Check that the "newKey" field of the key-change object also verifies the
-   inner JWS.
+   the account matching the old key (i.e., the "kid" field in the
+   outer JWS).
+8. Check that the "oldKey" field of the key-change object is the
+   same as the account key for the account in question.
 9. Check that no account exists whose account key is the same as the key in the
-   "newKey" field.
+   "jwk" header parameter of the inner JWS.
 
 If all of these checks pass, then the server updates the corresponding account
 by replacing the old account key with the new public key and returns status
