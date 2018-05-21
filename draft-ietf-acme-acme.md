@@ -1738,7 +1738,7 @@ Content-Type: application/jose+json
 
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
-identifiers as the initial new-order request.  Identifiers of type "dns" MUST apper in either in the commonName portion
+identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear in either in the commonName portion
 of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
 requesting a subjectAltName extension.  Specifications that define
 new identifier types must specify where in the certificate these
