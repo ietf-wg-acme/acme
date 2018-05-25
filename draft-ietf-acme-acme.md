@@ -155,7 +155,7 @@ deploying an HTTPS server using ACME, the experience would be something like thi
   issue a certificate for the intended domain name(s).
 * The CA verifies that the client controls the requested domain name(s) by
   having the ACME client perform some action related to the domain name(s).
-  For example, the CA might require a client requsting example.com
+  For example, the CA might require a client requesting example.com
   to provision DNS record under example.com or an HTTP resource
   under http://example.com.
 * Once the CA is satisfied, it issues the certificate and the ACME client
@@ -1494,7 +1494,7 @@ oldKey (required, JWK):
 : The JWK representation of the old key
 
 The client then encapsulates the key-change object in an "inner" JWS, signed with the
-requested new account key (i.e., the key matching the "newKey" value).
+requested new account key.
 This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.
 
