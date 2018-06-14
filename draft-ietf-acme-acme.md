@@ -355,7 +355,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
   * "jwk" (JSON Web Key, for all requests not signed using an existing
-          account, e.g. newAccount)
+          account, e.g., newAccount)
   * "kid" (Key ID, for all requests signed using an existing account)
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-url-integrity}} below)
