@@ -4,7 +4,7 @@ This is the working area for the Working Group internet-draft, "Automatic Certif
 
 * [Editor's copy](https://ietf-wg-acme.github.io/acme/)
 * [Build history](https://circleci.com/gh/ietf-wg-acme/acme)
-* [Working Group Draft] (https://tools.ietf.org/html/draft-ietf-acme-acme)
+* [Working Group Draft](https://tools.ietf.org/html/draft-ietf-acme-acme)
 
 
 ## Contributing
@@ -42,7 +42,7 @@ meaning of the specification), you can either:
 GitHub. However, you **must notify the mailing list** when creating such issues,
 providing a link to the issue in the message body.
 
-  Note that **github issues are not for substantial discussions**; the only
+  Note that **GitHub issues are not for substantial discussions**; the only
   appropriate place to discuss design issues is on the mailing list itself.
 
 
