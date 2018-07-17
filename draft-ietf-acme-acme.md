@@ -905,7 +905,7 @@ This field is structured as a problem document {{!RFC7807}}.
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
 before the requested certificate can be issued (see
-{{identifier-authorization}}), including authorizations that the client has completed in the past. The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
+{{identifier-authorization}}), including unexpired authorizations that the client has completed in the past for identifiers specified in the order. The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
@@ -1326,7 +1326,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
 If the server receives a newAccount request signed with a key for which it already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URL of
-that account in the Location header field.  The body of this response is the account value as it existed on the server before this request; any fields in the request object MUST be ignored.  This allows a client that has
+that account in the Location header field.  The body of this response represents the account object as it existed on the server before this request; any fields in the request object MUST be ignored.  This allows a client that has
 an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to find the URL for an existing account and does not want an
@@ -1763,11 +1763,12 @@ Content-Type: application/jose+json
 
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
-identifiers as the initial new-order request.  Identifiers of type "dns" MUST apper in either in the commonName portion
+identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear either in the commonName portion
 of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
 requesting a subjectAltName extension.  (These identifiers may appear
-in any order.)  Specifications that define
-new identifier types must specify where in the certificate these
+in any sort order.)  Specifications that define
+new identifier types must specify where in the certificate signing
+request these
 identifiers can appear.
 
 A request to finalize an order will result in error if the CA is unwilling to issue a certificate corresponding to the submitted CSR.  For example:
@@ -2882,7 +2883,7 @@ same set of actions to fulfill two different validation methods.
 
 The values "tls-sni-01" and "tls-sni-02" are reserved because they
 were used in pre-RFC versions of this specification to denote
-validation methods that were found not to be secure in some cases.
+validation methods that were removed because they were found not to be secure in some cases.
 
 Validation methods do not have to be compatible with ACME in order to be
 registered.  For example, a CA might wish to register a validation method in
