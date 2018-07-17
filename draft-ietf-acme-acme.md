@@ -390,6 +390,8 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
   * "url" (defined in {{request-url-integrity}} below)
   * Either "jwk" (JSON Web Key) or "kid" (Key ID) as specified below
 
+An ACME server MUST implement the "ES256" signature algorithm {{!RFC7518}} and SHOULD implement the "EdDSA" signature algorithm using the "Ed25519" variant (indicated by "crv") {{!RFC8037}}.
+
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
 
