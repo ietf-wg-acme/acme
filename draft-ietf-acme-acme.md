@@ -39,6 +39,18 @@ normative:
       ins: National Institute of Standards and Technology, U.S. Department of Commerce
     date: 2012-03
     target: http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+  JSS15:
+    title: On the Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1 v1.5 Encryption
+    author:
+      name: Tibor Jager
+      ins: T. Hager
+    author:
+      name: Jörg Schwenk
+      ins: J. Schwenk
+    author:
+      name: Juraj Somorovsky
+      ins: J. Somorovsky
+    target: https://dl.acm.org/citation.cfm?id=2813657
 
 
 --- abstract
@@ -70,9 +82,10 @@ name(s) in the certificate.
 
 Different types of certificates reflect different kinds of CA verification of
 information about the certificate subject.  "Domain Validation" (DV)
-certificates are by far the most common type.  For DV validation, the CA merely
-verifies that the requester has effective control of the web server and/or DNS
-server for the domain, but does not explicitly attempt to verify their
+certificates are by far the most common type.  The only validation
+the CA is required to perform in the DV issuance process is to
+verify that the requester has effective control of the domain.  The CA is not
+required to attempt to verify the requester's
 real-world identity.  (This is as opposed to "Organization Validation" (OV) and
 "Extended Validation" (EV) certificates, where the process is intended to also
 verify the real-world identity of the requester.)
@@ -153,7 +166,11 @@ deploying an HTTPS server using ACME, the experience would be something like thi
 * In the background, the ACME client contacts the CA and requests that it
   issue a certificate for the intended domain name(s).
 * The CA verifies that the client controls the requested domain name(s) by
-  having the ACME client perform some action related to the domain name(s).
+  having the ACME client perform some action(s) that can only be done
+  with control of the domain name(s).
+  For example, the CA might require a client requesting example.com
+  to provision DNS record under example.com or an HTTP resource
+  under http://example.com.
 * Once the CA is satisfied, it issues the certificate and the ACME client
   automatically downloads and installs it, potentially notifying the operator
   via email, SMS, etc.
@@ -171,9 +188,11 @@ from much of the time-consuming work described in the previous section.
 
 # Terminology
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
-NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in RFC 2119 {{!RFC2119}}.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in BCP
+14 {{!RFC2119}} {{!RFC8174}} when, and only when, they appear in all
+capitals, as shown here.
 
 The two main roles in ACME are "client" and "server".  The ACME client uses the
 protocol to request certificate management actions, such as issuance or
@@ -184,7 +203,7 @@ CA-provided challenge.  The ACME server runs at a certification authority,
 and responds to client requests, performing the requested actions if the client is
 authorized.
 
-An ACME client is represented by an "account key pair".  The client uses the
+An ACME client authenticates to the server by means of an "account key pair".  The client uses the
 private key of this key pair to sign all messages sent to the server.  The
 server uses the public key to verify the authenticity and integrity of messages
 from the client.
@@ -205,15 +224,19 @@ in another system. The creation request is signed with the generated
 private key to prove that the client controls it.
 
 ~~~~~~~~~~
-      Client                                                  Server
+      Client                                                   Server
 
-      Contact Information
-      ToS Agreement
-      Additional Data
+      [Contact Information]
+      [ToS Agreement]
+      [Additional Data]
       Signature                     ------->
+                                                          Account URL
+                                    <-------           Account Object
 
-                                    <-------                 Account
+
+                [] Information covered by request signatures
 ~~~~~~~~~~
+{: title="Account Creation"}
 
 
 Once an account is registered, there are four major steps the client needs to take to
@@ -246,22 +269,27 @@ certificate and make it available to the client.
 ~~~~~~~~~~
       Client                                                   Server
 
-      Order
+      [Order]
       Signature                     ------->
                                     <-------  Required Authorizations
 
-      Responses
+      [Responses]
       Signature                     ------->
 
                           <~~~~~~~~Validation~~~~~~~~>
 
-      CSR
+      [CSR]
       Signature                     ------->
+                                    <-------          Acknowledgement
 
                           <~~~~~~Await issuance~~~~~~>
 
-                                    <-------             Certificate
+      GET request                   ------->
+                                    <-------              Certificate
+
+                [] Information covered by request signatures
 ~~~~~~~~~~
+{: title="Certificate Issuance"}
 
 To revoke a certificate, the client sends a signed revocation request indicating
 the certificate to be revoked:
@@ -269,11 +297,14 @@ the certificate to be revoked:
 ~~~~~~~~~~
       Client                                                 Server
 
-      Revocation request
+      [Revocation request]
       Signature                    -------->
 
                                    <--------                 Result
+
+                [] Information covered by request signatures
 ~~~~~~~~~~
+{: title="Certificate Revocation"}
 
 Note that while ACME is defined with enough flexibility to handle different
 types of identifiers in principle, the primary use case addressed by this
@@ -333,7 +364,9 @@ Access-Control-Allow-Origin header field to the value "\*".
 Binary fields in the JSON objects used by ACME are encoded using base64url
 encoding described in {{!RFC4648}} Section 5, according to the profile specified
 in JSON Web Signature {{!RFC7515}} Section 2. This encoding uses a URL safe
-character set. Trailing '=' characters MUST be stripped.
+character set. Trailing '=' characters MUST be stripped. Encoded
+values that include trailing '=' characters MUST be rejected as
+improperly encoded.
 
 ## Request Authentication
 
@@ -346,19 +379,16 @@ authentication of requests.
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
 * The JWS MUST be in the  Flattened JSON Serialization {{!RFC7515}}
-* The JWS MUST NOT have the value "none" in its "alg" field
 * The JWS MUST NOT have multiple signatures
 * The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used
 * The JWS Unprotected Header {{!RFC7515}} MUST NOT be used
-* The JWS MUST NOT have a Message Authentication Code (MAC)-based algorithm in its "alg" field
 * The JWS Payload MUST NOT be detached
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
-  * "jwk" (JSON Web Key, for all requests not signed using an existing
-          account, e.g., newAccount)
-  * "kid" (Key ID, for all requests signed using an existing account)
+    * This field MUST NOT contain "none" or a Message Authentication Code (MAC)-based algorithm
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-url-integrity}} below)
+  * Either "jwk" (JSON Web Key) or "kid" (Key ID) as specified below
 
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
@@ -378,7 +408,7 @@ resources defined in this specification.
 
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
-and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
+and type "urn:ietf:params:acme:error:badSignatureAlgorithm" (see {{errors}}).  The problem
 document returned with the error MUST include an "algorithms" field with an
 array of supported "alg" values.
 
@@ -670,6 +700,7 @@ indicate HTTP link relations.
                             V |
                           challenge
 ~~~~~~~~~~
+{: title="ACME Resources and Relationships"}
 
 The following table illustrates a typical sequence of requests required to
 establish a new account with the server, prove control of an identifier, issue a
@@ -777,7 +808,7 @@ status (required, string):
 : The status of this account. Possible values are: "valid", "deactivated", and
 "revoked".  The value "deactivated" should be used to indicate client-initiated
 deactivation whereas "revoked" should be used to indicate server-initiated
-deactivation.
+deactivation. (See {{status-changes}})
 
 contact (optional, array of string):
 : An array of URLs that the server can use to contact the client for issues
@@ -840,7 +871,8 @@ resulted from this order.
 
 status (required, string):
 : The status of this order.  Possible values are: "pending",
-"ready", "processing", "valid", and "invalid".
+"ready", "processing", "valid", and "invalid".  (See
+{{status-changes}})
 
 expires (optional, string):
 : The timestamp after which the server will consider this order invalid, encoded
@@ -851,7 +883,9 @@ identifiers (required, array of object):
 : An array of identifier objects that the order pertains to.
 
   type (required, string):
-  : The type of identifier.
+  : The type of identifier.  This document defines the "dns"
+  identifier type.  See the registry defined in {{iana-identifier}}
+  for any others.
 
   value (required, string):
   : The identifier itself.
@@ -871,7 +905,7 @@ This field is structured as a problem document {{!RFC7807}}.
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
 before the requested certificate can be issued (see
-{{identifier-authorization}}). The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
+{{identifier-authorization}}), including unexpired authorizations that the client has completed in the past for identifiers specified in the order. The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
@@ -928,6 +962,18 @@ example, if a CA allows multiple orders to be fulfilled based on a single
 authorization transaction, then it SHOULD reflect that authorization in all of
 the orders.
 
+Note that just because an authorization URL is listed in the
+"authorizations" array of an order object doesn't mean that the
+client is required to take action.  There are several reasons that
+the referenced authorizations may already be valid:
+
+* The client completed the authorization as part of a previous order
+* The client previously pre-authorized the identifier (see {{pre-authorization}})
+* The server granted the client authorization based on an external account
+
+Clients should check the "status" field of an order to determine
+whether they need to take any action.
+
 ### Authorization Objects
 
 An ACME authorization object represents a server's authorization for an account
@@ -942,14 +988,15 @@ identifier (required, object):
 : The identifier that the account is authorized to represent
 
   type (required, string):
-  : The type of identifier.
+  : The type of identifier.  (See below and {{iana-identifier}})
 
   value (required, string):
   : The identifier itself.
 
 status (required, string):
 : The status of this authorization.  Possible values are: "pending",
-"valid", "invalid", "deactivated", "expired", and "revoked".
+"valid", "invalid", "deactivated", "expired", and "revoked".  (See
+{{status-changes}})
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
@@ -1052,6 +1099,7 @@ validation  |   validation
   V                   V
 valid              invalid
 ~~~~~~~~~~
+{: title="State Transitions for Challenge Objects"}
 
 Authorization objects are created in the "pending" state.  If one of
 the challenges listed in the authorization transitions to the
@@ -1083,6 +1131,7 @@ invalid              valid            |
         V              V              V
      revoked      deactivated      expired
 ~~~~~~~~~~
+{: title="State Transitions for Authorization Objects"}
 
 Order objects are created in the "pending" state.  Once all of the
 authorizations listed in the order object are in the "valid" state,
@@ -1114,6 +1163,7 @@ processing ------------+
     V                  V
   valid             invalid
 ~~~~~~~~~~
+{: title="State Transitions for Order Objects"}
 
 Account objects are created in the "valid" state, since no further
 action is required to create an account after a successful
@@ -1130,6 +1180,7 @@ deactiv.|                revoke |
         V                       V
    deactivated               revoked
 ~~~~~~~~~~
+{: title="State Transitions for Account Objects"}
 
 Note that some of these states may not ever appear in a "status"
 field, depending on server behavior.  For example, a server that
@@ -1149,7 +1200,7 @@ the server or if an existing nonce is no longer valid.
 To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
 on the server.  The server's response MUST include a Replay-Nonce header field
 containing a fresh nonce, and SHOULD have status code 200 (OK).  The
-server SHOULD also respond to GET requests for this resource, returning an empty
+server MUST also respond to GET requests for this resource, returning an empty
 body (while still providing a Replay-Nonce header) with a 204 (No Content) status.
 
 ~~~~~~~~~~
@@ -1273,9 +1324,9 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
 ### Finding an Account URL Given a Key
 
-If the server already has an account registered with the provided account key,
+If the server receives a newAccount request signed with a key for which it already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URL of
-that account in the Location header field.  This allows a client that has
+that account in the Location header field.  The body of this response represents the account object as it existed on the server before this request; any fields in the request object MUST be ignored.  This allows a client that has
 an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to find the URL for an existing account and does not want an
@@ -1290,10 +1341,9 @@ MUST return an error response with status code 400 (Bad Request) and type
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URL.  The server MUST ignore any
-updates to the "orders" field or any other fields it does not recognize. If the server
+updates to the "orders" field, "termsOfServiceAgreed" field (see {{changes-of-terms-of-service}}), or any other fields it does not recognize. If the server
 accepts the update, it MUST return a response with a 200 (OK) status code and the
 resulting account object.
-
 
 For example, to update the contact information in the above account, the client
 could send the following request:
@@ -1435,8 +1485,9 @@ verify the account binding, the CA MUST take the following steps:
 
 If all of these checks pass and the CA creates a new account, then the CA may
 consider the new account associated with the external account corresponding to
-the MAC key and MUST reflect the value of the "externalAccountBinding" field in
-the resulting account object.  If any of these checks fail, then the CA MUST
+the MAC key.  The account object the CA returns MUST include an
+"externalAccountBinding" field with the same value as the field in
+the request.  If any of these checks fail, then the CA MUST
 reject the new-account request.
 
 
@@ -1446,20 +1497,29 @@ A client may wish to change the public key that is associated with an account in
 order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
-To change the key associated with an account, the client first constructs a
-key-change object describing the change that it would like the server to make:
+To change the key associated with an account, the client sends a
+request to the server containing signatures by both the old and new
+keys.  The signature by the new key covers the account URL and the
+old key, signifying a request by the new key holder to take over the
+account from the old key holder.  The signature by the old key
+covers this request and its signature, and indicates the old key
+holder's assent to the roll-over request.
+
+To create this request object, the client first constructs a
+key-change object describing the account to be updated and its
+account key:
 
 account (required, string):
 : The URL for the account being modified.  The content of this field MUST be the
 exact string provided in the Location header field in response to the
 new-account request that created the account.
 
-newKey (required, JWK):
-: The JWK representation of the new key
+oldKey (required, JWK):
+: The JWK representation of the old key
 
 The client then encapsulates the key-change object in an "inner" JWS, signed with the
-requested new account key (i.e., the key matching the "newKey" value).  This JWS
-then becomes the payload for the "outer" JWS that is the body of the ACME
+requested new account key.
+This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.
 
 The outer JWS MUST meet the normal requirements for an ACME JWS (see
@@ -1467,7 +1527,7 @@ The outer JWS MUST meet the normal requirements for an ACME JWS (see
 with the following differences:
 
 * The inner JWS MUST have a "jwk" header parameter, containing the public key of
-  the new key pair (i.e., the same value as the "newKey" field).
+  the new key pair.
 * The inner JWS MUST have the same "url" header parameter as the outer JWS.
 * The inner JWS is NOT REQUIRED to have a "nonce" header parameter.  The server
   MUST ignore any value provided for the "nonce" header parameter.
@@ -1475,7 +1535,10 @@ with the following differences:
 This transaction has signatures from both the old and new keys so that the
 server can verify that the holders of the two keys both agree to the change.
 The signatures are nested to preserve the property that all signatures on POST
-messages are signed by exactly one key.
+messages are signed by exactly one key.  The "inner" JWS effectively
+represents a request by the holder of the new key to take over the
+account form the holder of the old key.  The "outer" JWS represents
+the current account holder's assent to this request.
 
 ~~~~~~~~~~
 POST /acme/key-change HTTP/1.1
@@ -1497,7 +1560,7 @@ Content-Type: application/jose+json
     }),
     "payload": base64url({
       "account": "https://example.com/acme/acct/1",
-      "newKey": /* new key */
+      "oldKey": /* old key */
     }),
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
   }),
@@ -1518,11 +1581,12 @@ addition to the typical JWS validation:
    (as described above).
 6. Check that the "url" parameters of the inner and outer JWSs are the same.
 7. Check that the "account" field of the key-change object contains the URL for
-   the account matching the old key.
-8. Check that the "newKey" field of the key-change object also verifies the
-   inner JWS.
+   the account matching the old key (i.e., the "kid" field in the
+   outer JWS).
+8. Check that the "oldKey" field of the key-change object is the
+   same as the account key for the account in question.
 9. Check that no account exists whose account key is the same as the key in the
-   "newKey" field.
+   "jwk" header parameter of the inner JWS.
 
 If all of these checks pass, then the server updates the corresponding account
 by replacing the old account key with the new public key and returns status
@@ -1575,7 +1639,7 @@ provide a way to reactivate a deactivated account.
 
 ## Applying for Certificate Issuance
 
-The client requests certificate issuance by sending a POST request to the server's
+The client begins the certificate issuance process by sending a POST request to the server's
 new-order resource.  The body of the POST is a JWS object whose JSON payload is
 a subset of the order object defined in {{order-objects}}, containing the fields
 that describe the certificate to be issued:
@@ -1699,13 +1763,26 @@ Content-Type: application/jose+json
 
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
-identifiers as the initial new-order request, either in the commonName portion
+identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear either in the commonName portion
 of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
-requesting a subjectAltName extension.
+requesting a subjectAltName extension.  (These identifiers may appear
+in any sort order.)  Specifications that define
+new identifier types must specify where in the certificate signing
+request these
+identifiers can appear.
 
-A request to finalize an order will result in error if the order indicated does
-not have status "ready", if the CSR and order identifiers differ, or if the
-account is not authorized for the identifiers indicated in the CSR.
+A request to finalize an order will result in error if the CA is unwilling to issue a certificate corresponding to the submitted CSR.  For example:
+
+* If the order indicated does not have status "ready"
+* If the CSR and order identifiers differ
+* If the account is not authorized for the identifiers indicated in the CSR
+* If the CSR requests extensions that the CA is not willing to include
+
+In such cases, the problem document returned by the server SHOULD
+use error code "badCSR", and describe specific reasons the CSR was
+rejected in its "details" field.  After returning such an error, the
+server SHOULD leave the order in the "ready" state, to allow the
+client to submit a new finalize request with an amended CSR.
 
 A valid request to finalize an order will return the order to be finalized.
 The client should begin polling the order by sending a GET request to the order
@@ -1839,7 +1916,7 @@ described in {{identifier-authorization}} to complete the authorization process.
 To download the issued certificate, the client simply sends a GET request to the
 certificate URL.
 
-The default format of the certificate is application/pem-certificate-chain (see IANA Considerations).
+The default format of the certificate is application/pem-certificate-chain (see {{iana-considerations}}).
 
 The server MAY provide one or more link relation header fields {{RFC5988}} with
 relation "alternate". Each such field SHOULD express an alternative certificate
@@ -2215,7 +2292,7 @@ url (required, string):
 
 status (required, string):
 : The status of this challenge.  Possible values are: "pending",
-"processing", "valid", and "invalid".
+"processing", "valid", and "invalid". (See {{status-changes}})
 
 validated (optional, string):
 : The time at which the server validated this challenge, encoded in the
@@ -2804,6 +2881,10 @@ interoperable definition and does not overlap with existing validation methods.
 That is, it should not be possible for a client and server to follow the
 same set of actions to fulfill two different validation methods.
 
+The values "tls-sni-01" and "tls-sni-02" are reserved because they
+were used in pre-RFC versions of this specification to denote
+validation methods that were removed because they were found not to be secure in some cases.
+
 Validation methods do not have to be compatible with ACME in order to be
 registered.  For example, a CA might wish to register a validation method in
 order to support its use with the ACME extensions to CAA
@@ -2856,6 +2937,7 @@ interacting with other Internet hosts along two "channels":
 |   Server   |  Validation Channel
 +------------+
 ~~~~~~~~~~
+{: title="Communications Channels Used by ACME"}
 
 In practice, the risks to these channels are not entirely separate, but they are
 different in most cases.  Each channel, for example, uses a
@@ -2886,7 +2968,7 @@ both (1) holds the private key of the account key pair, and (2) controls the
 identifier in question.
 
 Validation responses need to be bound to an account key pair in order to avoid
-situations where an ACME MitM can switch out a legitimate domain holder's
+situations where a MitM on ACME HTTPS requests can switch out a legitimate domain holder's
 account key for one of his choosing, e.g.:
 
 * Legitimate domain holder registers account key pair A
@@ -2902,6 +2984,39 @@ account key for one of his choosing, e.g.:
 * Because the challenges were issued in response to a message signed account key
   B, the ACME server grants authorization to account key B (the MitM) instead of
   account key A (the legitimate domain holder)
+
+~~~~~
+Domain                                         ACME
+Holder                  MitM                  Server  
+  |                      |                      |
+  | newAccount(A)        |                      |
+  |--------------------->|--------------------->|
+  |                      |                      |
+  |                      | newAccount(B)        |
+  |                      |--------------------->|
+  | newOrder(domain, A)  |                      | 
+  |--------------------->|                      |
+  |                      | newOrder(domain, B)  | 
+  |                      |--------------------->|
+  |                      |                      |
+  |   authz, challenges  |   authz, challenges  |
+  |<---------------------|<---------------------|
+  |                      |                      |
+  | response(chall, A)   | response(chall, B)   |
+  |--------------------->|--------------------->|
+  |                      |                      |
+  |  validation request  |                      |
+  |<--------------------------------------------|
+  |                      |                      |
+  | validation response  |                      |
+  |-------------------------------------------->|
+  |                      |                      |
+  |                      |                      | Considers challenge
+  |                      |                      | fulfilled by B.
+  |                      |                      |
+~~~~~
+{: title="Man-in-the-Middle Attack Exploiting a Validation Method without
+Account Key Binding"}
 
 All of the challenges above have a binding between the account private key and
 the validation query made by the server, via the key authorization. The key
@@ -3009,6 +3124,8 @@ Some server implementations include information from the validation server's
 response (in order to facilitate debugging).  Such implementations enable an
 attacker to extract this information from any web server that is accessible to
 the ACME server, even if it is not accessible to the ACME client.
+For example, the ACME server might be able to access servers behind
+a firewall that would prevent access by the ACME client.
 
 It might seem that the risk of SSRF through this channel is limited by the fact
 that the attacker can only control the domain of the URL, not the path.
@@ -3085,7 +3202,9 @@ SHOULD verify that a CSR submitted in a finalize request does not contain a
 public key for any known account key pair.  In particular, when a server
 receives a finalize request, it MUST verify that the public key in a CSR is not
 the same as the public key of the account key pair used to authenticate that
-request.
+request.  This assures that vulnerabilities in the protocols with which the
+certificate is used (e.g., signing oracles in TLS [JSS15]) do not result in 
+compromise of the ACME account.
 
 ## DNS security
 
@@ -3144,13 +3263,15 @@ In addition to the editors listed on the front page, this document has benefited
 from contributions from a broad set of contributors, all the way back to its
 inception.
 
+* Andrew Ayer, SSLMate
+* Karthik Bhargavan, INRIA
 * Peter Eckersley, EFF
+* Alex Halderman, University of Michigan
+* Sophie Herold, Hemio
 * Eric Rescorla, Mozilla
 * Seth Schoen, EFF
-* Alex Halderman, University of Michigan
 * Martin Thomson, Mozilla
 * Jakub Warmuz, University of Oxford
-* Sophie Herold, Hemio
 
 This document draws on many concepts established by Eric Rescorla's "Automated
 Certificate Issuance Protocol" draft.  Martin Thomson provided helpful guidance
