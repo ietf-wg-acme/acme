@@ -171,7 +171,7 @@ Internet-Draft                    ACME                         July 2018
 
 
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  82
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  84
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  85
      13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  86
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  86
 
@@ -604,12 +604,12 @@ Internet-Draft                    ACME                         July 2018
       *  Either "jwk" (JSON Web Key) or "kid" (Key ID) as specified
          below
 
+   An ACME server MUST implement the "ES256" signature algorithm
+   [RFC7518] and SHOULD implement the "EdDSA" signature algorithm using
+   the "Ed25519" variant (indicated by "crv") [RFC8037].
+
    The "jwk" and "kid" fields are mutually exclusive.  Servers MUST
    reject requests that contain both.
-
-   For newAccount requests, and for revokeCert requests authenticated by
-   certificate key, there MUST be a "jwk" field.  This field MUST
-
 
 
 
@@ -618,6 +618,8 @@ Barnes, et al.          Expires January 18, 2019               [Page 11]
 Internet-Draft                    ACME                         July 2018
 
 
+   For newAccount requests, and for revokeCert requests authenticated by
+   certificate key, there MUST be a "jwk" field.  This field MUST
    contain the public key corresponding to the private key used to sign
    the JWS.
 
@@ -664,8 +666,6 @@ Internet-Draft                    ACME                         July 2018
    receiving such an object in an HTTP request, the server MUST compare
    the "url" header parameter to the request URL.  If the two do not
    match, then the server MUST reject the request as unauthorized.
-
-
 
 
 
@@ -4683,6 +4683,11 @@ Internet-Draft                    ACME                         July 2018
               APIs", RFC 7807, DOI 10.17487/RFC7807, March 2016,
               <https://www.rfc-editor.org/info/rfc7807>.
 
+   [RFC8037]  Liusvaara, I., "CFRG Elliptic Curve Diffie-Hellman (ECDH)
+              and Signatures in JSON Object Signing and Encryption
+              (JOSE)", RFC 8037, DOI 10.17487/RFC8037, January 2017,
+              <https://www.rfc-editor.org/info/rfc8037>.
+
    [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
               Writing an IANA Considerations Section in RFCs", BCP 26,
               RFC 8126, DOI 10.17487/RFC8126, June 2017,
@@ -4692,12 +4697,7 @@ Internet-Draft                    ACME                         July 2018
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
-13.2.  Informative References
 
-   [I-D.ietf-acme-caa]
-              Landau, H., "CAA Record Extensions for Account URI and
-              ACME Method Binding", draft-ietf-acme-caa-05 (work in
-              progress), June 2018.
 
 
 
@@ -4705,6 +4705,13 @@ Barnes, et al.          Expires January 18, 2019               [Page 84]
 
 Internet-Draft                    ACME                         July 2018
 
+
+13.2.  Informative References
+
+   [I-D.ietf-acme-caa]
+              Landau, H., "CAA Record Extensions for Account URI and
+              ACME Method Binding", draft-ietf-acme-caa-05 (work in
+              progress), June 2018.
 
    [I-D.ietf-acme-ip]
               Shoemaker, R., "ACME IP Identifier Validation Extension",
@@ -4746,13 +4753,6 @@ Internet-Draft                    ACME                         July 2018
               (DTLS)", BCP 195, RFC 7525, DOI 10.17487/RFC7525, May
               2015, <https://www.rfc-editor.org/info/rfc7525>.
 
-   [W3C.CR-cors-20130129]
-              Kesteren, A., "Cross-Origin Resource Sharing", World Wide
-              Web Consortium CR CR-cors-20130129, January 2013,
-              <http://www.w3.org/TR/2013/CR-cors-20130129>.
-
-
-
 
 
 
@@ -4761,6 +4761,11 @@ Barnes, et al.          Expires January 18, 2019               [Page 85]
 
 Internet-Draft                    ACME                         July 2018
 
+
+   [W3C.CR-cors-20130129]
+              Kesteren, A., "Cross-Origin Resource Sharing", World Wide
+              Web Consortium CR CR-cors-20130129, January 2013,
+              <http://www.w3.org/TR/2013/CR-cors-20130129>.
 
 13.3.  URIs
 
@@ -4790,11 +4795,6 @@ Authors' Addresses
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
 
 
 

@@ -751,12 +751,13 @@ ul.toc li {
 </ul>
 </li>
 </ul>
-<p id="rfc.section.6.2.p.4">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
-<p id="rfc.section.6.2.p.5">For newAccount requests, and for revokeCert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field. This field MUST contain the public key corresponding to the private key used to sign the JWS.</p>
-<p id="rfc.section.6.2.p.6">For all other requests, the request is signed using an existing account and there MUST be a &#8220;kid&#8221; field. This field MUST contain the account URL received by POSTing to the newAccount resource.</p>
-<p id="rfc.section.6.2.p.7">Note that authentication via signed JWS request bodies implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.  Account resources are the only sensitive resources defined in this specification.</p>
-<p id="rfc.section.6.2.p.8">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221; (see <a href="#errors" class="xref">Section 6.6</a>).  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.</p>
-<p id="rfc.section.6.2.p.9">Because client requests in ACME carry JWS objects in the Flattened JSON Serialization, they must have the &#8220;Content-Type&#8221; header field set to &#8220;application/jose+json&#8221;.  If a request does not meet this requirement, then the server MUST return a response with status code 415 (Unsupported Media Type).</p>
+<p id="rfc.section.6.2.p.4">An ACME server MUST implement the &#8220;ES256&#8221; signature algorithm <a href="#RFC7518" class="xref">[RFC7518]</a> and SHOULD implement the &#8220;EdDSA&#8221; signature algorithm using the &#8220;Ed25519&#8221; variant (indicated by &#8220;crv&#8221;) <a href="#RFC8037" class="xref">[RFC8037]</a>.</p>
+<p id="rfc.section.6.2.p.5">The &#8220;jwk&#8221; and &#8220;kid&#8221; fields are mutually exclusive. Servers MUST reject requests that contain both.</p>
+<p id="rfc.section.6.2.p.6">For newAccount requests, and for revokeCert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field. This field MUST contain the public key corresponding to the private key used to sign the JWS.</p>
+<p id="rfc.section.6.2.p.7">For all other requests, the request is signed using an existing account and there MUST be a &#8220;kid&#8221; field. This field MUST contain the account URL received by POSTing to the newAccount resource.</p>
+<p id="rfc.section.6.2.p.8">Note that authentication via signed JWS request bodies implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.  Account resources are the only sensitive resources defined in this specification.</p>
+<p id="rfc.section.6.2.p.9">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221; (see <a href="#errors" class="xref">Section 6.6</a>).  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.</p>
+<p id="rfc.section.6.2.p.10">Because client requests in ACME carry JWS objects in the Flattened JSON Serialization, they must have the &#8220;Content-Type&#8221; header field set to &#8220;application/jose+json&#8221;.  If a request does not meet this requirement, then the server MUST return a response with status code 415 (Unsupported Media Type).</p>
 <h1 id="rfc.section.6.3">
 <a href="#rfc.section.6.3">6.3.</a> <a href="#request-url-integrity" id="request-url-integrity">Request URL Integrity</a>
 </h1>
@@ -3085,6 +3086,11 @@ Holder                  MitM                  Server
 <td class="reference"><b id="RFC7807">[RFC7807]</b></td>
 <td class="top">
 <a>Nottingham, M.</a> and <a>E. Wilde</a>, "<a href="https://tools.ietf.org/html/rfc7807">Problem Details for HTTP APIs</a>", RFC 7807, DOI 10.17487/RFC7807, March 2016.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8037">[RFC8037]</b></td>
+<td class="top">
+<a>Liusvaara, I.</a>, "<a href="https://tools.ietf.org/html/rfc8037">CFRG Elliptic Curve Diffie-Hellman (ECDH) and Signatures in JSON Object Signing and Encryption (JOSE)</a>", RFC 8037, DOI 10.17487/RFC8037, January 2017.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC8126">[RFC8126]</b></td>
