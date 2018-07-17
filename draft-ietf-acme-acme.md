@@ -378,7 +378,7 @@ authentication of requests.
 
 JWS objects sent in ACME requests MUST meet the following additional criteria:
 
-* The JWS MUST be in the  Flattened JSON Serialization {{!RFC7515}}
+* The JWS MUST be in the Flattened JSON Serialization {{!RFC7515}}
 * The JWS MUST NOT have multiple signatures
 * The JWS Unencoded Payload Option {{!RFC7797}} MUST NOT be used
 * The JWS Unprotected Header {{!RFC7515}} MUST NOT be used
