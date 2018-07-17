@@ -39,6 +39,18 @@ normative:
       ins: National Institute of Standards and Technology, U.S. Department of Commerce
     date: 2012-03
     target: http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+  JSS15:
+    title: On the Security of TLS 1.3 and QUIC Against Weaknesses in PKCS#1 v1.5 Encryption
+    author:
+      name: Tibor Jager
+      ins: T. Hager
+    author:
+      name: Jörg Schwenk
+      ins: J. Schwenk
+    author:
+      name: Juraj Somorovsky
+      ins: J. Somorovsky
+    target: https://dl.acm.org/citation.cfm?id=2813657
 
 
 --- abstract
@@ -154,8 +166,9 @@ deploying an HTTPS server using ACME, the experience would be something like thi
 * In the background, the ACME client contacts the CA and requests that it
   issue a certificate for the intended domain name(s).
 * The CA verifies that the client controls the requested domain name(s) by
-  having the ACME client perform some action related to the domain name(s).
-  For example, the CA might require a client requsting example.com
+  having the ACME client perform some action(s) that can only be done
+  with control of the domain name(s).
+  For example, the CA might require a client requesting example.com
   to provision DNS record under example.com or an HTTP resource
   under http://example.com.
 * Once the CA is satisfied, it issues the certificate and the ACME client
@@ -175,9 +188,11 @@ from much of the time-consuming work described in the previous section.
 
 # Terminology
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
-NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in RFC 2119 {{!RFC2119}}.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in BCP
+14 {{!RFC2119}} {{!RFC8174}} when, and only when, they appear in all
+capitals, as shown here.
 
 The two main roles in ACME are "client" and "server".  The ACME client uses the
 protocol to request certificate management actions, such as issuance or
@@ -545,6 +560,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | rateLimited             | The request exceeds a rate limit                                               |
 | rejectedIdentifier      | The server will not issue for the identifier                                   |
 | serverInternal          | The server experienced an internal error                                       |
+| tls                     | The server received a TLS error during validation                              |
 | unauthorized            | The client lacks sufficient authorization                                      |
 | unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
 | unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
@@ -889,7 +905,7 @@ This field is structured as a problem document {{!RFC7807}}.
 authorizations (required, array of string):
 : For pending orders, the authorizations that the client needs to complete
 before the requested certificate can be issued (see
-{{identifier-authorization}}), including authorizations that the client has completed in the past. The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
+{{identifier-authorization}}), including unexpired authorizations that the client has completed in the past for identifiers specified in the order. The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
 with a GET request.
 
@@ -1310,7 +1326,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
 If the server receives a newAccount request signed with a key for which it already has an account registered with the provided account key,
 then it MUST return a response with a 200 (OK) status code and provide the URL of
-that account in the Location header field.  The body of this response is the account value as it existed on the server before this request; any fields in the request object MUST be ignored.  This allows a client that has
+that account in the Location header field.  The body of this response represents the account object as it existed on the server before this request; any fields in the request object MUST be ignored.  This allows a client that has
 an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to find the URL for an existing account and does not want an
@@ -1481,8 +1497,17 @@ A client may wish to change the public key that is associated with an account in
 order to recover from a key compromise or proactively mitigate the impact of an
 unnoticed key compromise.
 
-To change the key associated with an account, the client first constructs a
-key-change object describing the account to be updated and its account key:
+To change the key associated with an account, the client sends a
+request to the server containing signatures by both the old and new
+keys.  The signature by the new key covers the account URL and the
+old key, signifying a request by the new key holder to take over the
+account from the old key holder.  The signature by the old key
+covers this request and its signature, and indicates the old key
+holder's assent to the roll-over request.
+
+To create this request object, the client first constructs a
+key-change object describing the account to be updated and its
+account key:
 
 account (required, string):
 : The URL for the account being modified.  The content of this field MUST be the
@@ -1614,7 +1639,7 @@ provide a way to reactivate a deactivated account.
 
 ## Applying for Certificate Issuance
 
-The client requests certificate issuance by sending a POST request to the server's
+The client begins the certificate issuance process by sending a POST request to the server's
 new-order resource.  The body of the POST is a JWS object whose JSON payload is
 a subset of the order object defined in {{order-objects}}, containing the fields
 that describe the certificate to be issued:
@@ -1738,10 +1763,12 @@ Content-Type: application/jose+json
 
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
-identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear in either in the commonName portion
+identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear either in the commonName portion
 of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
-requesting a subjectAltName extension.  Specifications that define
-new identifier types must specify where in the certificate these
+requesting a subjectAltName extension.  (These identifiers may appear
+in any sort order.)  Specifications that define
+new identifier types must specify where in the certificate signing
+request these
 identifiers can appear.
 
 A request to finalize an order will result in error if the CA is unwilling to issue a certificate corresponding to the submitted CSR.  For example:
@@ -2856,7 +2883,7 @@ same set of actions to fulfill two different validation methods.
 
 The values "tls-sni-01" and "tls-sni-02" are reserved because they
 were used in pre-RFC versions of this specification to denote
-validation methods that were found not to be secure in some cases.
+validation methods that were removed because they were found not to be secure in some cases.
 
 Validation methods do not have to be compatible with ACME in order to be
 registered.  For example, a CA might wish to register a validation method in
@@ -3097,6 +3124,8 @@ Some server implementations include information from the validation server's
 response (in order to facilitate debugging).  Such implementations enable an
 attacker to extract this information from any web server that is accessible to
 the ACME server, even if it is not accessible to the ACME client.
+For example, the ACME server might be able to access servers behind
+a firewall that would prevent access by the ACME client.
 
 It might seem that the risk of SSRF through this channel is limited by the fact
 that the attacker can only control the domain of the URL, not the path.
@@ -3173,7 +3202,9 @@ SHOULD verify that a CSR submitted in a finalize request does not contain a
 public key for any known account key pair.  In particular, when a server
 receives a finalize request, it MUST verify that the public key in a CSR is not
 the same as the public key of the account key pair used to authenticate that
-request.
+request.  This assures that vulnerabilities in the protocols with which the
+certificate is used (e.g., signing oracles in TLS [JSS15]) do not result in 
+compromise of the ACME account.
 
 ## DNS security
 
