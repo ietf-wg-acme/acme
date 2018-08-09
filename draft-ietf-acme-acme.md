@@ -410,9 +410,10 @@ resources defined in this specification.
 
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
-and type "urn:ietf:params:acme:error:badSignatureAlgorithm" (see {{errors}}).  The problem
+and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
 document returned with the error MUST include an "algorithms" field with an
-array of supported "alg" values.
+array of supported "alg" values.  See {{errors}} for more details on
+the structure of error responses.
 
 Because client requests in ACME carry JWS objects in the Flattened
 JSON Serialization, they must have the "Content-Type" header field
@@ -554,7 +555,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
 | compound                | Specific error conditions are indicated in the "subproblems" array.            |
 | connection              | The server could not connect to validation target                              |
-| dns                     | There was a problem with a DNS query                                           |
+| dns                     | There was a problem with a DNS query during identifier validation              |
 | externalAccountRequired | The request must include a value for the "externalAccountBinding" field        |
 | incorrectResponse       | Response received didn't match the challenge's requirements                    |
 | invalidContact          | A contact URL for an account was invalid                                       |
@@ -973,7 +974,7 @@ the referenced authorizations may already be valid:
 * The client previously pre-authorized the identifier (see {{pre-authorization}})
 * The server granted the client authorization based on an external account
 
-Clients should check the "status" field of an order to determine
+Clients SHOULD check the "status" field of an order to determine
 whether they need to take any action.
 
 ### Authorization Objects
@@ -2972,7 +2973,10 @@ identifier in question.
 
 Validation responses need to be bound to an account key pair in order to avoid
 situations where a MitM on ACME HTTPS requests can switch out a legitimate domain holder's
-account key for one of his choosing, e.g.:
+account key for one of his choosing.  Such MitMs can arise, for
+example, if a CA uses a CDN or third-party reverse proxy in front of
+its ACME interface.  An attack by such an MitM could have the
+following form:
 
 * Legitimate domain holder registers account key pair A
 * MitM registers account key pair B
@@ -3021,7 +3025,7 @@ Holder                  MitM                  Server
 {: title="Man-in-the-Middle Attack Exploiting a Validation Method without
 Account Key Binding"}
 
-All of the challenges above have a binding between the account private key and
+All of the challenges defined in this document have a binding between the account private key and
 the validation query made by the server, via the key authorization. The key
 authorization reflects the account public key, is provided to the server in the
 validation response over the validation channel and signed afterwards by the
