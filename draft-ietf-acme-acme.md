@@ -545,29 +545,30 @@ information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
 in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 
-| Type                    | Description                                                                    |
-|:------------------------|:-------------------------------------------------------------------------------|
-| accountDoesNotExist     | The request specified an account that does not exist                           |
-| badCSR                  | The CSR is unacceptable (e.g., due to a short key)                             |
-| badNonce                | The client sent an unacceptable anti-replay nonce                              |
-| badRevocationReason     | The revocation reason provided is not allowed by the server                    |
-| badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support               |
-| caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing |
-| compound                | Specific error conditions are indicated in the "subproblems" array.            |
-| connection              | The server could not connect to validation target                              |
-| dns                     | There was a problem with a DNS query during identifier validation              |
-| externalAccountRequired | The request must include a value for the "externalAccountBinding" field        |
-| incorrectResponse       | Response received didn't match the challenge's requirements                    |
-| invalidContact          | A contact URL for an account was invalid                                       |
-| malformed               | The request message was malformed                                              |
-| rateLimited             | The request exceeds a rate limit                                               |
-| rejectedIdentifier      | The server will not issue for the identifier                                   |
-| serverInternal          | The server experienced an internal error                                       |
-| tls                     | The server received a TLS error during validation                              |
-| unauthorized            | The client lacks sufficient authorization                                      |
-| unsupportedContact      | A contact URL for an account used an unsupported protocol scheme               |
-| unsupportedIdentifier   | Identifier is not supported, but may be in future                              |
-| userActionRequired      | Visit the "instance" URL and take actions specified there                      |
+| Type                    | Description                                                                     |
+|:------------------------|:--------------------------------------------------------------------------------|
+| accountDoesNotExist     | The request specified an account that does not exist                            |
+| alreadyRevoked          | The request specified a certificate to be revoked that has already been revoked |
+| badCSR                  | The CSR is unacceptable (e.g., due to a short key)                              |
+| badNonce                | The client sent an unacceptable anti-replay nonce                               |
+| badRevocationReason     | The revocation reason provided is not allowed by the server                     |
+| badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support                |
+| caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing  |
+| compound                | Specific error conditions are indicated in the "subproblems" array.             |
+| connection              | The server could not connect to validation target                               |
+| dns                     | There was a problem with a DNS query during identifier validation               |
+| externalAccountRequired | The request must include a value for the "externalAccountBinding" field         |
+| incorrectResponse       | Response received didn't match the challenge's requirements                     |
+| invalidContact          | A contact URL for an account was invalid                                        |
+| malformed               | The request message was malformed                                               |
+| rateLimited             | The request exceeds a rate limit                                                |
+| rejectedIdentifier      | The server will not issue for the identifier                                    |
+| serverInternal          | The server experienced an internal error                                        |
+| tls                     | The server received a TLS error during validation                               |
+| unauthorized            | The client lacks sufficient authorization                                       |
+| unsupportedContact      | A contact URL for an account used an unsupported protocol scheme                |
+| unsupportedIdentifier   | Identifier is not supported, but may be in future                               |
+| userActionRequired      | Visit the "instance" URL and take actions specified there                       |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
@@ -2232,7 +2233,9 @@ The server MUST also consider a revocation request valid if it is signed with
 the private key corresponding to the public key in the certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
-the revocation fails, the server returns an error.
+the revocation fails, the server returns an error.  For example, if the certificate
+has already been revoked the server returns an error response with status code 400
+(Bad Request) and type "urn:ietf:params:acme:error:alreadyRevoked".
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
