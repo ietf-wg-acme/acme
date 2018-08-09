@@ -547,6 +547,7 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | Type                    | Description                                                                    |
 |:------------------------|:-------------------------------------------------------------------------------|
 | accountDoesNotExist     | The request specified an account that does not exist                           |
+| alreadyRevoked          | The certificate has already been revoked                                       |
 | badCSR                  | The CSR is unacceptable (e.g., due to a short key)                             |
 | badNonce                | The client sent an unacceptable anti-replay nonce                              |
 | badRevocationReason     | The revocation reason provided is not allowed by the server                    |
@@ -2231,7 +2232,9 @@ The server MUST also consider a revocation request valid if it is signed with
 the private key corresponding to the public key in the certificate.
 
 If the revocation succeeds, the server responds with status code 200 (OK).  If
-the revocation fails, the server returns an error.
+the revocation fails, the server returns an error.  For example, if the certificate
+has already been revoked the servers returns an error response with status code 400
+(Bad Request) and type "urn:ietf:params:acme:error:alreadyRevoked".
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
