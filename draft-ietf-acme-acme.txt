@@ -636,9 +636,10 @@ Internet-Draft                    ACME                       August 2018
    If the client sends a JWS signed with an algorithm that the server
    does not support, then the server MUST return an error with status
    code 400 (Bad Request) and type
-   "urn:ietf:params:acme:error:badSignatureAlgorithm" (see Section 6.6).
-   The problem document returned with the error MUST include an
-   "algorithms" field with an array of supported "alg" values.
+   "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
+   document returned with the error MUST include an "algorithms" field
+   with an array of supported "alg" values.  See Section 6.6 for more
+   details on the structure of error responses.
 
    Because client requests in ACME carry JWS objects in the Flattened
    JSON Serialization, they must have the "Content-Type" header field
@@ -664,8 +665,7 @@ Internet-Draft                    ACME                       August 2018
    header parameter in their protected header.  This header parameter
    encodes the URL to which the client is directing the request.  On
    receiving such an object in an HTTP request, the server MUST compare
-   the "url" header parameter to the request URL.  If the two do not
-   match, then the server MUST reject the request as unauthorized.
+
 
 
 
@@ -673,6 +673,9 @@ Barnes, et al.          Expires February 10, 2019              [Page 12]
 
 Internet-Draft                    ACME                       August 2018
 
+
+   the "url" header parameter to the request URL.  If the two do not
+   match, then the server MUST reject the request as unauthorized.
 
    Except for the directory resource, all ACME resources are addressed
    with URLs provided to the client by the server.  In requests sent to
@@ -719,9 +722,6 @@ Internet-Draft                    ACME                       August 2018
    nonce.  On receiving such a response, a client SHOULD retry the
    request using the new nonce.
 
-   The precise method used to generate and track nonces is up to the
-   server.  For example, the server could generate a random 128-bit
-
 
 
 
@@ -730,6 +730,8 @@ Barnes, et al.          Expires February 10, 2019              [Page 13]
 Internet-Draft                    ACME                       August 2018
 
 
+   The precise method used to generate and track nonces is up to the
+   server.  For example, the server could generate a random 128-bit
    value for each response, keep a list of issued nonces, and strike
    nonces from this list as they are used.
 
@@ -776,8 +778,6 @@ Internet-Draft                    ACME                       August 2018
    that is the time where all rate limits allow access again for the
    current request with exactly the same parameters.
 
-   In addition to the human-readable "detail" field of the error
-   response, the server MAY send one or multiple link relations in the
 
 
 
@@ -786,6 +786,8 @@ Barnes, et al.          Expires February 10, 2019              [Page 14]
 Internet-Draft                    ACME                       August 2018
 
 
+   In addition to the human-readable "detail" field of the error
+   response, the server MAY send one or multiple link relations in the
    "Link" header pointing to documentation about the specific rate limit
    that was hit, using the "help" link relation type.
 
@@ -832,8 +834,6 @@ Internet-Draft                    ACME                       August 2018
    |                         |                                         |
    | compound                | Specific error conditions are indicated |
    |                         | in the "subproblems" array.             |
-   |                         |                                         |
-   | connection              | The server could not connect to         |
 
 
 
@@ -842,9 +842,12 @@ Barnes, et al.          Expires February 10, 2019              [Page 15]
 Internet-Draft                    ACME                       August 2018
 
 
+   |                         |                                         |
+   | connection              | The server could not connect to         |
    |                         | validation target                       |
    |                         |                                         |
    | dns                     | There was a problem with a DNS query    |
+   |                         | during identifier validation            |
    |                         |                                         |
    | externalAccountRequired | The request must include a value for    |
    |                         | the "externalAccountBinding" field      |
@@ -887,9 +890,6 @@ Internet-Draft                    ACME                       August 2018
    the standard types.  Clients SHOULD display the "detail" field of all
    errors.
 
-   In the remainder of this document, we use the tokens in the table
-   above to refer to error types, rather than the full URNs.  For
-
 
 
 
@@ -898,6 +898,8 @@ Barnes, et al.          Expires February 10, 2019              [Page 16]
 Internet-Draft                    ACME                       August 2018
 
 
+   In the remainder of this document, we use the tokens in the table
+   above to refer to error types, rather than the full URNs.  For
    example, an "error of type 'badCSR'" refers to an error document with
    "type" value "urn:ietf:params:acme:error:badCSR".
 
@@ -923,8 +925,6 @@ Internet-Draft                    ACME                       August 2018
    subproblems, referencing two of those identifiers, the ACME client
    may choose to submit another order containing only the eight
    identifiers not listed in the problem document.
-
-
 
 
 
@@ -1469,7 +1469,7 @@ Internet-Draft                    ACME                       August 2018
    o  The server granted the client authorization based on an external
       account
 
-   Clients should check the "status" field of an order to determine
+   Clients SHOULD check the "status" field of an order to determine
    whether they need to take any action.
 
 7.1.4.  Authorization Objects
@@ -4146,8 +4146,10 @@ Barnes, et al.          Expires February 10, 2019              [Page 74]
 Internet-Draft                    ACME                       August 2018
 
 
-   out a legitimate domain holder's account key for one of his choosing,
-   e.g.:
+   out a legitimate domain holder's account key for one of his choosing.
+   Such MitMs can arise, for example, if a CA uses a CDN or third-party
+   reverse proxy in front of its ACME interface.  An attack by such an
+   MitM could have the following form:
 
    o  Legitimate domain holder registers account key pair A
 
@@ -4171,8 +4173,6 @@ Internet-Draft                    ACME                       August 2018
       account key B, the ACME server grants authorization to account key
       B (the MitM) instead of account key A (the legitimate domain
       holder)
-
-
 
 
 
@@ -4234,12 +4234,13 @@ Internet-Draft                    ACME                       August 2018
       Man-in-the-Middle Attack Exploiting a Validation Method without
                             Account Key Binding
 
-   All of the challenges above have a binding between the account
-   private key and the validation query made by the server, via the key
-   authorization.  The key authorization reflects the account public
-   key, is provided to the server in the validation response over the
-   validation channel and signed afterwards by the corresponding private
-   key in the challenge response over the ACME channel.
+   All of the challenges defined in this document have a binding between
+   the account private key and the validation query made by the server,
+   via the key authorization.  The key authorization reflects the
+   account public key, is provided to the server in the validation
+   response over the validation channel and signed afterwards by the
+   corresponding private key in the challenge response over the ACME
+   channel.
 
    The association of challenges to identifiers is typically done by
    requiring the client to perform some action that only someone who
@@ -4249,7 +4250,6 @@ Internet-Draft                    ACME                       August 2018
    o  HTTP: Provision files under .well-known on a web server for the
       domain
 
-   o  DNS: Provision DNS resource records for the domain
 
 
 
@@ -4257,6 +4257,8 @@ Barnes, et al.          Expires February 10, 2019              [Page 76]
 
 Internet-Draft                    ACME                       August 2018
 
+
+   o  DNS: Provision DNS resource records for the domain
 
    There are several ways that these assumptions can be violated, both
    by misconfiguration and by attacks.  For example, on a web server
@@ -4303,9 +4305,7 @@ Internet-Draft                    ACME                       August 2018
    on the validation channel to hijack the authorization process to
    authorize a key of the attacker's choice.
 
-   An attacker that can only see the ACME channel would need to convince
-   the validation server to provide a response that would authorize the
-   attacker's account key, but this is prevented by binding the
+
 
 
 
@@ -4314,6 +4314,9 @@ Barnes, et al.          Expires February 10, 2019              [Page 77]
 Internet-Draft                    ACME                       August 2018
 
 
+   An attacker that can only see the ACME channel would need to convince
+   the validation server to provide a response that would authorize the
+   attacker's account key, but this is prevented by binding the
    validation response to the account key used to request challenges.  A
    passive attacker on the validation channel can observe the correct
    validation response and even replay it, but that response can only be
@@ -4359,9 +4362,6 @@ Internet-Draft                    ACME                       August 2018
    Server-Side Request Forgery (SSRF) attacks can arise when an attacker
    can cause a server to perform HTTP requests to an attacker-chosen
    URL.  In the ACME HTTP challenge validation process, the ACME server
-   performs an HTTP GET request to a URL in which the attacker can
-   choose the domain.  This request is made before the server has
-
 
 
 
@@ -4370,6 +4370,8 @@ Barnes, et al.          Expires February 10, 2019              [Page 78]
 Internet-Draft                    ACME                       August 2018
 
 
+   performs an HTTP GET request to a URL in which the attacker can
+   choose the domain.  This request is made before the server has
    verified that the client controls the domain, so any client can cause
    a query to any domain.
 
@@ -4416,8 +4418,6 @@ Internet-Draft                    ACME                       August 2018
 
       *  Is the name a known phishing domain?
 
-   o  Is the key in the CSR sufficiently strong?
-
 
 
 
@@ -4425,6 +4425,8 @@ Barnes, et al.          Expires February 10, 2019              [Page 79]
 
 Internet-Draft                    ACME                       August 2018
 
+
+   o  Is the key in the CSR sufficiently strong?
 
    o  Is the CSR signed with an acceptable algorithm?
 
@@ -4471,9 +4473,7 @@ Internet-Draft                    ACME                       August 2018
    4.  Changing the account key pair for the account, locking out the
        legitimate account holder
 
-   For this reason, it is RECOMMENDED that account key pairs be used for
-   no other purpose besides ACME authentication.  For example, the
-   public key of an account key pair SHOULD NOT be included in a
+
 
 
 
@@ -4482,6 +4482,9 @@ Barnes, et al.          Expires February 10, 2019              [Page 80]
 Internet-Draft                    ACME                       August 2018
 
 
+   For this reason, it is RECOMMENDED that account key pairs be used for
+   no other purpose besides ACME authentication.  For example, the
+   public key of an account key pair SHOULD NOT be included in a
    certificate.  ACME clients and servers SHOULD verify that a CSR
    submitted in a finalize request does not contain a public key for any
    known account key pair.  In particular, when a server receives a
@@ -4527,9 +4530,6 @@ Internet-Draft                    ACME                       August 2018
    prevents ACME clients from implementing a "naive" validation server
    that automatically replies to challenges without participating in the
    creation of the initial authorization request.
-
-
-
 
 
 

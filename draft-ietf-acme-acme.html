@@ -756,7 +756,7 @@ ul.toc li {
 <p id="rfc.section.6.2.p.6">For newAccount requests, and for revokeCert requests authenticated by certificate key, there MUST be a &#8220;jwk&#8221; field. This field MUST contain the public key corresponding to the private key used to sign the JWS.</p>
 <p id="rfc.section.6.2.p.7">For all other requests, the request is signed using an existing account and there MUST be a &#8220;kid&#8221; field. This field MUST contain the account URL received by POSTing to the newAccount resource.</p>
 <p id="rfc.section.6.2.p.8">Note that authentication via signed JWS request bodies implies that GET requests are not authenticated.  Servers MUST NOT respond to GET requests for resources that might be considered sensitive.  Account resources are the only sensitive resources defined in this specification.</p>
-<p id="rfc.section.6.2.p.9">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221; (see <a href="#errors" class="xref">Section 6.6</a>).  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.</p>
+<p id="rfc.section.6.2.p.9">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221;.  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.  See <a href="#errors" class="xref">Section 6.6</a> for more details on the structure of error responses.</p>
 <p id="rfc.section.6.2.p.10">Because client requests in ACME carry JWS objects in the Flattened JSON Serialization, they must have the &#8220;Content-Type&#8221; header field set to &#8220;application/jose+json&#8221;.  If a request does not meet this requirement, then the server MUST return a response with status code 415 (Unsupported Media Type).</p>
 <h1 id="rfc.section.6.3">
 <a href="#rfc.section.6.3">6.3.</a> <a href="#request-url-integrity" id="request-url-integrity">Request URL Integrity</a>
@@ -847,7 +847,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left">dns</td>
-<td class="left">There was a problem with a DNS query</td>
+<td class="left">There was a problem with a DNS query during identifier validation</td>
 </tr>
 <tr>
 <td class="left">externalAccountRequired</td>
@@ -1245,7 +1245,7 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;;rel="next"
 <li>The client previously pre-authorized the identifier (see <a href="#pre-authorization" class="xref">Section 7.4.1</a>)</li>
 <li>The server granted the client authorization based on an external account</li>
 </ul>
-<p id="rfc.section.7.1.3.p.8">Clients should check the &#8220;status&#8221; field of an order to determine whether they need to take any action.</p>
+<p id="rfc.section.7.1.3.p.8">Clients SHOULD check the &#8220;status&#8221; field of an order to determine whether they need to take any action.</p>
 <h1 id="rfc.section.7.1.4">
 <a href="#rfc.section.7.1.4">7.1.4.</a> <a href="#authorization-objects" id="authorization-objects">Authorization Objects</a>
 </h1>
@@ -2790,7 +2790,7 @@ Content-Type: application/jose+json
 <a href="#rfc.section.10.2">10.2.</a> <a href="#integrity-of-authorizations" id="integrity-of-authorizations">Integrity of Authorizations</a>
 </h1>
 <p id="rfc.section.10.2.p.1">ACME allows anyone to request challenges for an identifier by registering an account key and sending a new-order request using that account key.  The integrity of the authorization process thus depends on the identifier validation challenges to ensure that the challenge can only be completed by someone who both (1) holds the private key of the account key pair, and (2) controls the identifier in question.</p>
-<p id="rfc.section.10.2.p.2">Validation responses need to be bound to an account key pair in order to avoid situations where a MitM on ACME HTTPS requests can switch out a legitimate domain holder&#8217;s account key for one of his choosing, e.g.:</p>
+<p id="rfc.section.10.2.p.2">Validation responses need to be bound to an account key pair in order to avoid situations where a MitM on ACME HTTPS requests can switch out a legitimate domain holder&#8217;s account key for one of his choosing.  Such MitMs can arise, for example, if a CA uses a CDN or third-party reverse proxy in front of its ACME interface.  An attack by such an MitM could have the following form:</p>
 <p></p>
 
 <ul>
@@ -2834,7 +2834,7 @@ Holder                  MitM                  Server
   |                      |                      |
 </pre>
 <p class="figure">Man-in-the-Middle Attack Exploiting a Validation Method without Account Key Binding</p>
-<p id="rfc.section.10.2.p.4">All of the challenges above have a binding between the account private key and the validation query made by the server, via the key authorization. The key authorization reflects the account public key, is provided to the server in the validation response over the validation channel and signed afterwards by the corresponding private key in the challenge response over the ACME channel.</p>
+<p id="rfc.section.10.2.p.4">All of the challenges defined in this document have a binding between the account private key and the validation query made by the server, via the key authorization. The key authorization reflects the account public key, is provided to the server in the validation response over the validation channel and signed afterwards by the corresponding private key in the challenge response over the ACME channel.</p>
 <p id="rfc.section.10.2.p.5">The association of challenges to identifiers is typically done by requiring the client to perform some action that only someone who effectively controls the identifier can perform.  For the challenges in this document, the actions are:</p>
 <p></p>
 
