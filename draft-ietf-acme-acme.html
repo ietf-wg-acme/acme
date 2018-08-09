@@ -365,7 +365,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., McCarney, D., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2018-07-17" />
+  <meta name="dct.issued" scheme="ISO8601" content="2018-08-09" />
   <meta name="dct.abstract" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Certificates in PKI using X.509 (PKIX) are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certificate authorities in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a certification authority (CA) and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -389,7 +389,7 @@ ul.toc li {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: January 18, 2019</td>
+<td class="left">Expires: February 10, 2019</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -410,7 +410,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">July 17, 2018</td>
+<td class="right">August 09, 2018</td>
 </tr>
 
     	
@@ -427,7 +427,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on January 18, 2019.</p>
+<p>This Internet-Draft will expire on February 10, 2019.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -2145,7 +2145,7 @@ Content-Language: en
 <dt>type (required, string):</dt>
 <dd style="margin-left: 8">The string &#8220;http-01&#8221;</dd>
 <dt>token (required, string):</dt>
-<dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy.  It MUST NOT contain any characters outside the base64url alphabet, and MUST NOT include base64 padding characters (&#8220;=&#8221;).</dd>
+<dd style="margin-left: 8">A random value that uniquely identifies the challenge.  This value MUST have at least 128 bits of entropy.  It MUST NOT contain any characters outside the base64url alphabet, and MUST NOT include base64 padding characters (&#8220;=&#8221;).  See <a href="#RFC4086" class="xref">[RFC4086]</a> for additional information on randomness requirements.</dd>
 </dl>
 <pre>
 GET /acme/authz/1234/0 HTTP/1.1
@@ -3008,6 +3008,11 @@ Holder                  MitM                  Server
 <a>Berners-Lee, T.</a>, <a>Fielding, R.</a> and <a>L. Masinter</a>, "<a href="https://tools.ietf.org/html/rfc3986">Uniform Resource Identifier (URI): Generic Syntax</a>", STD 66, RFC 3986, DOI 10.17487/RFC3986, January 2005.</td>
 </tr>
 <tr>
+<td class="reference"><b id="RFC4086">[RFC4086]</b></td>
+<td class="top">
+<a>Eastlake 3rd, D.</a>, <a>Schiller, J.</a> and <a>S. Crocker</a>, "<a href="https://tools.ietf.org/html/rfc4086">Randomness Requirements for Security</a>", BCP 106, RFC 4086, DOI 10.17487/RFC4086, June 2005.</td>
+</tr>
+<tr>
 <td class="reference"><b id="RFC4648">[RFC4648]</b></td>
 <td class="top">
 <a>Josefsson, S.</a>, "<a href="https://tools.ietf.org/html/rfc4648">The Base16, Base32, and Base64 Data Encodings</a>", RFC 4648, DOI 10.17487/RFC4648, October 2006.</td>
@@ -3114,7 +3119,7 @@ Holder                  MitM                  Server
 <tr>
 <td class="reference"><b id="I-D.ietf-acme-ip">[I-D.ietf-acme-ip]</b></td>
 <td class="top">
-<a>Shoemaker, R.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-acme-ip-02">ACME IP Identifier Validation Extension</a>", Internet-Draft draft-ietf-acme-ip-02, May 2018.</td>
+<a>Shoemaker, R.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-acme-ip-04">ACME IP Identifier Validation Extension</a>", Internet-Draft draft-ietf-acme-ip-04, July 2018.</td>
 </tr>
 <tr>
 <td class="reference"><b id="I-D.ietf-acme-telephone">[I-D.ietf-acme-telephone]</b></td>
