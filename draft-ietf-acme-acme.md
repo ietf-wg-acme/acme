@@ -647,7 +647,7 @@ enables:
 
 ## Resources
 
-ACME is structured as a REST {{!REST}} application with the following types of resources:
+ACME is structured as a REST {{REST}} application with the following types of resources:
 
 * Account resources, representing information about an account
   ({{account-objects}}, {{account-creation}})
