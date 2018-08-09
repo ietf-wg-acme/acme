@@ -742,12 +742,12 @@ the following table and whose values are the corresponding URLs.
 
 | Field          | URL in value         |
 |:---------------|:---------------------|
-| newNonce       | new-nonce            |
-| newAccount     | new-account          |
-| newOrder       | new-order            |
-| newAuthz       | new-authorization    |
-| revokeCert     | revoke-certificate   |
-| keyChange      | key-change           |
+| newNonce       | New nonce            |
+| newAccount     | New account          |
+| newOrder       | New order            |
+| newAuthz       | New authorization    |
+| revokeCert     | Revoke certificate   |
+| keyChange      | Key Change           |
 
 There is no constraint on the URL of the directory except that it
 should be different from the other ACME server resources' URLs, and that it
