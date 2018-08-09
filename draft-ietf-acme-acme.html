@@ -814,6 +814,10 @@ ul.toc li {
 <td class="left">The request specified an account that does not exist</td>
 </tr>
 <tr>
+<td class="left">alreadyRevoked</td>
+<td class="left">The request specified a certificate to be revoked that has already been revoked</td>
+</tr>
+<tr>
 <td class="left">badCSR</td>
 <td class="left">The CSR is unacceptable (e.g., due to a short key)</td>
 </tr>
@@ -2061,7 +2065,7 @@ Content-Type: application/jose+json
 <li>an account that holds authorizations for all of the identifiers in the certificate.</li>
 </ul>
 <p id="rfc.section.7.6.p.8">The server MUST also consider a revocation request valid if it is signed with the private key corresponding to the public key in the certificate.</p>
-<p id="rfc.section.7.6.p.9">If the revocation succeeds, the server responds with status code 200 (OK).  If the revocation fails, the server returns an error.</p>
+<p id="rfc.section.7.6.p.9">If the revocation succeeds, the server responds with status code 200 (OK).  If the revocation fails, the server returns an error.  For example, if the certificate has already been revoked the server returns an error response with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:alreadyRevoked&#8221;.</p>
 <pre>
 HTTP/1.1 200 OK
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
