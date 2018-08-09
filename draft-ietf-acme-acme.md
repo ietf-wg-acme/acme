@@ -2397,7 +2397,8 @@ token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy.
 It MUST NOT contain any characters outside the base64url alphabet, and MUST NOT
-include base64 padding characters ("=").
+include base64 padding characters ("=").  See {{!RFC4086}} for additional information
+on randomness requirements.
 
 ~~~~~~~~~~
 GET /acme/authz/1234/0 HTTP/1.1
