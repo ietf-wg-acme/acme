@@ -460,7 +460,7 @@ same string in their "url" header parameter.
 The "url" header parameter specifies the URL {{!RFC3986}} to which this JWS
 object is directed.  The "url" header parameter MUST be carried in the protected
 header of the JWS.  The value of the "url" header parameter MUST be a string
-representing the URL.
+representing the Target URL.
 
 ## Replay protection
 
