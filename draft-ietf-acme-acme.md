@@ -51,16 +51,23 @@ normative:
       name: Juraj Somorovsky
       ins: J. Somorovsky
     target: https://dl.acm.org/citation.cfm?id=2813657
+  REST:
+    title: Architectural Styles and the Design of Network-based Software Architectures
+    author:
+      name: Roy Thomas Fielding
+      ins: R. Fielding
+    date: 2000
+    target: http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
 
 
 --- abstract
 
-Certificates in PKI using X.509 (PKIX) are used for a number of purposes,
+Public Key Infrastructure X.509 (PKIX) certificates are used for a number of purposes,
 the most significant of which is the authentication of domain names.  Thus,
-certificate authorities in the Web PKI are trusted to verify that an applicant
+certification authorities (CAs) in the Web PKI are trusted to verify that an applicant
 for a certificate legitimately represents the domain name(s) in the certificate.
 Today, this verification is done through a collection of ad hoc mechanisms.
-This document describes a protocol that a certification authority (CA) and an
+This document describes a protocol that a CA and an
 applicant can use to automate the process of verification and certificate
 issuance.  The protocol also provides facilities for other certificate
 management functions, such as certificate revocation.
@@ -76,7 +83,7 @@ discussed on the ACME mailing list (acme@ietf.org).
 # Introduction
 
 Certificates {{!RFC5280}} in the Web PKI are most commonly used to authenticate
-domain names.  Thus, certificate authorities in the Web PKI are trusted to
+domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to
 verify that an applicant for a certificate legitimately represents the domain
 name(s) in the certificate.
 
@@ -95,7 +102,7 @@ protocols for certificate issuance and identity verification.  In the case of DV
 certificates, a typical user experience is something like:
 
 * Generate a PKCS#10 {{!RFC2986}} Certificate Signing Request (CSR).
-* Cut-and-paste the CSR into a CA web page.
+* Cut-and-paste the CSR into a CA's web page.
 * Prove ownership of the domain by one of the following methods:
    * Put a CA-provided challenge at a specific place on the web server.
    * Put a CA-provided challenge in a DNS record corresponding to the target
@@ -109,7 +116,7 @@ With the exception of the CSR itself and the certificates that are issued, these
 are all completely ad hoc procedures and are accomplished by getting the human
 user to follow interactive natural-language instructions from the CA rather than
 by machine-implemented published protocols.  In many cases, the instructions are
-difficult to follow and cause significant confusion.  Informal usability tests
+difficult to follow and cause significant frustration and confusion.  Informal usability tests
 by the authors indicate that webmasters often need 1-3 hours to obtain and
 install a certificate for a domain.  Even in the best case, the lack of
 published, standardized mechanisms presents an obstacle to the wide deployment
@@ -117,16 +124,16 @@ of HTTPS and other PKIX-dependent systems because it inhibits mechanization of
 tasks related to certificate issuance, deployment, and revocation.
 
 This document describes an extensible framework for automating the issuance and
-domain validation procedure, thereby allowing servers and infrastructural
+domain validation procedure, thereby allowing servers and infrastructure
 software to obtain certificates without user interaction.  Use of this protocol
-should radically simplify the deployment of HTTPS and the practicality of PKIX
+should radically simplify the deployment of HTTPS and the practicality of PKIX-based
 authentication for other protocols based on Transport Layer Security (TLS)
 {{!RFC5246}}.
 
 It should be noted that while the focus of this document is on validating
 domain names for purposes of issuing certificates in the Web PKI, ACME supports
 extensions for uses with other identifiers in other PKI contexts.  For example,
-as of this writing, there is ongoing work to use ACME for issuance of WebPKI
+as of this writing, there is ongoing work to use ACME for issuance of Web PKI
 certificates attesting to IP addresses {{?I-D.ietf-acme-ip}} and STIR
 certificates attesting to telephone numbers {{?I-D.ietf-acme-telephone}}.
 
@@ -197,7 +204,7 @@ capitals, as shown here.
 The two main roles in ACME are "client" and "server".  The ACME client uses the
 protocol to request certificate management actions, such as issuance or
 revocation.  An ACME client may run on a web server, mail server, or some other
-server system which requires valid TLS certificates.  Or, it may run on a separate
+server system which requires valid certificates for TLS.  Or, it may run on a separate
 server that does not consume the certificate, but is authorized to respond to a
 CA-provided challenge.  The ACME server runs at a certification authority,
 and responds to client requests, performing the requested actions if the client is
@@ -214,7 +221,7 @@ ACME allows a client to request certificate management actions using a set of
 JavaScript Object Notation (JSON) messages carried over HTTPS.
 Issuance using ACME resembles a traditional CA's issuance process, in which a user creates an account,
 requests a certificate, and proves control of the domain(s) in that certificate in
-order for the CA to sign the requested certificate.
+order for the CA to issue the requested certificate.
 
 The first phase of ACME is for the client to request an account with the
 ACME server.  The client generates an asymmetric key pair and requests a
@@ -395,8 +402,8 @@ An ACME server MUST implement the "ES256" signature algorithm {{!RFC7518}} and S
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
 
-For newAccount requests, and for revokeCert requests authenticated by certificate
-key, there MUST be a "jwk" field. This field MUST contain the public key
+For newAccount requests, and for revokeCert requests authenticated by certified
+keys, there MUST be a "jwk" field. This field MUST contain the public key
 corresponding to the private key used to sign the JWS.
 
 For all other requests, the request is signed using an existing account and
@@ -462,7 +469,7 @@ requests have a mandatory anti-replay mechanism.  This mechanism is based on the
 server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
-An ACME server provides nonces to clients using the Replay-Nonce header field,
+An ACME server provides nonces to clients using the HTTP Replay-Nonce header field,
 as specified in {{replay-nonce}} below.  The server MUST include a Replay-Nonce
 header field in every successful response to a POST request and SHOULD provide
 it in error responses as well.
@@ -496,7 +503,8 @@ acceptable to generate Replay-Nonces randomly.
 
 The value of the Replay-Nonce field MUST be an octet string encoded according to
 the base64url encoding described in Section 2 of {{!RFC7515}}.  Clients MUST
-ignore invalid Replay-Nonce values.
+ignore invalid Replay-Nonce values.  The ABNF {{!RFC5234}} for the Replay-Nonce
+header field follows:
 
 ~~~~~
   base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
@@ -522,13 +530,13 @@ then the verifier MUST reject the JWS as malformed.
 Creation of resources can be rate limited by ACME servers to ensure fair usage and
 prevent abuse.  Once the rate limit is exceeded, the server MUST respond
 with an error with the type "urn:ietf:params:acme:error:rateLimited".
-Additionally, the server SHOULD send a "Retry-After" header indicating
+Additionally, the server SHOULD send a "Retry-After" header {{!RFC7231}} indicating
 when the current request may succeed again.  If multiple rate limits are
 in place, that is the time where all rate limits allow access again for
 the current request with exactly the same parameters.
 
 In addition to the human-readable "detail" field of the error response, the
-server MAY send one or multiple link relations in the "Link" header pointing to
+server MAY send one or multiple link relations in the "Link" header {{!RFC8288}} pointing to
 documentation about the specific rate limit that was hit, using the "help" link relation type.
 
 ## Errors
@@ -542,7 +550,7 @@ then the server MAY return status code 405 (Method Not Allowed).
 When the server responds with an error status, it SHOULD provide additional
 information using a problem document {{!RFC7807}}.  To facilitate automatic
 response to errors, this document defines the following standard tokens for use
-in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
+in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"):
 
 | Type                    | Description                                                                    |
 |:------------------------|:-------------------------------------------------------------------------------|
@@ -569,8 +577,8 @@ in the "type" field (within the "urn:ietf:params:acme:error:" namespace):
 | userActionRequired      | Visit the "instance" URL and take actions specified there                      |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
-set to a URI other than those defined above.  Servers MUST NOT use the ACME URN {{?RFC3553}}
-namespace for errors other than the standard types.  Clients SHOULD display the
+set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
+namespace {{acme-urn-space}} for errors other than the standard types.  Clients SHOULD display the
 "detail" field of all errors.
 
 In the remainder of this document, we use the tokens in the table above to refer
@@ -639,7 +647,7 @@ enables:
 
 ## Resources
 
-ACME is structured as a REST application with the following types of resources:
+ACME is structured as a REST {{!REST}} application with the following types of resources:
 
 * Account resources, representing information about an account
   ({{account-objects}}, {{account-creation}})
@@ -734,12 +742,12 @@ the following table and whose values are the corresponding URLs.
 
 | Field          | URL in value         |
 |:---------------|:---------------------|
-| newNonce       | New nonce            |
-| newAccount     | New account          |
-| newOrder       | New order            |
-| newAuthz       | New authorization    |
-| revokeCert     | Revoke certificate   |
-| keyChange      | Key change           |
+| newNonce       | new-nonce            |
+| newAccount     | new-account          |
+| newOrder       | new-order            |
+| newAuthz       | new-authorization    |
+| revokeCert     | revoke-certificate   |
+| keyChange      | key-change           |
 
 There is no constraint on the URL of the directory except that it
 should be different from the other ACME server resources' URLs, and that it
@@ -1956,8 +1964,8 @@ Cache-Control headers specifying a point in time in the distant future. These
 headers have no relation to the certificate's period of validity.
 
 The ACME client MAY request other formats by including an Accept
-header in its request.  For example, the client could use the media type
-`application/pkix-cert` {{!RFC2585}} to request the end-entity certificate
+header {{RFC7231}} in its request.  For example, the client could use the media type
+`application/pkix-cert` {{!RFC2585}} or `applicaiton/pkcs7-mime` {{!RFC5751}} to request the end-entity certificate
 in DER format. Server support for alternate formats is OPTIONAL. For
 formats that can only express a single certificate, the server SHOULD
 provide one or more `Link: rel="up"` headers pointing to an issuer or
@@ -2611,7 +2619,7 @@ value:
 
 | Header Field Name | Protocol | Status   | Reference        |
 |:------------------|:---------|:---------|:-----------------|
-| Replay-Nonce      | http     | standard | {{replay-nonce}} |
+| Replay-Nonce      | http     | standard | [[this-RFC, {{replay-nonce}}] |
 
 ## "url" JWS Header Parameter
 
@@ -2643,7 +2651,7 @@ updated with the following additional value:
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
 
-## URN Sub-namespace for ACME (urn:ietf:params:acme)
+## URN Sub-namespace for ACME (urn:ietf:params:acme) {#acme-urn-space}
 
 The "IETF URN Sub-namespace for Registered Protocol Parameter Identifiers"
 registry should be updated with the following additional value, following the
