@@ -403,7 +403,7 @@ The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
 
 For newAccount requests, and for revokeCert requests authenticated by a certificate
-keys, there MUST be a "jwk" field. This field MUST contain the public key
+key, there MUST be a "jwk" field. This field MUST contain the public key
 corresponding to the private key used to sign the JWS.
 
 For all other requests, the request is signed using an existing account and
