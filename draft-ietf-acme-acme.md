@@ -402,7 +402,7 @@ An ACME server MUST implement the "ES256" signature algorithm {{!RFC7518}} and S
 The "jwk" and "kid" fields are mutually exclusive. Servers MUST reject requests
 that contain both.
 
-For newAccount requests, and for revokeCert requests authenticated by certified
+For newAccount requests, and for revokeCert requests authenticated by a certificate
 keys, there MUST be a "jwk" field. This field MUST contain the public key
 corresponding to the private key used to sign the JWS.
 
@@ -460,7 +460,7 @@ same string in their "url" header parameter.
 The "url" header parameter specifies the URL {{!RFC3986}} to which this JWS
 object is directed.  The "url" header parameter MUST be carried in the protected
 header of the JWS.  The value of the "url" header parameter MUST be a string
-representing the Target URL.
+representing the target URL.
 
 ## Replay protection
 
