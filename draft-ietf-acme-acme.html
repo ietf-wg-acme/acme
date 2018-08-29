@@ -365,7 +365,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., McCarney, D., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2018-08-10" />
+  <meta name="dct.issued" scheme="ISO8601" content="2018-08-29" />
   <meta name="dct.abstract" content="Public Key Infrastructure X.509 (PKIX) certificates are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a CA and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Public Key Infrastructure X.509 (PKIX) certificates are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a CA and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -389,7 +389,7 @@ ul.toc li {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: February 11, 2019</td>
+<td class="left">Expires: March 2, 2019</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -410,7 +410,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">August 10, 2018</td>
+<td class="right">August 29, 2018</td>
 </tr>
 
     	
@@ -427,7 +427,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on February 11, 2019.</p>
+<p>This Internet-Draft will expire on March 2, 2019.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -621,7 +621,7 @@ ul.toc li {
 <h1 id="rfc.section.2">
 <a href="#rfc.section.2">2.</a> <a href="#deployment-model-and-operator-experience" id="deployment-model-and-operator-experience">Deployment Model and Operator Experience</a>
 </h1>
-<p id="rfc.section.2.p.1">The guiding use case for ACME is obtaining certificates for websites (HTTPS <a href="#RFC2818" class="xref">[RFC2818]</a>).  In this case, the user&#8217;s web server is intended to speak for one or more domains, and the process of certificate issuance is intended to verify that this web server actually speaks for the domain(s).</p>
+<p id="rfc.section.2.p.1">The guiding use case for ACME is obtaining certificates for websites (HTTPS <a href="#RFC2818" class="xref">[RFC2818]</a>).  In this case, a web server is intended to speak for one or more domains, and the process of certificate issuance is intended to verify that this web server actually speaks for the domain(s).</p>
 <p id="rfc.section.2.p.2">DV certificate validation commonly checks claims about properties related to control of a domain name &#8211; properties that can be observed by the certificate issuer in an interactive process that can be conducted purely online.  That means that under typical circumstances, all steps in the request, verification, and issuance process can be represented and performed by Internet protocols with no out-of-band human intervention.</p>
 <p id="rfc.section.2.p.3">Prior to ACME, when deploying an HTTPS server, a server operator typically gets a prompt to generate a self-signed certificate.  If the operator were instead deploying an HTTPS server using ACME, the experience would be something like this:</p>
 <p></p>
@@ -722,7 +722,7 @@ ul.toc li {
 <a href="#rfc.section.6.1">6.1.</a> <a href="#https-requests" id="https-requests">HTTPS Requests</a>
 </h1>
 <p id="rfc.section.6.1.p.1">Each ACME function is accomplished by the client sending a sequence of HTTPS requests to the server, carrying JSON messages <a href="#RFC2818" class="xref">[RFC2818]</a><a href="#RFC7159" class="xref">[RFC7159]</a>.  Use of HTTPS is REQUIRED. Each subsection of <a href="#certificate-management" class="xref">Section 7</a> below describes the message formats used by the function and the order in which messages are sent.</p>
-<p id="rfc.section.6.1.p.2">In most HTTPS transactions used by ACME, the ACME client is the HTTPS client and the ACME server is the HTTPS server. The ACME server acts as an HTTP and HTTPS client when validating challenges via HTTP.</p>
+<p id="rfc.section.6.1.p.2">In most HTTPS transactions used by ACME, the ACME client is the HTTPS client and the ACME server is the HTTPS server. The ACME server acts as a client when validating challenges: an HTTP client when validating an &#8216;http-01&#8217; challenge, a DNS client with &#8216;dns-01&#8217;, etc.</p>
 <p id="rfc.section.6.1.p.3">ACME servers SHOULD follow the recommendations of <a href="#RFC7525" class="xref">[RFC7525]</a> when configuring their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients to send early data (0-RTT).  This is safe because the ACME protocol itself includes anti-replay protections (see <a href="#replay-protection" class="xref">Section 6.4</a>).</p>
 <p id="rfc.section.6.1.p.4">ACME clients MUST send a User-Agent header, in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a>. This header SHOULD include the name and version of the ACME software in addition to the name and version of the underlying HTTP client software.</p>
 <p id="rfc.section.6.1.p.5">ACME clients SHOULD send an Accept-Language header in accordance with <a href="#RFC7231" class="xref">[RFC7231]</a> to enable localization of error messages.</p>
@@ -1440,7 +1440,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.7.3.p.4">In general, the server MUST ignore any fields in the request object that it does not recognize.  In particular, it MUST NOT reflect unrecognized fields in the resulting account object.  This allows clients to detect when servers do not support an extension field.</p>
 <p id="rfc.section.7.3.p.5">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URLs it MUST support the &#8220;mailto&#8221; scheme.  Clients MUST NOT provide a &#8220;mailto&#8221; URL in the &#8220;contact&#8221; field that contains <samp>hfields</samp> <a href="#RFC6068" class="xref">[RFC6068]</a>, or more than one <samp>addr-spec</samp> in the <samp>to</samp> component.  If a server encounters a &#8220;mailto&#8221; contact URL that does not meet these criteria, then it SHOULD reject it as invalid.</p>
 <p id="rfc.section.7.3.p.6">If the server rejects a contact URL for using an unsupported scheme it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description describing the error and what types of contact URLs the server considers acceptable. If the server rejects a contact URL for using a supported scheme but an invalid value then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
-<p id="rfc.section.7.3.p.7">If the server wishes to present the client with terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;termsOfService&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;termsOfServiceAgreed&#8221; field set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
+<p id="rfc.section.7.3.p.7">If the server wishes to require the client to agree to terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;termsOfService&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;termsOfServiceAgreed&#8221; field set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
 <p id="rfc.section.7.3.p.8">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field. The account URL is used as the &#8220;kid&#8221; value in the JWS authenticating subsequent requests by this account (See <a href="#request-authentication" class="xref">Section 6.2</a>).</p>
 <pre>
 HTTP/1.1 201 Created
@@ -1591,7 +1591,7 @@ Content-Type: application/jose+json
 <ul>
 <li>The inner JWS MUST have a &#8220;jwk&#8221; header parameter, containing the public key of the new key pair.</li>
 <li>The inner JWS MUST have the same &#8220;url&#8221; header parameter as the outer JWS.</li>
-<li>The inner JWS is NOT REQUIRED to have a &#8220;nonce&#8221; header parameter.  The server MUST ignore any value provided for the &#8220;nonce&#8221; header parameter.</li>
+<li>The inner JWS MAY omit the &#8220;nonce&#8221; header parameter.  The server MUST ignore any value provided for the &#8220;nonce&#8221; header parameter.</li>
 </ul>
 <p id="rfc.section.7.3.6.p.8">This transaction has signatures from both the old and new keys so that the server can verify that the holders of the two keys both agree to the change.  The signatures are nested to preserve the property that all signatures on POST messages are signed by exactly one key.  The &#8220;inner&#8221; JWS effectively represents a request by the holder of the new key to take over the account form the holder of the old key.  The &#8220;outer&#8221; JWS represents the current account holder&#8217;s assent to this request.</p>
 <pre>
@@ -2210,6 +2210,7 @@ Content-Type: application/jose+json
 </ol>
 <p id="rfc.section.8.3.p.10">The server SHOULD follow redirects when dereferencing the URL.</p>
 <p id="rfc.section.8.3.p.11">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
+<p id="rfc.section.8.3.p.12">The client SHOULD de-provision the resource provisioned for this challenge once the challenge is complete, i.e., once the &#8220;status&#8221; field of the challenge has the value &#8220;valid&#8221; or &#8220;invalid&#8221;.</p>
 <h1 id="rfc.section.8.4">
 <a href="#rfc.section.8.4">8.4.</a> <a href="#dns-challenge" id="dns-challenge">DNS Challenge</a>
 </h1>
@@ -2268,6 +2269,7 @@ Content-Type: application/jose+json
 <li>Verify that the contents of one of the TXT records match the digest value</li>
 </ol>
 <p id="rfc.section.8.4.p.9">If all of the above verifications succeed, then the validation is successful.  If no DNS record is found, or DNS record and response payload do not pass these checks, then the validation fails.</p>
+<p id="rfc.section.8.4.p.10">The client SHOULD de-provision the resource record(s) provisioned for this challenge once the challenge is complete, i.e., once the &#8220;status&#8221; field of the challenge has the value &#8220;valid&#8221; or &#8220;invalid&#8221;.</p>
 <h1 id="rfc.section.9">
 <a href="#rfc.section.9">9.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
 </h1>
@@ -2856,7 +2858,7 @@ Holder                  MitM                  Server
 <p id="rfc.section.10.2.p.12">Given these considerations, the ACME validation process makes it impossible for any attacker on the ACME channel or a passive attacker on the validation channel to hijack the authorization process to authorize a key of the attacker&#8217;s choice.</p>
 <p id="rfc.section.10.2.p.13">An attacker that can only see the ACME channel would need to convince the validation server to provide a response that would authorize the attacker&#8217;s account key, but this is prevented by binding the validation response to the account key used to request challenges.  A passive attacker on the validation channel can observe the correct validation response and even replay it, but that response can only be used with the account key for which it was generated.</p>
 <p id="rfc.section.10.2.p.14">An active attacker on the validation channel can subvert the ACME process, by performing normal ACME transactions and providing a validation response for his own account key.  The risks due to hosting providers noted above are a particular case.</p>
-<p id="rfc.section.10.2.p.15">It is RECOMMENDED that the server perform DNS queries and make HTTP connections from various network perspectives, in order to make MitM attacks harder.</p>
+<p id="rfc.section.10.2.p.15">Attackers can also exploit vulnerabilities in Internet routing protocols to gain access to the validation channel (see, e.g., <a href="#RFC7132" class="xref">[RFC7132]</a>).  In order to make such attacks more difficult, it is RECOMMENDED that the server perform DNS queries and make HTTP connections from multiple points in the network.  Since routing attacks are often localized or dependent on the position of the attacker, forcing the attacker to attack multiple points (the server&#8217;s validation vantage points) or a specific point (the DNS / HTTP server) makes it more difficult to subvert ACME validation using attacks on routing.</p>
 <h1 id="rfc.section.10.3">
 <a href="#rfc.section.10.3">10.3.</a> <a href="#denial-of-service-considerations" id="denial-of-service-considerations">Denial-of-Service Considerations</a>
 </h1>
@@ -3174,6 +3176,11 @@ Holder                  MitM                  Server
 <td class="reference"><b id="RFC5785">[RFC5785]</b></td>
 <td class="top">
 <a>Nottingham, M.</a> and <a>E. Hammer-Lahav</a>, "<a href="https://tools.ietf.org/html/rfc5785">Defining Well-Known Uniform Resource Identifiers (URIs)</a>", RFC 5785, DOI 10.17487/RFC5785, April 2010.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC7132">[RFC7132]</b></td>
+<td class="top">
+<a>Kent, S.</a> and <a>A. Chi</a>, "<a href="https://tools.ietf.org/html/rfc7132">Threat Model for BGP Path Security</a>", RFC 7132, DOI 10.17487/RFC7132, February 2014.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC7525">[RFC7525]</b></td>
