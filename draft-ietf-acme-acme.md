@@ -148,7 +148,7 @@ fully automated, such as the issuance of Extended Validation certificates.
 # Deployment Model and Operator Experience
 
 The guiding use case for ACME is obtaining certificates for websites
-(HTTPS {{!RFC2818}}).  In this case, the user's web server is intended to speak
+(HTTPS {{!RFC2818}}).  In this case, a web server is intended to speak
 for one or more domains, and the process of certificate issuance is intended to
 verify that this web server actually speaks for the domain(s).
 
@@ -347,8 +347,9 @@ HTTPS is REQUIRED. Each subsection of
 function and the order in which messages are sent.
 
 In most HTTPS transactions used by ACME, the ACME client is the HTTPS client
-and the ACME server is the HTTPS server. The ACME server acts as an HTTP and
-HTTPS client when validating challenges via HTTP.
+and the ACME server is the HTTPS server. The ACME server acts as a
+client when validating challenges: an HTTP client when
+validating an 'http-01' challenge, a DNS client with 'dns-01', etc.
 
 ACME servers SHOULD follow the recommendations of {{?RFC7525}} when configuring
 their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
@@ -1300,7 +1301,7 @@ considers acceptable. If the server rejects a contact URL for using a supported
 scheme but an invalid value then the server MUST return an error of type
 "invalidContact".
 
-If the server wishes to present the client with terms under which the ACME
+If the server wishes to require the client to agree to terms under which the ACME
 service is to be used, it MUST indicate the URL where such terms can be accessed
 in the "termsOfService" subfield of the "meta" field in the directory object,
 and the server MUST reject new-account requests that do not have the
@@ -1541,7 +1542,7 @@ with the following differences:
 * The inner JWS MUST have a "jwk" header parameter, containing the public key of
   the new key pair.
 * The inner JWS MUST have the same "url" header parameter as the outer JWS.
-* The inner JWS is NOT REQUIRED to have a "nonce" header parameter.  The server
+* The inner JWS MAY omit the "nonce" header parameter.  The server
   MUST ignore any value provided for the "nonce" header parameter.
 
 This transaction has signatures from both the old and new keys so that the
@@ -2491,6 +2492,10 @@ If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
 failed.
 
+The client SHOULD de-provision the resource provisioned for this
+challenge once the challenge is complete, i.e., once the "status"
+field of the challenge has the value "valid" or "invalid".
+
 ## DNS Challenge
 
 When the identifier being validated is a domain name, the client can prove
@@ -2567,6 +2572,10 @@ To validate a DNS challenge, the server performs the following steps:
 If all of the above verifications succeed, then the validation is successful.
 If no DNS record is found, or DNS record and response payload do not pass these
 checks, then the validation fails.
+
+The client SHOULD de-provision the resource record(s) provisioned for this
+challenge once the challenge is complete, i.e., once the "status"
+field of the challenge has the value "valid" or "invalid".
 
 # IANA Considerations
 
@@ -3101,9 +3110,16 @@ performing normal ACME transactions and providing a validation response for his
 own account key.  The risks due to hosting providers noted above are a
 particular case.
 
-It is RECOMMENDED that the server perform DNS queries and make HTTP
-connections from various network perspectives, in order to make MitM attacks
-harder.
+Attackers can also exploit vulnerabilities in Internet routing
+protocols to gain access to the validation channel (see, e.g.,
+{{?RFC7132}}).  In order to make such attacks more difficult, it is
+RECOMMENDED that the server perform DNS queries and make HTTP
+connections from multiple points in the network.  Since routing
+attacks are often localized or dependent on the position of the
+attacker, forcing the attacker to attack multiple points (the
+server's validation vantage points) or a specific point (the DNS /
+HTTP server) makes it more difficult to subvert ACME validation
+using attacks on routing.
 
 ## Denial-of-Service Considerations
 
