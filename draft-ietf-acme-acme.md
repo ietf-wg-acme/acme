@@ -783,8 +783,9 @@ caaIdentities (optional, array of string):
 itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  Each string MUST represent the same sequence of ASCII
 code points that the server will expect to see as the "Issuer Domain
-Name.  This allows clients to determine the correct issuer domain
-name to use when configuring CAA records.
+Name" in a CAA issue or issuewild property tag.  This allows clients
+to determine the correct issuer domain name to use when configuring
+CAA records.
 
 externalAccountRequired (optional, boolean):
 : If this field is present and set to "true", then the CA requires that all
@@ -828,7 +829,7 @@ contact (optional, array of string):
 : An array of URLs that the server can use to contact the client for issues
 related to this account. For example, the server may wish to notify the
 client about server-initiated revocation or certificate expiration.
-For infomration on supported URL schemes, see {{account-creation}}
+For information on supported URL schemes, see {{account-creation}}
 
 termsOfServiceAgreed (optional, boolean):
 : Including this field in a new-account request, with a value of true, indicates
@@ -2895,13 +2896,13 @@ Label column of the ACME Identifier Types registry.
 Template:
 
 * Label: The identifier for this validation method
-* Identifier Type: The type of identifier that this method applies to.
+* Identifier Type: The type of identifier that this method applies to
 * ACME: "Y" if the validation method corresponds to an ACME challenge type;
-  "N" otherwise.
+  "N" otherwise
 * Reference: Where the validation method is defined
 
 This registry may also contain reserved entries (e.g., to avoid
-collisions).  Such entries should have the"ACME" field set to "N"
+collisions).  Such entries should have the "ACME" field set to "N"
 and the "Identifier Type" set to "RESERVED".
 
 Initial Contents
