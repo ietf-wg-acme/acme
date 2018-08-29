@@ -2489,7 +2489,9 @@ domain by verifying that the resource was provisioned as expected.
 5. Verify that key authorization provided by the HTTP server matches the key
    authorization stored by the server.
 
-The server MUST follow redirects when dereferencing the URL.
+The server SHOULD follow redirects when dereferencing the URL.  See
+{{integrity-of-authorizations}} for security considerations related
+to redirects.
 
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
