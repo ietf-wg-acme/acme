@@ -782,9 +782,9 @@ caaIdentities (optional, array of string):
 : The hostnames that the ACME server recognizes as referring to
 itself for the purposes of CAA record validation as defined in
 {{!RFC6844}}.  Each string MUST represent the same sequence of ASCII
-code points that the server will expect to see in a CAA record.
-This allows clients to determine the correct issuer domain name to
-use when configuring CAA records.
+code points that the server will expect to see as the "Issuer Domain
+Name.  This allows clients to determine the correct issuer domain
+name to use when configuring CAA records.
 
 externalAccountRequired (optional, boolean):
 : If this field is present and set to "true", then the CA requires that all
@@ -2579,7 +2579,7 @@ RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the fi
 certificate MUST be an end-entity certificate. Each following certificate
 SHOULD directly certify the one preceding it. Because certificate validation
 requires that trust anchors be distributed independently, a certificate
-that specifies a trust anchor MAY be omitted from the chain, provided
+that represents a trust anchor MAY be omitted from the chain, provided
 that supported peers are known to possess any omitted certificates.
 
 The "Media Types" registry should be updated with the following additional
@@ -2894,10 +2894,14 @@ Label column of the ACME Identifier Types registry.
 Template:
 
 * Label: The identifier for this validation method
-* Identifier Type: The type of identifier that this method applies to.  For non-ACME validation methods, this field should be set to "N/A".
+* Identifier Type: The type of identifier that this method applies to.
 * ACME: "Y" if the validation method corresponds to an ACME challenge type;
   "N" otherwise.
 * Reference: Where the validation method is defined
+
+This registry may also contain reserved entries (e.g., to avoid
+collisions).  Such entries should have the"ACME" field set to "N"
+and the "Identifier Type" set to "RESERVED".
 
 Initial Contents
 
@@ -2905,8 +2909,8 @@ Initial Contents
 |:-----------|:----------------|:-----|:----------|
 | http-01    | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
-| tls-sni-01 | N/A             | N    | RFC XXXX  |
-| tls-sni-02 | N/A             | N    | RFC XXXX  |
+| tls-sni-01 | RESERVED        | N    | RFC XXXX  |
+| tls-sni-02 | RESERVED        | N    | RFC XXXX  |
 
 When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
