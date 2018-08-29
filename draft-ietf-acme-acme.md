@@ -508,9 +508,9 @@ ignore invalid Replay-Nonce values.  The ABNF {{!RFC5234}} for the Replay-Nonce
 header field follows:
 
 ~~~~~
-  base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
+  base64url = (%x40 - %x5A) / (%x61 - %x7A) / (%x30 - %x39) / "-" / "_"
 
-  Replay-Nonce = *base64url
+  Replay-Nonce = 1*base64url
 ~~~~~
 
 The Replay-Nonce header field SHOULD NOT be included in HTTP request messages.
@@ -575,12 +575,12 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
 | tls                     | The server received a TLS error during validation                               |
 | unauthorized            | The client lacks sufficient authorization                                       |
 | unsupportedContact      | A contact URL for an account used an unsupported protocol scheme                |
-| unsupportedIdentifier   | Identifier is not supported, but may be in future                               |
+| unsupportedIdentifier   | An identifier is of an unsupported type                                         |
 | userActionRequired      | Visit the "instance" URL and take actions specified there                       |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
-namespace {{acme-urn-space}} for errors other than the standard types.  Clients SHOULD display the
+namespace for errors not listed in the appropriate IANA registry (see {{acme-urn-space}}).  Clients SHOULD display the
 "detail" field of all errors.
 
 In the remainder of this document, we use the tokens in the table above to refer
@@ -779,9 +779,11 @@ website (optional, string):
 information about the ACME server.
 
 caaIdentities (optional, array of string):
-: Each string MUST be a lowercase hostname which the ACME server recognizes as
-referring to itself for the purposes of CAA record validation as defined in
-{{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
+: The hostnames that the ACME server recognizes as referring to
+itself for the purposes of CAA record validation as defined in
+{{!RFC6844}}.  Each string MUST represent the same sequence of ASCII
+code points that the server will expect to see in a CAA record.
+This allows clients to determine the correct issuer domain name to
 use when configuring CAA records.
 
 externalAccountRequired (optional, boolean):
@@ -1741,7 +1743,7 @@ transaction that the client must complete before the server will issue the
 certificate (see {{identifier-authorization}}).  If the client fails to complete
 the required actions before the "expires" time, then the server SHOULD change
 the status of the order to "invalid" and MAY delete the order resource. Clients
-SHOULD NOT make any assumptions about the sort order of "identifiers" or
+MUST NOT make any assumptions about the sort order of "identifiers" or
 "authorizations" elements in the returned order object.
 
 Once the client believes it has fulfilled the server's requirements, it should
@@ -1939,7 +1941,7 @@ own heuristics to decide which is optimal.
 ~~~~~~~~~~
 GET /acme/cert/asdf HTTP/1.1
 Host: example.com
-Accept: application/pkix-cert
+Accept: application/pem-certificate-chain
 
 HTTP/1.1 200 OK
 Content-Type: application/pem-certificate-chain
@@ -2572,6 +2574,14 @@ checks, then the validation fails.
 
 ## MIME Type: application/pem-certificate-chain
 
+A file of this type contains one or more certificates encoded with the PEM textual encoding, according to
+RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
+certificate MUST be an end-entity certificate. Each following certificate
+SHOULD directly certify the one preceding it. Because certificate validation
+requires that trust anchors be distributed independently, a certificate
+that specifies a trust anchor MAY be omitted from the chain, provided
+that supported peers are known to possess any omitted certificates.
+
 The "Media Types" registry should be updated with the following additional
 value:
 
@@ -2583,26 +2593,34 @@ Required parameters: None
 
 Optional parameters: None
 
-Encoding considerations: None
+Encoding considerations: 7bit
 
-Security considerations: Carries a cryptographic certificate and its associated certificate chain
+Security considerations: Carries a cryptographic certificate and its associated certificate chain.  This media type carries no active content.
 
 Interoperability considerations: None
 
 Published specification: draft-ietf-acme-acme
 \[\[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]
 
-Applications which use this media type: Any MIME-compliant transport
+Applications which use this media type: ACME clients and servers, HTTP servers, other applications that need to be configured with a certificate chain
 
 Additional information:
 
-File contains one or more certificates encoded with the PEM textual encoding, according to
-RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
-certificate MUST be an end-entity certificate. Each following certificate
-SHOULD directly certify the one preceding it. Because certificate validation
-requires that trust anchors be distributed independently, a certificate
-that specifies a trust anchor MAY be omitted from the chain, provided
-that supported peers are known to possess any omitted certificates.
+  Deprecated alias names for this type: n/a
+  Magic number(s): n/a
+  File extension(s): .pem
+  Macintosh file type code(s): n/a
+
+Person & email address to contact for further information: See Authors' Addresses section.
+
+Intended usage: COMMON
+
+Restrictions on usage: n/a
+
+Author: See Authors' Addresses section.
+
+Change controller: Internet Engineering Task Force <iesg@ietf.org>
+
 
 ## Well-Known URI for the HTTP Challenge
 
@@ -2876,7 +2894,7 @@ Label column of the ACME Identifier Types registry.
 Template:
 
 * Label: The identifier for this validation method
-* Identifier Type: The type of identifier that this method applies to
+* Identifier Type: The type of identifier that this method applies to.  For non-ACME validation methods, this field should be set to "N/A".
 * ACME: "Y" if the validation method corresponds to an ACME challenge type;
   "N" otherwise.
 * Reference: Where the validation method is defined
@@ -2887,8 +2905,8 @@ Initial Contents
 |:-----------|:----------------|:-----|:----------|
 | http-01    | dns             | Y    | RFC XXXX  |
 | dns-01     | dns             | Y    | RFC XXXX  |
-| tls-sni-01 | RESERVED        | N    | RFC XXXX  |
-| tls-sni-02 | RESERVED        | N    | RFC XXXX  |
+| tls-sni-01 | N/A             | N    | RFC XXXX  |
+| tls-sni-02 | N/A             | N    | RFC XXXX  |
 
 When evaluating a request for an assignment in this registry, the designated
 expert should ensure that the method being registered has a clear,
