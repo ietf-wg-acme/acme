@@ -355,12 +355,12 @@ their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
 to send early data (0-RTT).  This is safe because the ACME protocol itself
 includes anti-replay protections (see {{replay-protection}}).
 
-ACME clients MUST send a User-Agent header, in accordance with
-{{!RFC7231}}. This header SHOULD include the name and version of the
+ACME clients MUST send a User-Agent header field, in accordance with
+{{!RFC7231}}. This header field SHOULD include the name and version of the
 ACME software in addition to the name and version of the underlying
 HTTP client software.
 
-ACME clients SHOULD send an Accept-Language header in accordance with
+ACME clients SHOULD send an Accept-Language header field in accordance with
 {{!RFC7231}} to enable localization of error messages.
 
 ACME servers that are intended to be generally accessible need to use
@@ -508,7 +508,7 @@ ignore invalid Replay-Nonce values.  The ABNF {{!RFC5234}} for the Replay-Nonce
 header field follows:
 
 ~~~~~
-  base64url = (%x40 - %x5A) / (%x61 - %x7A) / (%x30 - %x39) / "-" / "_"
+  base64url = (%x40-5A) / (%x61-7A) / (%x30-39) / "-" / "_"
 
   Replay-Nonce = 1*base64url
 ~~~~~
@@ -828,6 +828,7 @@ contact (optional, array of string):
 : An array of URLs that the server can use to contact the client for issues
 related to this account. For example, the server may wish to notify the
 client about server-initiated revocation or certificate expiration.
+For infomration on supported URL schemes, see {{account-creation}}
 
 termsOfServiceAgreed (optional, boolean):
 : Including this field in a new-account request, with a value of true, indicates
@@ -857,7 +858,7 @@ by the account can be fetched via GET request. The result of the GET request
 MUST be a JSON object whose "orders" field is an array of URLs, each identifying
 an order belonging to the account.  The server SHOULD include pending orders,
 and SHOULD NOT include orders that are invalid in the array of URLs. The server
-MAY return an incomplete list, along with a Link header with a "next" link
+MAY return an incomplete list, along with a Link header field with a "next" link
 relation indicating where further entries can be acquired.
 
 ~~~~~~~~~~
@@ -1402,7 +1403,7 @@ If the server has changed its terms of service since a client initially agreed,
 and the server is unwilling to process a request without explicit agreement to
 the new terms, then it MUST return an error response with status code 403
 (Forbidden) and type "urn:ietf:params:acme:error:userActionRequired".  This
-response MUST include a Link header with link relation "terms-of-service" and
+response MUST include a Link header field with link relation "terms-of-service" and
 the latest terms-of-service URL.
 
 The problem document returned with the error MUST also include an "instance"
@@ -1964,15 +1965,15 @@ to request one.
 
 Because certificate resources are immutable once issuance is complete, the
 server MAY enable the caching of the resource by adding Expires and
-Cache-Control headers specifying a point in time in the distant future. These
-headers have no relation to the certificate's period of validity.
+Cache-Control header fields specifying a point in time in the distant future. These
+header fields have no relation to the certificate's period of validity.
 
 The ACME client MAY request other formats by including an Accept
-header {{RFC7231}} in its request.  For example, the client could use the media type
+header field {{RFC7231}} in its request.  For example, the client could use the media type
 `application/pkix-cert` {{!RFC2585}} or `applicaiton/pkcs7-mime` {{!RFC5751}} to request the end-entity certificate
 in DER format. Server support for alternate formats is OPTIONAL. For
 formats that can only express a single certificate, the server SHOULD
-provide one or more `Link: rel="up"` headers pointing to an issuer or
+provide one or more `Link: rel="up"` header fields pointing to an issuer or
 issuers so that ACME clients can build a certificate chain as defined
 in TLS.
 
@@ -2487,7 +2488,7 @@ domain by verifying that the resource was provisioned as expected.
 5. Verify that key authorization provided by the HTTP server matches the key
    authorization stored by the server.
 
-The server SHOULD follow redirects when dereferencing the URL.
+The server MUST follow redirects when dereferencing the URL.
 
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
