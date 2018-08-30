@@ -413,11 +413,25 @@ POSTing to the newAccount resource.
 
 Note that authentication via signed JWS request bodies implies that GET requests
 are not authenticated.  Servers MUST NOT respond to GET requests for resources
-that might be considered sensitive.  For example, a CA might consider account 
-resources sensitive because they reveal clients' email addresses.
-Or the CA might consider order-list resources (in the "orders" field
-of an account object) to be sensitive because they reveal which
-certificates were issued by the same account.
+that might be considered sensitive.  Examples of resources that a CA might consider sensitive include:
+
+* Account resources, since they contain email addresses
+
+* Order resources, since they reveal correlations among identifiers
+
+* Authorization resources, since they reveal potentially sensitive
+  identifiers (currently only domain names, but possibly things like
+  email addresses or telephone numbers in the future)
+
+To allow clients to fetch the value of sensitive resources, servers
+MUST treat a POST request with an empty JSON object ({}) as the
+payload of the JWS in the same way as a GET request (in terms of
+idempotency, etc.), except that it may also be allowed for sensitive
+resources  If a server receives a GET request to a resource that it
+considers sensitive, then it MUST return an error with status 405
+"Method Not Allowed".  The client SHOULD then retry the request as
+an authenticated POST request with an empty payload (as described
+above).
 
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
