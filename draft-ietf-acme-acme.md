@@ -726,11 +726,11 @@ certificate, and fetch an updated certificate some time after issuance.  The
 | Get nonce             | HEAD newNonce             | 200            |
 | Create account        | POST newAccount           | 201 -> account |
 | Submit order          | POST newOrder             | 201 -> order   |
-| Fetch challenges      | GET  order authorizations | 200            |
+| Fetch challenges      | POST order authorizations | 200            |
 | Respond to challenges | POST challenge urls       | 200            |
-| Poll for status       | GET  order                | 200            |
+| Poll for status       | POST order                | 200            |
 | Finalize order        | POST order finalize       | 200            |
-| Poll for status       | GET  order                | 200            |
+| Poll for status       | POST order                | 200            |
 | Download certificate  | GET  order certificate    | 200            |
 
 The remainder of this section provides the details of how these resources are
