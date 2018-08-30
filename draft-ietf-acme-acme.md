@@ -291,7 +291,7 @@ certificate and make it available to the client.
 
                           <~~~~~~Await issuance~~~~~~>
 
-      GET request                   ------->
+      POST-as-GET request           ------->
                                     <-------              Certificate
 
                 [] Information covered by request signatures
@@ -397,6 +397,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-url-integrity}} below)
   * Either "jwk" (JSON Web Key) or "kid" (Key ID) as specified below
+* The JWS Protected Header MUST NOT have a "typ" parameter
 
 An ACME server MUST implement the "ES256" signature algorithm {{!RFC7518}} and SHOULD implement the "EdDSA" signature algorithm using the "Ed25519" variant (indicated by "crv") {{!RFC8037}}.
 
@@ -411,10 +412,25 @@ For all other requests, the request is signed using an existing account and
 there MUST be a "kid" field. This field MUST contain the account URL received by
 POSTing to the newAccount resource.
 
-Note that authentication via signed JWS request bodies implies that GET requests
-are not authenticated.  Servers MUST NOT respond to GET requests for resources
-that might be considered sensitive.  Account resources are the only sensitive
-resources defined in this specification.
+Note that authentication via signed JWS request bodies implies that
+requests other than POST requests are not authenticated.  The server
+MUST allow GET requests for its directory resource and both GET and
+HEAD requests for its newNonce resource (see {{resources}}), in
+order to support client bootstrapping.
+
+Otherwise, if a client wishes to fetch a resource from
+the server (which would otherwise be done with a GET), then it MUST
+send a POST request with a JWS body as described above, with the
+following differences:
+
+* The JWS Protected Header MUST contain a "typ" field with the value
+  "GET"
+* The payload MUST be an empty JSON object ({})
+
+We will refer to these as "POST-as-GET" requests. On receiving such
+a request, the server MUST authenticate the sender and verify any
+access control rules.  Otherwise, the server MUST treat this request
+as having the same semantics as a GET request for the same resource.
 
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
@@ -720,18 +736,18 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action                | Request                   | Response       |
-|:----------------------|:--------------------------|:---------------|
-| Get directory         | GET  directory            | 200            |
-| Get nonce             | HEAD newNonce             | 200            |
-| Create account        | POST newAccount           | 201 -> account |
-| Submit order          | POST newOrder             | 201 -> order   |
-| Fetch challenges      | GET  order authorizations | 200            |
-| Respond to challenges | POST challenge urls       | 200            |
-| Poll for status       | GET  order                | 200            |
-| Finalize order        | POST order finalize       | 200            |
-| Poll for status       | GET  order                | 200            |
-| Download certificate  | GET  order certificate    | 200            |
+| Action                | Request                    | Response       |
+|:----------------------|:---------------------------|:---------------|
+| Get directory         | GET  directory             | 200            |
+| Get nonce             | HEAD newNonce              | 200            |
+| Create account        | POST newAccount            | 201 -> account |
+| Submit order          | POST newOrder              | 201 -> order   |
+| Fetch challenges      | POST-as-GET authorizations | 200            |
+| Respond to challenges | POST challenge urls        | 200            |
+| Poll for status       | POST-as-GET order          | 200            |
+| Finalize order        | POST order finalize        | 200            |
+| Poll for status       | POST-as-GET order          | 200            |
+| Download certificate  | POST order certificate     | 200            |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -790,7 +806,7 @@ externalAccountRequired (optional, boolean):
 new-account requests include an "externalAccountBinding" field associating the
 new account with an external account.
 
-Clients access the directory by sending a GET request to the directory URL.
+Clients access the directory by sending a POST-as-GET request to the directory URL.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
@@ -835,7 +851,7 @@ by the client.
 
 orders (required, string):
 : A URL from which a list of orders submitted by this account can be fetched via
-a GET request, as described in {{orders-list}}.
+a POST-as-GET request, as described in {{orders-list}}.
 
 ~~~~~~~~~~
 {
@@ -852,7 +868,7 @@ a GET request, as described in {{orders-list}}.
 #### Orders List
 
 Each account object includes an "orders" URL from which a list of orders created
-by the account can be fetched via GET request. The result of the GET request
+by the account can be fetched via POST-as-GET request. The result of the request
 MUST be a JSON object whose "orders" field is an array of URLs, each identifying
 an order belonging to the account.  The server SHOULD include pending orders,
 and SHOULD NOT include orders that are invalid in the array of URLs. The server
@@ -920,7 +936,7 @@ authorizations (required, array of string):
 before the requested certificate can be issued (see
 {{identifier-authorization}}), including unexpired authorizations that the client has completed in the past for identifiers specified in the order. The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
-with a GET request.
+with a POST-as-GET request.
 
 finalize (required, string):
 : A URL that a CSR must be POSTed to once all of the order's authorizations are
@@ -1383,14 +1399,6 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-### Account Information
-
-Servers MUST NOT respond to GET requests for account resources as these
-requests are not authenticated.  If a client wishes to query the server for
-information about its account (e.g., to examine the "contact" or "orders"
-fields), then it SHOULD do so by sending a POST request with an empty update.
-That is, it should send a JWS whose payload is an empty object ({}).
-
 ### Changes of Terms of Service
 
 As described above, a client can indicate its agreement with the CA's terms of
@@ -1798,7 +1806,7 @@ server SHOULD leave the order in the "ready" state, to allow the
 client to submit a new finalize request with an amended CSR.
 
 A valid request to finalize an order will return the order to be finalized.
-The client should begin polling the order by sending a GET request to the order
+The client should begin polling the order by sending a POST-as-GET request to the order
 resource to obtain its current state. The status of the order will indicate what
 action the client should take:
 
@@ -1813,7 +1821,7 @@ action the client should take:
   fulfilled, and is awaiting finalization.  Submit a finalization
   request.
 
-* "processing": The certificate is being issued. Send a GET request after the
+* "processing": The certificate is being issued. Send a POST-as-GET request after the
   time given in the "Retry-After" header field of the response, if
   any.
 
@@ -1926,7 +1934,7 @@ described in {{identifier-authorization}} to complete the authorization process.
 
 ### Downloading the Certificate
 
-To download the issued certificate, the client simply sends a GET request to the
+To download the issued certificate, the client simply sends a POST-as-GET request to the
 certificate URL.
 
 The default format of the certificate is application/pem-certificate-chain (see {{iana-considerations}}).
@@ -1938,9 +1946,22 @@ paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
 
 ~~~~~~~~~~
-GET /acme/cert/asdf HTTP/1.1
+POST /acme/cert/asdf HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
 Accept: application/pkix-cert
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/new-authz",
+    "typ": "GET"
+  }),
+  "payload": base64url({}),
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
 
 HTTP/1.1 200 OK
 Content-Type: application/pem-certificate-chain
@@ -1996,14 +2017,28 @@ authorization object is implicitly tied to the account key used to sign the
 request.
 
 When a client receives an order from the server it downloads the authorization
-resources by sending GET requests to the indicated URLs.  If the client
+resources by sending POST-as-GET requests to the indicated URLs.  If the client
 initiates authorization using a request to the new authorization resource, it
 will have already received the pending authorization object in the response
 to that request.
 
 ~~~~~~~~~~
-GET /acme/authz/1234 HTTP/1.1
+POST /acme/authz/1234 HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
+Accept: application/pkix-cert
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/new-authz",
+    "typ": "GET"
+  }),
+  "payload": base64url({}),
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
 
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -2093,15 +2128,29 @@ where the client can tell when the server has validated the challenge (e.g., by
 seeing an HTTP or DNS request from the server), the client SHOULD NOT begin
 polling until it has seen the validation request from the server.
 
-To check on the status of an authorization, the client sends a GET request to
+To check on the status of an authorization, the client sends a POST-as-GET request to
 the authorization URL, and the server responds with the current authorization
 object. In responding to poll requests while the validation is still in
 progress, the server MUST return a 200 (OK) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
-GET /acme/authz/1234 HTTP/1.1
+POST /acme/authz/1234 HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
+Accept: application/pkix-cert
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/new-authz",
+    "typ": "GET"
+  }),
+  "payload": base64url({}),
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
 
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -2414,12 +2463,6 @@ include base64 padding characters ("=").  See {{!RFC4086}} for additional inform
 on randomness requirements.
 
 ~~~~~~~~~~
-GET /acme/authz/1234/0 HTTP/1.1
-Host: example.com
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-
 {
   "type": "http-01",
   "url": "https://example.com/acme/authz/0",
@@ -2511,12 +2554,6 @@ at least 128 bits of entropy. It MUST NOT contain any characters outside the
 base64url alphabet, including padding characters ("=").
 
 ~~~~~~~~~~
-GET /acme/authz/1234/2 HTTP/1.1
-Host: example.com
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-
 {
   "type": "dns-01",
   "url": "https://example.com/acme/authz/1234/2",
