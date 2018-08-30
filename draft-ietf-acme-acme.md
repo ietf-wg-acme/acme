@@ -508,7 +508,7 @@ ignore invalid Replay-Nonce values.  The ABNF {{!RFC5234}} for the Replay-Nonce
 header field follows:
 
 ~~~~~
-  base64url = (%x41-5A) / (%x61-7A) / (%x30-39) / "-" / "_"
+  base64url = ALPHA / DIGIT / “-“ / “_”
 
   Replay-Nonce = 1*base64url
 ~~~~~
