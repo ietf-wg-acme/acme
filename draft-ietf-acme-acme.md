@@ -413,8 +413,11 @@ POSTing to the newAccount resource.
 
 Note that authentication via signed JWS request bodies implies that GET requests
 are not authenticated.  Servers MUST NOT respond to GET requests for resources
-that might be considered sensitive.  Account resources are the only sensitive
-resources defined in this specification.
+that might be considered sensitive.  For example, a CA might consider account 
+resources sensitive because they reveal clients' email addresses.
+Or the CA might consider order-list resources (in the "orders" field
+of an account object) to be sensitive because they reveal which
+certificates were issued by the same account.
 
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
