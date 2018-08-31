@@ -443,22 +443,19 @@ MUST authenticate the sender and verify any access control rules.
 Otherwise, the server MUST treat this request as having the same
 semantics as a GET request for the same resource.
 
-The server MUST allow GET requests for the following resources(see
-{{resources}}, in addition to POST-as-GET requests for these
-resources:
+The server MUST allow GET requests for the directory and newNonce
+resources (see {{resources}}), in addition to POST-as-GET requests
+for these resources.  This enables clients to bootstrap into the
+ACME authentication system.
 
-* The directory resource
-* The newNonce resource
-* Certificate resources
-
-Allowing GET requests for the directory and newNonce resourcse
-enables clients to bootstrap into the ACME authentication system.
-GET requests for certificate resources allow non-ACME entities to
-consume certificates resulting from ACME interactions.  If a server
-regards certificate resources as sensitive, then it SHOULD assign
-them capability URLs {{?W3C.WD-capability-urls-20140218}} so that
-they cannot be guessed and thus have to be obtained from an
-authorized party.
+The server MAY allow GET requests for certificate resources, in
+order to allow certificates to be fetched by a lower-privileged
+process, e.g., the web server that will use the referenced
+certificate chain.  (See {{?I-D.ietf-acme-star}} for more advanced
+cases.)  A server that allows GET requests for certificate resources
+can still provide them a degree of access control by assigning them
+capability URLs them capability URLs
+{{?W3C.WD-capability-urls-20140218}}.
 
 ## Request URL Integrity
 
@@ -3240,6 +3237,30 @@ perform all necessary checks before issuing.
 CAs using ACME to allow clients to agree to terms of service should keep in mind
 that ACME clients can automate this agreement, possibly not involving a human
 user.
+
+ACME does not specify how the server constructs the URLs that it
+uses to address resources.  If the server operator uses URLs that
+are predictable to third parties, this can leak information about
+what URLs exist on the server, since an attacker can probe for
+whether POST-as-GET request to the URL returns "Not Found" or
+"Unauthorized".  
+
+For example, suppose that the CA uses highly structured URLs that
+with several low-entropy fields:
+
+* Accounts: https://example.com/:accountID
+* Orders: https://example.com/:accountID/:orderID
+* Authorizations: https://example.com/:accountID/:authorizationID
+* Certificates: https://example.com/:accountID/:certID
+
+If the ID fields have low entropy, then an attacker can find out how
+many users a CA has, how many authorizations each account has, etc.
+
+In order to avoid leaking these correlations, servers SHOULD assign
+capability URLs for dynamically-created resources
+{{?W3C.WD-capability-urls-20140218}}.  These URLs incorporate large
+unpredictable components to prevent third parties from guessing
+them.
 
 # Operational Considerations
 
