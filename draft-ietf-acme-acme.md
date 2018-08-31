@@ -326,7 +326,11 @@ validation challenges the server might require.
 
 All requests and responses sent via HTTP by ACME clients, ACME servers, and
 validation servers as well as any inputs for digest computations MUST be encoded
-using the UTF-8 {{!RFC3629}} character set.
+using the UTF-8 {{!RFC3629}} character set. Note that identifiers that appear in
+certificates may have their own encoding considerations (e.g., DNS names containing
+non-ASCII characters are expressed as A-labels rather than U-labels). Any such
+encoding considerations are to be applied prior to the aforementioned UTF-8
+encoding.
 
 # Message Transport
 
