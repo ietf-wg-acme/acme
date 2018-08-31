@@ -326,11 +326,7 @@ validation challenges the server might require.
 
 All requests and responses sent via HTTP by ACME clients, ACME servers, and
 validation servers as well as any inputs for digest computations MUST be encoded
-using the UTF-8 {{!RFC3629}} character set. Note that identifiers that appear in
-certificates may have their own encoding considerations (e.g., DNS names containing
-non-ASCII characters are expressed as A-labels rather than U-labels). Any such
-encoding considerations are to be applied prior to the aforementioned UTF-8
-encoding.
+using the UTF-8 {{!RFC3629}} character set.
 
 # Message Transport
 
@@ -941,15 +937,15 @@ certificate (optional, string):
 ~~~~~~~~~~
 {
   "status": "valid",
-  "expires": "2015-03-01T14:09:00Z",
+  "expires": "2015-03-01T14:09:07.99Z",
 
   "identifiers": [
     { "type": "dns", "value": "example.com" },
     { "type": "dns", "value": "www.example.com" }
   ],
 
-  "notBefore": "2016-01-01T00:00:00Z",
-  "notAfter": "2016-01-08T00:00:00Z",
+  "notBefore": "2016-01-01T00:00:53Z",
+  "notAfter": "2016-01-08T00:00:32Z",
 
   "authorizations": [
     "https://example.com/acme/authz/1234",
@@ -1053,7 +1049,7 @@ name validation.
 ~~~~~~~~~~
 {
   "status": "valid",
-  "expires": "2015-03-01T14:09:00Z",
+  "expires": "2015-03-01T14:09:07.99Z",
 
   "identifier": {
     "type": "dns",
@@ -1066,7 +1062,7 @@ name validation.
       "type": "http-01",
       "status": "valid",
       "token": "DGyRejmCefe7v4NfDGDKfA",
-      "validated": "2014-12-01T12:05:00Z"
+      "validated": "2014-12-01T12:05:58.16Z"
     }
   ],
 
@@ -1698,8 +1694,8 @@ Content-Type: application/jose+json
     "identifiers": [
       { "type": "dns", "value": "example.com" }
     ],
-    "notBefore": "2016-01-01T00:00:00Z",
-    "notAfter": "2016-01-08T00:00:00Z"
+    "notBefore": "2016-01-01T00:04:00+04:00",
+    "notAfter": "2016-01-08T00:04:00+04:00"
   }),
   "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
 }
@@ -1835,10 +1831,10 @@ Location: https://example.com/acme/order/asdf
 
 {
   "status": "valid",
-  "expires": "2016-01-01T00:00:00Z",
+  "expires": "2015-12-31T00:17:00.00-09:00",
 
-  "notBefore": "2016-01-01T00:00:00Z",
-  "notAfter": "2016-01-08T00:00:00Z",
+  "notBefore": "2015-12-31T00:17:00.00-09:00",
+  "notAfter": "2015-12-31T00:17:00.00-09:00",
 
   "identifiers": [
     { "type": "dns", "value": "example.com" },
@@ -2019,7 +2015,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "status": "pending",
-  "expires": "2018-03-03T14:09:00Z",
+  "expires": "2018-03-03T14:09:30Z",
 
   "identifier": {
     "type": "dns",
@@ -2116,7 +2112,7 @@ Content-Type: application/json
 
 {
   "status": "valid",
-  "expires": "2018-09-09T14:09:00Z",
+  "expires": "2018-09-09T14:09:01.13Z",
 
   "identifier": {
     "type": "dns",
@@ -2128,7 +2124,7 @@ Content-Type: application/json
       "type": "http-01",
       "url": "https://example.com/acme/authz/1234/0",
       "status": "valid",
-      "validated": "2014-12-01T12:05:00Z",
+      "validated": "2014-12-01T12:05:13.72Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     }
   ],
