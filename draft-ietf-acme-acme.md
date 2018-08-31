@@ -354,7 +354,9 @@ validating an 'http-01' challenge, a DNS client with 'dns-01', etc.
 ACME servers SHOULD follow the recommendations of {{?RFC7525}} when configuring
 their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
 to send early data (0-RTT).  This is safe because the ACME protocol itself
-includes anti-replay protections (see {{replay-protection}}).
+includes anti-replay protections (see {{replay-protection}}) in all cases where
+they are required.  For this reason, there are no restrictions on what ACME
+data can be carried in 0-RTT. 
 
 ACME clients MUST send a User-Agent header, in accordance with
 {{!RFC7231}}. This header SHOULD include the name and version of the
@@ -1017,11 +1019,13 @@ encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRE
 for objects with "valid" in the "status" field.
 
 challenges (required, array of objects):
-: For pending authorizations, the challenges that the client can fulfill in
-order to prove possession of the identifier.  For final authorizations (in the "valid" or "invalid" state), the
-challenges that were used.  Each array entry is an object with parameters
-required to validate the challenge.  A client should attempt to fulfill
-one of these challenges, and a server should consider any one of the challenges
+: For pending authorizations, the challenges that the client can
+fulfill in order to prove possession of the identifier.  For valid
+authorizations, the challenge that was validated.  For invalid
+authorizations, the challenges that were attempted and failed.  Each
+array entry is an object with parameters required to validate the
+challenge.  A client should attempt to fulfill one of these
+challenges, and a server should consider any one of the challenges
 sufficient to make the authorization valid.
 
 wildcard (optional, boolean):
@@ -2981,6 +2985,12 @@ middleboxes with a TLS MitM function.  Preventing abusive use of ACME means
 ensuring that an attacker with access to the validation channel can't obtain
 illegitimate authorization by acting as an ACME client (legitimately, in terms
 of the protocol).
+
+We do not protect against other types of abuse by a MitM on the ACME channel. 
+For example, such an attacker could send a bogus "badSignatureAlgorithm"
+response to downgrade a client to the lowest-quality signature algorithm that
+the server supports.  A MitM that is present on all connections (such as a 
+CDN), can cause denial-of-service conditions in a variety of ways.
 
 ## Integrity of Authorizations
 
