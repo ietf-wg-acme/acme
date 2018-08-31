@@ -944,8 +944,8 @@ certificate (optional, string):
     { "type": "dns", "value": "www.example.com" }
   ],
 
-  "notBefore": "2016-01-01T00:00:53Z",
-  "notAfter": "2016-01-08T00:00:32Z",
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z",
 
   "authorizations": [
     "https://example.com/acme/authz/1234",
