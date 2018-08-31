@@ -2986,7 +2986,7 @@ ensuring that an attacker with access to the validation channel can't obtain
 illegitimate authorization by acting as an ACME client (legitimately, in terms
 of the protocol).
 
-We do not protect against other types of abuse by a MitM on the ACME channel. 
+ACME does not protect against other types of abuse by a MitM on the ACME channel. 
 For example, such an attacker could send a bogus "badSignatureAlgorithm"
 response to downgrade a client to the lowest-quality signature algorithm that
 the server supports.  A MitM that is present on all connections (such as a 
