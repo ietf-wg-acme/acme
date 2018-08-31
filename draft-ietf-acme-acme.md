@@ -326,7 +326,11 @@ validation challenges the server might require.
 
 All requests and responses sent via HTTP by ACME clients, ACME servers, and
 validation servers as well as any inputs for digest computations MUST be encoded
-using the UTF-8 {{!RFC3629}} character set.
+using the UTF-8 {{!RFC3629}} character set. Note that identifiers that appear in
+certificates may have their own encoding considerations (e.g., DNS names containing
+non-ASCII characters are expressed as A-labels rather than U-labels). Any such
+encoding considerations are to be applied prior to the aforementioned UTF-8
+encoding.
 
 # Message Transport
 
@@ -356,12 +360,12 @@ their TLS implementations.  ACME servers that support TLS 1.3 MAY allow clients
 to send early data (0-RTT).  This is safe because the ACME protocol itself
 includes anti-replay protections (see {{replay-protection}}).
 
-ACME clients MUST send a User-Agent header, in accordance with
-{{!RFC7231}}. This header SHOULD include the name and version of the
+ACME clients MUST send a User-Agent header field, in accordance with
+{{!RFC7231}}. This header field SHOULD include the name and version of the
 ACME software in addition to the name and version of the underlying
 HTTP client software.
 
-ACME clients SHOULD send an Accept-Language header in accordance with
+ACME clients SHOULD send an Accept-Language header field in accordance with
 {{!RFC7231}} to enable localization of error messages.
 
 ACME servers that are intended to be generally accessible need to use
@@ -537,9 +541,9 @@ ignore invalid Replay-Nonce values.  The ABNF {{!RFC5234}} for the Replay-Nonce
 header field follows:
 
 ~~~~~
-  base64url = [A-Z] / [a-z] / [0-9] / "-" / "_"
+  base64url = ALPHA / DIGIT / "-" / "_"
 
-  Replay-Nonce = *base64url
+  Replay-Nonce = 1*base64url
 ~~~~~
 
 The Replay-Nonce header field SHOULD NOT be included in HTTP request messages.
@@ -604,12 +608,12 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
 | tls                     | The server received a TLS error during validation                               |
 | unauthorized            | The client lacks sufficient authorization                                       |
 | unsupportedContact      | A contact URL for an account used an unsupported protocol scheme                |
-| unsupportedIdentifier   | Identifier is not supported, but may be in future                               |
+| unsupportedIdentifier   | An identifier is of an unsupported type                                         |
 | userActionRequired      | Visit the "instance" URL and take actions specified there                       |
 
 This list is not exhaustive. The server MAY return errors whose "type" field is
 set to a URI other than those defined above.  Servers MUST NOT use the ACME URN
-namespace {{acme-urn-space}} for errors other than the standard types.  Clients SHOULD display the
+namespace for errors not listed in the appropriate IANA registry (see {{acme-urn-space}}).  Clients SHOULD display the
 "detail" field of all errors.
 
 In the remainder of this document, we use the tokens in the table above to refer
@@ -808,10 +812,13 @@ website (optional, string):
 information about the ACME server.
 
 caaIdentities (optional, array of string):
-: Each string MUST be a lowercase hostname which the ACME server recognizes as
-referring to itself for the purposes of CAA record validation as defined in
-{{!RFC6844}}.  This allows clients to determine the correct issuer domain name to
-use when configuring CAA records.
+: The hostnames that the ACME server recognizes as referring to
+itself for the purposes of CAA record validation as defined in
+{{!RFC6844}}.  Each string MUST represent the same sequence of ASCII
+code points that the server will expect to see as the "Issuer Domain
+Name" in a CAA issue or issuewild property tag.  This allows clients
+to determine the correct issuer domain name to use when configuring
+CAA records.
 
 externalAccountRequired (optional, boolean):
 : If this field is present and set to "true", then the CA requires that all
@@ -855,6 +862,7 @@ contact (optional, array of string):
 : An array of URLs that the server can use to contact the client for issues
 related to this account. For example, the server may wish to notify the
 client about server-initiated revocation or certificate expiration.
+For information on supported URL schemes, see {{account-creation}}
 
 termsOfServiceAgreed (optional, boolean):
 : Including this field in a new-account request, with a value of true, indicates
@@ -884,7 +892,7 @@ by the account can be fetched via POST-as-GET request. The result of the request
 MUST be a JSON object whose "orders" field is an array of URLs, each identifying
 an order belonging to the account.  The server SHOULD include pending orders,
 and SHOULD NOT include orders that are invalid in the array of URLs. The server
-MAY return an incomplete list, along with a Link header with a "next" link
+MAY return an incomplete list, along with a Link header field with a "next" link
 relation indicating where further entries can be acquired.
 
 ~~~~~~~~~~
@@ -1421,7 +1429,7 @@ If the server has changed its terms of service since a client initially agreed,
 and the server is unwilling to process a request without explicit agreement to
 the new terms, then it MUST return an error response with status code 403
 (Forbidden) and type "urn:ietf:params:acme:error:userActionRequired".  This
-response MUST include a Link header with link relation "terms-of-service" and
+response MUST include a Link header field with link relation "terms-of-service" and
 the latest terms-of-service URL.
 
 The problem document returned with the error MUST also include an "instance"
@@ -1764,7 +1772,7 @@ transaction that the client must complete before the server will issue the
 certificate (see {{identifier-authorization}}).  If the client fails to complete
 the required actions before the "expires" time, then the server SHOULD change
 the status of the order to "invalid" and MAY delete the order resource. Clients
-SHOULD NOT make any assumptions about the sort order of "identifiers" or
+MUST NOT make any assumptions about the sort order of "identifiers" or
 "authorizations" elements in the returned order object.
 
 Once the client believes it has fulfilled the server's requirements, it should
@@ -1962,6 +1970,7 @@ own heuristics to decide which is optimal.
 ~~~~~~~~~~
 GET /acme/cert/asdf HTTP/1.1
 Host: example.com
+Accept: application/pem-certificate-chain
 
 HTTP/1.1 200 OK
 Content-Type: application/pem-certificate-chain
@@ -1984,15 +1993,15 @@ to request one.
 
 Because certificate resources are immutable once issuance is complete, the
 server MAY enable the caching of the resource by adding Expires and
-Cache-Control headers specifying a point in time in the distant future. These
-headers have no relation to the certificate's period of validity.
+Cache-Control header fields specifying a point in time in the distant future. These
+header fields have no relation to the certificate's period of validity.
 
 The ACME client MAY request other formats by including an Accept
-header {{RFC7231}} in its request.  For example, the client could use the media type
+header field {{RFC7231}} in its request.  For example, the client could use the media type
 `application/pkix-cert` {{!RFC2585}} or `applicaiton/pkcs7-mime` {{!RFC5751}} to request the end-entity certificate
 in DER format. Server support for alternate formats is OPTIONAL. For
 formats that can only express a single certificate, the server SHOULD
-provide one or more `Link: rel="up"` headers pointing to an issuer or
+provide one or more `Link: rel="up"` header fields pointing to an issuer or
 issuers so that ACME clients can build a certificate chain as defined
 in TLS.
 
@@ -2530,6 +2539,10 @@ domain by verifying that the resource was provisioned as expected.
    authorization stored by the server.
 
 The server SHOULD follow redirects when dereferencing the URL.
+Clients might use redirects, for example, so that the response can
+be provided by a centralized certificate management server.  See
+{{integrity-of-authorizations}} for security considerations related
+to redirects.
 
 If all of the above verifications succeed, then the validation is successful.
 If the request fails, or the body does not pass these checks, then it has
@@ -2618,6 +2631,14 @@ field of the challenge has the value "valid" or "invalid".
 
 ## MIME Type: application/pem-certificate-chain
 
+A file of this type contains one or more certificates encoded with the PEM textual encoding, according to
+RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
+certificate MUST be an end-entity certificate. Each following certificate
+SHOULD directly certify the one preceding it. Because certificate validation
+requires that trust anchors be distributed independently, a certificate
+that represents a trust anchor MAY be omitted from the chain, provided
+that supported peers are known to possess any omitted certificates.
+
 The "Media Types" registry should be updated with the following additional
 value:
 
@@ -2629,26 +2650,34 @@ Required parameters: None
 
 Optional parameters: None
 
-Encoding considerations: None
+Encoding considerations: 7bit
 
-Security considerations: Carries a cryptographic certificate and its associated certificate chain
+Security considerations: Carries a cryptographic certificate and its associated certificate chain.  This media type carries no active content.
 
 Interoperability considerations: None
 
 Published specification: draft-ietf-acme-acme
 \[\[ RFC EDITOR: Please replace draft-ietf-acme-acme above with the RFC number assigned to this ]]
 
-Applications which use this media type: Any MIME-compliant transport
+Applications which use this media type: ACME clients and servers, HTTP servers, other applications that need to be configured with a certificate chain
 
 Additional information:
 
-File contains one or more certificates encoded with the PEM textual encoding, according to
-RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
-certificate MUST be an end-entity certificate. Each following certificate
-SHOULD directly certify the one preceding it. Because certificate validation
-requires that trust anchors be distributed independently, a certificate
-that specifies a trust anchor MAY be omitted from the chain, provided
-that supported peers are known to possess any omitted certificates.
+  Deprecated alias names for this type: n/a
+  Magic number(s): n/a
+  File extension(s): .pem
+  Macintosh file type code(s): n/a
+
+Person & email address to contact for further information: See Authors' Addresses section.
+
+Intended usage: COMMON
+
+Restrictions on usage: n/a
+
+Author: See Authors' Addresses section.
+
+Change controller: Internet Engineering Task Force <iesg@ietf.org>
+
 
 ## Well-Known URI for the HTTP Challenge
 
@@ -2924,8 +2953,12 @@ Template:
 * Label: The identifier for this validation method
 * Identifier Type: The type of identifier that this method applies to
 * ACME: "Y" if the validation method corresponds to an ACME challenge type;
-  "N" otherwise.
+  "N" otherwise
 * Reference: Where the validation method is defined
+
+This registry may also contain reserved entries (e.g., to avoid
+collisions).  Such entries should have the "ACME" field set to "N"
+and the "Identifier Type" set to "RESERVED".
 
 Initial Contents
 
