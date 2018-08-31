@@ -713,7 +713,7 @@ ul.toc li {
 <h1 id="rfc.section.5">
 <a href="#rfc.section.5">5.</a> <a href="#character-encoding" id="character-encoding">Character Encoding</a>
 </h1>
-<p id="rfc.section.5.p.1">All requests and responses sent via HTTP by ACME clients, ACME servers, and validation servers as well as any inputs for digest computations MUST be encoded using the UTF-8 <a href="#RFC3629" class="xref">[RFC3629]</a> character set.</p>
+<p id="rfc.section.5.p.1">All requests and responses sent via HTTP by ACME clients, ACME servers, and validation servers as well as any inputs for digest computations MUST be encoded using the UTF-8 <a href="#RFC3629" class="xref">[RFC3629]</a> character set. Note that identifiers that appear in certificates may have their own encoding considerations (e.g., DNS names containing non-ASCII characters are expressed as A-labels rather than U-labels). Any such encoding considerations are to be applied prior to the aforementioned UTF-8 encoding.</p>
 <h1 id="rfc.section.6">
 <a href="#rfc.section.6">6.</a> <a href="#message-transport" id="message-transport">Message Transport</a>
 </h1>
