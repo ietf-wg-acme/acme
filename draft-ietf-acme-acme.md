@@ -291,7 +291,7 @@ certificate and make it available to the client.
 
                           <~~~~~~Await issuance~~~~~~>
 
-      POST-as-GET request           ------->
+      GET request                   ------->
                                     <-------              Certificate
 
                 [] Information covered by request signatures
@@ -366,7 +366,7 @@ ACME clients SHOULD send an Accept-Language header in accordance with
 
 ACME servers that are intended to be generally accessible need to use
 Cross-Origin Resource Sharing (CORS) in order to be accessible from
-browser-based clients {{?W3C.CR-cors-20130129}}.  Such servers SHOULD set the
+browser-based clients {{?W3C.REC-cors-20140116}}.  Such servers SHOULD set the
 Access-Control-Allow-Origin header field to the value "\*".
 
 Binary fields in the JSON objects used by ACME are encoded using base64url
@@ -397,7 +397,6 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-url-integrity}} below)
   * Either "jwk" (JSON Web Key) or "kid" (Key ID) as specified below
-* The JWS Protected Header MUST NOT have a "typ" parameter
 
 An ACME server MUST implement the "ES256" signature algorithm {{!RFC7518}} and SHOULD implement the "EdDSA" signature algorithm using the "Ed25519" variant (indicated by "crv") {{!RFC8037}}.
 
@@ -412,26 +411,6 @@ For all other requests, the request is signed using an existing account and
 there MUST be a "kid" field. This field MUST contain the account URL received by
 POSTing to the newAccount resource.
 
-Note that authentication via signed JWS request bodies implies that
-requests other than POST requests are not authenticated.  The server
-MUST allow GET requests for its directory resource and both GET and
-HEAD requests for its newNonce resource (see {{resources}}), in
-order to support client bootstrapping.
-
-Otherwise, if a client wishes to fetch a resource from
-the server (which would otherwise be done with a GET), then it MUST
-send a POST request with a JWS body as described above, with the
-following differences:
-
-* The JWS Protected Header MUST contain a "typ" field with the value
-  "GET"
-* The payload MUST be an empty JSON object ({})
-
-We will refer to these as "POST-as-GET" requests. On receiving such
-a request, the server MUST authenticate the sender and verify any
-access control rules.  Otherwise, the server MUST treat this request
-as having the same semantics as a GET request for the same resource.
-
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
 and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
@@ -444,6 +423,42 @@ JSON Serialization, they must have the "Content-Type" header field
 set to "application/jose+json".  If a request does not meet this
 requirement, then the server MUST return a response with status code
 415 (Unsupported Media Type).
+
+## POST-as-GET Requests
+
+Note that authentication via signed JWS request bodies implies that
+requests without an entity body are not authenticated, in particular
+GET requests.  Except for the cases described in this section, if
+the server receives a GET request, it MUST return an error with
+status code 405 "Method Not Allowed" and type "malformedRequest".
+
+If a client wishes to fetch a resource from the server (which would
+otherwise be done with a GET), then it MUST send a POST request with
+a JWS body as described above, where the payload of the JWS is a
+zero-length octet string.
+
+We will refer to these as "POST-as-GET" requests. On receiving a
+request with a zero-length (and thus non-JSON) payload, the server
+MUST authenticate the sender and verify any access control rules.
+Otherwise, the server MUST treat this request as having the same
+semantics as a GET request for the same resource.
+
+The server MUST allow GET requests for the following resources(see
+{{resources}}, in addition to POST-as-GET requests for these
+resources:
+
+* The directory resource
+* The newNonce resource
+* Certificate resources
+
+Allowing GET requests for the directory and newNonce resourcse
+enables clients to bootstrap into the ACME authentication system.
+GET requests for certificate resources allow non-ACME entities to
+consume certificates resulting from ACME interactions.  If a server
+regards certificate resources as sensitive, then it SHOULD assign
+them capability URLs {{?W3C.WD-capability-urls-20140218}} so that
+they cannot be guessed and thus have to be obtained from an
+authorized party.
 
 ## Request URL Integrity
 
@@ -747,7 +762,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 | Poll for status       | POST-as-GET order          | 200            |
 | Finalize order        | POST order finalize        | 200            |
 | Poll for status       | POST-as-GET order          | 200            |
-| Download certificate  | POST order certificate     | 200            |
+| Download certificate  | GET  order certificate     | 200            |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -806,7 +821,7 @@ externalAccountRequired (optional, boolean):
 new-account requests include an "externalAccountBinding" field associating the
 new account with an external account.
 
-Clients access the directory by sending a POST-as-GET request to the directory URL.
+Clients access the directory by sending a GET request to the directory URL.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
@@ -1624,7 +1639,9 @@ orders or authorization transactions based on a change of account key.
 
 A client can deactivate an account by posting a signed update to the server with
 a status field of "deactivated." Clients may wish to do this when the account
-key is compromised or decommissioned.
+key is compromised or decommissioned. A deactivated account an no longer request
+certificate issuance or access resources related to the account, such as orders
+or authorizations.
 
 ~~~~~~~~~~
 POST /acme/acct/1 HTTP/1.1
@@ -1934,7 +1951,7 @@ described in {{identifier-authorization}} to complete the authorization process.
 
 ### Downloading the Certificate
 
-To download the issued certificate, the client simply sends a POST-as-GET request to the
+To download the issued certificate, the client simply sends a POST-as-GET or GET request to the
 certificate URL.
 
 The default format of the certificate is application/pem-certificate-chain (see {{iana-considerations}}).
@@ -1946,22 +1963,8 @@ paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
 
 ~~~~~~~~~~
-POST /acme/cert/asdf HTTP/1.1
+GET /acme/cert/asdf HTTP/1.1
 Host: example.com
-Content-Type: application/jose+json
-Accept: application/pkix-cert
-
-{
-  "protected": base64url({
-    "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
-    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/new-authz",
-    "typ": "GET"
-  }),
-  "payload": base64url({}),
-  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
-}
 
 HTTP/1.1 200 OK
 Content-Type: application/pem-certificate-chain
@@ -2033,7 +2036,7 @@ Accept: application/pkix-cert
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/new-authz",
+    "url": "https://example.com/acme/authz/1234",
     "typ": "GET"
   }),
   "payload": base64url({}),
@@ -2145,7 +2148,7 @@ Accept: application/pkix-cert
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/new-authz",
+    "url": "https://example.com/acme/authz/1234",
     "typ": "GET"
   }),
   "payload": base64url({}),
