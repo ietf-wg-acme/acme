@@ -58,13 +58,6 @@ normative:
       ins: R. Fielding
     date: 2000
     target: http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
-  ECMAScript:
-    title: ECMAScript 2018 Language Specification
-    author:
-      name: ECMA
-      ins: ECMA
-    date: 2018-06
-    target: http://www.ecma-international.org/ecma-262/
 
 
 --- abstract
@@ -329,17 +322,11 @@ The use of ACME for other identifiers will require further specification in orde
 to describe how these identifiers are encoded in the protocol and what types of
 validation challenges the server might require.
 
-# Encodings
+# Character Encoding
 
 All requests and responses sent via HTTP by ACME clients, ACME servers, and
 validation servers as well as any inputs for digest computations MUST be encoded
 using the UTF-8 {{!RFC3629}} character set.
-
-Some JSON structures used by ACME include date time values encoded
-as strings.  These values MUST be encoded in the format specified in
-Section 15.0.1.15 of the ECMAScript specification {{ECMAScript}}.
-This format is a simplification of the format defined in
-{{?RFC3339}}, summarized as "YYYY-MM-DDTHH:mm:ss.sssZ".
 
 # Message Transport
 
@@ -902,7 +889,7 @@ status (required, string):
 
 expires (optional, string):
 : The timestamp after which the server will consider this order invalid, encoded
-in the date format specified in {{encodings}}.  This field is REQUIRED for
+in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED for
 objects with "pending" or "valid" in the status field.
 
 identifiers (required, array of object):
@@ -917,12 +904,12 @@ identifiers (required, array of object):
   : The identifier itself.
 
 notBefore (optional, string):
-: The requested value of the notBefore field in the certificate, in the date 
-format specified in {{encodings}}.
+: The requested value of the notBefore field in the certificate, in the date
+format defined in {{!RFC3339}}.
 
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
-format specified in {{encodings}}.
+format defined in {{!RFC3339}}.
 
 error (optional, object):
 : The error that occurred while processing the order, if any.
@@ -1026,7 +1013,7 @@ status (required, string):
 
 expires (optional, string):
 : The timestamp after which the server will consider this authorization invalid,
-encoded in the date format specified in {{encodings}}.  This field is REQUIRED
+encoded in the format specified in RFC 3339 {{!RFC3339}}.  This field is REQUIRED
 for objects with "valid" in the "status" field.
 
 challenges (required, array of objects):
@@ -1682,11 +1669,11 @@ identifiers (required, array of object):
 
 notBefore (optional, string):
 : The requested value of the notBefore field in the certificate, in the date
-format specified in {{encodings}}.
+format defined in {{!RFC3339}}.
 
 notAfter (optional, string):
 : The requested value of the notAfter field in the certificate, in the date
-format specified in {{encodings}}.
+format defined in {{!RFC3339}}.
 
 ~~~~~~~~~~
 POST /acme/new-order HTTP/1.1
@@ -2325,7 +2312,7 @@ status (required, string):
 
 validated (optional, string):
 : The time at which the server validated this challenge, encoded in the
-date format specified in {{encodings}}.  This field is REQUIRED if the
+format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 "status" field is "valid".
 
 error (optional, object):
