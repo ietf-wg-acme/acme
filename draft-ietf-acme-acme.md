@@ -1644,7 +1644,7 @@ orders or authorization transactions based on a change of account key.
 
 A client can deactivate an account by posting a signed update to the server with
 a status field of "deactivated." Clients may wish to do this when the account
-key is compromised or decommissioned. A deactivated account an no longer request
+key is compromised or decommissioned. A deactivated account can no longer request
 certificate issuance or access resources related to the account, such as orders
 or authorizations.
 
@@ -2045,7 +2045,7 @@ Accept: application/pkix-cert
     "url": "https://example.com/acme/authz/1234",
     "typ": "GET"
   }),
-  "payload": base64url({}),
+  "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
 
@@ -2157,7 +2157,7 @@ Accept: application/pkix-cert
     "url": "https://example.com/acme/authz/1234",
     "typ": "GET"
   }),
-  "payload": base64url({}),
+  "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
 }
 
