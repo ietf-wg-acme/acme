@@ -3279,8 +3279,8 @@ what URLs exist on the server, since an attacker can probe for
 whether POST-as-GET request to the URL returns "Not Found" or
 "Unauthorized".  
 
-For example, suppose that the CA uses highly structured URLs that
-with several low-entropy fields:
+For example, suppose that the CA uses highly structured URLs with
+several low-entropy fields:
 
 * Accounts: https://example.com/:accountID
 * Orders: https://example.com/:accountID/:orderID
