@@ -428,7 +428,7 @@ set to "application/jose+json".  If a request does not meet this
 requirement, then the server MUST return a response with status code
 415 (Unsupported Media Type).
 
-## POST-as-GET Requests
+## GET and POST-as-GET Requests
 
 Note that authentication via signed JWS request bodies implies that
 requests without an entity body are not authenticated, in particular
@@ -439,7 +439,8 @@ status code 405 "Method Not Allowed" and type "malformedRequest".
 If a client wishes to fetch a resource from the server (which would
 otherwise be done with a GET), then it MUST send a POST request with
 a JWS body as described above, where the payload of the JWS is a
-zero-length octet string.
+zero-length octet string.  In other words, the "payload" field of the
+JWS object MUST be present and set to the empty string ("").
 
 We will refer to these as "POST-as-GET" requests. On receiving a
 request with a zero-length (and thus non-JSON) payload, the server
@@ -458,8 +459,10 @@ process, e.g., the web server that will use the referenced
 certificate chain.  (See {{?I-D.ietf-acme-star}} for more advanced
 cases.)  A server that allows GET requests for certificate resources
 can still provide them a degree of access control by assigning them
-capability URLs them capability URLs
-{{?W3C.WD-capability-urls-20140218}}.
+capability URLs them capability URLs {{?W3C.WD-capability-urls-20140218}}.
+As above, if the server does not allow GET requests for a given
+resource, it MUST return an error with status code 405 "Method Not
+Allowed" and type "malformedRequest".
 
 ## Request URL Integrity
 
@@ -763,7 +766,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 | Poll for status       | POST-as-GET order          | 200            |
 | Finalize order        | POST order finalize        | 200            |
 | Poll for status       | POST-as-GET order          | 200            |
-| Download certificate  | GET  order certificate     | 200            |
+| Download certificate  | POST-as-GET certificate    | 200            |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -1956,7 +1959,7 @@ described in {{identifier-authorization}} to complete the authorization process.
 
 ### Downloading the Certificate
 
-To download the issued certificate, the client simply sends a POST-as-GET or GET request to the
+To download the issued certificate, the client simply sends a POST-as-GET request to the
 certificate URL.
 
 The default format of the certificate is application/pem-certificate-chain (see {{iana-considerations}}).
@@ -2043,7 +2046,6 @@ Accept: application/pkix-cert
     "kid": "https://example.com/acme/acct/1",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
     "url": "https://example.com/acme/authz/1234",
-    "typ": "GET"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2155,7 +2157,6 @@ Accept: application/pkix-cert
     "kid": "https://example.com/acme/acct/1",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
     "url": "https://example.com/acme/authz/1234",
-    "typ": "GET"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -3293,7 +3294,19 @@ In order to avoid leaking these correlations, servers SHOULD assign
 capability URLs for dynamically-created resources
 {{?W3C.WD-capability-urls-20140218}}.  These URLs incorporate large
 unpredictable components to prevent third parties from guessing
-them.
+them.  These URLs SHOULD NOT have a structure that would enable a
+third party to infer correlations between resources.  
+
+For example, a CA might assign URLs for each resource type from an
+independent namespace, using unpredictable IDs for each resource:
+
+* Accounts: https://example.com/acct/:accountID
+* Orders: https://example.com/order/:orderID
+* Authorizations: https://example.com/authz/:authorizationID
+* Certificates: https://example.com/cert/:certID
+
+Such a scheme would leak only the type of resource, hiding the
+additional correlations revealed in the example above. 
 
 # Operational Considerations
 
