@@ -365,7 +365,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., McCarney, D., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2018-08-31" />
+  <meta name="dct.issued" scheme="ISO8601" content="2018-09-14" />
   <meta name="dct.abstract" content="Public Key Infrastructure X.509 (PKIX) certificates are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a CA and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Public Key Infrastructure X.509 (PKIX) certificates are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a CA and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -389,7 +389,7 @@ ul.toc li {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: March 4, 2019</td>
+<td class="left">Expires: March 18, 2019</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -410,7 +410,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">August 31, 2018</td>
+<td class="right">September 14, 2018</td>
 </tr>
 
     	
@@ -427,7 +427,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on March 4, 2019.</p>
+<p>This Internet-Draft will expire on March 18, 2019.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -762,7 +762,7 @@ ul.toc li {
 <a href="#rfc.section.6.3">6.3.</a> <a href="#request-url-integrity" id="request-url-integrity">Request URL Integrity</a>
 </h1>
 <p id="rfc.section.6.3.p.1">It is common in deployment for the entity terminating TLS for HTTPS to be different from the entity operating the logical HTTPS server, with a &#8220;request routing&#8221; layer in the middle.  For example, an ACME CA might have a content delivery network terminate TLS connections from clients so that it can inspect client requests for denial-of-service protection.</p>
-<p id="rfc.section.6.3.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URL and headers.  ACME uses JWS to provide an integrity mechanism, which protects against an intermediary changing the request URL to another ACME URL.</p>
+<p id="rfc.section.6.3.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URL and header fields.  ACME uses JWS to provide an integrity mechanism, which protects against an intermediary changing the request URL to another ACME URL.</p>
 <p id="rfc.section.6.3.p.3">As noted in <a href="#request-authentication" class="xref">Section 6.2</a> above, all ACME request objects carry a &#8220;url&#8221; header parameter in their protected header.  This header parameter encodes the URL to which the client is directing the request.  On receiving such an object in an HTTP request, the server MUST compare the &#8220;url&#8221; header parameter to the request URL.  If the two do not match, then the server MUST reject the request as unauthorized.</p>
 <p id="rfc.section.6.3.p.4">Except for the directory resource, all ACME resources are addressed with URLs provided to the client by the server.  In requests sent to these resources, the client MUST set the &#8220;url&#8221; header parameter to the exact string provided by the server (rather than performing any re-encoding on the URL).  The server SHOULD perform the corresponding string equality check, configuring each resource with the URL string provided to clients and having the resource check that requests have the same string in their &#8220;url&#8221; header parameter.</p>
 <h1 id="rfc.section.6.3.1">
@@ -780,7 +780,7 @@ ul.toc li {
 <h1 id="rfc.section.6.4.1">
 <a href="#rfc.section.6.4.1">6.4.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a>
 </h1>
-<p id="rfc.section.6.4.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server MUST generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability. For instance, it is acceptable to generate Replay-Nonces randomly.</p>
+<p id="rfc.section.6.4.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server MUST generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability, and unpredictable to anyone besides the server. For instance, it is acceptable to generate Replay-Nonces randomly.</p>
 <p id="rfc.section.6.4.1.p.2">The value of the Replay-Nonce field MUST be an octet string encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515" class="xref">[RFC7515]</a>.  Clients MUST ignore invalid Replay-Nonce values.  The ABNF <a href="#RFC5234" class="xref">[RFC5234]</a> for the Replay-Nonce header field follows:</p>
 <pre>
   base64url = ALPHA / DIGIT / "-" / "_"
@@ -1273,7 +1273,7 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;;rel="next"
 <dt>wildcard (optional, boolean):</dt>
 <dd style="margin-left: 8">For authorizations created as a result of a newOrder request containing a DNS identifier with a value that contained a wildcard prefix this field MUST be present, and true.</dd>
 </dl>
-<p id="rfc.section.7.1.4.p.4">The only type of identifier defined by this specification is a fully-qualified domain name (type: &#8220;dns&#8221;). If a domain name contains non-ASCII Unicode characters it MUST be encoded using the rules defined in <a href="#RFC3492" class="xref">[RFC3492]</a>. Servers MUST verify any identifier values that begin with the ASCII Compatible Encoding prefix &#8220;xn--&#8221; as defined in <a href="#RFC5890" class="xref">[RFC5890]</a> are properly encoded. Wildcard domain names (with &#8220;*&#8221; as the first label) MUST NOT be included in authorization objects. If an authorization object conveys authorization for the base domain of a newOrder DNS type identifier with a wildcard prefix then the optional authorizations &#8220;wildcard&#8221; field MUST be present with a value of true.</p>
+<p id="rfc.section.7.1.4.p.4">The only type of identifier defined by this specification is a fully-qualified domain name (type: &#8220;dns&#8221;). The domain name MUST be encoded in the form in which it would apper in a certificate.  That is, it MUST be encoded according to the rules in Section 7 of <a href="#RFC5280" class="xref">[RFC5280]</a>.  Servers MUST verify any identifier values that begin with the ASCII Compatible Encoding prefix &#8220;xn--&#8221; as defined in <a href="#RFC5890" class="xref">[RFC5890]</a> are properly encoded. Wildcard domain names (with &#8220;*&#8221; as the first label) MUST NOT be included in authorization objects. If an authorization object conveys authorization for the base domain of a newOrder DNS type identifier with a wildcard prefix then the optional authorizations &#8220;wildcard&#8221; field MUST be present with a value of true.</p>
 <p><a href="#identifier-validation-challenges" class="xref">Section 8</a> describes a set of challenges for domain name validation.</p>
 <pre>
 {
@@ -1891,7 +1891,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 </ol>
 <p id="rfc.section.7.5.p.3">This process may be repeated to associate multiple identifiers to a key pair (e.g., to request certificates with multiple identifiers), or to associate multiple accounts with an identifier (e.g., to allow multiple entities to manage certificates).</p>
 <p id="rfc.section.7.5.p.4">Authorization resources are created by the server in response to certificate orders or authorization requests submitted by an account key holder; their URLs are provided to the client in the responses to these requests.  The authorization object is implicitly tied to the account key used to sign the request.</p>
-<p id="rfc.section.7.5.p.5">When a client receives an order from the server it downloads the authorization resources by sending GET requests to the indicated URLs.  If the client initiates authorization using a request to the new authorization resource, it will have already received the pending authorization object in the response to that request.</p>
+<p id="rfc.section.7.5.p.5">When a client receives an order from the server, it downloads the authorization resources by sending GET requests to the indicated URLs.  If the client initiates authorization using a request to the new authorization resource, it will have already received the pending authorization object in the response to that request.</p>
 <pre>
 GET /acme/authz/1234 HTTP/1.1
 Host: example.com
@@ -2128,9 +2128,9 @@ Content-Language: en
 </h1>
 <p id="rfc.section.8.1.p.1">All challenges defined in this document make use of a key authorization string.  A key authorization is a string that expresses a domain holder&#8217;s authorization for a specified key to satisfy a specified challenge, by concatenating the token for the challenge with a key fingerprint, separated by a &#8220;.&#8221; character:</p>
 <pre>
-  keyAuthorization = token || '.' || base64url(JWK_Thumbprint(accountKey))
+keyAuthorization = token || '.' || base64url(Thumbprint(accountKey))
 </pre>
-<p id="rfc.section.8.1.p.2">The &#8220;JWK_Thumbprint&#8221; step indicates the computation specified in <a href="#RFC7638" class="xref">[RFC7638]</a>, using the SHA-256 digest <a href="#FIPS180-4" class="xref">[FIPS180-4]</a>.  As noted in <a href="#RFC7518" class="xref">[RFC7518]</a> any prepended zero octets in the fields of a JWK object MUST be stripped before doing the computation.</p>
+<p id="rfc.section.8.1.p.2">The &#8220;Thumbprint&#8221; step indicates the computation specified in <a href="#RFC7638" class="xref">[RFC7638]</a>, using the SHA-256 digest <a href="#FIPS180-4" class="xref">[FIPS180-4]</a>.  As noted in <a href="#RFC7518" class="xref">[RFC7518]</a> any prepended zero octets in the fields of a JWK object MUST be stripped before doing the computation.</p>
 <p id="rfc.section.8.1.p.3">As specified in the individual challenges below, the token for a challenge is a string comprised entirely of characters in the URL-safe base64 alphabet.  The &#8220;||&#8221; operator indicates concatenation of strings.</p>
 <h1 id="rfc.section.8.2">
 <a href="#rfc.section.8.2">8.2.</a> <a href="#retrying-challenges" id="retrying-challenges">Retrying Challenges</a>
@@ -2169,15 +2169,16 @@ Content-Type: application/json
 <p id="rfc.section.8.3.p.4">A client fulfills this challenge by constructing a key authorization from the &#8220;token&#8221; value provided in the challenge and the client&#8217;s account key.  The client then provisions the key authorization as a resource on the HTTP server for the domain in question.</p>
 <p id="rfc.section.8.3.p.5">The path at which the resource is provisioned is comprised of the fixed prefix &#8220;/.well-known/acme-challenge/&#8221;, followed by the &#8220;token&#8221; value in the challenge.  The value of the resource MUST be the ASCII representation of the key authorization.</p>
 <pre>
-GET /.well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
+GET /.well-known/acme-challenge/LoqXcYV8...jxAjEuX0
 Host: example.org
 
 HTTP/1.1 200 OK
 Content-Type: application/octet-stream
 
-LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
+LoqXcYV8...jxAjEuX0.9jg46WB3...fm21mqTI
 </pre>
-<p id="rfc.section.8.3.p.6">A client responds with an empty object ({}) to acknowledge that the challenge can be validated by the server.</p>
+<p id="rfc.section.8.3.p.6">(In the above, &#8220;&#8230;&#8221; indicates that the token and the JWK thumbprint in the key authorization have been truncated to fit on the page.)</p>
+<p id="rfc.section.8.3.p.7">A client responds with an empty object ({}) to acknowledge that the challenge can be validated by the server.</p>
 <pre>
 POST /acme/authz/1234/0
 Host: example.com
@@ -2194,8 +2195,8 @@ Content-Type: application/jose+json
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
 }
 </pre>
-<p id="rfc.section.8.3.p.7">On receiving a response, the server constructs and stores the key authorization from the challenge &#8220;token&#8221; value and the current client account key.</p>
-<p id="rfc.section.8.3.p.8">Given a challenge/response pair, the server verifies the client&#8217;s control of the domain by verifying that the resource was provisioned as expected.</p>
+<p id="rfc.section.8.3.p.8">On receiving a response, the server constructs and stores the key authorization from the challenge &#8220;token&#8221; value and the current client account key.</p>
+<p id="rfc.section.8.3.p.9">Given a challenge/response pair, the server verifies the client&#8217;s control of the domain by verifying that the resource was provisioned as expected.</p>
 <p></p>
 
 <ol>
@@ -2209,9 +2210,9 @@ Content-Type: application/jose+json
 <li>Verify that the body of the response is well-formed key authorization.  The server SHOULD ignore whitespace characters at the end of the body.</li>
 <li>Verify that key authorization provided by the HTTP server matches the key authorization stored by the server.</li>
 </ol>
-<p id="rfc.section.8.3.p.10">The server SHOULD follow redirects when dereferencing the URL.  Clients might use redirects, for example, so that the response can be provided by a centralized certificate management server.  See <a href="#integrity-of-authorizations" class="xref">Section 10.2</a> for security considerations related to redirects.</p>
-<p id="rfc.section.8.3.p.11">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
-<p id="rfc.section.8.3.p.12">The client SHOULD de-provision the resource provisioned for this challenge once the challenge is complete, i.e., once the &#8220;status&#8221; field of the challenge has the value &#8220;valid&#8221; or &#8220;invalid&#8221;.</p>
+<p id="rfc.section.8.3.p.11">The server SHOULD follow redirects when dereferencing the URL.  Clients might use redirects, for example, so that the response can be provided by a centralized certificate management server.  See <a href="#integrity-of-authorizations" class="xref">Section 10.2</a> for security considerations related to redirects.</p>
+<p id="rfc.section.8.3.p.12">If all of the above verifications succeed, then the validation is successful.  If the request fails, or the body does not pass these checks, then it has failed.</p>
+<p id="rfc.section.8.3.p.13">The client SHOULD de-provision the resource provisioned for this challenge once the challenge is complete, i.e., once the &#8220;status&#8221; field of the challenge has the value &#8220;valid&#8221; or &#8220;invalid&#8221;.</p>
 <h1 id="rfc.section.8.4">
 <a href="#rfc.section.8.4">8.4.</a> <a href="#dns-challenge" id="dns-challenge">DNS Challenge</a>
 </h1>
@@ -3010,11 +3011,6 @@ Holder                  MitM                  Server
 <td class="reference"><b id="RFC3339">[RFC3339]</b></td>
 <td class="top">
 <a>Klyne, G.</a> and <a>C. Newman</a>, "<a href="https://tools.ietf.org/html/rfc3339">Date and Time on the Internet: Timestamps</a>", RFC 3339, DOI 10.17487/RFC3339, July 2002.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC3492">[RFC3492]</b></td>
-<td class="top">
-<a>Costello, A.</a>, "<a href="https://tools.ietf.org/html/rfc3492">Punycode: A Bootstring encoding of Unicode for Internationalized Domain Names in Applications (IDNA)</a>", RFC 3492, DOI 10.17487/RFC3492, March 2003.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC3629">[RFC3629]</b></td>
