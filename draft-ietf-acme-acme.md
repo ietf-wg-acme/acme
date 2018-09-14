@@ -378,7 +378,7 @@ ACME clients SHOULD send an Accept-Language header field in accordance with
 
 ACME servers that are intended to be generally accessible need to use
 Cross-Origin Resource Sharing (CORS) in order to be accessible from
-browser-based clients {{?W3C.CR-cors-20140116}}.  Such servers SHOULD set the
+browser-based clients {{?W3C.REC-cors-20140116}}.  Such servers SHOULD set the
 Access-Control-Allow-Origin header field to the value "\*".
 
 Binary fields in the JSON objects used by ACME are encoded using base64url
