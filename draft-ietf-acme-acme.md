@@ -442,7 +442,7 @@ network terminate TLS connections from clients so that it can inspect client
 requests for denial-of-service protection.
 
 These intermediaries can also change values in the request that are not signed
-in the HTTPS request, e.g., the request URL and headers.  ACME uses JWS to
+in the HTTPS request, e.g., the request URL and header fields.  ACME uses JWS to
 provide an integrity mechanism, which protects against an intermediary
 changing the request URL to another ACME URL.
 
@@ -504,7 +504,7 @@ keep a list of issued nonces, and strike nonces from this list as they are used.
 The "Replay-Nonce" header field includes a server-generated value that the
 server can use to detect unauthorized replay in future client requests.  The
 server MUST generate the value provided in Replay-Nonce in such a way that
-they are unique to each message, with high probability. For instance, it is
+they are unique to each message, with high probability, and unpredictable to anyone besides the server. For instance, it is
 acceptable to generate Replay-Nonces randomly.
 
 The value of the Replay-Nonce field MUST be an octet string encoded according to
@@ -1038,8 +1038,9 @@ identifier with a value that contained a wildcard prefix this field MUST be
 present, and true.
 
 The only type of identifier defined by this specification is a fully-qualified
-domain name (type: "dns"). If a domain name contains non-ASCII Unicode characters
-it MUST be encoded using the rules defined in {{!RFC3492}}. Servers MUST verify
+domain name (type: "dns"). The domain name MUST be encoded in the
+form in which it would apper in a certificate.  That is, it MUST be
+encoded according to the rules in Section 7 of {{!RFC5280}}.  Servers MUST verify
 any identifier values that begin with the ASCII Compatible Encoding prefix
 "xn\-\-" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
 (with "\*" as the first label) MUST NOT be included in authorization objects. If
@@ -2003,7 +2004,7 @@ URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
 
-When a client receives an order from the server it downloads the authorization
+When a client receives an order from the server, it downloads the authorization
 resources by sending GET requests to the indicated URLs.  If the client
 initiates authorization using a request to the new authorization resource, it
 will have already received the pending authorization object in the response
@@ -2351,10 +2352,10 @@ concatenating the token for the challenge with a key fingerprint, separated by a
 "." character:
 
 ~~~~~~~~~~
-  keyAuthorization = token || '.' || base64url(JWK_Thumbprint(accountKey))
+keyAuthorization = token || '.' || base64url(Thumbprint(accountKey))
 ~~~~~~~~~~
 
-The "JWK\_Thumbprint" step indicates the computation specified in {{!RFC7638}},
+The "Thumbprint" step indicates the computation specified in {{!RFC7638}},
 using the SHA-256 digest [FIPS180-4].  As noted in {{!RFC7518}} any prepended
 zero octets in the fields of a JWK object MUST be stripped before doing the computation.
 
@@ -2447,14 +2448,18 @@ The value of the resource MUST be the ASCII representation of the key
 authorization.
 
 ~~~~~~~~~~
-GET /.well-known/acme-challenge/LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0
+GET /.well-known/acme-challenge/LoqXcYV8...jxAjEuX0
 Host: example.org
 
 HTTP/1.1 200 OK
 Content-Type: application/octet-stream
 
-LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0.9jg46WB3rR_AHD-EBXdN7cBkH1WOu0tA3M9fm21mqTI
+LoqXcYV8...jxAjEuX0.9jg46WB3...fm21mqTI
 ~~~~~~~~~~
+
+(In the above, "..." indicates that the token and the JWK
+thumbprint in the key authorization have been truncated to fit on
+the page.)
 
 A client responds with an empty object ({}) to acknowledge that the challenge
 can be validated by the server.
