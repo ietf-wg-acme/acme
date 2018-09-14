@@ -2988,7 +2988,7 @@ of the protocol).
 
 ACME does not protect against other types of abuse by a MitM on the ACME channel. 
 For example, such an attacker could send a bogus "badSignatureAlgorithm"
-response to downgrade a client to the lowest-quality signature algorithm that
+error response to downgrade a client to the lowest-quality signature algorithm that
 the server supports.  A MitM that is present on all connections (such as a 
 CDN), can cause denial-of-service conditions in a variety of ways.
 
