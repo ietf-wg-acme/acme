@@ -31,6 +31,14 @@ author:
     org: University of Michigan
     email: jdkasten@umich.edu
 
+informative:
+  CABFBR:
+    title: CA/Browser Forum Baseline Requirements
+    author:
+      name: CAB
+      ins: CA/Browser Forum
+    date: 2018-09
+    target: https://cabforum.org/baseline-requirements-documents/
 normative:
   FIPS180-4:
     title: NIST FIPS 180-4, Secure Hash Standard
@@ -91,7 +99,7 @@ Different types of certificates reflect different kinds of CA verification of
 information about the certificate subject.  "Domain Validation" (DV)
 certificates are by far the most common type.  The only validation
 the CA is required to perform in the DV issuance process is to
-verify that the requester has effective control of the domain.  The CA is not
+verify that the requester has effective control of the domain [CABFBR].  The CA is not
 required to attempt to verify the requester's
 real-world identity.  (This is as opposed to "Organization Validation" (OV) and
 "Extended Validation" (EV) certificates, where the process is intended to also
@@ -370,7 +378,7 @@ ACME clients SHOULD send an Accept-Language header field in accordance with
 
 ACME servers that are intended to be generally accessible need to use
 Cross-Origin Resource Sharing (CORS) in order to be accessible from
-browser-based clients {{?W3C.CR-cors-20130129}}.  Such servers SHOULD set the
+browser-based clients {{?W3C.REC-cors-20140116}}.  Such servers SHOULD set the
 Access-Control-Allow-Origin header field to the value "\*".
 
 Binary fields in the JSON objects used by ACME are encoded using base64url
@@ -397,7 +405,7 @@ JWS objects sent in ACME requests MUST meet the following additional criteria:
 * The JWS Payload MUST NOT be detached
 * The JWS Protected Header MUST include the following fields:
   * "alg" (Algorithm)
-    * This field MUST NOT contain "none" or a Message Authentication Code (MAC)-based algorithm
+    * This field MUST NOT contain "none" or a Message Authentication Code (MAC)-based algorithm (e.g. one in which the algorithm registry description mentions MAC/HMAC).
   * "nonce" (defined in {{replay-protection}} below)
   * "url" (defined in {{request-url-integrity}} below)
   * Either "jwk" (JSON Web Key) or "kid" (Key ID) as specified below
@@ -459,7 +467,8 @@ the "url" header parameter to the exact string provided by the server (rather
 than performing any re-encoding on the URL).  The server SHOULD perform the
 corresponding string equality check, configuring each resource with the URL
 string provided to clients and having the resource check that requests have the
-same string in their "url" header parameter.
+same string in their "url" header parameter. The server MUST reject the request
+as unauthorized if the string equality check fails.
 
 ### "url" (URL) JWS Header Parameter
 
@@ -471,7 +480,7 @@ representing the target URL.
 ## Replay protection
 
 In order to protect ACME resources from any possible replay attacks, ACME
-requests have a mandatory anti-replay mechanism.  This mechanism is based on the
+POST requests have a mandatory anti-replay mechanism.  This mechanism is based on the
 server maintaining a list of nonces that it has issued to clients, and requiring
 any signed request from the client to carry such a nonce.
 
@@ -745,7 +754,8 @@ structured and how the ACME protocol makes use of them.
 In order to help clients configure themselves with the right URLs for each ACME
 operation, ACME servers provide a directory object. This should be the only URL
 needed to configure clients. It is a JSON object, whose field names are drawn from
-the following table and whose values are the corresponding URLs.
+the resource registry ({{iana-resource}}) and whose values are the corresponding
+URLs.
 
 | Field          | URL in value         |
 |:---------------|:---------------------|
@@ -774,7 +784,7 @@ The object MAY additionally contain a field "meta". If present, it MUST be a
 JSON object; each field in the object is an item of metadata relating to
 the service provided by the ACME server.
 
-The following metadata items are defined, all of which are OPTIONAL:
+The following metadata items are defined ({{iana-meta}}), all of which are OPTIONAL:
 
 termsOfService (optional, string):
 : A URL identifying the current terms of service.
@@ -1419,7 +1429,7 @@ order for instructions on how to agree to the terms.
 
 ~~~~~
 HTTP/1.1 403 Forbidden
-Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+Replay-Nonce: T81bdZroZ2ITWSondpTmAw
 Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"
 Content-Type: application/problem+json
 Content-Language: en
@@ -1444,7 +1454,7 @@ base64url-encoded form, to maximize compatibility between non-ACME provisioning 
 and ACME clients.
 
 The ACME client then computes a binding JWS to indicate the external account holder's
-approval of the ACME account key.  The payload of this JWS is the account key
+approval of the ACME account key.  The payload of this JWS is the ACME account key
 being registered, in JWK form.  The protected header of the JWS MUST meet the
 following criteria:
 
@@ -1486,7 +1496,7 @@ Content-Type: application/jose+json
 }
 ~~~~~
 
-If a CA requires that new-account requests contain an "externalAccountBinding"
+If such a CA requires that new-account requests contain an "externalAccountBinding"
 field, then it MUST provide the value "true" in the "externalAccountRequired" subfield
 of the "meta" field in the directory object.  If the CA receives a
 new-account request without an "externalAccountBinding" field, then it SHOULD
@@ -1571,7 +1581,7 @@ Content-Type: application/jose+json
   "protected": base64url({
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
-    "nonce": "K60BWPrMQG9SDxBDS_xtSw",
+    "nonce": "S9XaOcxP5McpnTcWPIhYuB",
     "url": "https://example.com/acme/key-change"
   }),
   "payload": base64url({
@@ -1623,9 +1633,9 @@ orders or authorization transactions based on a change of account key.
 
 ### Account Deactivation
 
-A client can deactivate an account by posting a signed update to the server with
-a status field of "deactivated." Clients may wish to do this when the account
-key is compromised or decommissioned.
+A client can deactivate an account by posting a signed update to the account URL
+with a status field of "deactivated." Clients may wish to do this when the
+account key is compromised or decommissioned.
 
 ~~~~~~~~~~
 POST /acme/acct/1 HTTP/1.1
@@ -1730,12 +1740,10 @@ Location: https://example.com/acme/order/asdf
 
   "identifiers": [
     { "type": "dns", "value": "example.com" },
-    { "type": "dns", "value": "www.example.com" }
   ],
 
   "authorizations": [
     "https://example.com/acme/authz/1234",
-    "https://example.com/acme/authz/2345"
   ],
 
   "finalize": "https://example.com/acme/order/asdf/finalize"
@@ -1885,6 +1893,12 @@ identifier (required, object):
 : The identifier to appear in the resulting authorization object
 (see {{authorization-objects}})
 
+  type (required, string):
+  : The type of identifier.
+
+  value (required, string):
+  : The identifier itself.
+
 ~~~~~~~~~~
 POST /acme/new-authz HTTP/1.1
 Host: example.com
@@ -2004,11 +2018,11 @@ URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
 
-When a client receives an order from the server, it downloads the authorization
-resources by sending GET requests to the indicated URLs.  If the client
-initiates authorization using a request to the new authorization resource, it
-will have already received the pending authorization object in the response
-to that request.
+When a client receives an order from the server in reply to a new order request,
+it downloads the authorization resources by sending GET requests to the
+indicated URLs.  If the client initiates authorization using a request to the
+new authorization resource, it will have already received the pending
+authorization object in the response to that request.
 
 ~~~~~~~~~~
 GET /acme/authz/1234 HTTP/1.1
@@ -2047,14 +2061,13 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 ### Responding to Challenges
 
 To prove control of the identifier and receive authorization, the client needs to
-respond with information to complete the challenges.  To do this, the client
-updates the authorization object received from the server by filling in any
-required information in the elements of the "challenges" dictionary.
+provision the required challenge response based on the challenge type and
+indicate to the server that it is ready for the challenge validation to
+be attempted.
 
-The client sends these updates back to the server in the form of a JSON object
-with contents as specified by the challenge type, carried in a POST
-request to the challenge URL (not authorization URL) once it is ready for
-the server to attempt validation.
+The client indicates to the server it is ready for the challenge validation by
+sending an empty JSON body (`{}`), carried in a POST request to the challenge
+URL (not authorization URL).
 
 For example, if the client were to respond to the "http-01" challenge in the
 above authorization, it would send the following request:
@@ -2326,7 +2339,8 @@ format specified in RFC 3339 {{RFC3339}}.  This field is REQUIRED if the
 error (optional, object):
 : Error that occurred while the server was validating the challenge, if any,
 structured as a problem document {{!RFC7807}}. Multiple errors can be indicated
-by using subproblems {{subproblems}}.
+by using subproblems {{subproblems}}. A challenge object with an error MUST have
+status equal to "invalid".
 
 All additional fields are specified by the challenge type.  If the server sets a
 challenge's "status" to "invalid", it SHOULD also include the "error" field to
@@ -2473,7 +2487,7 @@ Content-Type: application/jose+json
   "protected": base64url({
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
-    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "nonce": "UQI1PoRi5OuXzxuX7V7wL0",
     "url": "https://example.com/acme/authz/1234/0"
   }),
   "payload": base64url({}),
@@ -2494,7 +2508,7 @@ domain by verifying that the resource was provisioned as expected.
 2. Verify that the resulting URL is well-formed.
 3. Dereference the URL using an HTTP GET request.  This request MUST be sent to
    TCP port 80 on the HTTP server.
-4. Verify that the body of the response is well-formed key authorization.  The
+4. Verify that the body of the response is a well-formed key authorization.  The
    server SHOULD ignore whitespace characters at the end of the body.
 5. Verify that key authorization provided by the HTTP server matches the key
    authorization stored by the server.
@@ -2525,7 +2539,8 @@ type (required, string):
 token (required, string):
 : A random value that uniquely identifies the challenge.  This value MUST have
 at least 128 bits of entropy. It MUST NOT contain any characters outside the
-base64url alphabet, including padding characters ("=").
+base64url alphabet, including padding characters ("="). See {{!RFC4086}} for
+additional information on randomness requirements.
 
 ~~~~~~~~~~
 GET /acme/authz/1234/2 HTTP/1.1
@@ -2569,7 +2584,7 @@ Content-Type: application/jose+json
   "protected": base64url({
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/1",
-    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "nonce": "SS2sSl1PtspvFZ08kNtzKd",
     "url": "https://example.com/acme/authz/1234/2"
   }),
   "payload": base64url({}),
@@ -3084,9 +3099,8 @@ Account Key Binding"}
 
 All of the challenges defined in this document have a binding between the account private key and
 the validation query made by the server, via the key authorization. The key
-authorization reflects the account public key, is provided to the server in the
-validation response over the validation channel and signed afterwards by the
-corresponding private key in the challenge response over the ACME channel.
+authorization reflects the account public key and is provided to the server in
+the validation response over the validation channel.
 
 The association of challenges to identifiers is typically done by requiring the
 client to perform some action that only someone who effectively controls the
@@ -3191,7 +3205,7 @@ URL in which the attacker can choose the domain.  This request is made before
 the server has verified that the client controls the domain, so any client can
 cause a query to any domain.
 
-Some server implementations include information from the validation server's
+Some ACME server implementations include information from the validation server's
 response (in order to facilitate debugging).  Such implementations enable an
 attacker to extract this information from any web server that is accessible to
 the ACME server, even if it is not accessible to the ACME client.
@@ -3275,7 +3289,9 @@ receives a finalize request, it MUST verify that the public key in a CSR is not
 the same as the public key of the account key pair used to authenticate that
 request.  This assures that vulnerabilities in the protocols with which the
 certificate is used (e.g., signing oracles in TLS [JSS15]) do not result in 
-compromise of the ACME account.
+compromise of the ACME account. Because ACME accounts are uniquely identified by
+their account key pair (see {{finding-an-account-url-given-a-key}}) the server
+MUST not allow account key pair reuse across multiple accounts.
 
 ## DNS security
 
@@ -3300,7 +3316,7 @@ TXT, etc.).
 
 ## Token Entropy
 
-The http-01, and dns-01 validation methods mandate the usage of
+The http-01 and dns-01 validation methods mandate the usage of
 a random token value to uniquely identify the challenge. The value of the token
 is required to contain at least 128 bits of entropy for the following security
 properties. First, the ACME client should not be able to influence the ACME
