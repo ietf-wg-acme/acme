@@ -1121,7 +1121,8 @@ valid              invalid
 Authorization objects are created in the "pending" state.  If one of
 the challenges listed in the authorization transitions to the
 "valid" state, then the authorization also changes to the "valid"
-state.  If there is an error while the authorization is still
+state.  If the client attemts to fulfill a challenge and failes, or
+if there is an error while the authorization is still
 pending, then the authorization transitions to the "invalid" state.
 Once the authorization is in the valid state, it can expire
 ("expired"), be deactivated by the client ("deactivated", see
@@ -1129,24 +1130,25 @@ Once the authorization is in the valid state, it can expire
 ("revoked").
 
 ~~~~~~~~~~
-          pending --------------------+
-             |                        |
-             |                        |
- Error       |  Challenge valid       |
-   +---------+---------+              |
-   |                   |              |
-   V                   V              |
-invalid              valid            |
-                       |              |
-                       |              |
-                       |              |
-        +--------------+--------------+
-        |              |              |
-        |              |              |
- Server |       Client |   Time after |
- revoke |   deactivate |    "expires" |
-        V              V              V
-     revoked      deactivated      expired
+                   pending --------------------+
+                      |                        |
+    Challenge failure |                        |
+           or         |                        |
+          Error       |  Challenge valid       |
+            +---------+---------+              |
+            |                   |              |
+            V                   V              |
+         invalid              valid            |
+                                |              |
+                                |              |
+                                |              |
+                 +--------------+--------------+
+                 |              |              |
+                 |              |              |
+          Server |       Client |   Time after |
+          revoke |   deactivate |    "expires" |
+                 V              V              V
+              revoked      deactivated      expired
 ~~~~~~~~~~
 {: title="State Transitions for Authorization Objects"}
 
