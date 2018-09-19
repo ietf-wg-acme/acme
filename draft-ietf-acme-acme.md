@@ -1022,7 +1022,7 @@ challenges (required, array of objects):
 : For pending authorizations, the challenges that the client can
 fulfill in order to prove possession of the identifier.  For valid
 authorizations, the challenge that was validated.  For invalid
-authorizations, the challenges that were attempted and failed.  Each
+authorizations, the challenge that was attempted and failed.  Each
 array entry is an object with parameters required to validate the
 challenge.  A client should attempt to fulfill one of these
 challenges, and a server should consider any one of the challenges
