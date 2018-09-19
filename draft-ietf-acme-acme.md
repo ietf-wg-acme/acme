@@ -1121,7 +1121,7 @@ valid              invalid
 Authorization objects are created in the "pending" state.  If one of
 the challenges listed in the authorization transitions to the
 "valid" state, then the authorization also changes to the "valid"
-state.  If the client attemts to fulfill a challenge and failes, or
+state.  If the client attempts to fulfill a challenge and fails, or
 if there is an error while the authorization is still
 pending, then the authorization transitions to the "invalid" state.
 Once the authorization is in the valid state, it can expire
