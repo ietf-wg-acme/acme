@@ -2618,7 +2618,7 @@ the PEM textual encoding, according to RFC 7468 {{!RFC7468}}.  The
 textual encoding of certificates in this file MUST use the strict
 encoding and MUST NOT include explanatory text.  The ABNF for this
 format is as follows, where `stricttextualmsg` and `eol` are as
-defined in Figure 3 of RFC 7468:
+defined in Section 3 of RFC 7468:
 
 ~~~~~
 certchain = stricttextualmsg *(eol stricttextualmsg)
