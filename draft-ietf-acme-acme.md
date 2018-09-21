@@ -453,12 +453,12 @@ resources (see {{resources}}), in addition to POST-as-GET requests
 for these resources.  This enables clients to bootstrap into the
 ACME authentication system.
 
-The server MAY allow GET requests for certificate resources, in
+The server MAY allow GET requests for certificate resources in
 order to allow certificates to be fetched by a lower-privileged
 process, e.g., the web server that will use the referenced
 certificate chain.  (See {{?I-D.ietf-acme-star}} for more advanced
 cases.)  A server that allows GET requests for certificate resources
-can still provide them a degree of access control by assigning them
+can still provide a degree of access control by assigning them
 capability URLs them capability URLs {{?W3C.WD-capability-urls-20140218}}.
 As above, if the server does not allow GET requests for a given
 resource, it MUST return an error with status code 405 "Method Not
@@ -1649,7 +1649,9 @@ A client can deactivate an account by posting a signed update to the server with
 a status field of "deactivated." Clients may wish to do this when the account
 key is compromised or decommissioned. A deactivated account can no longer request
 certificate issuance or access resources related to the account, such as orders
-or authorizations.
+or authorizations.  If a server receives a POST or POST-as-GET from
+a deactivated account, it MUST return an error response with status
+code 401 (Unauthorized) and type "urn:ietf:params:acme:error:unauthorized".
 
 ~~~~~~~~~~
 POST /acme/acct/1 HTTP/1.1
