@@ -2660,8 +2660,18 @@ field of the challenge has the value "valid" or "invalid".
 
 ## MIME Type: application/pem-certificate-chain
 
-A file of this type contains one or more certificates encoded with the PEM textual encoding, according to
-RFC 7468 {{!RFC7468}}.  In order to provide easy interoperation with TLS, the first
+A file of this type contains one or more certificates encoded with
+the PEM textual encoding, according to RFC 7468 {{!RFC7468}}.  The
+textual encoding of certificates in this file MUST use the strict
+encoding and MUST NOT include explanatory text.  The ABNF for this
+format is as follows, where `stricttextualmsg` and `eol` are as
+defined in Section 3 of RFC 7468:
+
+~~~~~
+certchain = stricttextualmsg *(eol stricttextualmsg)
+~~~~~
+
+In order to provide easy interoperation with TLS, the first
 certificate MUST be an end-entity certificate. Each following certificate
 SHOULD directly certify the one preceding it. Because certificate validation
 requires that trust anchors be distributed independently, a certificate
