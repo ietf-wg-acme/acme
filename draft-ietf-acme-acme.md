@@ -2003,7 +2003,7 @@ in DER format. Server support for alternate formats is OPTIONAL. For
 formats that can only express a single certificate, the server SHOULD
 provide one or more `Link: rel="up"` header fields pointing to an issuer or
 issuers so that ACME clients can build a certificate chain as defined
-in TLS.
+in TLS {{!RFC8446}}.
 
 ## Identifier Authorization
 
