@@ -3344,8 +3344,7 @@ properties. First, the ACME client should not be able to influence the ACME
 server's choice of token as this may allow an attacker to reuse a domain owner's
 previous challenge responses for a new validation request. Secondly, the entropy
 requirement prevents ACME clients from implementing a "naive" validation server
-that automatically replies to challenges without participating in the creation
-of the initial authorization request.
+that automatically replies to challenges by predicting the token.
 
 ## Malformed Certificate Chains
 
