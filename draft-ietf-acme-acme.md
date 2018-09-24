@@ -1821,7 +1821,7 @@ rejected in its "details" field.  After returning such an error, the
 server SHOULD leave the order in the "ready" state, to allow the
 client to submit a new finalize request with an amended CSR.
 
-A valid request to finalize an order will return the order to be finalized.
+A request to finalize an order will return the order to be finalized.
 The client should begin polling the order by sending a GET request to the order
 resource to obtain its current state. The status of the order will indicate what
 action the client should take:
