@@ -483,7 +483,7 @@ representing the target URL.
 
 In order to protect ACME resources from any possible replay attacks, ACME
 POST requests have a mandatory anti-replay mechanism.  This mechanism is based on the
-server maintaining a list of nonces that it has issued to clients, and requiring
+server maintaining a list of nonces that it has issued, and requiring
 any signed request from the client to carry such a nonce.
 
 An ACME server provides nonces to clients using the HTTP Replay-Nonce header field,
