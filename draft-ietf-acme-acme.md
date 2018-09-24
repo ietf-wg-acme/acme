@@ -692,10 +692,10 @@ be configured with the directory URL.  These URLs are connected by a few
 different link relations {{!RFC5988}}.
 
 The "up" link relation is used with challenge resources to indicate the
-authorization resource to which a challenge belongs.  It is also used from
-certificate resources to indicate a resource from which the client may fetch a
-chain of CA certificates that could be used to validate the certificate in the
-original resource.
+authorization resource to which a challenge belongs.  It is also used, with some
+media types, from certificate resources to indicate a resource from which the
+client may fetch a chain of CA certificates that could be used to validate the
+certificate in the original resource.
 
 The "index" link relation is present on all resources other than the
 directory and indicates the URL of the directory.
