@@ -365,7 +365,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., McCarney, D., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2018-09-24" />
+  <meta name="dct.issued" scheme="ISO8601" content="2018-09-25" />
   <meta name="dct.abstract" content="Public Key Infrastructure X.509 (PKIX) certificates are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a CA and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Public Key Infrastructure X.509 (PKIX) certificates are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  Today, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a CA and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -389,7 +389,7 @@ ul.toc li {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: March 28, 2019</td>
+<td class="left">Expires: March 29, 2019</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -410,7 +410,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">September 24, 2018</td>
+<td class="right">September 25, 2018</td>
 </tr>
 
     	
@@ -427,7 +427,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on March 28, 2019.</p>
+<p>This Internet-Draft will expire on March 29, 2019.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -779,7 +779,7 @@ ul.toc li {
 <h1 id="rfc.section.6.5">
 <a href="#rfc.section.6.5">6.5.</a> <a href="#replay-protection" id="replay-protection">Replay protection</a>
 </h1>
-<p id="rfc.section.6.5.p.1">In order to protect ACME resources from any possible replay attacks, ACME POST requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued to clients, and requiring any signed request from the client to carry such a nonce.</p>
+<p id="rfc.section.6.5.p.1">In order to protect ACME resources from any possible replay attacks, ACME POST requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued, and requiring any signed request from the client to carry such a nonce.</p>
 <p id="rfc.section.6.5.p.2">An ACME server provides nonces to clients using the HTTP Replay-Nonce header field, as specified in <a href="#replay-nonce" class="xref">Section 6.5.1</a> below.  The server MUST include a Replay-Nonce header field in every successful response to a POST request and SHOULD provide it in error responses as well.</p>
 <p id="rfc.section.6.5.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined in <a href="#nonce-nonce-jws-header-parameter" class="xref">Section 6.5.2</a> below.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
 <p id="rfc.section.6.5.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it MUST provide HTTP status code 400 (Bad Request), and indicate the ACME error type &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error type MUST include a Replay-Nonce header with a fresh nonce.  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
@@ -974,7 +974,7 @@ Content-Type: application/problem+json
 </ul>
 <p id="rfc.section.7.1.p.3">The server MUST provide &#8220;directory&#8221; and &#8220;newNonce&#8221; resources.</p>
 <p id="rfc.section.7.1.p.4">ACME uses different URLs for different management functions. Each function is listed in a directory along with its corresponding URL, so clients only need to be configured with the directory URL.  These URLs are connected by a few different link relations <a href="#RFC5988" class="xref">[RFC5988]</a>.</p>
-<p id="rfc.section.7.1.p.5">The &#8220;up&#8221; link relation is used with challenge resources to indicate the authorization resource to which a challenge belongs.  It is also used from certificate resources to indicate a resource from which the client may fetch a chain of CA certificates that could be used to validate the certificate in the original resource.</p>
+<p id="rfc.section.7.1.p.5">The &#8220;up&#8221; link relation is used with challenge resources to indicate the authorization resource to which a challenge belongs.  It is also used, with some media types, from certificate resources to indicate a resource from which the client may fetch a chain of CA certificates that could be used to validate the certificate in the original resource.</p>
 <p id="rfc.section.7.1.p.6">The &#8220;index&#8221; link relation is present on all resources other than the directory and indicates the URL of the directory.</p>
 <p id="rfc.section.7.1.p.7">The following diagram illustrates the relations between resources on an ACME server.  For the most part, these relations are expressed by URLs provided as strings in the resources&#8217; JSON representations.  Lines with labels in quotes indicate HTTP link relations.</p>
 <pre>
@@ -1031,12 +1031,12 @@ Content-Type: application/problem+json
 </tr>
 <tr>
 <td class="left">Fetch challenges</td>
-<td class="left">POST-as-GET authorizations</td>
+<td class="left">POST-as-GET order&#8217;s authorization urls</td>
 <td class="left">200</td>
 </tr>
 <tr>
 <td class="left">Respond to challenges</td>
-<td class="left">POST challenge urls</td>
+<td class="left">POST-as-GET authorization challenge urls</td>
 <td class="left">200</td>
 </tr>
 <tr>
@@ -1046,7 +1046,7 @@ Content-Type: application/problem+json
 </tr>
 <tr>
 <td class="left">Finalize order</td>
-<td class="left">POST order finalize</td>
+<td class="left">POST order&#8217;s finalize url</td>
 <td class="left">200</td>
 </tr>
 <tr>
@@ -1056,7 +1056,7 @@ Content-Type: application/problem+json
 </tr>
 <tr>
 <td class="left">Download certificate</td>
-<td class="left">POST-as-GET certificate</td>
+<td class="left">POST-as-GET order&#8217;s certificate url</td>
 <td class="left">200</td>
 </tr>
 </tbody>
@@ -1408,7 +1408,7 @@ Cache-Control: no-store
 <h1 id="rfc.section.7.3">
 <a href="#rfc.section.7.3">7.3.</a> <a href="#account-creation" id="account-creation">Account Creation</a>
 </h1>
-<p id="rfc.section.7.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URL.  The body of the request is a stub account object optionally containing the &#8220;contact&#8221; and &#8220;termsOfServiceAgreed&#8221; fields.</p>
+<p id="rfc.section.7.3.p.1">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URL.  The body of the request is a stub account object optionally containing the &#8220;contact&#8221; and &#8220;termsOfServiceAgreed&#8221; fields, and optionally the &#8220;onlyReturnExisting&#8221; and &#8220;externalAccountBinding&#8221; fields.</p>
 <p></p>
 
 <dl>
@@ -1477,7 +1477,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 <h1 id="rfc.section.7.3.2">
 <a href="#rfc.section.7.3.2">7.3.2.</a> <a href="#account-update" id="account-update">Account Update</a>
 </h1>
-<p id="rfc.section.7.3.2.p.1">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URL.  The server MUST ignore any updates to the &#8220;orders&#8221; field, &#8220;termsOfServiceAgreed&#8221; field (see <a href="#changes-of-terms-of-service" class="xref">Section 7.3.3</a>), or any other fields it does not recognize. If the server accepts the update, it MUST return a response with a 200 (OK) status code and the resulting account object.</p>
+<p id="rfc.section.7.3.2.p.1">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URL.  The server MUST ignore any updates to the &#8220;orders&#8221; field, &#8220;termsOfServiceAgreed&#8221; field (see <a href="#changes-of-terms-of-service" class="xref">Section 7.3.3</a>), the &#8220;status&#8221; field (except as allowed by <a href="#account-deactivation" class="xref">Section 7.3.6</a>), or any other fields it does not recognize. If the server accepts the update, it MUST return a response with a 200 (OK) status code and the resulting account object.</p>
 <p id="rfc.section.7.3.2.p.2">For example, to update the contact information in the above account, the client could send the following request:</p>
 <pre>
 POST /acme/acct/1 HTTP/1.1
@@ -1771,7 +1771,7 @@ Content-Type: application/jose+json
 <li>If the CSR requests extensions that the CA is not willing to include</li>
 </ul>
 <p id="rfc.section.7.4.p.11">In such cases, the problem document returned by the server SHOULD use error code &#8220;badCSR&#8221;, and describe specific reasons the CSR was rejected in its &#8220;details&#8221; field.  After returning such an error, the server SHOULD leave the order in the &#8220;ready&#8221; state, to allow the client to submit a new finalize request with an amended CSR.</p>
-<p id="rfc.section.7.4.p.12">A valid request to finalize an order will return the order to be finalized.  The client should begin polling the order by sending a POST-as-GET request to the order resource to obtain its current state. The status of the order will indicate what action the client should take:</p>
+<p id="rfc.section.7.4.p.12">A request to finalize an order will return the order to be finalized.  The client should begin polling the order by sending a POST-as-GET request to the order resource to obtain its current state. The status of the order will indicate what action the client should take:</p>
 <p></p>
 
 <ul>
@@ -1887,7 +1887,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 </pre>
 <p id="rfc.section.7.4.2.p.4">A certificate resource represents a single, immutable certificate. If the client wishes to obtain a renewed certificate, the client initiates a new order process to request one.</p>
 <p id="rfc.section.7.4.2.p.5">Because certificate resources are immutable once issuance is complete, the server MAY enable the caching of the resource by adding Expires and Cache-Control header fields specifying a point in time in the distant future. These header fields have no relation to the certificate&#8217;s period of validity.</p>
-<p id="rfc.section.7.4.2.p.6">The ACME client MAY request other formats by including an Accept header field <a href="#RFC7231" class="xref">[RFC7231]</a> in its request.  For example, the client could use the media type <samp>application/pkix-cert</samp> <a href="#RFC2585" class="xref">[RFC2585]</a> or <samp>applicaiton/pkcs7-mime</samp> <a href="#RFC5751" class="xref">[RFC5751]</a> to request the end-entity certificate in DER format. Server support for alternate formats is OPTIONAL. For formats that can only express a single certificate, the server SHOULD provide one or more <samp>Link: rel="up"</samp> header fields pointing to an issuer or issuers so that ACME clients can build a certificate chain as defined in TLS.</p>
+<p id="rfc.section.7.4.2.p.6">The ACME client MAY request other formats by including an Accept header field <a href="#RFC7231" class="xref">[RFC7231]</a> in its request.  For example, the client could use the media type <samp>application/pkix-cert</samp> <a href="#RFC2585" class="xref">[RFC2585]</a> or <samp>applicaiton/pkcs7-mime</samp> <a href="#RFC5751" class="xref">[RFC5751]</a> to request the end-entity certificate in DER format. Server support for alternate formats is OPTIONAL. For formats that can only express a single certificate, the server SHOULD provide one or more <samp>Link: rel="up"</samp> header fields pointing to an issuer or issuers so that ACME clients can build a certificate chain as defined in TLS <a href="#RFC8446" class="xref">[RFC8446]</a>.</p>
 <h1 id="rfc.section.7.5">
 <a href="#rfc.section.7.5">7.5.</a> <a href="#identifier-authorization" id="identifier-authorization">Identifier Authorization</a>
 </h1>
@@ -2161,7 +2161,7 @@ Content-Language: en
 <h1 id="rfc.section.8.1">
 <a href="#rfc.section.8.1">8.1.</a> <a href="#key-authorizations" id="key-authorizations">Key Authorizations</a>
 </h1>
-<p id="rfc.section.8.1.p.1">All challenges defined in this document make use of a key authorization string.  A key authorization is a string that expresses a domain holder&#8217;s authorization for a specified key to satisfy a specified challenge, by concatenating the token for the challenge with a key fingerprint, separated by a &#8220;.&#8221; character:</p>
+<p id="rfc.section.8.1.p.1">All challenges defined in this document make use of a key authorization string.  A key authorization is a string that concatinates the token for the challenge with a key fingerprint, separated by a &#8220;.&#8221; character:</p>
 <pre>
 keyAuthorization = token || '.' || base64url(Thumbprint(accountKey))
 </pre>
@@ -2988,7 +2988,7 @@ Holder                  MitM                  Server
 <h1 id="rfc.section.11.3">
 <a href="#rfc.section.11.3">11.3.</a> <a href="#token-entropy" id="token-entropy">Token Entropy</a>
 </h1>
-<p id="rfc.section.11.3.p.1">The http-01 and dns-01 validation methods mandate the usage of a random token value to uniquely identify the challenge. The value of the token is required to contain at least 128 bits of entropy for the following security properties. First, the ACME client should not be able to influence the ACME server&#8217;s choice of token as this may allow an attacker to reuse a domain owner&#8217;s previous challenge responses for a new validation request. Secondly, the entropy requirement prevents ACME clients from implementing a &#8220;naive&#8221; validation server that automatically replies to challenges without participating in the creation of the initial authorization request.</p>
+<p id="rfc.section.11.3.p.1">The http-01 and dns-01 validation methods mandate the usage of a random token value to uniquely identify the challenge. The value of the token is required to contain at least 128 bits of entropy for the following security properties. First, the ACME client should not be able to influence the ACME server&#8217;s choice of token as this may allow an attacker to reuse a domain owner&#8217;s previous challenge responses for a new validation request. Secondly, the entropy requirement prevents ACME clients from implementing a &#8220;naive&#8221; validation server that automatically replies to challenges by predicting the token.</p>
 <h1 id="rfc.section.11.4">
 <a href="#rfc.section.11.4">11.4.</a> <a href="#malformed-certificate-chains" id="malformed-certificate-chains">Malformed Certificate Chains</a>
 </h1>
@@ -3186,6 +3186,11 @@ Holder                  MitM                  Server
 <td class="reference"><b id="RFC8288">[RFC8288]</b></td>
 <td class="top">
 <a>Nottingham, M.</a>, "<a href="https://tools.ietf.org/html/rfc8288">Web Linking</a>", RFC 8288, DOI 10.17487/RFC8288, October 2017.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8446">[RFC8446]</b></td>
+<td class="top">
+<a>Rescorla, E.</a>, "<a href="https://tools.ietf.org/html/rfc8446">The Transport Layer Security (TLS) Protocol Version 1.3</a>", RFC 8446, DOI 10.17487/RFC8446, August 2018.</td>
 </tr>
 </tbody></table>
 <h1 id="rfc.references.2">
