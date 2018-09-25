@@ -514,7 +514,7 @@ representing the target URL.
 
 In order to protect ACME resources from any possible replay attacks, ACME
 POST requests have a mandatory anti-replay mechanism.  This mechanism is based on the
-server maintaining a list of nonces that it has issued to clients, and requiring
+server maintaining a list of nonces that it has issued, and requiring
 any signed request from the client to carry such a nonce.
 
 An ACME server provides nonces to clients using the HTTP Replay-Nonce header field,
@@ -723,10 +723,10 @@ be configured with the directory URL.  These URLs are connected by a few
 different link relations {{!RFC5988}}.
 
 The "up" link relation is used with challenge resources to indicate the
-authorization resource to which a challenge belongs.  It is also used from
-certificate resources to indicate a resource from which the client may fetch a
-chain of CA certificates that could be used to validate the certificate in the
-original resource.
+authorization resource to which a challenge belongs.  It is also used, with some
+media types, from certificate resources to indicate a resource from which the
+client may fetch a chain of CA certificates that could be used to validate the
+certificate in the original resource.
 
 The "index" link relation is present on all resources other than the
 directory and indicates the URL of the directory.
@@ -766,18 +766,18 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action                | Request                    | Response       |
-|:----------------------|:---------------------------|:---------------|
-| Get directory         | GET  directory             | 200            |
-| Get nonce             | HEAD newNonce              | 200            |
-| Create account        | POST newAccount            | 201 -> account |
-| Submit order          | POST newOrder              | 201 -> order   |
-| Fetch challenges      | POST-as-GET authorizations | 200            |
-| Respond to challenges | POST challenge urls        | 200            |
-| Poll for status       | POST-as-GET order          | 200            |
-| Finalize order        | POST order finalize        | 200            |
-| Poll for status       | POST-as-GET order          | 200            |
-| Download certificate  | POST-as-GET certificate    | 200            |
+| Action                | Request                                  | Response       |
+|:----------------------|:-----------------------------------------|:---------------|
+| Get directory         | GET  directory                           | 200            |
+| Get nonce             | HEAD newNonce                            | 200            |
+| Create account        | POST newAccount                          | 201 -> account |
+| Submit order          | POST newOrder                            | 201 -> order   |
+| Fetch challenges      | POST-as-GET order's authorization urls   | 200            |
+| Respond to challenges | POST-as-GET authorization challenge urls | 200            |
+| Poll for status       | POST-as-GET order                        | 200            |
+| Finalize order        | POST order's finalize url                | 200            |
+| Poll for status       | POST-as-GET order                        | 200            |
+| Download certificate  | POST-as-GET order's certificate url      | 200            |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -1291,7 +1291,8 @@ caching of this resource.
 
 A client creates a new account with the server by sending a POST request to the
 server's new-account URL.  The body of the request is a stub account object
-optionally containing the "contact" and "termsOfServiceAgreed" fields.
+optionally containing the "contact" and "termsOfServiceAgreed" fields, and
+optionally the "onlyReturnExisting" and "externalAccountBinding" fields.
 
 contact (optional, array of string):
 : Same meaning as the corresponding server field defined in {{account-objects}}
@@ -1410,7 +1411,7 @@ MUST return an error response with status code 400 (Bad Request) and type
 
 If the client wishes to update this information in the future, it sends a POST
 request with updated information to the account URL.  The server MUST ignore any
-updates to the "orders" field, "termsOfServiceAgreed" field (see {{changes-of-terms-of-service}}), or any other fields it does not recognize. If the server
+updates to the "orders" field, "termsOfServiceAgreed" field (see {{changes-of-terms-of-service}}), the "status" field (except as allowed by {{account-deactivation}}), or any other fields it does not recognize. If the server
 accepts the update, it MUST return a response with a 200 (OK) status code and the
 resulting account object.
 
@@ -1847,7 +1848,7 @@ rejected in its "details" field.  After returning such an error, the
 server SHOULD leave the order in the "ready" state, to allow the
 client to submit a new finalize request with an amended CSR.
 
-A valid request to finalize an order will return the order to be finalized.
+A request to finalize an order will return the order to be finalized.
 The client should begin polling the order by sending a POST-as-GET request to the order
 resource to obtain its current state. The status of the order will indicate what
 action the client should take:
@@ -2029,7 +2030,7 @@ in DER format. Server support for alternate formats is OPTIONAL. For
 formats that can only express a single certificate, the server SHOULD
 provide one or more `Link: rel="up"` header fields pointing to an issuer or
 issuers so that ACME clients can build a certificate chain as defined
-in TLS.
+in TLS {{!RFC8446}}.
 
 ## Identifier Authorization
 
@@ -2419,10 +2420,8 @@ need to specify which types of identifier they apply to.
 ## Key Authorizations
 
 All challenges defined in this document make use of a key authorization
-string.  A key authorization is a string that expresses a domain holder's
-authorization for a specified key to satisfy a specified challenge, by
-concatenating the token for the challenge with a key fingerprint, separated by a
-"." character:
+string.  A key authorization is a string that concatinates the token for the
+challenge with a key fingerprint, separated by a "." character:
 
 ~~~~~~~~~~
 keyAuthorization = token || '.' || base64url(Thumbprint(accountKey))
@@ -3422,8 +3421,7 @@ properties. First, the ACME client should not be able to influence the ACME
 server's choice of token as this may allow an attacker to reuse a domain owner's
 previous challenge responses for a new validation request. Secondly, the entropy
 requirement prevents ACME clients from implementing a "naive" validation server
-that automatically replies to challenges without participating in the creation
-of the initial authorization request.
+that automatically replies to challenges by predicting the token.
 
 ## Malformed Certificate Chains
 
