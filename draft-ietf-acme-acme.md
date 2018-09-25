@@ -425,11 +425,6 @@ For all other requests, the request is signed using an existing account and
 there MUST be a "kid" field. This field MUST contain the account URL received by
 POSTing to the newAccount resource.
 
-Note that authentication via signed JWS request bodies implies that GET requests
-are not authenticated.  Servers MUST NOT respond to GET requests for resources
-that might be considered sensitive.  Account resources are the only sensitive
-resources defined in this specification.
-
 If the client sends a JWS signed with an algorithm that the server does not
 support, then the server MUST return an error with status code 400 (Bad Request)
 and type "urn:ietf:params:acme:error:badSignatureAlgorithm".  The problem
@@ -442,6 +437,42 @@ JSON Serialization, they must have the "Content-Type" header field
 set to "application/jose+json".  If a request does not meet this
 requirement, then the server MUST return a response with status code
 415 (Unsupported Media Type).
+
+## GET and POST-as-GET Requests
+
+Note that authentication via signed JWS request bodies implies that
+requests without an entity body are not authenticated, in particular
+GET requests.  Except for the cases described in this section, if
+the server receives a GET request, it MUST return an error with
+status code 405 "Method Not Allowed" and type "malformedRequest".
+
+If a client wishes to fetch a resource from the server (which would
+otherwise be done with a GET), then it MUST send a POST request with
+a JWS body as described above, where the payload of the JWS is a
+zero-length octet string.  In other words, the "payload" field of the
+JWS object MUST be present and set to the empty string ("").
+
+We will refer to these as "POST-as-GET" requests. On receiving a
+request with a zero-length (and thus non-JSON) payload, the server
+MUST authenticate the sender and verify any access control rules.
+Otherwise, the server MUST treat this request as having the same
+semantics as a GET request for the same resource.
+
+The server MUST allow GET requests for the directory and newNonce
+resources (see {{resources}}), in addition to POST-as-GET requests
+for these resources.  This enables clients to bootstrap into the
+ACME authentication system.
+
+The server MAY allow GET requests for certificate resources in
+order to allow certificates to be fetched by a lower-privileged
+process, e.g., the web server that will use the referenced
+certificate chain.  (See {{?I-D.ietf-acme-star}} for more advanced
+cases.)  A server that allows GET requests for certificate resources
+can still provide a degree of access control by assigning them
+capability URLs {{?W3C.WD-capability-urls-20140218}}.
+As above, if the server does not allow GET requests for a given
+resource, it MUST return an error with status code 405 "Method Not
+Allowed" and type "malformedRequest".
 
 ## Request URL Integrity
 
@@ -735,18 +766,18 @@ establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
 "->" is a mnemonic for a Location header pointing to a created resource.
 
-| Action                | Request                           | Response       |
-|:----------------------|:----------------------------------|:---------------|
-| Get directory         | GET  directory                    | 200            |
-| Get nonce             | HEAD newNonce                     | 200            |
-| Create account        | POST newAccount                   | 201 -> account |
-| Submit order          | POST newOrder                     | 201 -> order   |
-| Fetch challenges      | GET  order's authorization urls   | 200            |
-| Respond to challenges | POST authorization challenge urls | 200            |
-| Poll for status       | GET  order                        | 200            |
-| Finalize order        | POST order's finalize url         | 200            |
-| Poll for status       | GET  order                        | 200            |
-| Download certificate  | GET  order's certificate url      | 200            |
+| Action                | Request                                  | Response       |
+|:----------------------|:-----------------------------------------|:---------------|
+| Get directory         | GET  directory                           | 200            |
+| Get nonce             | HEAD newNonce                            | 200            |
+| Create account        | POST newAccount                          | 201 -> account |
+| Submit order          | POST newOrder                            | 201 -> order   |
+| Fetch challenges      | POST-as-GET order's authorization urls   | 200            |
+| Respond to challenges | POST-as-GET authorization challenge urls | 200            |
+| Poll for status       | POST-as-GET order                        | 200            |
+| Finalize order        | POST order's finalize url                | 200            |
+| Poll for status       | POST-as-GET order                        | 200            |
+| Download certificate  | POST-as-GET order's certificate url      | 200            |
 
 The remainder of this section provides the details of how these resources are
 structured and how the ACME protocol makes use of them.
@@ -855,7 +886,7 @@ by the client.
 
 orders (required, string):
 : A URL from which a list of orders submitted by this account can be fetched via
-a GET request, as described in {{orders-list}}.
+a POST-as-GET request, as described in {{orders-list}}.
 
 ~~~~~~~~~~
 {
@@ -872,7 +903,7 @@ a GET request, as described in {{orders-list}}.
 #### Orders List
 
 Each account object includes an "orders" URL from which a list of orders created
-by the account can be fetched via GET request. The result of the GET request
+by the account can be fetched via POST-as-GET request. The result of the request
 MUST be a JSON object whose "orders" field is an array of URLs, each identifying
 an order belonging to the account.  The server SHOULD include pending orders,
 and SHOULD NOT include orders that are invalid in the array of URLs. The server
@@ -940,7 +971,7 @@ authorizations (required, array of string):
 before the requested certificate can be issued (see
 {{identifier-authorization}}), including unexpired authorizations that the client has completed in the past for identifiers specified in the order. The authorizations required are dictated by server policy and there may not be a 1:1 relationship between the order identifiers and the authorizations required. For final orders (in the "valid" or "invalid" state), the authorizations that
 were completed.  Each entry is a URL from which an authorization can be fetched
-with a GET request.
+with a POST-as-GET request.
 
 finalize (required, string):
 : A URL that a CSR must be POSTed to once all of the order's authorizations are
@@ -1409,14 +1440,6 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-### Account Information
-
-Servers MUST NOT respond to GET requests for account resources as these
-requests are not authenticated.  If a client wishes to query the server for
-information about its account (e.g., to examine the "contact" or "orders"
-fields), then it SHOULD do so by sending a POST request with an empty update.
-That is, it should send a JWS whose payload is an empty object ({}).
-
 ### Changes of Terms of Service
 
 As described above, a client can indicate its agreement with the CA's terms of
@@ -1640,9 +1663,13 @@ orders or authorization transactions based on a change of account key.
 
 ### Account Deactivation
 
-A client can deactivate an account by posting a signed update to the account URL
-with a status field of "deactivated." Clients may wish to do this when the
-account key is compromised or decommissioned.
+A client can deactivate an account by posting a signed update to the account URL with
+a status field of "deactivated." Clients may wish to do this when the account
+key is compromised or decommissioned. A deactivated account can no longer request
+certificate issuance or access resources related to the account, such as orders
+or authorizations.  If a server receives a POST or POST-as-GET from
+a deactivated account, it MUST return an error response with status
+code 401 (Unauthorized) and type "urn:ietf:params:acme:error:unauthorized".
 
 ~~~~~~~~~~
 POST /acme/acct/1 HTTP/1.1
@@ -1822,7 +1849,7 @@ server SHOULD leave the order in the "ready" state, to allow the
 client to submit a new finalize request with an amended CSR.
 
 A request to finalize an order will return the order to be finalized.
-The client should begin polling the order by sending a GET request to the order
+The client should begin polling the order by sending a POST-as-GET request to the order
 resource to obtain its current state. The status of the order will indicate what
 action the client should take:
 
@@ -1837,7 +1864,7 @@ action the client should take:
   fulfilled, and is awaiting finalization.  Submit a finalization
   request.
 
-* "processing": The certificate is being issued. Send a GET request after the
+* "processing": The certificate is being issued. Send a POST-as-GET request after the
   time given in the "Retry-After" header field of the response, if
   any.
 
@@ -1956,7 +1983,7 @@ described in {{identifier-authorization}} to complete the authorization process.
 
 ### Downloading the Certificate
 
-To download the issued certificate, the client simply sends a GET request to the
+To download the issued certificate, the client simply sends a POST-as-GET request to the
 certificate URL.
 
 The default format of the certificate is application/pem-certificate-chain (see {{iana-considerations}}).
@@ -2025,15 +2052,28 @@ URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
 
-When a client receives an order from the server in reply to a new order request,
-it downloads the authorization resources by sending GET requests to the
-indicated URLs.  If the client initiates authorization using a request to the
-new authorization resource, it will have already received the pending
-authorization object in the response to that request.
+When a client receives an order from the server in reply to a new order request, it downloads the authorization
+resources by sending POST-as-GET requests to the indicated URLs.  If the client
+initiates authorization using a request to the new authorization resource, it
+will have already received the pending authorization object in the response
+to that request.
 
 ~~~~~~~~~~
-GET /acme/authz/1234 HTTP/1.1
+POST /acme/authz/1234 HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
+Accept: application/pkix-cert
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/authz/1234",
+  }),
+  "payload": "",
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
 
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -2122,15 +2162,28 @@ where the client can tell when the server has validated the challenge (e.g., by
 seeing an HTTP or DNS request from the server), the client SHOULD NOT begin
 polling until it has seen the validation request from the server.
 
-To check on the status of an authorization, the client sends a GET request to
+To check on the status of an authorization, the client sends a POST-as-GET request to
 the authorization URL, and the server responds with the current authorization
 object. In responding to poll requests while the validation is still in
 progress, the server MUST return a 200 (OK) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
-GET /acme/authz/1234 HTTP/1.1
+POST /acme/authz/1234 HTTP/1.1
 Host: example.com
+Content-Type: application/jose+json
+Accept: application/pkix-cert
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/authz/1234",
+  }),
+  "payload": "",
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
 
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -2442,12 +2495,6 @@ include base64 padding characters ("=").  See {{!RFC4086}} for additional inform
 on randomness requirements.
 
 ~~~~~~~~~~
-GET /acme/authz/1234/0 HTTP/1.1
-Host: example.com
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-
 {
   "type": "http-01",
   "url": "https://example.com/acme/authz/0",
@@ -2548,12 +2595,6 @@ base64url alphabet, including padding characters ("="). See {{!RFC4086}} for
 additional information on randomness requirements.
 
 ~~~~~~~~~~
-GET /acme/authz/1234/2 HTTP/1.1
-Host: example.com
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-
 {
   "type": "dns-01",
   "url": "https://example.com/acme/authz/1234/2",
@@ -3272,6 +3313,42 @@ perform all necessary checks before issuing.
 CAs using ACME to allow clients to agree to terms of service should keep in mind
 that ACME clients can automate this agreement, possibly not involving a human
 user.
+
+ACME does not specify how the server constructs the URLs that it
+uses to address resources.  If the server operator uses URLs that
+are predictable to third parties, this can leak information about
+what URLs exist on the server, since an attacker can probe for
+whether POST-as-GET request to the URL returns "Not Found" or
+"Unauthorized".  
+
+For example, suppose that the CA uses highly structured URLs with
+several low-entropy fields:
+
+* Accounts: https://example.com/:accountID
+* Orders: https://example.com/:accountID/:orderID
+* Authorizations: https://example.com/:accountID/:authorizationID
+* Certificates: https://example.com/:accountID/:certID
+
+If the ID fields have low entropy, then an attacker can find out how
+many users a CA has, how many authorizations each account has, etc.
+
+In order to avoid leaking these correlations, servers SHOULD assign
+capability URLs for dynamically-created resources
+{{?W3C.WD-capability-urls-20140218}}.  These URLs incorporate large
+unpredictable components to prevent third parties from guessing
+them.  These URLs SHOULD NOT have a structure that would enable a
+third party to infer correlations between resources.  
+
+For example, a CA might assign URLs for each resource type from an
+independent namespace, using unpredictable IDs for each resource:
+
+* Accounts: https://example.com/acct/:accountID
+* Orders: https://example.com/order/:orderID
+* Authorizations: https://example.com/authz/:authorizationID
+* Certificates: https://example.com/cert/:certID
+
+Such a scheme would leak only the type of resource, hiding the
+additional correlations revealed in the example above. 
 
 # Operational Considerations
 
