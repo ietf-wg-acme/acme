@@ -472,7 +472,7 @@ can still provide a degree of access control by assigning them
 capability URLs {{?W3C.WD-capability-urls-20140218}}.
 As above, if the server does not allow GET requests for a given
 resource, it MUST return an error with status code 405 "Method Not
-Allowed" and type "malformedRequest".
+Allowed" and type "malformed".
 
 ## Request URL Integrity
 
