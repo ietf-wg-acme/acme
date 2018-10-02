@@ -896,7 +896,7 @@ a POST-as-GET request, as described in {{orders-list}}.
     "mailto:admin@example.com"
   ],
   "termsOfServiceAgreed": true,
-  "orders": "https://example.com/acme/acct/1/orders"
+  "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"
 }
 ~~~~~~~~~~
 
@@ -913,14 +913,14 @@ relation indicating where further entries can be acquired.
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/acct/1/orders?cursor=2>;rel="next"
+Link: <https://example.com/acme/acct/evOfKhNU60wg/orders?cursor=2>;rel="next"
 
 {
   "orders": [
-    "https://example.com/acme/acct/1/order/1",
-    "https://example.com/acme/acct/1/order/2",
-    /* 47 more URLs not shown for example brevity */
-    "https://example.com/acme/acct/1/order/50"
+    "https://example.com/acme/order/TOlocE8rfgo",
+    "https://example.com/acme/order/4E16bbL5iSw",
+    /* more URLs not shown for example brevity */
+    "https://example.com/acme/order/neBHYLfw0mg"
   ]
 }
 ~~~~~~~~~~
@@ -995,13 +995,13 @@ certificate (optional, string):
   "notAfter": "2016-01-08T00:00:00Z",
 
   "authorizations": [
-    "https://example.com/acme/authz/1234",
-    "https://example.com/acme/authz/2345"
+    "https://example.com/acme/authz/PAniVnsZcis",
+    "https://example.com/acme/authz/r4HqLzrSrpI"
   ],
 
-  "finalize": "https://example.com/acme/acct/1/order/1/finalize",
+  "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",
 
-  "certificate": "https://example.com/acme/cert/1234"
+  "certificate": "https://example.com/acme/cert/jWCdfHVGY2M"
 }
 ~~~~~~~~~~
 
@@ -1108,7 +1108,7 @@ name validation.
 
   "challenges": [
     {
-      "url": "https://example.com/acme/authz/1234/0",
+      "url": "https://example.com/acme/chall/prV_B7yEyA4",
       "type": "http-01",
       "status": "valid",
       "token": "DGyRejmCefe7v4NfDGDKfA",
@@ -1377,7 +1377,7 @@ account (See {{request-authentication}}).
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Location: https://example.com/acme/acct/1
+Location: https://example.com/acme/acct/evOfKhNU60wg
 Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
@@ -1388,7 +1388,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
     "mailto:admin@example.com"
   ],
 
-  "orders": "https://example.com/acme/acct/1/orders"
+  "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"
 }
 ~~~~~~~~~~
 
@@ -1419,16 +1419,16 @@ For example, to update the contact information in the above account, the client
 could send the following request:
 
 ~~~~~~~~~~
-POST /acme/acct/1 HTTP/1.1
+POST /acme/acct/evOfKhNU60wg HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
-    "url": "https://example.com/acme/acct/1"
+    "url": "https://example.com/acme/acct/evOfKhNU60wg"
   }),
   "payload": base64url({
     "contact": [
@@ -1610,7 +1610,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "S9XaOcxP5McpnTcWPIhYuB",
     "url": "https://example.com/acme/key-change"
   }),
@@ -1621,7 +1621,7 @@ Content-Type: application/jose+json
       "url": "https://example.com/acme/key-change"
     }),
     "payload": base64url({
-      "account": "https://example.com/acme/acct/1",
+      "account": "https://example.com/acme/acct/evOfKhNU60wg",
       "oldKey": /* old key */
     }),
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1672,16 +1672,16 @@ a deactivated account, it MUST return an error response with status
 code 401 (Unauthorized) and type "urn:ietf:params:acme:error:unauthorized".
 
 ~~~~~~~~~~
-POST /acme/acct/1 HTTP/1.1
+POST /acme/acct/evOfKhNU60wg HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
-    "url": "https://example.com/acme/acct/1"
+    "url": "https://example.com/acme/acct/evOfKhNU60wg"
   }),
   "payload": base64url({
     "status": "deactivated"
@@ -1735,7 +1735,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-order"
   }),
@@ -1763,7 +1763,7 @@ certificate will be issued.
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-Location: https://example.com/acme/order/asdf
+Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
   "status": "pending",
@@ -1777,10 +1777,10 @@ Location: https://example.com/acme/order/asdf
   ],
 
   "authorizations": [
-    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/authz/PAniVnsZcis",
   ],
 
-  "finalize": "https://example.com/acme/order/asdf/finalize"
+  "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize"
 }
 ~~~~~~~~~~
 
@@ -1807,16 +1807,16 @@ Because this field uses base64url, and does not include headers, it is different
 from PEM.).
 
 ~~~~~~~~~~
-POST /acme/order/asdf/finalize HTTP/1.1
+POST /acme/order/TOlocE8rfgo/finalize HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "MSF2j2nawWHPxxkE3ZJtKQ",
-    "url": "https://example.com/acme/order/asdf/finalize"
+    "url": "https://example.com/acme/order/TOlocE8rfgo/finalize"
   }),
   "payload": base64url({
     "csr": "MIIBPTCBxAIBADBFMQ...FS6aKdZeGsysoCo4H9P",
@@ -1874,7 +1874,7 @@ action the client should take:
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
-Location: https://example.com/acme/order/asdf
+Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
   "status": "valid",
@@ -1889,13 +1889,13 @@ Location: https://example.com/acme/order/asdf
   ],
 
   "authorizations": [
-    "https://example.com/acme/authz/1234",
-    "https://example.com/acme/authz/2345"
+    "https://example.com/acme/authz/PAniVnsZcis",
+    "https://example.com/acme/authz/r4HqLzrSrpI"
   ],
 
-  "finalize": "https://example.com/acme/order/asdf/finalize",
+  "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",
 
-  "certificate": "https://example.com/acme/cert/asdf"
+  "certificate": "https://example.com/acme/cert/mAt3xBGaobw"
 }
 ~~~~~~~~~~
 
@@ -1941,7 +1941,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
     "url": "https://example.com/acme/new-authz"
   }),
@@ -1995,7 +1995,7 @@ paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
 
 ~~~~~~~~~~
-POST /acme/cert/asdf HTTP/1.1
+POST /acme/cert/mAt3xBGaobw HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 Accept: application/pkix-cert
@@ -2003,9 +2003,9 @@ Accept: application/pkix-cert
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/cert/asdf",
+    "url": "https://example.com/acme/cert/mAt3xBGaobw",
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2077,7 +2077,7 @@ will have already received the pending authorization object in the response
 to that request.
 
 ~~~~~~~~~~
-POST /acme/authz/1234 HTTP/1.1
+POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 Accept: application/pkix-cert
@@ -2085,9 +2085,9 @@ Accept: application/pkix-cert
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/authz/1234",
+    "url": "https://example.com/acme/authz/PAniVnsZcis",
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2109,12 +2109,12 @@ Link: <https://example.com/acme/some-directory>;rel="index"
   "challenges": [
     {
       "type": "http-01",
-      "url": "https://example.com/acme/authz/1234/0",
+      "url": "https://example.com/acme/chall/prV_B7yEyA4",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     },
     {
       "type": "dns-01",
-      "url": "https://example.com/acme/authz/1234/2",
+      "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ],
@@ -2138,16 +2138,16 @@ For example, if the client were to respond to the "http-01" challenge in the
 above authorization, it would send the following request:
 
 ~~~~~~~~~~
-POST /acme/authz/1234/0 HTTP/1.1
+POST /acme/chall/prV_B7yEyA4 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
-    "url": "https://example.com/acme/authz/1234/0"
+    "url": "https://example.com/acme/chall/prV_B7yEyA4"
   }),
   "payload": base64url({}),
   "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
@@ -2187,7 +2187,7 @@ progress, the server MUST return a 200 (OK) response and MAY include a
 Retry-After header field to suggest a polling interval to the client.
 
 ~~~~~~~~~~
-POST /acme/authz/1234 HTTP/1.1
+POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 Accept: application/pkix-cert
@@ -2195,9 +2195,9 @@ Accept: application/pkix-cert
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/authz/1234",
+    "url": "https://example.com/acme/authz/PAniVnsZcis",
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2218,7 +2218,7 @@ Content-Type: application/json
   "challenges": [
     {
       "type": "http-01",
-      "url": "https://example.com/acme/authz/1234/0",
+      "url": "https://example.com/acme/chall/prV_B7yEyA4",
       "status": "valid",
       "validated": "2014-12-01T12:05:13.72Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
@@ -2237,16 +2237,16 @@ associated with it by sending POST requests with the static object
 {"status": "deactivated"} to each authorization URL.
 
 ~~~~~~~~~~
-POST /acme/authz/1234 HTTP/1.1
+POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
-    "url": "https://example.com/acme/authz/1234"
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
   }),
   "payload": base64url({
     "status": "deactivated"
@@ -2296,7 +2296,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   }),
@@ -2515,7 +2515,7 @@ on randomness requirements.
 ~~~~~~~~~~
 {
   "type": "http-01",
-  "url": "https://example.com/acme/authz/0",
+  "url": "https://example.com/acme/authz/eYL3Xw",
   "status": "pending",
   "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"
 }
@@ -2549,16 +2549,16 @@ A client responds with an empty object ({}) to acknowledge that the challenge
 can be validated by the server.
 
 ~~~~~~~~~~
-POST /acme/authz/1234/0
+POST /acme/authz/PAniVnsZcis/0
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "UQI1PoRi5OuXzxuX7V7wL0",
-    "url": "https://example.com/acme/authz/1234/0"
+    "url": "https://example.com/acme/chall/prV_B7yEyA4"
   }),
   "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
@@ -2615,7 +2615,7 @@ additional information on randomness requirements.
 ~~~~~~~~~~
 {
   "type": "dns-01",
-  "url": "https://example.com/acme/authz/1234/2",
+  "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",
   "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
@@ -2640,16 +2640,16 @@ A client responds with an empty object ({}) to acknowledge that the challenge
 can be validated by the server.
 
 ~~~~~~~~~~
-POST /acme/authz/1234/2
+POST /acme/chall/Rg5dV14Gh1Q
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "SS2sSl1PtspvFZ08kNtzKd",
-    "url": "https://example.com/acme/authz/1234/2"
+    "url": "https://example.com/acme/chall/Rg5dV14Gh1Q"
   }),
   "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
