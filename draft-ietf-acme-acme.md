@@ -438,7 +438,7 @@ set to "application/jose+json".  If a request does not meet this
 requirement, then the server MUST return a response with status code
 415 (Unsupported Media Type).
 
-## GET and POST-as-GET Requests
+## GET and POST-as-GET Requests {#post-as-get}
 
 Note that authentication via signed JWS request bodies implies that
 requests without an entity body are not authenticated, in particular
@@ -1995,9 +1995,21 @@ paths to various trust anchors. Clients can fetch these alternates and use their
 own heuristics to decide which is optimal.
 
 ~~~~~~~~~~
-GET /acme/cert/asdf HTTP/1.1
+POST /acme/cert/asdf HTTP/1.1
 Host: example.com
-Accept: application/pem-certificate-chain
+Content-Type: application/jose+json
+Accept: application/pkix-cert
+
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://example.com/acme/acct/1",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/cert/asdf",
+  }),
+  "payload": "",
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
 
 HTTP/1.1 200 OK
 Content-Type: application/pem-certificate-chain
@@ -2013,6 +2025,12 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 [Other certificate contents]
 -----END CERTIFICATE-----
 ~~~~~~~~~~
+
+An ACME client MAY attempt to fetch the certificate with a GET
+request.  If the server does not allow GET requests for certificate
+resources, then it will return an error as described in
+{{post-as-get}}.  On receiving such an error, the client SHOULD fall
+back to a POST-as-GET request.
 
 A certificate resource represents a single, immutable certificate. If the client
 wishes to obtain a renewed certificate, the client initiates a new order process
