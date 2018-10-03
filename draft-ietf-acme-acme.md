@@ -444,7 +444,7 @@ Note that authentication via signed JWS request bodies implies that
 requests without an entity body are not authenticated, in particular
 GET requests.  Except for the cases described in this section, if
 the server receives a GET request, it MUST return an error with
-status code 405 "Method Not Allowed" and type "malformedRequest".
+status code 405 "Method Not Allowed" and type "malformed".
 
 If a client wishes to fetch a resource from the server (which would
 otherwise be done with a GET), then it MUST send a POST request with
@@ -1998,7 +1998,7 @@ own heuristics to decide which is optimal.
 POST /acme/cert/mAt3xBGaobw HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
-Accept: application/pkix-cert
+Accept: application/pem-certificate-chain
 
 {
   "protected": base64url({
@@ -2080,14 +2080,13 @@ to that request.
 POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
-Accept: application/pkix-cert
 
 {
   "protected": base64url({
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/authz/PAniVnsZcis"
+    "url": "https://example.com/acme/authz/1234"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2190,7 +2189,6 @@ Retry-After header field to suggest a polling interval to the client.
 POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
-Accept: application/pkix-cert
 
 {
   "protected": base64url({
