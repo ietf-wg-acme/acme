@@ -2005,7 +2005,7 @@ Accept: application/pkix-cert
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/cert/mAt3xBGaobw",
+    "url": "https://example.com/acme/cert/mAt3xBGaobw"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2087,7 +2087,7 @@ Accept: application/pkix-cert
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/authz/PAniVnsZcis",
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2197,7 +2197,7 @@ Accept: application/pkix-cert
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/authz/PAniVnsZcis",
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2515,7 +2515,7 @@ on randomness requirements.
 ~~~~~~~~~~
 {
   "type": "http-01",
-  "url": "https://example.com/acme/authz/eYL3Xw",
+  "url": "https://example.com/acme/chall/prV_B7yEyA4",
   "status": "pending",
   "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"
 }
