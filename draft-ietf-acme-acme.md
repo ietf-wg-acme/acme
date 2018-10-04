@@ -1084,7 +1084,7 @@ present, and true.
 
 The only type of identifier defined by this specification is a fully-qualified
 domain name (type: "dns"). The domain name MUST be encoded in the
-form in which it would apper in a certificate.  That is, it MUST be
+form in which it would appear in a certificate.  That is, it MUST be
 encoded according to the rules in Section 7 of {{!RFC5280}}.  Servers MUST verify
 any identifier values that begin with the ASCII Compatible Encoding prefix
 "xn\-\-" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
