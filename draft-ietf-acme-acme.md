@@ -467,10 +467,7 @@ The server MAY allow GET requests for certificate resources in
 order to allow certificates to be fetched by a lower-privileged
 process, e.g., the web server that will use the referenced
 certificate chain.  (See {{?I-D.ietf-acme-star}} for more advanced
-cases.)  A server that allows GET requests for certificate resources
-can still provide a degree of access control by assigning them
-capability URLs {{?W3C.WD-capability-urls-20140218}}.
-As above, if the server does not allow GET requests for a given
+cases.) As above, if the server does not allow GET requests for a given
 resource, it MUST return an error with status code 405 "Method Not
 Allowed" and type "malformed".
 
