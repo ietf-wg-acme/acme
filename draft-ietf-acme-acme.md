@@ -840,6 +840,10 @@ externalAccountRequired (optional, boolean):
 new-account requests include an "externalAccountBinding" field associating the
 new account with an external account.
 
+certificateGET (optional, boolean):
+: If this field is present and set to "true", then the CA allows GET
+requests to certificate URLs (see {{post-as-get}}).
+
 Clients access the directory by sending a GET request to the directory URL.
 
 ~~~~~~~~~~
