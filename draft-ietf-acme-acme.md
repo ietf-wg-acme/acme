@@ -2964,7 +2964,7 @@ Template:
   string
 * Reference: Where this field is defined
 
-Initial contents: The fields and descriptions defined in {{account-objects}}.
+Initial contents: The fields and descriptions defined in {{directory}}.
 
 | Field Name              | Field Type      | Reference |
 |:------------------------|:----------------|:----------|
