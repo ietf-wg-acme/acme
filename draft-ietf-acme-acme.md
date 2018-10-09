@@ -3335,36 +3335,27 @@ uses to address resources.  If the server operator uses URLs that
 are predictable to third parties, this can leak information about
 what URLs exist on the server, since an attacker can probe for
 whether POST-as-GET request to the URL returns "Not Found" or
-"Unauthorized".  
+"Unauthorized".
 
 For example, suppose that the CA uses highly structured URLs with
-several low-entropy fields:
+guessable fields:
 
 * Accounts: https://example.com/:accountID
-* Orders: https://example.com/:accountID/:orderID
-* Authorizations: https://example.com/:accountID/:authorizationID
-* Certificates: https://example.com/:accountID/:certID
+* Certificates: https://example.com/:accountID/:domainName
 
-If the ID fields have low entropy, then an attacker can find out how
-many users a CA has, how many authorizations each account has, etc.
+Under that scheme, an attacker could probe for which domain names are
+associated with which accounts, which may allow correlation of ownership
+between domain names, if the CA does not otherwise permit it.
 
-In order to avoid leaking these correlations, servers SHOULD assign
-capability URLs for dynamically-created resources
-{{?W3C.WD-capability-urls-20140218}}.  These URLs incorporate large
-unpredictable components to prevent third parties from guessing
-them.  These URLs SHOULD NOT have a structure that would enable a
-third party to infer correlations between resources.  
-
-For example, a CA might assign URLs for each resource type from an
+When designing a URL structure, CAs SHOULD consider correlations between
+resources. For example, a CA might assign URLs for each resource type from an
 independent namespace, using unpredictable IDs for each resource:
 
 * Accounts: https://example.com/acct/:accountID
-* Orders: https://example.com/order/:orderID
-* Authorizations: https://example.com/authz/:authorizationID
 * Certificates: https://example.com/cert/:certID
 
 Such a scheme would leak only the type of resource, hiding the
-additional correlations revealed in the example above. 
+additional correlations revealed in the example above.
 
 # Operational Considerations
 
