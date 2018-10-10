@@ -3341,22 +3341,23 @@ For example, suppose that the CA uses highly structured URLs with
 guessable fields:
 
 * Accounts: https://example.com/:accountID
-* Certificates: https://example.com/:accountID/:domainName
 * Orders: https://example.com/:accountID/:domainName
 * Authorizations: https://example.com/:accountID/:domainName
+* Certificates: https://example.com/:accountID/:domainName
 
 Under that scheme, an attacker could probe for which domain names are
 associated with which accounts, which may allow correlation of ownership
 between domain names, if the CA does not otherwise permit it.
 
-When designing a URL structure, CAs SHOULD consider correlations between
-resources. For example, a CA might assign URLs for each resource type from an
+To avoid leaking these correlations, CAs SHOULD assign URLs with an
+unpredictable component.
+For example, a CA might assign URLs for each resource type from an
 independent namespace, using unpredictable IDs for each resource:
 
 * Accounts: https://example.com/acct/:accountID
-* Certificates: https://example.com/cert/:certID
 * Orders: https://example.com/order/:orderID
 * Authorizations: https://example.com/authz/:authorizationID
+* Certificates: https://example.com/cert/:certID
 
 Such a scheme would leak only the type of resource, hiding the
 additional correlations revealed in the example above.
