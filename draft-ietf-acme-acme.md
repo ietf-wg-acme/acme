@@ -1591,8 +1591,7 @@ with the following differences:
 * The inner JWS MUST have a "jwk" header parameter, containing the public key of
   the new key pair.
 * The inner JWS MUST have the same "url" header parameter as the outer JWS.
-* The inner JWS MAY omit the "nonce" header parameter.  The server
-  MUST ignore any value provided for the "nonce" header parameter.
+* The inner JWS MUST omit the "nonce" header parameter.
 
 This transaction has signatures from both the old and new keys so that the
 server can verify that the holders of the two keys both agree to the change.
