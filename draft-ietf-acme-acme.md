@@ -3342,6 +3342,8 @@ guessable fields:
 
 * Accounts: https://example.com/:accountID
 * Certificates: https://example.com/:accountID/:domainName
+* Orders: https://example.com/:accountID/:domainName
+* Authorizations: https://example.com/:accountID/:domainName
 
 Under that scheme, an attacker could probe for which domain names are
 associated with which accounts, which may allow correlation of ownership
@@ -3353,6 +3355,8 @@ independent namespace, using unpredictable IDs for each resource:
 
 * Accounts: https://example.com/acct/:accountID
 * Certificates: https://example.com/cert/:certID
+* Orders: https://example.com/order/:orderID
+* Authorizations: https://example.com/authz/:authorizationID
 
 Such a scheme would leak only the type of resource, hiding the
 additional correlations revealed in the example above.
