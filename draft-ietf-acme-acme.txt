@@ -159,9 +159,9 @@ Internet-Draft                    ACME                      October 2018
      11.1.  Key Selection  . . . . . . . . . . . . . . . . . . . . .  82
      11.2.  DNS security . . . . . . . . . . . . . . . . . . . . . .  83
      11.3.  Token Entropy  . . . . . . . . . . . . . . . . . . . . .  83
-     11.4.  Malformed Certificate Chains . . . . . . . . . . . . . .  84
+     11.4.  Malformed Certificate Chains . . . . . . . . . . . . . .  83
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  84
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  85
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  84
 
 
 
@@ -173,7 +173,7 @@ Internet-Draft                    ACME                      October 2018
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  85
      13.2.  Informative References . . . . . . . . . . . . . . . . .  88
      13.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  89
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  90
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  89
 
 1.  Introduction
 
@@ -4507,29 +4507,29 @@ Internet-Draft                    ACME                      October 2018
    POST-as-GET request to the URL returns "Not Found" or "Unauthorized".
 
    For example, suppose that the CA uses highly structured URLs with
-   several low-entropy fields:
+   guessable fields:
 
    o  Accounts: https://example.com/:accountID
 
-   o  Orders: https://example.com/:accountID/:orderID
+   o  Orders: https://example.com/:accountID/:domainName
 
-   o  Authorizations: https://example.com/:accountID/:authorizationID
+   o  Authorizations: https://example.com/:accountID/:domainName
 
-   o  Certificates: https://example.com/:accountID/:certID
+   o  Certificates: https://example.com/:accountID/:domainName
 
-   If the ID fields have low entropy, then an attacker can find out how
-   many users a CA has, how many authorizations each account has, etc.
+   Under that scheme, an attacker could probe for which domain names are
+   associated with which accounts, which may allow correlation of
+   ownership between domain names, if the CA does not otherwise permit
+   it.
 
-   In order to avoid leaking these correlations, servers SHOULD assign
-   capability URLs for dynamically-created resources
-   [W3C.WD-capability-urls-20140218].  These URLs incorporate large
-   unpredictable components to prevent third parties from guessing them.
-   These URLs SHOULD NOT have a structure that would enable a third
-   party to infer correlations between resources.
+   To avoid leaking these correlations, CAs SHOULD assign URLs with an
+   unpredictable component.  For example, a CA might assign URLs for
+   each resource type from an independent namespace, using unpredictable
+   IDs for each resource:
 
-   For example, a CA might assign URLs for each resource type from an
-   independent namespace, using unpredictable IDs for each resource:
+   o  Accounts: https://example.com/acct/:accountID
 
+   o  Orders: https://example.com/order/:orderID
 
 
 
@@ -4537,10 +4537,6 @@ Barnes, et al.           Expires April 14, 2019                [Page 81]
 
 Internet-Draft                    ACME                      October 2018
 
-
-   o  Accounts: https://example.com/acct/:accountID
-
-   o  Orders: https://example.com/order/:orderID
 
    o  Authorizations: https://example.com/authz/:authorizationID
 
@@ -4586,6 +4582,10 @@ Internet-Draft                    ACME                      October 2018
    no other purpose besides ACME authentication.  For example, the
    public key of an account key pair SHOULD NOT be included in a
    certificate.  ACME clients and servers SHOULD verify that a CSR
+   submitted in a finalize request does not contain a public key for any
+   known account key pair.  In particular, when a server receives a
+   finalize request, it MUST verify that the public key in a CSR is not
+   the same as the public key of the account key pair used to
 
 
 
@@ -4594,10 +4594,6 @@ Barnes, et al.           Expires April 14, 2019                [Page 82]
 Internet-Draft                    ACME                      October 2018
 
 
-   submitted in a finalize request does not contain a public key for any
-   known account key pair.  In particular, when a server receives a
-   finalize request, it MUST verify that the public key in a CSR is not
-   the same as the public key of the account key pair used to
    authenticate that request.  This assures that vulnerabilities in the
    protocols with which the certificate is used (e.g., signing oracles
    in TLS [JSS15]) do not result in compromise of the ACME account.
@@ -4641,7 +4637,11 @@ Internet-Draft                    ACME                      October 2018
    prevents ACME clients from implementing a "naive" validation server
    that automatically replies to challenges by predicting the token.
 
+11.4.  Malformed Certificate Chains
 
+   ACME provides certificate chains in the widely-used format known
+   colloquially as PEM (though it may diverge from the actual Privacy
+   Enhanced Mail specifications [RFC1421], as noted in [RFC7468]).  Some
 
 
 
@@ -4650,11 +4650,6 @@ Barnes, et al.           Expires April 14, 2019                [Page 83]
 Internet-Draft                    ACME                      October 2018
 
 
-11.4.  Malformed Certificate Chains
-
-   ACME provides certificate chains in the widely-used format known
-   colloquially as PEM (though it may diverge from the actual Privacy
-   Enhanced Mail specifications [RFC1421], as noted in [RFC7468]).  Some
    current software will allow the configuration of a private key and a
    certificate in one PEM file, by concatenating the textual encodings
    of the two objects.  In the context of ACME, such software might be
@@ -4697,6 +4692,11 @@ Internet-Draft                    ACME                      October 2018
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
    provided helpful guidance in the use of HTTP.
 
+13.  References
+
+
+
+
 
 
 
@@ -4705,8 +4705,6 @@ Barnes, et al.           Expires April 14, 2019                [Page 84]
 
 Internet-Draft                    ACME                      October 2018
 
-
-13.  References
 
 13.1.  Normative References
 
@@ -4753,7 +4751,9 @@ Internet-Draft                    ACME                      October 2018
               Timestamps", RFC 3339, DOI 10.17487/RFC3339, July 2002,
               <https://www.rfc-editor.org/info/rfc3339>.
 
-
+   [RFC3629]  Yergeau, F., "UTF-8, a transformation format of ISO
+              10646", STD 63, RFC 3629, DOI 10.17487/RFC3629, November
+              2003, <https://www.rfc-editor.org/info/rfc3629>.
 
 
 
@@ -4761,10 +4761,6 @@ Barnes, et al.           Expires April 14, 2019                [Page 85]
 
 Internet-Draft                    ACME                      October 2018
 
-
-   [RFC3629]  Yergeau, F., "UTF-8, a transformation format of ISO
-              10646", STD 63, RFC 3629, DOI 10.17487/RFC3629, November
-              2003, <https://www.rfc-editor.org/info/rfc3629>.
 
    [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
               Resource Identifier (URI): Generic Syntax", STD 66,
@@ -4810,6 +4806,10 @@ Internet-Draft                    ACME                      October 2018
               DOI 10.17487/RFC5988, October 2010,
               <https://www.rfc-editor.org/info/rfc5988>.
 
+   [RFC6068]  Duerst, M., Masinter, L., and J. Zawinski, "The 'mailto'
+              URI Scheme", RFC 6068, DOI 10.17487/RFC6068, October 2010,
+              <https://www.rfc-editor.org/info/rfc6068>.
+
 
 
 
@@ -4817,10 +4817,6 @@ Barnes, et al.           Expires April 14, 2019                [Page 86]
 
 Internet-Draft                    ACME                      October 2018
 
-
-   [RFC6068]  Duerst, M., Masinter, L., and J. Zawinski, "The 'mailto'
-              URI Scheme", RFC 6068, DOI 10.17487/RFC6068, October 2010,
-              <https://www.rfc-editor.org/info/rfc6068>.
 
    [RFC6570]  Gregorio, J., Fielding, R., Hadley, M., Nottingham, M.,
               and D. Orchard, "URI Template", RFC 6570,
@@ -4865,6 +4861,10 @@ Internet-Draft                    ACME                      October 2018
               APIs", RFC 7807, DOI 10.17487/RFC7807, March 2016,
               <https://www.rfc-editor.org/info/rfc7807>.
 
+   [RFC8037]  Liusvaara, I., "CFRG Elliptic Curve Diffie-Hellman (ECDH)
+              and Signatures in JSON Object Signing and Encryption
+              (JOSE)", RFC 8037, DOI 10.17487/RFC8037, January 2017,
+              <https://www.rfc-editor.org/info/rfc8037>.
 
 
 
@@ -4873,11 +4873,6 @@ Barnes, et al.           Expires April 14, 2019                [Page 87]
 
 Internet-Draft                    ACME                      October 2018
 
-
-   [RFC8037]  Liusvaara, I., "CFRG Elliptic Curve Diffie-Hellman (ECDH)
-              and Signatures in JSON Object Signing and Encryption
-              (JOSE)", RFC 8037, DOI 10.17487/RFC8037, January 2017,
-              <https://www.rfc-editor.org/info/rfc8037>.
 
    [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
               Writing an IANA Considerations Section in RFCs", BCP 26,
@@ -4921,6 +4916,11 @@ Internet-Draft                    ACME                      October 2018
               Improve Transaction Identity", draft-vixie-dnsext-
               dns0x20-00 (work in progress), March 2008.
 
+   [RFC1421]  Linn, J., "Privacy Enhancement for Internet Electronic
+              Mail: Part I: Message Encryption and Authentication
+              Procedures", RFC 1421, DOI 10.17487/RFC1421, February
+              1993, <https://www.rfc-editor.org/info/rfc1421>.
+
 
 
 
@@ -4929,11 +4929,6 @@ Barnes, et al.           Expires April 14, 2019                [Page 88]
 
 Internet-Draft                    ACME                      October 2018
 
-
-   [RFC1421]  Linn, J., "Privacy Enhancement for Internet Electronic
-              Mail: Part I: Message Encryption and Authentication
-              Procedures", RFC 1421, DOI 10.17487/RFC1421, February
-              1993, <https://www.rfc-editor.org/info/rfc1421>.
 
    [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
               Text on Security Considerations", BCP 72, RFC 3552,
@@ -4965,26 +4960,11 @@ Internet-Draft                    ACME                      October 2018
               Web Consortium Recommendation REC-cors-20140116, January
               2014, <http://www.w3.org/TR/2014/REC-cors-20140116>.
 
-   [W3C.WD-capability-urls-20140218]
-              Tennison, J., "Good Practices for Capability URLs", World
-              Wide Web Consortium WD WD-capability-urls-20140218,
-              February 2014,
-              <http://www.w3.org/TR/2014/WD-capability-urls-20140218>.
-
 13.3.  URIs
 
    [1] https://github.com/ietf-wg-acme/acme
 
    [2] mailto:iesg@ietf.org
-
-
-
-
-
-Barnes, et al.           Expires April 14, 2019                [Page 89]
-
-Internet-Draft                    ACME                      October 2018
-
 
 Authors' Addresses
 
@@ -5000,6 +4980,12 @@ Authors' Addresses
    Email: jsha@eff.org
 
 
+
+Barnes, et al.           Expires April 14, 2019                [Page 89]
+
+Internet-Draft                    ACME                      October 2018
+
+
    Daniel McCarney
    Let's Encrypt
 
@@ -5010,6 +4996,20 @@ Authors' Addresses
    University of Michigan
 
    Email: jdkasten@umich.edu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

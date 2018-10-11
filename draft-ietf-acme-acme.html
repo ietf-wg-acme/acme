@@ -2944,18 +2944,17 @@ Holder                  MitM                  Server
 <p id="rfc.section.10.5.p.3">CAs that use ACME to automate issuance will need to ensure that their servers perform all necessary checks before issuing.</p>
 <p id="rfc.section.10.5.p.4">CAs using ACME to allow clients to agree to terms of service should keep in mind that ACME clients can automate this agreement, possibly not involving a human user.</p>
 <p id="rfc.section.10.5.p.5">ACME does not specify how the server constructs the URLs that it uses to address resources.  If the server operator uses URLs that are predictable to third parties, this can leak information about what URLs exist on the server, since an attacker can probe for whether POST-as-GET request to the URL returns &#8220;Not Found&#8221; or &#8220;Unauthorized&#8221;.</p>
-<p id="rfc.section.10.5.p.6">For example, suppose that the CA uses highly structured URLs with several low-entropy fields:</p>
+<p id="rfc.section.10.5.p.6">For example, suppose that the CA uses highly structured URLs with guessable fields:</p>
 <p></p>
 
 <ul>
 <li>Accounts: https://example.com/:accountID</li>
-<li>Orders: https://example.com/:accountID/:orderID</li>
-<li>Authorizations: https://example.com/:accountID/:authorizationID</li>
-<li>Certificates: https://example.com/:accountID/:certID</li>
+<li>Orders: https://example.com/:accountID/:domainName</li>
+<li>Authorizations: https://example.com/:accountID/:domainName</li>
+<li>Certificates: https://example.com/:accountID/:domainName</li>
 </ul>
-<p id="rfc.section.10.5.p.8">If the ID fields have low entropy, then an attacker can find out how many users a CA has, how many authorizations each account has, etc.</p>
-<p id="rfc.section.10.5.p.9">In order to avoid leaking these correlations, servers SHOULD assign capability URLs for dynamically-created resources <a href="#W3C.WD-capability-urls-20140218" class="xref">[W3C.WD-capability-urls-20140218]</a>.  These URLs incorporate large unpredictable components to prevent third parties from guessing them.  These URLs SHOULD NOT have a structure that would enable a third party to infer correlations between resources.</p>
-<p id="rfc.section.10.5.p.10">For example, a CA might assign URLs for each resource type from an independent namespace, using unpredictable IDs for each resource:</p>
+<p id="rfc.section.10.5.p.8">Under that scheme, an attacker could probe for which domain names are associated with which accounts, which may allow correlation of ownership between domain names, if the CA does not otherwise permit it.</p>
+<p id="rfc.section.10.5.p.9">To avoid leaking these correlations, CAs SHOULD assign URLs with an unpredictable component.  For example, a CA might assign URLs for each resource type from an independent namespace, using unpredictable IDs for each resource:</p>
 <p></p>
 
 <ul>
@@ -2964,7 +2963,7 @@ Holder                  MitM                  Server
 <li>Authorizations: https://example.com/authz/:authorizationID</li>
 <li>Certificates: https://example.com/cert/:certID</li>
 </ul>
-<p id="rfc.section.10.5.p.12">Such a scheme would leak only the type of resource, hiding the additional correlations revealed in the example above.</p>
+<p id="rfc.section.10.5.p.11">Such a scheme would leak only the type of resource, hiding the additional correlations revealed in the example above.</p>
 <h1 id="rfc.section.11">
 <a href="#rfc.section.11">11.</a> <a href="#operational-considerations" id="operational-considerations">Operational Considerations</a>
 </h1>
@@ -3265,11 +3264,6 @@ Holder                  MitM                  Server
 <td class="reference"><b id="W3C.REC-cors-20140116">[W3C.REC-cors-20140116]</b></td>
 <td class="top">
 <a>Kesteren, A.</a>, "<a href="http://www.w3.org/TR/2014/REC-cors-20140116">Cross-Origin Resource Sharing</a>", World Wide Web Consortium Recommendation REC-cors-20140116, January 2014.</td>
-</tr>
-<tr>
-<td class="reference"><b id="W3C.WD-capability-urls-20140218">[W3C.WD-capability-urls-20140218]</b></td>
-<td class="top">
-<a>Tennison, J.</a>, "<a href="http://www.w3.org/TR/2014/WD-capability-urls-20140218">Good Practices for Capability URLs</a>", World Wide Web Consortium WD WD-capability-urls-20140218, February 2014.</td>
 </tr>
 </tbody></table>
 <h1 id="rfc.authors"><a href="#rfc.authors">Authors' Addresses</a></h1>
