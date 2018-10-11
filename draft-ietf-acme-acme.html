@@ -1595,7 +1595,7 @@ Content-Type: application/jose+json
 <ul>
 <li>The inner JWS MUST have a &#8220;jwk&#8221; header parameter, containing the public key of the new key pair.</li>
 <li>The inner JWS MUST have the same &#8220;url&#8221; header parameter as the outer JWS.</li>
-<li>The inner JWS MAY omit the &#8220;nonce&#8221; header parameter.  The server MUST ignore any value provided for the &#8220;nonce&#8221; header parameter.</li>
+<li>The inner JWS MUST omit the &#8220;nonce&#8221; header parameter.</li>
 </ul>
 <p id="rfc.section.7.3.5.p.8">This transaction has signatures from both the old and new keys so that the server can verify that the holders of the two keys both agree to the change.  The signatures are nested to preserve the property that all signatures on POST messages are signed by exactly one key.  The &#8220;inner&#8221; JWS effectively represents a request by the holder of the new key to take over the account form the holder of the old key.  The &#8220;outer&#8221; JWS represents the current account holder&#8217;s assent to this request.</p>
 <pre>

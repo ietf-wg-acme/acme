@@ -2140,8 +2140,7 @@ Internet-Draft                    ACME                      October 2018
    o  The inner JWS MUST have the same "url" header parameter as the
       outer JWS.
 
-   o  The inner JWS MAY omit the "nonce" header parameter.  The server
-      MUST ignore any value provided for the "nonce" header parameter.
+   o  The inner JWS MUST omit the "nonce" header parameter.
 
    This transaction has signatures from both the old and new keys so
    that the server can verify that the holders of the two keys both
@@ -2177,6 +2176,7 @@ Internet-Draft                    ACME                      October 2018
      }),
      "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
    }
+
 
 
 
