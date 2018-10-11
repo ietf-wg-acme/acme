@@ -1164,7 +1164,7 @@ Content-Type: application/json
     "mailto:admin@example.com"
   ],
   "termsOfServiceAgreed": true,
-  "orders": "https://example.com/acme/acct/1/orders"
+  "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"
 }
 </pre>
 <h1 id="rfc.section.7.1.2.1">
@@ -1174,14 +1174,14 @@ Content-Type: application/json
 <pre>
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;;rel="next"
+Link: &lt;https://example.com/acme/acct/evOfKhNU60wg/orders?cursor=2&gt;;rel="next"
 
 {
   "orders": [
-    "https://example.com/acme/acct/1/order/1",
-    "https://example.com/acme/acct/1/order/2",
-    /* 47 more URLs not shown for example brevity */
-    "https://example.com/acme/acct/1/order/50"
+    "https://example.com/acme/order/TOlocE8rfgo",
+    "https://example.com/acme/order/4E16bbL5iSw",
+    /* more URLs not shown for example brevity */
+    "https://example.com/acme/order/neBHYLfw0mg"
   ]
 }
 </pre>
@@ -1232,13 +1232,13 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;;rel="next"
   "notAfter": "2016-01-08T00:00:00Z",
 
   "authorizations": [
-    "https://example.com/acme/authz/1234",
-    "https://example.com/acme/authz/2345"
+    "https://example.com/acme/authz/PAniVnsZcis",
+    "https://example.com/acme/authz/r4HqLzrSrpI"
   ],
 
-  "finalize": "https://example.com/acme/acct/1/order/1/finalize",
+  "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",
 
-  "certificate": "https://example.com/acme/cert/1234"
+  "certificate": "https://example.com/acme/cert/jWCdfHVGY2M"
 }
 </pre>
 <p id="rfc.section.7.1.3.p.3">Any identifier of type &#8220;dns&#8221; in a new-order request MAY have a wildcard domain name as its value. A wildcard domain name consists of a single asterisk character followed by a single full stop character (&#8220;*.&#8221;) followed by a domain name as defined for use in the Subject Alternate Name Extension by RFC 5280 <a href="#RFC5280" class="xref">[RFC5280]</a>. An authorization returned by the server for a wildcard domain name identifier MUST NOT include the asterisk and full stop (&#8220;*.&#8221;) prefix in the authorization identifier value. The returned authorization MUST include the optional &#8220;wildcard&#8221; field, with a value of true.</p>
@@ -1293,7 +1293,7 @@ Link: &lt;https://example.com/acme/acct/1/orders?cursor=2&gt;;rel="next"
 
   "challenges": [
     {
-      "url": "https://example.com/acme/authz/1234/0",
+      "url": "https://example.com/acme/chall/prV_B7yEyA4",
       "type": "http-01",
       "status": "valid",
       "token": "DGyRejmCefe7v4NfDGDKfA",
@@ -1454,7 +1454,7 @@ Content-Type: application/jose+json
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Location: https://example.com/acme/acct/1
+Location: https://example.com/acme/acct/evOfKhNU60wg
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 
 {
@@ -1465,7 +1465,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
     "mailto:admin@example.com"
   ],
 
-  "orders": "https://example.com/acme/acct/1/orders"
+  "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"
 }
 </pre>
 <h1 id="rfc.section.7.3.1">
@@ -1479,16 +1479,16 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 <p id="rfc.section.7.3.2.p.1">If the client wishes to update this information in the future, it sends a POST request with updated information to the account URL.  The server MUST ignore any updates to the &#8220;orders&#8221; field, &#8220;termsOfServiceAgreed&#8221; field (see <a href="#changes-of-terms-of-service" class="xref">Section 7.3.3</a>), the &#8220;status&#8221; field (except as allowed by <a href="#account-deactivation" class="xref">Section 7.3.6</a>), or any other fields it does not recognize. If the server accepts the update, it MUST return a response with a 200 (OK) status code and the resulting account object.</p>
 <p id="rfc.section.7.3.2.p.2">For example, to update the contact information in the above account, the client could send the following request:</p>
 <pre>
-POST /acme/acct/1 HTTP/1.1
+POST /acme/acct/evOfKhNU60wg HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
-    "url": "https://example.com/acme/acct/1"
+    "url": "https://example.com/acme/acct/evOfKhNU60wg"
   }),
   "payload": base64url({
     "contact": [
@@ -1606,7 +1606,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "S9XaOcxP5McpnTcWPIhYuB",
     "url": "https://example.com/acme/key-change"
   }),
@@ -1617,7 +1617,7 @@ Content-Type: application/jose+json
       "url": "https://example.com/acme/key-change"
     }),
     "payload": base64url({
-      "account": "https://example.com/acme/acct/1",
+      "account": "https://example.com/acme/acct/evOfKhNU60wg",
       "oldKey": /* old key */
     }),
     "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
@@ -1646,16 +1646,16 @@ Content-Type: application/jose+json
 </h1>
 <p id="rfc.section.7.3.6.p.1">A client can deactivate an account by posting a signed update to the account URL with a status field of &#8220;deactivated.&#8221; Clients may wish to do this when the account key is compromised or decommissioned. A deactivated account can no longer request certificate issuance or access resources related to the account, such as orders or authorizations.  If a server receives a POST or POST-as-GET from a deactivated account, it MUST return an error response with status code 401 (Unauthorized) and type &#8220;urn:ietf:params:acme:error:unauthorized&#8221;.</p>
 <pre>
-POST /acme/acct/1 HTTP/1.1
+POST /acme/acct/evOfKhNU60wg HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "ntuJWWSic4WVNSqeUmshgg",
-    "url": "https://example.com/acme/acct/1"
+    "url": "https://example.com/acme/acct/evOfKhNU60wg"
   }),
   "payload": base64url({
     "status": "deactivated"
@@ -1694,7 +1694,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "5XJ1L3lEkMG7tR6pA00clA",
     "url": "https://example.com/acme/new-order"
   }),
@@ -1713,7 +1713,7 @@ Content-Type: application/jose+json
 <pre>
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-Location: https://example.com/acme/order/asdf
+Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
   "status": "pending",
@@ -1727,10 +1727,10 @@ Location: https://example.com/acme/order/asdf
   ],
 
   "authorizations": [
-    "https://example.com/acme/authz/1234",
+    "https://example.com/acme/authz/PAniVnsZcis",
   ],
 
-  "finalize": "https://example.com/acme/order/asdf/finalize"
+  "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize"
 }
 </pre>
 <p id="rfc.section.7.4.p.5">The order object returned by the server represents a promise that if the client fulfills the server&#8217;s requirements before the &#8220;expires&#8221; time, then the server will be willing to finalize the order upon request and issue the requested certificate.  In the order object, any authorization referenced in the &#8220;authorizations&#8221; array whose status is &#8220;pending&#8221; represents an authorization transaction that the client must complete before the server will issue the certificate (see <a href="#identifier-authorization" class="xref">Section 7.5</a>).  If the client fails to complete the required actions before the &#8220;expires&#8221; time, then the server SHOULD change the status of the order to &#8220;invalid&#8221; and MAY delete the order resource. Clients MUST NOT make any assumptions about the sort order of &#8220;identifiers&#8221; or &#8220;authorizations&#8221; elements in the returned order object.</p>
@@ -1742,16 +1742,16 @@ Location: https://example.com/acme/order/asdf
 <dd style="margin-left: 8">A CSR encoding the parameters for the certificate being requested <a href="#RFC2986" class="xref">[RFC2986]</a>.  The CSR is sent in the base64url-encoded version of the DER format.  (Note: Because this field uses base64url, and does not include headers, it is different from PEM.).</dd>
 </dl>
 <pre>
-POST /acme/order/asdf/finalize HTTP/1.1
+POST /acme/order/TOlocE8rfgo/finalize HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "MSF2j2nawWHPxxkE3ZJtKQ",
-    "url": "https://example.com/acme/order/asdf/finalize"
+    "url": "https://example.com/acme/order/TOlocE8rfgo/finalize"
   }),
   "payload": base64url({
     "csr": "MIIBPTCBxAIBADBFMQ...FS6aKdZeGsysoCo4H9P",
@@ -1783,7 +1783,7 @@ Content-Type: application/jose+json
 <pre>
 HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
-Location: https://example.com/acme/order/asdf
+Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
   "status": "valid",
@@ -1798,13 +1798,13 @@ Location: https://example.com/acme/order/asdf
   ],
 
   "authorizations": [
-    "https://example.com/acme/authz/1234",
-    "https://example.com/acme/authz/2345"
+    "https://example.com/acme/authz/PAniVnsZcis",
+    "https://example.com/acme/authz/r4HqLzrSrpI"
   ],
 
-  "finalize": "https://example.com/acme/order/asdf/finalize",
+  "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",
 
-  "certificate": "https://example.com/acme/cert/asdf"
+  "certificate": "https://example.com/acme/cert/mAt3xBGaobw"
 }
 </pre>
 <h1 id="rfc.section.7.4.1">
@@ -1835,7 +1835,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
     "url": "https://example.com/acme/new-authz"
   }),
@@ -1866,7 +1866,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.7.4.2.p.2">The default format of the certificate is application/pem-certificate-chain (see <a href="#iana-considerations" class="xref">Section 9</a>).</p>
 <p id="rfc.section.7.4.2.p.3">The server MAY provide one or more link relation header fields <a href="#RFC5988" class="xref">[RFC5988]</a> with relation &#8220;alternate&#8221;. Each such field SHOULD express an alternative certificate chain starting with the same end-entity certificate. This can be used to express paths to various trust anchors. Clients can fetch these alternates and use their own heuristics to decide which is optimal.</p>
 <pre>
-POST /acme/cert/asdf HTTP/1.1
+POST /acme/cert/mAt3xBGaobw HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 Accept: application/pem-certificate-chain
@@ -1874,9 +1874,9 @@ Accept: application/pem-certificate-chain
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/cert/asdf"
+    "url": "https://example.com/acme/cert/mAt3xBGaobw"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -1914,14 +1914,14 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 <p id="rfc.section.7.5.p.4">Authorization resources are created by the server in response to certificate orders or authorization requests submitted by an account key holder; their URLs are provided to the client in the responses to these requests.  The authorization object is implicitly tied to the account key used to sign the request.</p>
 <p id="rfc.section.7.5.p.5">When a client receives an order from the server in reply to a new order request, it downloads the authorization resources by sending POST-as-GET requests to the indicated URLs.  If the client initiates authorization using a request to the new authorization resource, it will have already received the pending authorization object in the response to that request.</p>
 <pre>
-POST /acme/authz/1234 HTTP/1.1
+POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
     "url": "https://example.com/acme/authz/1234"
   }),
@@ -1945,12 +1945,12 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
   "challenges": [
     {
       "type": "http-01",
-      "url": "https://example.com/acme/authz/1234/0",
+      "url": "https://example.com/acme/chall/prV_B7yEyA4",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     },
     {
       "type": "dns-01",
-      "url": "https://example.com/acme/authz/1234/2",
+      "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
   ],
@@ -1965,16 +1965,16 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 <p id="rfc.section.7.5.1.p.2">The client indicates to the server it is ready for the challenge validation by sending an empty JSON body (<samp>{}</samp>), carried in a POST request to the challenge URL (not authorization URL).</p>
 <p id="rfc.section.7.5.1.p.3">For example, if the client were to respond to the &#8220;http-01&#8221; challenge in the above authorization, it would send the following request:</p>
 <pre>
-POST /acme/authz/1234/0 HTTP/1.1
+POST /acme/chall/prV_B7yEyA4 HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
-    "url": "https://example.com/acme/authz/1234/0"
+    "url": "https://example.com/acme/chall/prV_B7yEyA4"
   }),
   "payload": base64url({}),
   "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
@@ -1986,16 +1986,16 @@ Content-Type: application/jose+json
 <p id="rfc.section.7.5.1.p.7">Usually, the validation process will take some time, so the client will need to poll the authorization resource to see when it is finalized.  For challenges where the client can tell when the server has validated the challenge (e.g., by seeing an HTTP or DNS request from the server), the client SHOULD NOT begin polling until it has seen the validation request from the server.</p>
 <p id="rfc.section.7.5.1.p.8">To check on the status of an authorization, the client sends a POST-as-GET request to the authorization URL, and the server responds with the current authorization object. In responding to poll requests while the validation is still in progress, the server MUST return a 200 (OK) response and MAY include a Retry-After header field to suggest a polling interval to the client.</p>
 <pre>
-POST /acme/authz/1234 HTTP/1.1
+POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/authz/1234"
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2016,7 +2016,7 @@ Content-Type: application/json
   "challenges": [
     {
       "type": "http-01",
-      "url": "https://example.com/acme/authz/1234/0",
+      "url": "https://example.com/acme/chall/prV_B7yEyA4",
       "status": "valid",
       "validated": "2014-12-01T12:05:13.72Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
@@ -2031,16 +2031,16 @@ Content-Type: application/json
 </h1>
 <p id="rfc.section.7.5.2.p.1">If a client wishes to relinquish its authorization to issue certificates for an identifier, then it may request that the server deactivates each authorization associated with it by sending POST requests with the static object {&#8220;status&#8221;: &#8220;deactivated&#8221;} to each authorization URL.</p>
 <pre>
-POST /acme/authz/1234 HTTP/1.1
+POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "xWCM9lGbIyCgue8di6ueWQ",
-    "url": "https://example.com/acme/authz/1234"
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
   }),
   "payload": base64url({
     "status": "deactivated"
@@ -2072,7 +2072,7 @@ Content-Type: application/jose+json
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "JHb54aT_KTXBWQOzGYkt9A",
     "url": "https://example.com/acme/revoke-cert"
   }),
@@ -2200,7 +2200,7 @@ keyAuthorization = token || '.' || base64url(Thumbprint(accountKey))
 <pre>
 {
   "type": "http-01",
-  "url": "https://example.com/acme/authz/0",
+  "url": "https://example.com/acme/chall/prV_B7yEyA4",
   "status": "pending",
   "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"
 }
@@ -2219,16 +2219,16 @@ LoqXcYV8...jxAjEuX0.9jg46WB3...fm21mqTI
 <p id="rfc.section.8.3.p.6">(In the above, &#8220;&#8230;&#8221; indicates that the token and the JWK thumbprint in the key authorization have been truncated to fit on the page.)</p>
 <p id="rfc.section.8.3.p.7">A client responds with an empty object ({}) to acknowledge that the challenge can be validated by the server.</p>
 <pre>
-POST /acme/authz/1234/0
+POST /acme/authz/PAniVnsZcis/0
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "UQI1PoRi5OuXzxuX7V7wL0",
-    "url": "https://example.com/acme/authz/1234/0"
+    "url": "https://example.com/acme/chall/prV_B7yEyA4"
   }),
   "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
@@ -2267,7 +2267,7 @@ Content-Type: application/jose+json
 <pre>
 {
   "type": "dns-01",
-  "url": "https://example.com/acme/authz/1234/2",
+  "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",
   "status": "pending",
   "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
 }
@@ -2279,16 +2279,16 @@ _acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 </pre>
 <p id="rfc.section.8.4.p.5">A client responds with an empty object ({}) to acknowledge that the challenge can be validated by the server.</p>
 <pre>
-POST /acme/authz/1234/2
+POST /acme/chall/Rg5dV14Gh1Q
 Host: example.com
 Content-Type: application/jose+json
 
 {
   "protected": base64url({
     "alg": "ES256",
-    "kid": "https://example.com/acme/acct/1",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "SS2sSl1PtspvFZ08kNtzKd",
-    "url": "https://example.com/acme/authz/1234/2"
+    "url": "https://example.com/acme/chall/Rg5dV14Gh1Q"
   }),
   "payload": base64url({}),
   "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
