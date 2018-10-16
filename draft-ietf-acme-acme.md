@@ -3435,7 +3435,7 @@ malicious ACME server could cause a client to use a private key of its choosing
 by including the key in the PEM file returned in response to a query for a
 certificate URL.
 
-When processing an file of type "application/pem-certificate-chain", a client
+When processing a file of type "application/pem-certificate-chain", a client
 SHOULD verify that the file contains only encoded certificates.  If anything
 other than a certificate is found (i.e., if the string "\-\-\-\-\-BEGIN" is ever
 followed by anything other than "CERTIFICATE"), then the client MUST reject the
