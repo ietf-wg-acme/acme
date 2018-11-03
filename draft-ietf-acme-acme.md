@@ -689,7 +689,7 @@ enables:
 ACME is structured as a REST {{REST}} application with the following types of resources:
 
 * Account resources, representing information about an account
-  ({{account-objects}}, {{account-creation}})
+  ({{account-objects}}, {{account-management}})
 * Order resources, representing an account's requests to issue certificates
   ({{order-objects}})
 * Authorization resources, representing an account's authorization to act for an
@@ -700,7 +700,7 @@ ACME is structured as a REST {{REST}} application with the following types of re
   ({{downloading-the-certificate}})
 * A "directory" resource ({{directory}})
 * A "newNonce" resource ({{getting-a-nonce}})
-* A "newAccount" resource ({{account-creation}})
+* A "newAccount" resource ({{account-management}})
 * A "newOrder" resource ({{applying-for-certificate-issuance}})
 * A "revokeCert" resource ({{certificate-revocation}})
 * A "keyChange" resource ({{account-key-roll-over}})
@@ -867,7 +867,7 @@ contact (optional, array of string):
 : An array of URLs that the server can use to contact the client for issues
 related to this account. For example, the server may wish to notify the
 client about server-initiated revocation or certificate expiration.
-For information on supported URL schemes, see {{account-creation}}
+For information on supported URL schemes, see {{account-management}}
 
 termsOfServiceAgreed (optional, boolean):
 : Including this field in a new-account request, with a value of true, indicates
