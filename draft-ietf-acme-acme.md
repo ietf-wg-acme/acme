@@ -2031,7 +2031,7 @@ header fields have no relation to the certificate's period of validity.
 
 The ACME client MAY request other formats by including an Accept
 header field {{RFC7231}} in its request.  For example, the client could use the media type
-`application/pkix-cert` {{!RFC2585}} or `applicaiton/pkcs7-mime` {{!RFC5751}} to request the end-entity certificate
+`application/pkix-cert` {{!RFC2585}} or `application/pkcs7-mime` {{!RFC5751}} to request the end-entity certificate
 in DER format. Server support for alternate formats is OPTIONAL. For
 formats that can only express a single certificate, the server SHOULD
 provide one or more `Link: rel="up"` header fields pointing to an issuer or
@@ -3435,7 +3435,7 @@ malicious ACME server could cause a client to use a private key of its choosing
 by including the key in the PEM file returned in response to a query for a
 certificate URL.
 
-When processing an file of type "application/pem-certificate-chain", a client
+When processing a file of type "application/pem-certificate-chain", a client
 SHOULD verify that the file contains only encoded certificates.  If anything
 other than a certificate is found (i.e., if the string "\-\-\-\-\-BEGIN" is ever
 followed by anything other than "CERTIFICATE"), then the client MUST reject the
