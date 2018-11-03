@@ -2746,7 +2746,7 @@ Barnes, et al.             Expires May 7, 2019                 [Page 49]
 Internet-Draft                    ACME                     November 2018
 
 
-   use the media type "application/pkix-cert" [RFC2585] or "applicaiton/
+   use the media type "application/pkix-cert" [RFC2585] or "application/
    pkcs7-mime" [RFC5751] to request the end-entity certificate in DER
    format.  Server support for alternate formats is OPTIONAL.  For
    formats that can only express a single certificate, the server SHOULD
@@ -4658,8 +4658,8 @@ Internet-Draft                    ACME                     November 2018
    including the key in the PEM file returned in response to a query for
    a certificate URL.
 
-   When processing an file of type "application/pem-certificate-chain",
-   a client SHOULD verify that the file contains only encoded
+   When processing a file of type "application/pem-certificate-chain", a
+   client SHOULD verify that the file contains only encoded
    certificates.  If anything other than a certificate is found (i.e.,
    if the string "-----BEGIN" is ever followed by anything other than
    "CERTIFICATE"), then the client MUST reject the file as invalid.
