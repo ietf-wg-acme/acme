@@ -2535,7 +2535,7 @@ A client responds with an empty object ({}) to acknowledge that the challenge
 can be validated by the server.
 
 ~~~~~~~~~~
-POST /acme/authz/PAniVnsZcis/0
+POST /acme/chall/prV_B7yEyA4
 Host: example.com
 Content-Type: application/jose+json
 
