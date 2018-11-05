@@ -3384,14 +3384,13 @@ account holder could take within the scope of ACME:
 
 For this reason, it is RECOMMENDED that account key pairs be used for no other
 purpose besides ACME authentication.  For example, the public key of an account
-key pair SHOULD NOT be included in a certificate.  ACME clients MUST NOT reuse 
+key pair MUST NOT be included in a certificate.  ACME clients MUST NOT reuse
 the same account key for multiple accounts, and MUST NOT allow account key 
-roll-over to a previously-used account key.  ACME servers SHOULD reject a 
-new-account request using an account key already associated with an account 
-on the server.  
+roll-over to a previously-used account key.  ACME servers MUST NOT create a new
+account using an account key already associated with an account on the server.
 
 ACME clients and servers
-SHOULD verify that a CSR submitted in a finalize request does not contain a
+MUST verify that a CSR submitted in a finalize request does not contain a
 public key for any known account key pair.  In particular, when a server
 receives a finalize request, it MUST verify that the public key in a CSR is not
 the same as the public key of the account key pair used to authenticate that
