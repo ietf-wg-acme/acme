@@ -762,7 +762,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 | Create account        | POST newAccount                          | 201 -> account |
 | Submit order          | POST newOrder                            | 201 -> order   |
 | Fetch challenges      | POST-as-GET order's authorization urls   | 200            |
-| Respond to challenges | POST-as-GET authorization challenge urls | 200            |
+| Respond to challenges | POST authorization challenge urls        | 200            |
 | Poll for status       | POST-as-GET order                        | 200            |
 | Finalize order        | POST order's finalize url                | 200            |
 | Poll for status       | POST-as-GET order                        | 200            |
