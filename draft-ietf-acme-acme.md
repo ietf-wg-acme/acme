@@ -3406,7 +3406,7 @@ client knows to be used elsewhere, then the client MUST return an
 error.  Clients that manage account keys on behalf of users SHOULD
 generate a fresh account key for every account creation or roll-over
 operation.  Note that given the requirements of
-{{#finding-an-account-url-given-a-key}}, servers will not create
+{{finding-an-account-url-given-a-key}}, servers will not create
 accounts with reused keys anyway.
 
 ACME clients and servers MUST verify that a CSR submitted in a finalize request does not contain a
