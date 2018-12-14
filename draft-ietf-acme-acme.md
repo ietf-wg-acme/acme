@@ -2589,6 +2589,16 @@ The client SHOULD de-provision the resource provisioned for this
 challenge once the challenge is complete, i.e., once the "status"
 field of the challenge has the value "valid" or "invalid".
 
+Note that becuase the token appears both in the request sent by the
+ACME server and in the key authorization in the response, it is
+possible to build clients that copy the token from request to
+response.  Clients should avoid this behavior, because it can lead
+to cross-site scripting vulnerabilities; instead, clients should be
+explicitly configured on a per-challenge basis. A client that does
+copy tokens from requests to responses MUST validate that the token
+in the request matches the token syntax above (e.g., that it
+includes only characters from the base64url alphabet).
+
 ## DNS Challenge
 
 When the identifier being validated is a domain name, the client can prove
