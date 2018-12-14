@@ -509,8 +509,7 @@ any signed request from the client to carry such a nonce.
 An ACME server provides nonces to clients using the HTTP Replay-Nonce header field,
 as specified in {{replay-nonce}} below.  The server MUST include a Replay-Nonce
 header field in every successful response to a POST request and SHOULD provide
-it in error responses as well.  Servers SHOULD use globally scoped nonces, so that
-a nonce, once issued, will be accepted on any HTTP request.
+it in error responses as well.
 
 Every JWS sent by an ACME client MUST include, in its protected header, the
 "nonce" header parameter, with contents as defined in
@@ -523,7 +522,9 @@ way as a value it had never issued.
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
 ACME error type "urn:ietf:params:acme:error:badNonce".  An error response with
-the "badNonce" error type MUST include a Replay-Nonce header with a fresh nonce.
+the "badNonce" error type MUST include a Replay-Nonce header with a
+fresh nonce that the server will accept in a retry of the original
+query (and possibly in other requests).
 On receiving such a response, a client SHOULD retry the request using the new
 nonce.
 
@@ -1278,6 +1279,10 @@ directive in responses for the new-nonce resource, in order to prevent
 caching of this resource.
 
 ## Account Management 
+
+In this section, we describe how an ACME client can create an
+account on an ACME server, and perform some modifications to the
+account after it has been created.
 
 A client creates a new account with the server by sending a POST request to the
 server's new-account URL.  The body of the request is a stub account object
@@ -3382,9 +3387,19 @@ account holder could take within the scope of ACME:
 4. Changing the account key pair for the account, locking out the
    legitimate account holder
 
-For this reason, it is RECOMMENDED that account key pairs be used for no other
-purpose besides ACME authentication.  For example, the public key of an account
-key pair MUST NOT be included in a certificate.  ACME clients MUST NOT reuse
+For this reason, it is RECOMMENDED that each account key pair be
+used only for authentication of a single ACME account.  For example,
+the public key of an account key pair MUST NOT be included in a
+certificate.  If an ACME client receives a request from a user for
+account creation or key roll-over using an account key that the
+client knows to be used elsewhere, then the client MUST return an
+error.  Clients that manage account keys on behalf of users SHOULD
+generate a fresh account key for every account creation or roll-over
+operation.  Note that given the requirements of
+{{#finding-an-account-url-given-a-key}}, servers will not create
+accounts with reused keys anyway.
+
+ACME clients MUST NOT reuse
 the same account key for multiple accounts, and MUST NOT allow account key 
 roll-over to a previously-used account key.  ACME servers MUST NOT create a new
 account using an account key already associated with an account on the server.
