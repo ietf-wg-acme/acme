@@ -3409,8 +3409,7 @@ operation.  Note that given the requirements of
 {{#finding-an-account-url-given-a-key}}, servers will not create
 accounts with reused keys anyway.
 
-ACME clients and servers
-MUST verify that a CSR submitted in a finalize request does not contain a
+ACME clients and servers MUST verify that a CSR submitted in a finalize request does not contain a
 public key for any known account key pair.  In particular, when a server
 receives a finalize request, it MUST verify that the public key in a CSR is not
 the same as the public key of the account key pair used to authenticate that
@@ -3490,4 +3489,3 @@ inception.
 This document draws on many concepts established by Eric Rescorla's "Automated
 Certificate Issuance Protocol" draft.  Martin Thomson provided helpful guidance
 in the use of HTTP.
-
