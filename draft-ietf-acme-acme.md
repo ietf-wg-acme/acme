@@ -3409,11 +3409,6 @@ operation.  Note that given the requirements of
 {{#finding-an-account-url-given-a-key}}, servers will not create
 accounts with reused keys anyway.
 
-ACME clients MUST NOT reuse
-the same account key for multiple accounts, and MUST NOT allow account key 
-roll-over to a previously-used account key.  ACME servers MUST NOT create a new
-account using an account key already associated with an account on the server.
-
 ACME clients and servers
 MUST verify that a CSR submitted in a finalize request does not contain a
 public key for any known account key pair.  In particular, when a server
