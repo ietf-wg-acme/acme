@@ -532,6 +532,15 @@ The precise method used to generate and track nonces is up to the server.  For
 example, the server could generate a random 128-bit value for each response,
 keep a list of issued nonces, and strike nonces from this list as they are used.
 
+Other than the constraint above with regard to nonces issued in
+"badNonce" responses, ACME does not constrain how servers
+scope nonces. Clients MAY assume that nonces have broad scope,
+e.g., by having a single pool of nonces used for all requests.
+However, when retrying in response to a "badNonce" error, the client
+MUST use the nonce provided in the error response. Obviously,
+servers should scope nonces broadly enough that retries are not
+needed very often.
+
 ### Replay-Nonce
 
 The "Replay-Nonce" header field includes a server-generated value that the
