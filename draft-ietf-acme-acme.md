@@ -538,9 +538,8 @@ Other than the constraint above with regard to nonces issued in
 scope nonces. Clients MAY assume that nonces have broad scope,
 e.g., by having a single pool of nonces used for all requests.
 However, when retrying in response to a "badNonce" error, the client
-MUST use the nonce provided in the error response. Obviously,
-servers should scope nonces broadly enough that retries are not
-needed very often.
+MUST use the nonce provided in the error response. Servers should
+scope nonces broadly enough that retries are not needed very often.
 
 ### Replay-Nonce
 
