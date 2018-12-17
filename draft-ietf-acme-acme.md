@@ -524,7 +524,8 @@ present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
 ACME error type "urn:ietf:params:acme:error:badNonce".  An error response with
 the "badNonce" error type MUST include a Replay-Nonce header with a
 fresh nonce that the server will accept in a retry of the original
-query (and possibly in other requests).
+query (and possibly in other requests, according to the server's
+nonce scoping policy).
 On receiving such a response, a client SHOULD retry the request using the new
 nonce.
 
