@@ -226,7 +226,7 @@ from the client.
 # Protocol Overview
 
 ACME allows a client to request certificate management actions using a set of
-JavaScript Object Notation (JSON) messages carried over HTTPS.
+JavaScript Object Notation (JSON) messages carried over HTTPS {{!RFC7159}} {{!RFC2818}}.
 Issuance using ACME resembles a traditional CA's issuance process, in which a user creates an account,
 requests a certificate, and proves control of the domain(s) in that certificate in
 order for the CA to issue the requested certificate.
@@ -522,13 +522,24 @@ way as a value it had never issued.
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
 ACME error type "urn:ietf:params:acme:error:badNonce".  An error response with
-the "badNonce" error type MUST include a Replay-Nonce header with a fresh nonce.
+the "badNonce" error type MUST include a Replay-Nonce header with a
+fresh nonce that the server will accept in a retry of the original
+query (and possibly in other requests, according to the server's
+nonce scoping policy).
 On receiving such a response, a client SHOULD retry the request using the new
 nonce.
 
 The precise method used to generate and track nonces is up to the server.  For
 example, the server could generate a random 128-bit value for each response,
 keep a list of issued nonces, and strike nonces from this list as they are used.
+
+Other than the constraint above with regard to nonces issued in
+"badNonce" responses, ACME does not constrain how servers
+scope nonces. Clients MAY assume that nonces have broad scope,
+e.g., by having a single pool of nonces used for all requests.
+However, when retrying in response to a "badNonce" error, the client
+MUST use the nonce provided in the error response. Servers should
+scope nonces broadly enough that retries are not needed very often.
 
 ### Replay-Nonce
 
@@ -688,7 +699,7 @@ enables:
 ACME is structured as a REST {{REST}} application with the following types of resources:
 
 * Account resources, representing information about an account
-  ({{account-objects}}, {{account-creation}})
+  ({{account-objects}}, {{account-management}})
 * Order resources, representing an account's requests to issue certificates
   ({{order-objects}})
 * Authorization resources, representing an account's authorization to act for an
@@ -699,7 +710,7 @@ ACME is structured as a REST {{REST}} application with the following types of re
   ({{downloading-the-certificate}})
 * A "directory" resource ({{directory}})
 * A "newNonce" resource ({{getting-a-nonce}})
-* A "newAccount" resource ({{account-creation}})
+* A "newAccount" resource ({{account-management}})
 * A "newOrder" resource ({{applying-for-certificate-issuance}})
 * A "revokeCert" resource ({{certificate-revocation}})
 * A "keyChange" resource ({{account-key-roll-over}})
@@ -866,7 +877,7 @@ contact (optional, array of string):
 : An array of URLs that the server can use to contact the client for issues
 related to this account. For example, the server may wish to notify the
 client about server-initiated revocation or certificate expiration.
-For information on supported URL schemes, see {{account-creation}}
+For information on supported URL schemes, see {{account-management}}
 
 termsOfServiceAgreed (optional, boolean):
 : Including this field in a new-account request, with a value of true, indicates
@@ -1276,12 +1287,15 @@ The server MUST include a Cache-Control header field with the "no-store"
 directive in responses for the new-nonce resource, in order to prevent
 caching of this resource.
 
-## Account Creation
+## Account Management 
+
+In this section, we describe how an ACME client can create an
+account on an ACME server, and perform some modifications to the
+account after it has been created.
 
 A client creates a new account with the server by sending a POST request to the
 server's new-account URL.  The body of the request is a stub account object
-optionally containing the "contact" and "termsOfServiceAgreed" fields, and
-optionally the "onlyReturnExisting" and "externalAccountBinding" fields.
+containing some subset of the following fields:
 
 contact (optional, array of string):
 : Same meaning as the corresponding server field defined in {{account-objects}}
@@ -1360,7 +1374,8 @@ JWS (i.e., the "jwk" element of the JWS header) to authenticate future requests
 from the account.  The server returns this account object in a 201 (Created)
 response, with the account URL in a Location header field. The account URL is
 used as the "kid" value in the JWS authenticating subsequent requests by this
-account (See {{request-authentication}}).
+account (see {{request-authentication}}).  The account URL is also used for
+requests for management actions on this account, as described below.
 
 ~~~~~~~~~~
 HTTP/1.1 201 Created
@@ -1817,7 +1832,7 @@ The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
 identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear either in the commonName portion
 of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
-requesting a subjectAltName extension.  (These identifiers may appear
+requesting a subjectAltName extension, or both.  (These identifiers may appear
 in any sort order.)  Specifications that define
 new identifier types must specify where in the certificate signing
 request these
@@ -2030,7 +2045,7 @@ in DER format. Server support for alternate formats is OPTIONAL. For
 formats that can only express a single certificate, the server SHOULD
 provide one or more `Link: rel="up"` header fields pointing to an issuer or
 issuers so that ACME clients can build a certificate chain as defined
-in TLS {{!RFC8446}}.
+in TLS (see Section 4.4.2 of {{!RFC8446}}).
 
 ## Identifier Authorization
 
@@ -2577,6 +2592,16 @@ The client SHOULD de-provision the resource provisioned for this
 challenge once the challenge is complete, i.e., once the "status"
 field of the challenge has the value "valid" or "invalid".
 
+Note that becuase the token appears both in the request sent by the
+ACME server and in the key authorization in the response, it is
+possible to build clients that copy the token from request to
+response.  Clients should avoid this behavior, because it can lead
+to cross-site scripting vulnerabilities; instead, clients should be
+explicitly configured on a per-challenge basis. A client that does
+copy tokens from requests to responses MUST validate that the token
+in the request matches the token syntax above (e.g., that it
+includes only characters from the base64url alphabet).
+
 ## DNS Challenge
 
 When the identifier being validated is a domain name, the client can prove
@@ -2817,19 +2842,22 @@ Template:
 * Field name: The string to be used as a field name in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
-* Client configurable: Boolean indicating whether the server should accept
-  values provided by the client
+* Requests: Either the value "none" or a list of types of requests
+  where the field is allowed in a request object, taken from the
+  following values:
+  * "new" - Requests to the "newAccount" URL
+  * "account" - Requests to an account URL
 * Reference: Where this field is defined
 
 Initial contents: The fields and descriptions defined in {{account-objects}}.
 
-| Field Name               | Field Type      | Configurable | Reference |
+| Field Name               | Field Type      | Requests     | Reference |
 |:-------------------------|:----------------|:-------------|:----------|
-| status                   | string          | false        | RFC XXXX  |
-| contact                  | array of string | true         | RFC XXXX  |
-| externalAccountBinding   | object          | true         | RFC XXXX  |
-| termsOfServiceAgreed     | boolean         | true         | RFC XXXX  |
-| orders                   | string          | false        | RFC XXXX  |
+| status                   | string          | new, account | RFC XXXX  |
+| contact                  | array of string | new, account | RFC XXXX  |
+| externalAccountBinding   | object          | new          | RFC XXXX  |
+| termsOfServiceAgreed     | boolean         | new          | RFC XXXX  |
+| orders                   | string          | none         | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
 document ]]
@@ -3372,10 +3400,19 @@ account holder could take within the scope of ACME:
 4. Changing the account key pair for the account, locking out the
    legitimate account holder
 
-For this reason, it is RECOMMENDED that account key pairs be used for no other
-purpose besides ACME authentication.  For example, the public key of an account
-key pair SHOULD NOT be included in a certificate.  ACME clients and servers
-SHOULD verify that a CSR submitted in a finalize request does not contain a
+For this reason, it is RECOMMENDED that each account key pair be
+used only for authentication of a single ACME account.  For example,
+the public key of an account key pair MUST NOT be included in a
+certificate.  If an ACME client receives a request from a user for
+account creation or key roll-over using an account key that the
+client knows to be used elsewhere, then the client MUST return an
+error.  Clients that manage account keys on behalf of users SHOULD
+generate a fresh account key for every account creation or roll-over
+operation.  Note that given the requirements of
+{{finding-an-account-url-given-a-key}}, servers will not create
+accounts with reused keys anyway.
+
+ACME clients and servers MUST verify that a CSR submitted in a finalize request does not contain a
 public key for any known account key pair.  In particular, when a server
 receives a finalize request, it MUST verify that the public key in a CSR is not
 the same as the public key of the account key pair used to authenticate that
@@ -3414,8 +3451,9 @@ is required to contain at least 128 bits of entropy for the following security
 properties. First, the ACME client should not be able to influence the ACME
 server's choice of token as this may allow an attacker to reuse a domain owner's
 previous challenge responses for a new validation request. Secondly, the entropy
-requirement prevents ACME clients from implementing a "naive" validation server
-that automatically replies to challenges by predicting the token.
+requirement makes it more difficult for ACME clients to implement a "naive"
+validation server that automatically replies to challenges without being 
+configured per-challenge.
 
 ## Malformed Certificate Chains
 
