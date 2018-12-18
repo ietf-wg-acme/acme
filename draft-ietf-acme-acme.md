@@ -2592,7 +2592,7 @@ The client SHOULD de-provision the resource provisioned for this
 challenge once the challenge is complete, i.e., once the "status"
 field of the challenge has the value "valid" or "invalid".
 
-Note that becuase the token appears both in the request sent by the
+Note that because the token appears both in the request sent by the
 ACME server and in the key authorization in the response, it is
 possible to build clients that copy the token from request to
 response.  Clients should avoid this behavior, because it can lead
