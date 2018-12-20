@@ -3406,9 +3406,8 @@ the public key of an account key pair MUST NOT be included in a
 certificate.  If an ACME client receives a request from a user for
 account creation or key roll-over using an account key that the
 client knows to be used elsewhere, then the client MUST return an
-error.  Clients that manage account keys on behalf of users SHOULD
-generate a fresh account key for every account creation or roll-over
-operation.  Note that given the requirements of
+error.  Clients MUST generate a fresh account key for every account
+creation or roll-over operation.  Note that given the requirements of
 {{finding-an-account-url-given-a-key}}, servers will not create
 accounts with reused keys anyway.
 
