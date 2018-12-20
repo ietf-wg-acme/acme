@@ -299,7 +299,7 @@ certificate and make it available to the client.
 
                           <~~~~~~Await issuance~~~~~~>
 
-      GET request                   ------->
+      POST-as-GET request           ------->
                                     <-------              Certificate
 
                 [] Information covered by request signatures
@@ -773,7 +773,7 @@ certificate, and fetch an updated certificate some time after issuance.  The
 | Create account        | POST newAccount                          | 201 -> account |
 | Submit order          | POST newOrder                            | 201 -> order   |
 | Fetch challenges      | POST-as-GET order's authorization urls   | 200            |
-| Respond to challenges | POST-as-GET authorization challenge urls | 200            |
+| Respond to challenges | POST authorization challenge urls        | 200            |
 | Poll for status       | POST-as-GET order                        | 200            |
 | Finalize order        | POST order's finalize url                | 200            |
 | Poll for status       | POST-as-GET order                        | 200            |
@@ -2028,12 +2028,6 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 [Other certificate contents]
 -----END CERTIFICATE-----
 ~~~~~~~~~~
-
-An ACME client MAY attempt to fetch the certificate with a GET
-request.  If the server does not allow GET requests for certificate
-resources, then it will return an error as described in
-{{post-as-get}}.  On receiving such an error, the client SHOULD fall
-back to a POST-as-GET request.
 
 A certificate resource represents a single, immutable certificate. If the client
 wishes to obtain a renewed certificate, the client initiates a new order process
