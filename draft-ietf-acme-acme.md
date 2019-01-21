@@ -2433,7 +2433,7 @@ need to specify which types of identifier they apply to.
 ## Key Authorizations
 
 All challenges defined in this document make use of a key authorization
-string.  A key authorization is a string that concatinates the token for the
+string.  A key authorization is a string that concatenates the token for the
 challenge with a key fingerprint, separated by a "." character:
 
 ~~~~~~~~~~
