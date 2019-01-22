@@ -484,7 +484,7 @@ the request URL.  If the two do not match, then the server MUST reject the
 request as unauthorized.
 
 Except for the directory resource, all ACME resources are addressed with URLs
-provided to the client by the server.  In requests sent to these resources, the client MUST set
+provided to the client by the server.  In POST requests sent to these resources, the client MUST set
 the "url" header parameter to the exact string provided by the server (rather
 than performing any re-encoding on the URL).  The server SHOULD perform the
 corresponding string equality check, configuring each resource with the URL
