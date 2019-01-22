@@ -639,7 +639,7 @@ to error types, rather than the full URNs.  For example, an "error of type
 
 Sometimes a CA may need to return multiple errors in response to a request.
 Additionally, the CA may need to attribute errors to specific
-identifiers.  For instance, a new-order request may contain multiple
+identifiers.  For instance, a newOrder request may contain multiple
 identifiers for which the CA cannot issue. In this situation, an ACME
 problem document MAY contain the "subproblems" field, containing a JSON
 array of problem documents, each of which MAY contain an "identifier"
@@ -650,7 +650,7 @@ Subproblems need not all have the same type, and do not need to match the top le
 
 ACME clients may choose to use the "identifier" field of a subproblem
 as a hint that an operation would succeed if that identifier were omitted. For
-instance, if an order contains ten DNS identifiers, and the new-order
+instance, if an order contains ten DNS identifiers, and the newOrder
 request returns a problem document with two subproblems, referencing two
 of those identifiers, the ACME client may choose to submit another order
 containing only the eight identifiers not listed in the problem document.
@@ -837,7 +837,7 @@ CAA records.
 
 externalAccountRequired (optional, boolean):
 : If this field is present and set to "true", then the CA requires that all
-new-account requests include an "externalAccountBinding" field associating the
+newAccount requests include an "externalAccountBinding" field associating the
 new account with an external account.
 
 Clients access the directory by sending a GET request to the directory URL.
@@ -880,7 +880,7 @@ client about server-initiated revocation or certificate expiration.
 For information on supported URL schemes, see {{account-management}}
 
 termsOfServiceAgreed (optional, boolean):
-: Including this field in a new-account request, with a value of true, indicates
+: Including this field in a newAccount request, with a value of true, indicates
 the client's agreement with the terms of service. This field is not updateable
 by the client.
 
@@ -1005,7 +1005,7 @@ certificate (optional, string):
 }
 ~~~~~~~~~~
 
-Any identifier of type "dns" in a new-order request MAY have a wildcard domain
+Any identifier of type "dns" in a newOrder request MAY have a wildcard domain
 name as its value. A wildcard domain name consists of a single asterisk
 character followed by a single full stop character ("\*.") followed by a domain
 name as defined for use in the Subject Alternate Name Extension by RFC 5280
@@ -1266,7 +1266,7 @@ the client will have gotten a nonce from a previous request.  However, the
 client might sometimes need to get a new nonce, e.g., on its first request to
 the server or if an existing nonce is no longer valid.
 
-To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
+To get a fresh nonce, the client sends a HEAD request to the newNonce resource
 on the server.  The server's response MUST include a Replay-Nonce header field
 containing a fresh nonce, and SHOULD have status code 200 (OK).  The
 server MUST also respond to GET requests for this resource, returning an empty
@@ -1281,10 +1281,10 @@ Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 ~~~~~~~~~~
 
-Proxy caching of responses from the new-nonce resource can cause
+Proxy caching of responses from the newNonce resource can cause
 clients receive the same nonce repeatedly, leading to badNonce errors.
 The server MUST include a Cache-Control header field with the "no-store"
-directive in responses for the new-nonce resource, in order to prevent
+directive in responses for the newNonce resource, in order to prevent
 caching of this resource.
 
 ## Account Management 
@@ -1294,7 +1294,7 @@ account on an ACME server, and perform some modifications to the
 account after it has been created.
 
 A client creates a new account with the server by sending a POST request to the
-server's new-account URL.  The body of the request is a stub account object
+server's newAccount URL.  The body of the request is a stub account object
 containing some subset of the following fields:
 
 contact (optional, array of string):
@@ -1364,7 +1364,7 @@ scheme but an invalid value then the server MUST return an error of type
 If the server wishes to require the client to agree to terms under which the ACME
 service is to be used, it MUST indicate the URL where such terms can be accessed
 in the "termsOfService" subfield of the "meta" field in the directory object,
-and the server MUST reject new-account requests that do not have the
+and the server MUST reject newAccount requests that do not have the
 "termsOfServiceAgreed" field set to "true".  Clients SHOULD NOT automatically agree
 to terms by default.  Rather, they SHOULD require some user interaction for
 agreement to terms.
@@ -1405,7 +1405,7 @@ an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to find the URL for an existing account and does not want an
 account to be created if one does not already exist, then it SHOULD do so by
-sending a POST request to the new-account URL with a JWS whose payload has an
+sending a POST request to the newAccount URL with a JWS whose payload has an
 "onlyReturnExisting" field set to "true" ({"onlyReturnExisting": true}).
 If a client sends such a request and an account does not exist, then the server
 MUST return an error response with status code 400 (Bad Request) and type
@@ -1530,13 +1530,13 @@ Content-Type: application/jose+json
 }
 ~~~~~
 
-If such a CA requires that new-account requests contain an "externalAccountBinding"
+If such a CA requires that newAccount requests contain an "externalAccountBinding"
 field, then it MUST provide the value "true" in the "externalAccountRequired" subfield
 of the "meta" field in the directory object.  If the CA receives a
-new-account request without an "externalAccountBinding" field, then it SHOULD
+newAccount request without an "externalAccountBinding" field, then it SHOULD
 reply with an error of type "externalAccountRequired".
 
-When a CA receives a new-account request containing an
+When a CA receives a newAccount request containing an
 "externalAccountBinding" field, it decides whether or not to verify the
 binding.  If the CA does not verify the binding, then it MUST NOT reflect the
 "externalAccountBinding" field in the resulting account object (if any).  To
@@ -1554,7 +1554,7 @@ consider the new account associated with the external account corresponding to
 the MAC key.  The account object the CA returns MUST include an
 "externalAccountBinding" field with the same value as the field in
 the request.  If any of these checks fail, then the CA MUST
-reject the new-account request.
+reject the newAccount request.
 
 
 ### Account Key Roll-over
@@ -1572,18 +1572,18 @@ covers this request and its signature, and indicates the old key
 holder's assent to the roll-over request.
 
 To create this request object, the client first constructs a
-key-change object describing the account to be updated and its
+keyChange object describing the account to be updated and its
 account key:
 
 account (required, string):
 : The URL for the account being modified.  The content of this field MUST be the
 exact string provided in the Location header field in response to the
-new-account request that created the account.
+newAccount request that created the account.
 
 oldKey (required, JWK):
 : The JWK representation of the old key
 
-The client then encapsulates the key-change object in an "inner" JWS, signed with the
+The client then encapsulates the keyChange object in an "inner" JWS, signed with the
 requested new account key.
 This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.
@@ -1633,7 +1633,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-On receiving key-change request, the server MUST perform the following steps in
+On receiving keyChange request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
 1. Validate the POST request belongs to a currently active account, as described
@@ -1642,13 +1642,13 @@ addition to the typical JWS validation:
    JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
 4. Check that the inner JWS verifies using the key in its "jwk" field.
-5. Check that the payload of the inner JWS is a well-formed key-change object
+5. Check that the payload of the inner JWS is a well-formed keyChange object
    (as described above).
 6. Check that the "url" parameters of the inner and outer JWSs are the same.
-7. Check that the "account" field of the key-change object contains the URL for
+7. Check that the "account" field of the keyChange object contains the URL for
    the account matching the old key (i.e., the "kid" field in the
    outer JWS).
-8. Check that the "oldKey" field of the key-change object is the
+8. Check that the "oldKey" field of the keyChange object is the
    same as the account key for the account in question.
 9. Check that no account exists whose account key is the same as the key in the
    "jwk" header parameter of the inner JWS.
@@ -1709,7 +1709,7 @@ provide a way to reactivate a deactivated account.
 ## Applying for Certificate Issuance
 
 The client begins the certificate issuance process by sending a POST request to the server's
-new-order resource.  The body of the POST is a JWS object whose JSON payload is
+newOrder resource.  The body of the POST is a JWS object whose JSON payload is
 a subset of the order object defined in {{order-objects}}, containing the fields
 that describe the certificate to be issued:
 
@@ -1830,7 +1830,7 @@ Content-Type: application/jose+json
 
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
-identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear either in the commonName portion
+identifiers as the initial newOrder request.  Identifiers of type "dns" MUST appear either in the commonName portion
 of the requested subject name, or in an extensionRequest attribute {{!RFC2985}}
 requesting a subjectAltName extension, or both.  (These identifiers may appear
 in any sort order.)  Specifications that define
@@ -1923,7 +1923,7 @@ authorization" resource in its directory by adding the field "newAuthz" with a
 URL for the new authorization resource.
 
 To request authorization for an identifier, the client sends a POST request to
-the new-authorization resource specifying the identifier for which authorization
+the newAuthorization resource specifying the identifier for which authorization
 is being requested.
 
 identifier (required, object):
@@ -2835,7 +2835,7 @@ Required policy {{!RFC8126}}.
 
 This registry lists field names that are defined for use in ACME account
 objects.  Fields marked as "configurable" may be included in a
-new-account request.
+newAccount request.
 
 Template:
 
@@ -2866,7 +2866,7 @@ document ]]
 
 This registry lists field names that are defined for use in ACME order
 objects.  Fields marked as "configurable" may be included in a
-new-order request.
+newOrder request.
 
 Template:
 
@@ -2897,7 +2897,7 @@ document ]]
 
 This registry lists field names that are defined for use in ACME authorization
 objects.  Fields marked as "configurable" may be included in a
-new-authorization request.
+newAuthorization request.
 
 Template:
 
@@ -3125,7 +3125,7 @@ CDN), can cause denial-of-service conditions in a variety of ways.
 ## Integrity of Authorizations
 
 ACME allows anyone to request challenges for an identifier by registering an
-account key and sending a new-order request using that account key.  The
+account key and sending a newOrder request using that account key.  The
 integrity of the authorization process thus depends on the identifier validation
 challenges to ensure that the challenge can only be completed by someone who
 both (1) holds the private key of the account key pair, and (2) controls the
@@ -3140,7 +3140,7 @@ following form:
 
 * Legitimate domain holder registers account key pair A
 * MitM registers account key pair B
-* Legitimate domain holder sends a new-order request signed using account key A
+* Legitimate domain holder sends a newOrder request signed using account key A
 * MitM suppresses the legitimate request but sends the same request signed
   using account key B
 * ACME server issues challenges and MitM forwards them to the legitimate domain
