@@ -433,13 +433,16 @@ array of supported "alg" values.  See {{errors}} for more details on
 the structure of error responses.
 
 If the server supports the signature algorithm "alg" but either does not support
-or chooses to reject the public key "jwk" (e.g., "alg" is "RS256" but the
-modulus "n" is only 512-bit; "alg" is "ES256" but "jwk" does not contain a valid
-P-256 public key; "alg" is "EdDSA" and "crv" is "Ed448", but the server only
-supports "EdDSA" with "Ed25519"; the corresponding private key is known to have
-been compromised; etc), then the server MUST return an error with status code
-400 (Bad Request) and type "urn:ietf:params:acme:error:badPublicKey".  The
-problem document detail SHOULD describe the reason for rejecting the public key.
+or chooses to reject the public key "jwk", then the server MUST return an error
+with status code 400 (Bad Request) and type
+"urn:ietf:params:acme:error:badPublicKey".  The problem document detail SHOULD
+describe the reason for rejecting the public key; some example reasons are:
+
+* "alg" is "RS256" but the modulus "n" is too small (e.g., 512-bit)
+* "alg" is "ES256" but "jwk" does not contain a valid P-256 public key
+* "alg" is "EdDSA" and "crv" is "Ed448", but the server only supports "EdDSA"
+  with "Ed25519"
+* the corresponding private key is known to have been compromised
 
 Because client requests in ACME carry JWS objects in the Flattened
 JSON Serialization, they must have the "Content-Type" header field
