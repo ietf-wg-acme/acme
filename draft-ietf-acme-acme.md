@@ -1340,8 +1340,9 @@ The server MUST ignore any values provided in the "orders" fields in account
 objects sent by the client, as well as any other fields that it does not
 recognize. If new fields are specified in the future, the specification of those
 fields MUST describe whether they can be provided by the client. The server MUST
-NOT reflect unrecognized fields in the resulting account object. This allows
-clients to detect when servers do not support an extension field.
+NOT reflect the "onlyReturnExisting" field or any unrecognized fields in the
+resulting account object. This allows clients to detect when servers do not
+support an extension field.
 
 The server SHOULD validate that the contact URLs in the "contact" field are
 valid and supported by the server. If the server validates contact URLs it MUST
@@ -2853,6 +2854,7 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 | contact                  | array of string | new, account | RFC XXXX  |
 | externalAccountBinding   | object          | new          | RFC XXXX  |
 | termsOfServiceAgreed     | boolean         | new          | RFC XXXX  |
+| onlyReturnExisting       | boolean         | new          | RFC XXXX  |
 | orders                   | string          | none         | RFC XXXX  |
 
 \[\[ RFC EDITOR: Please replace XXXX above with the RFC number assigned to this
