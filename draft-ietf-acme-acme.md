@@ -884,6 +884,11 @@ termsOfServiceAgreed (optional, boolean):
 the client's agreement with the terms of service. This field is not updateable
 by the client.
 
+externalAccountBinding (optional, object):
+: Including this field in a newAccount request indicates approval by the holder
+of an existing non-ACME account to bind that account to this ACME account. This
+field is not updateable by the client. (See {{external-account-binding}}).
+
 orders (required, string):
 : A URL from which a list of orders submitted by this account can be fetched via
 a POST-as-GET request, as described in {{orders-list}}.
@@ -1310,8 +1315,7 @@ onlyReturnExisting (optional, boolean):
   {{finding-an-account-url-given-a-key}}).
 
 externalAccountBinding (optional, object):
-: An optional field for binding the new account with an existing non-ACME
-  account (see {{ external-account-binding }}).
+: Same meaning as the corresponding server field defined in {{account-objects}}
 
 ~~~~~~~~~~
 POST /acme/new-account HTTP/1.1
