@@ -433,7 +433,7 @@ array of supported "alg" values.  See {{errors}} for more details on
 the structure of error responses.
 
 Because client requests in ACME carry JWS objects in the Flattened
-JSON Serialization, they must have the "Content-Type" header field
+JSON Serialization, they must have the Content-Type header field
 set to "application/jose+json".  If a request does not meet this
 requirement, then the server MUST return a response with status code
 415 (Unsupported Media Type).
@@ -522,7 +522,7 @@ way as a value it had never issued.
 When a server rejects a request because its nonce value was unacceptable (or not
 present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
 ACME error type "urn:ietf:params:acme:error:badNonce".  An error response with
-the "badNonce" error type MUST include a Replay-Nonce header with a
+the "badNonce" error type MUST include a Replay-Nonce header field with a
 fresh nonce that the server will accept in a retry of the original
 query (and possibly in other requests, according to the server's
 nonce scoping policy).
@@ -543,7 +543,7 @@ scope nonces broadly enough that retries are not needed very often.
 
 ### Replay-Nonce
 
-The "Replay-Nonce" header field includes a server-generated value that the
+The Replay-Nonce header field includes a server-generated value that the
 server can use to detect unauthorized replay in future client requests.  The
 server MUST generate the value provided in Replay-Nonce in such a way that
 they are unique to each message, with high probability, and unpredictable to anyone besides the server. For instance, it is
@@ -578,13 +578,13 @@ then the verifier MUST reject the JWS as malformed.
 Creation of resources can be rate limited by ACME servers to ensure fair usage and
 prevent abuse.  Once the rate limit is exceeded, the server MUST respond
 with an error with the type "urn:ietf:params:acme:error:rateLimited".
-Additionally, the server SHOULD send a "Retry-After" header {{!RFC7231}} indicating
+Additionally, the server SHOULD send a Retry-After header field {{!RFC7231}} indicating
 when the current request may succeed again.  If multiple rate limits are
 in place, that is the time where all rate limits allow access again for
 the current request with exactly the same parameters.
 
 In addition to the human-readable "detail" field of the error response, the
-server MAY send one or multiple link relations in the "Link" header {{!RFC8288}} pointing to
+server MAY send one or multiple link relations in the Link header field {{!RFC8288}} pointing to
 documentation about the specific rate limit that was hit, using the "help" link relation type.
 
 ## Errors
@@ -639,7 +639,7 @@ to error types, rather than the full URNs.  For example, an "error of type
 
 Sometimes a CA may need to return multiple errors in response to a request.
 Additionally, the CA may need to attribute errors to specific
-identifiers.  For instance, a new-order request may contain multiple
+identifiers.  For instance, a newOrder request may contain multiple
 identifiers for which the CA cannot issue. In this situation, an ACME
 problem document MAY contain the "subproblems" field, containing a JSON
 array of problem documents, each of which MAY contain an "identifier"
@@ -650,7 +650,7 @@ Subproblems need not all have the same type, and they do not need to match the t
 
 ACME clients may choose to use the "identifier" field of a subproblem
 as a hint that an operation would succeed if that identifier were omitted. For
-instance, if an order contains ten DNS identifiers, and the new-order
+instance, if an order contains ten DNS identifiers, and the newOrder
 request returns a problem document with two subproblems (referencing two
 of those identifiers), the ACME client may choose to submit another order
 containing only the eight identifiers not listed in the problem document.
@@ -764,7 +764,7 @@ indicate HTTP link relations.
 The following table illustrates a typical sequence of requests required to
 establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
-"->" is a mnemonic for a Location header pointing to a created resource.
+"->" is a mnemonic for a Location header field pointing to a created resource.
 
 | Action                | Request                                  | Response       |
 |:----------------------|:-----------------------------------------|:---------------|
@@ -837,7 +837,7 @@ CAA records.
 
 externalAccountRequired (optional, boolean):
 : If this field is present and set to "true", then the CA requires that all
-new-account requests include an "externalAccountBinding" field associating the
+newAccount requests include an "externalAccountBinding" field associating the
 new account with an external account.
 
 Clients access the directory by sending a GET request to the directory URL.
@@ -880,7 +880,7 @@ client about server-initiated revocation or certificate expiration.
 For information on supported URL schemes, see {{account-management}}.
 
 termsOfServiceAgreed (optional, boolean):
-: Including this field in a new-account request, with a value of true, indicates
+: Including this field in a newAccount request, with a value of true, indicates
 the client's agreement with the terms of service. This field cannot be updated
 by the client.
 
@@ -1005,7 +1005,7 @@ certificate (optional, string):
 }
 ~~~~~~~~~~
 
-Any identifier of type "dns" in a new-order request MAY have a wildcard domain
+Any identifier of type "dns" in a newOrder request MAY have a wildcard domain
 name as its value. A wildcard domain name consists of a single asterisk
 character followed by a single full stop character ("\*.") followed by a domain
 name as defined for use in the Subject Alternate Name Extension by
@@ -1175,7 +1175,7 @@ the challenges listed in the authorization transitions to the
 state.  If the client attempts to fulfill a challenge and fails, or
 if there is an error while the authorization is still
 pending, then the authorization transitions to the "invalid" state.
-Once the authorization is in the valid state, it can expire
+Once the authorization is in the "valid" state, it can expire
 ("expired"), be deactivated by the client ("deactivated", see
 {{deactivating-an-authorization}}), or revoked by the server
 ("revoked").
@@ -1283,7 +1283,7 @@ Cache-Control: no-store
 ~~~~~~~~~~
 
 Proxy caching of responses from the new-nonce resource can cause
-clients to receive the same nonce repeatedly, leading to badNonce errors.
+clients to receive the same nonce repeatedly, leading to "badNonce" errors.
 The server MUST include a Cache-Control header field with the "no-store"
 directive in responses for the new-nonce resource, in order to prevent
 caching of this resource.
@@ -1295,7 +1295,7 @@ account on an ACME server and perform some modifications to the
 account after it has been created.
 
 A client creates a new account with the server by sending a POST request to the
-server's new-account URL.  The body of the request is a stub account object
+server's newAccount URL.  The body of the request is a stub account object
 containing some subset of the following fields:
 
 contact (optional, array of string):
@@ -1365,7 +1365,7 @@ scheme but an invalid value, then the server MUST return an error of type
 If the server wishes to require the client to agree to terms under which the ACME
 service is to be used, it MUST indicate the URL where such terms can be accessed
 in the "termsOfService" subfield of the "meta" field in the directory object,
-and the server MUST reject new-account requests that do not have the
+and the server MUST reject newAccount requests that do not have the
 "termsOfServiceAgreed" field set to "true".  Clients SHOULD NOT automatically agree
 to terms by default.  Rather, they SHOULD require some user interaction for
 agreement to terms.
@@ -1406,7 +1406,7 @@ an account key but not the corresponding account URL to recover the account URL.
 
 If a client wishes to find the URL for an existing account and does not want an
 account to be created if one does not already exist, then it SHOULD do so by
-sending a POST request to the new-account URL with a JWS whose payload has an
+sending a POST request to the newAccount URL with a JWS whose payload has an
 "onlyReturnExisting" field set to "true" ({"onlyReturnExisting": true}).
 If a client sends such a request and an account does not exist, then the server
 MUST return an error response with status code 400 (Bad Request) and type
@@ -1531,13 +1531,13 @@ Content-Type: application/jose+json
 }
 ~~~~~
 
-If such a CA requires that new-account requests contain an "externalAccountBinding"
+If such a CA requires that newAccount requests contain an "externalAccountBinding"
 field, then it MUST provide the value "true" in the "externalAccountRequired" subfield
 of the "meta" field in the directory object.  If the CA receives a
-new-account request without an "externalAccountBinding" field, then it SHOULD
+newAccount request without an "externalAccountBinding" field, then it SHOULD
 reply with an error of type "externalAccountRequired".
 
-When a CA receives a new-account request containing an
+When a CA receives a newAccount request containing an
 "externalAccountBinding" field, it decides whether or not to verify the
 binding.  If the CA does not verify the binding, then it MUST NOT reflect the
 "externalAccountBinding" field in the resulting account object (if any).  To
@@ -1555,7 +1555,7 @@ consider the new account associated with the external account corresponding to
 the MAC key.  The account object the CA returns MUST include an
 "externalAccountBinding" field with the same value as the field in
 the request.  If any of these checks fail, then the CA MUST
-reject the new-account request.
+reject the newAccount request.
 
 
 ### Account Key Rollover {#account-key-roll-over}
@@ -1579,7 +1579,7 @@ account key:
 account (required, string):
 : The URL for the account being modified.  The content of this field MUST be the
 exact string provided in the Location header field in response to the
-new-account request that created the account.
+newAccount request that created the account.
 
 oldKey (required, JWK):
 : The JWK representation of the old key.
@@ -1710,7 +1710,7 @@ provide a way to reactivate a deactivated account.
 ## Applying for Certificate Issuance
 
 The client begins the certificate issuance process by sending a POST request to the server's
-new-order resource.  The body of the POST is a JWS object whose JSON payload is
+newOrder resource.  The body of the POST is a JWS object whose JSON payload is
 a subset of the order object defined in {{order-objects}}, containing the fields
 that describe the certificate to be issued:
 
@@ -1831,7 +1831,7 @@ Content-Type: application/jose+json
 
 The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
-identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear either in the commonName portion
+identifiers as the initial newOrder request.  Identifiers of type "dns" MUST appear either in the commonName portion
 of the requested subject name or in an extensionRequest attribute {{!RFC2985}}
 requesting a subjectAltName extension, or both.  (These identifiers may appear
 in any sort order.)  Specifications that define
@@ -1869,7 +1869,7 @@ action the client should take:
   request.
 
 * "processing": The certificate is being issued. Send a POST-as-GET request after the
-  time given in the "Retry-After" header field of the response, if
+  time given in the Retry-After header field of the response, if
   any.
 
 * "valid": The server has issued the certificate and provisioned its URL to the
@@ -1921,10 +1921,10 @@ orders submitted by the client.
 
 If a CA wishes to allow pre-authorization within ACME, it can offer a "new
 authorization" resource in its directory by adding the field "newAuthz" with a
-URL for the new authorization resource.
+URL for the newAuthz resource.
 
 To request authorization for an identifier, the client sends a POST request to
-the new-authorization resource specifying the identifier for which authorization
+the newAuthz resource specifying the identifier for which authorization
 is being requested.
 
 identifier (required, object):
@@ -2071,7 +2071,7 @@ request.
 
 When a client receives an order from the server in reply to a new order request, it downloads the authorization
 resources by sending POST-as-GET requests to the indicated URLs.  If the client
-initiates authorization using a request to the new authorization resource, it
+initiates authorization using a request to the newAuthz resource, it
 will have already received the pending authorization object in the response
 to that request.
 
@@ -2823,7 +2823,7 @@ Required policy {{!RFC8126}}.
 
 The "ACME Account Object Fields" registry lists field names that are defined
 for use in ACME account objects.  Fields marked as "configurable" may be included in a
-new-account request.
+newAccount request.
 
 Template:
 
@@ -3094,7 +3094,7 @@ CDN) can cause denial-of-service conditions in a variety of ways.
 ## Integrity of Authorizations
 
 ACME allows anyone to request challenges for an identifier by registering an
-account key and sending a new-order request using that account key.  The
+account key and sending a newOrder request using that account key.  The
 integrity of the authorization process thus depends on the identifier validation
 challenges to ensure that the challenge can only be completed by someone who
 both (1) holds the private key of the account key pair and (2) controls the
