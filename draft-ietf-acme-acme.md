@@ -432,6 +432,18 @@ document returned with the error MUST include an "algorithms" field with an
 array of supported "alg" values.  See {{errors}} for more details on
 the structure of error responses.
 
+If the server supports the signature algorithm "alg" but either does not support
+or chooses to reject the public key "jwk", then the server MUST return an error
+with status code 400 (Bad Request) and type
+"urn:ietf:params:acme:error:badPublicKey".  The problem document detail SHOULD
+describe the reason for rejecting the public key; some example reasons are:
+
+* "alg" is "RS256" but the modulus "n" is too small (e.g., 512-bit)
+* "alg" is "ES256" but "jwk" does not contain a valid P-256 public key
+* "alg" is "EdDSA" and "crv" is "Ed448", but the server only supports "EdDSA"
+  with "Ed25519"
+* the corresponding private key is known to have been compromised
+
 Because client requests in ACME carry JWS objects in the Flattened
 JSON Serialization, they must have the Content-Type header field
 set to "application/jose+json".  If a request does not meet this
@@ -606,6 +618,7 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
 | alreadyRevoked          | The request specified a certificate to be revoked that has already been revoked              |
 | badCSR                  | The CSR is unacceptable (e.g., due to a short key)                                           |
 | badNonce                | The client sent an unacceptable anti-replay nonce                                            |
+| badPublicKey            | The JWS was signed by a public key the server does not support                               |
 | badRevocationReason     | The revocation reason provided is not allowed by the server                                  |
 | badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support                             |
 | caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing a certificate |
