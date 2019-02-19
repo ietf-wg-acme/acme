@@ -769,7 +769,7 @@ ul.toc li {
 <p id="rfc.section.6.4.p.1">It is common in deployment for the entity terminating TLS for HTTPS to be different from the entity operating the logical HTTPS server, with a &#8220;request routing&#8221; layer in the middle.  For example, an ACME CA might have a content delivery network terminate TLS connections from clients so that it can inspect client requests for denial-of-service (DoS) protection.</p>
 <p id="rfc.section.6.4.p.2">These intermediaries can also change values in the request that are not signed in the HTTPS request, e.g., the request URL and header fields.  ACME uses JWS to provide an integrity mechanism, which protects against an intermediary changing the request URL to another ACME URL.</p>
 <p id="rfc.section.6.4.p.3">As noted in <a href="#request-authentication" class="xref">Section 6.2</a>, all ACME request objects carry a &#8220;url&#8221; header parameter in their protected header.  This header parameter encodes the URL to which the client is directing the request.  On receiving such an object in an HTTP request, the server MUST compare the &#8220;url&#8221; header parameter to the request URL.  If the two do not match, then the server MUST reject the request as unauthorized.</p>
-<p id="rfc.section.6.4.p.4">Except for the directory resource, all ACME resources are addressed with URLs provided to the client by the server.  In requests sent to these resources, the client MUST set the &#8220;url&#8221; header parameter to the exact string provided by the server (rather than performing any re-encoding on the URL).  The server SHOULD perform the corresponding string equality check, configuring each resource with the URL string provided to clients and having the resource check that requests have the same string in their &#8220;url&#8221; header parameter. The server MUST reject the request as unauthorized if the string equality check fails.</p>
+<p id="rfc.section.6.4.p.4">Except for the directory resource, all ACME resources are addressed with URLs provided to the client by the server.  In POST requests sent to these resources, the client MUST set the &#8220;url&#8221; header parameter to the exact string provided by the server (rather than performing any re-encoding on the URL).  The server SHOULD perform the corresponding string equality check, configuring each resource with the URL string provided to clients and having the resource check that requests have the same string in their &#8220;url&#8221; header parameter. The server MUST reject the request as unauthorized if the string equality check fails.</p>
 <h1 id="rfc.section.6.4.1">
 <a href="#rfc.section.6.4.1">6.4.1.</a> <a href="#url-url-jws-header-parameter" id="url-url-jws-header-parameter">"url" (URL) JWS Header Parameter</a>
 </h1>
@@ -1393,7 +1393,7 @@ deactiv.|                revoke |
 <a href="#rfc.section.7.2">7.2.</a> <a href="#getting-a-nonce" id="getting-a-nonce">Getting a Nonce</a>
 </h1>
 <p id="rfc.section.7.2.p.1">Before sending a POST request to the server, an ACME client needs to have a fresh anti-replay nonce to put in the &#8220;nonce&#8221; header of the JWS.  In most cases, the client will have gotten a nonce from a previous request.  However, the client might sometimes need to get a new nonce, e.g., on its first request to the server or if an existing nonce is no longer valid.</p>
-<p id="rfc.section.7.2.p.2">To get a fresh nonce, the client sends a HEAD request to the new-nonce resource on the server.  The server&#8217;s response MUST include a Replay-Nonce header field containing a fresh nonce and SHOULD have status code 200 (OK).  The server MUST also respond to GET requests for this resource, returning an empty body (while still providing a Replay-Nonce header) with a status code of 204 (No Content).</p>
+<p id="rfc.section.7.2.p.2">To get a fresh nonce, the client sends a HEAD request to the newNonce resource on the server.  The server&#8217;s response MUST include a Replay-Nonce header field containing a fresh nonce and SHOULD have status code 200 (OK).  The server MUST also respond to GET requests for this resource, returning an empty body (while still providing a Replay-Nonce header) with a status code of 204 (No Content).</p>
 <pre>
 HEAD /acme/new-nonce HTTP/1.1
 Host: example.com
@@ -1402,7 +1402,7 @@ HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 </pre>
-<p id="rfc.section.7.2.p.3">Proxy caching of responses from the new-nonce resource can cause clients to receive the same nonce repeatedly, leading to &#8220;badNonce&#8221; errors.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the new-nonce resource, in order to prevent caching of this resource.</p>
+<p id="rfc.section.7.2.p.3">Proxy caching of responses from the newNonce resource can cause clients to receive the same nonce repeatedly, leading to &#8220;badNonce&#8221; errors.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the newNonce resource, in order to prevent caching of this resource.</p>
 <h1 id="rfc.section.7.3">
 <a href="#rfc.section.7.3">7.3.</a> <a href="#account-management" id="account-management">Account Management</a>
 </h1>
@@ -1577,7 +1577,7 @@ Content-Type: application/jose+json
 </h1>
 <p id="rfc.section.7.3.5.p.1">A client may wish to change the public key that is associated with an account in order to recover from a key compromise or proactively mitigate the impact of an unnoticed key compromise.</p>
 <p id="rfc.section.7.3.5.p.2">To change the key associated with an account, the client sends a request to the server containing signatures by both the old and new keys.  The signature by the new key covers the account URL and the old key, signifying a request by the new key holder to take over the account from the old key holder.  The signature by the old key covers this request and its signature, and indicates the old key holder&#8217;s assent to the rollover request.</p>
-<p id="rfc.section.7.3.5.p.3">To create this request object, the client first constructs a key-change object describing the account to be updated and its account key:</p>
+<p id="rfc.section.7.3.5.p.3">To create this request object, the client first constructs a keyChange object describing the account to be updated and its account key:</p>
 <p></p>
 
 <dl>
@@ -1586,7 +1586,7 @@ Content-Type: application/jose+json
 <dt>oldKey (required, JWK):</dt>
 <dd style="margin-left: 8">The JWK representation of the old key.</dd>
 </dl>
-<p id="rfc.section.7.3.5.p.5">The client then encapsulates the key-change object in an &#8220;inner&#8221; JWS, signed with the requested new account key.  This &#8220;inner&#8221; JWS becomes the payload for the &#8220;outer&#8221; JWS that is the body of the ACME request.</p>
+<p id="rfc.section.7.3.5.p.5">The client then encapsulates the keyChange object in an &#8220;inner&#8221; JWS, signed with the requested new account key.  This &#8220;inner&#8221; JWS becomes the payload for the &#8220;outer&#8221; JWS that is the body of the ACME request.</p>
 <p id="rfc.section.7.3.5.p.6">The outer JWS MUST meet the normal requirements for an ACME JWS (see <a href="#request-authentication" class="xref">Section 6.2</a>).  The inner JWS MUST meet the normal requirements, with the following differences:</p>
 <p></p>
 
@@ -1623,7 +1623,7 @@ Content-Type: application/jose+json
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 </pre>
-<p id="rfc.section.7.3.5.p.9">On receiving key-change request, the server MUST perform the following steps in addition to the typical JWS validation:</p>
+<p id="rfc.section.7.3.5.p.9">On receiving keyChange request, the server MUST perform the following steps in addition to the typical JWS validation:</p>
 <p></p>
 
 <ol>
@@ -1631,10 +1631,10 @@ Content-Type: application/jose+json
 <li>Check that the payload of the JWS is a well-formed JWS object (the &#8220;inner JWS&#8221;).</li>
 <li>Check that the JWS protected header of the inner JWS has a &#8220;jwk&#8221; field.</li>
 <li>Check that the inner JWS verifies using the key in its &#8220;jwk&#8221; field.</li>
-<li>Check that the payload of the inner JWS is a well-formed key-change object (as described above).</li>
+<li>Check that the payload of the inner JWS is a well-formed keyChange object (as described above).</li>
 <li>Check that the &#8220;url&#8221; parameters of the inner and outer JWSs are the same.</li>
-<li>Check that the &#8220;account&#8221; field of the key-change object contains the URL for the account matching the old key (i.e., the &#8220;kid&#8221; field in the outer JWS).</li>
-<li>Check that the &#8220;oldKey&#8221; field of the key-change object is the same as the account key for the account in question.</li>
+<li>Check that the &#8220;account&#8221; field of the keyChange object contains the URL for the account matching the old key (i.e., the &#8220;kid&#8221; field in the outer JWS).</li>
+<li>Check that the &#8220;oldKey&#8221; field of the keyChange object is the same as the account key for the account in question.</li>
 <li>Check that no account exists whose account key is the same as the key in the &#8220;jwk&#8221; header parameter of the inner JWS.</li>
 </ol>
 <p id="rfc.section.7.3.5.p.11">If all of these checks pass, then the server updates the corresponding account by replacing the old account key with the new public key and returns status code 200 (OK). Otherwise, the server responds with an error status code and a problem document describing the error.  If there is an existing account with the new key provided, then the server SHOULD use status code 409 (Conflict) and provide the URL of that account in the Location header field.</p>
@@ -2480,7 +2480,7 @@ certchain = stricttextualmsg *(eol stricttextualmsg)
 <h1 id="rfc.section.9.7.2">
 <a href="#rfc.section.9.7.2">9.7.2.</a> <a href="#iana-order" id="iana-order">Fields in Order Objects</a>
 </h1>
-<p id="rfc.section.9.7.2.p.1">The &#8220;ACME Order Object Fields&#8221; registry lists field names that are defined for use in ACME order objects.  Fields marked as &#8220;configurable&#8221; may be included in a new-order request.</p>
+<p id="rfc.section.9.7.2.p.1">The &#8220;ACME Order Object Fields&#8221; registry lists field names that are defined for use in ACME order objects.  Fields marked as &#8220;configurable&#8221; may be included in a newOrder request.</p>
 <p id="rfc.section.9.7.2.p.2">Template:</p>
 <p></p>
 
@@ -2558,7 +2558,7 @@ certchain = stricttextualmsg *(eol stricttextualmsg)
 <h1 id="rfc.section.9.7.3">
 <a href="#rfc.section.9.7.3">9.7.3.</a> <a href="#iana-authz" id="iana-authz">Fields in Authorization Objects</a>
 </h1>
-<p id="rfc.section.9.7.3.p.1">The &#8220;ACME Authorization Object Fields&#8221; registry lists field names that are defined for use in ACME authorization objects.  Fields marked as &#8220;configurable&#8221; may be included in a new-authorization request.</p>
+<p id="rfc.section.9.7.3.p.1">The &#8220;ACME Authorization Object Fields&#8221; registry lists field names that are defined for use in ACME authorization objects.  Fields marked as &#8220;configurable&#8221; may be included in a newAuthz request.</p>
 <p id="rfc.section.9.7.3.p.2">Template:</p>
 <p></p>
 
@@ -2846,7 +2846,7 @@ certchain = stricttextualmsg *(eol stricttextualmsg)
 <ol>
 <li>Legitimate domain holder registers account key pair A</li>
 <li>MitM registers account key pair B</li>
-<li>Legitimate domain holder sends a new-order request signed using account key A</li>
+<li>Legitimate domain holder sends a newOrder request signed using account key A</li>
 <li>MitM suppresses the legitimate request but sends the same request signed using account key B</li>
 <li>ACME server issues challenges and MitM forwards them to the legitimate domain holder</li>
 <li>Legitimate domain holder provisions the validation response</li>
