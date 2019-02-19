@@ -484,7 +484,7 @@ the request URL.  If the two do not match, then the server MUST reject the
 request as unauthorized.
 
 Except for the directory resource, all ACME resources are addressed with URLs
-provided to the client by the server.  In requests sent to these resources, the client MUST set
+provided to the client by the server.  In POST requests sent to these resources, the client MUST set
 the "url" header parameter to the exact string provided by the server (rather
 than performing any re-encoding on the URL).  The server SHOULD perform the
 corresponding string equality check, configuring each resource with the URL
@@ -1267,7 +1267,7 @@ the client will have gotten a nonce from a previous request.  However, the
 client might sometimes need to get a new nonce, e.g., on its first request to
 the server or if an existing nonce is no longer valid.
 
-To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
+To get a fresh nonce, the client sends a HEAD request to the newNonce resource
 on the server.  The server's response MUST include a Replay-Nonce header field
 containing a fresh nonce and SHOULD have status code 200 (OK).  The
 server MUST also respond to GET requests for this resource, returning an empty
@@ -1282,10 +1282,10 @@ Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 ~~~~~~~~~~
 
-Proxy caching of responses from the new-nonce resource can cause
+Proxy caching of responses from the newNonce resource can cause
 clients to receive the same nonce repeatedly, leading to "badNonce" errors.
 The server MUST include a Cache-Control header field with the "no-store"
-directive in responses for the new-nonce resource, in order to prevent
+directive in responses for the newNonce resource, in order to prevent
 caching of this resource.
 
 ## Account Management 
@@ -1573,7 +1573,7 @@ covers this request and its signature, and indicates the old key
 holder's assent to the rollover request.
 
 To create this request object, the client first constructs a
-key-change object describing the account to be updated and its
+keyChange object describing the account to be updated and its
 account key:
 
 account (required, string):
@@ -1584,7 +1584,7 @@ newAccount request that created the account.
 oldKey (required, JWK):
 : The JWK representation of the old key.
 
-The client then encapsulates the key-change object in an "inner" JWS, signed with the
+The client then encapsulates the keyChange object in an "inner" JWS, signed with the
 requested new account key.
 This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.
@@ -1634,7 +1634,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-On receiving key-change request, the server MUST perform the following steps in
+On receiving keyChange request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
 1. Validate the POST request belongs to a currently active account, as described
@@ -1643,13 +1643,13 @@ addition to the typical JWS validation:
    JWS").
 3. Check that the JWS protected header of the inner JWS has a "jwk" field.
 4. Check that the inner JWS verifies using the key in its "jwk" field.
-5. Check that the payload of the inner JWS is a well-formed key-change object
+5. Check that the payload of the inner JWS is a well-formed keyChange object
    (as described above).
 6. Check that the "url" parameters of the inner and outer JWSs are the same.
-7. Check that the "account" field of the key-change object contains the URL for
+7. Check that the "account" field of the keyChange object contains the URL for
    the account matching the old key (i.e., the "kid" field in the
    outer JWS).
-8. Check that the "oldKey" field of the key-change object is the
+8. Check that the "oldKey" field of the keyChange object is the
    same as the account key for the account in question.
 9. Check that no account exists whose account key is the same as the key in the
    "jwk" header parameter of the inner JWS.
@@ -2851,7 +2851,7 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 The "ACME Order Object Fields" registry lists field names that are defined
 for use in ACME order objects.  Fields marked as "configurable" may be included in a
-new-order request.
+newOrder request.
 
 Template:
 
@@ -2880,7 +2880,7 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 
 The "ACME Authorization Object Fields" registry lists field names that are 
 defined for use in ACME authorization objects.  Fields marked as
-"configurable" may be included in a new-authorization request.
+"configurable" may be included in a newAuthz request.
 
 Template:
 
@@ -3109,7 +3109,7 @@ following form:
 
 1. Legitimate domain holder registers account key pair A
 2. MitM registers account key pair B
-3. Legitimate domain holder sends a new-order request signed using account key A
+3. Legitimate domain holder sends a newOrder request signed using account key A
 4. MitM suppresses the legitimate request but sends the same request signed
    using account key B
 5. ACME server issues challenges and MitM forwards them to the legitimate domain
