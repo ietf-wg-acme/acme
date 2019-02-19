@@ -608,6 +608,7 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
 | badNonce                | The client sent an unacceptable anti-replay nonce                               |
 | badRevocationReason     | The revocation reason provided is not allowed by the server                     |
 | badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support                |
+| badState                | The request attempted to finalize an order that is not ready to be finalized    |
 | caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing  |
 | compound                | Specific error conditions are indicated in the "subproblems" array.             |
 | connection              | The server could not connect to validation target                               |
@@ -1840,7 +1841,6 @@ identifiers can appear.
 
 A request to finalize an order will result in error if the CA is unwilling to issue a certificate corresponding to the submitted CSR.  For example:
 
-* If the order indicated does not have status "ready"
 * If the CSR and order identifiers differ
 * If the account is not authorized for the identifiers indicated in the CSR
 * If the CSR requests extensions that the CA is not willing to include
@@ -1851,9 +1851,15 @@ rejected in its "details" field.  After returning such an error, the
 server SHOULD leave the order in the "ready" state, to allow the
 client to submit a new finalize request with an amended CSR.
 
-A request to finalize an order will return the order to be finalized.
-The client should begin polling the order by sending a POST-as-GET request to the order
-resource to obtain its current state. The status of the order will indicate what
+A request to finalize an order will result in error if the order is not in the
+"ready" state.  In such cases, the server MUST return a 403 (Forbidden) error
+with a problem document of type "badState".  The client should then send a
+POST-as-GET request to the order resource to obtain its current state.  The
+status of the order will indicate what action the client should take (see
+below).
+
+If a request to finalize an order is successful, the server will return a 200
+(OK) with an updated order object.  The status of the order will indicate what
 action the client should take:
 
 * "invalid": The certificate will not be issued.  Consider this order process
