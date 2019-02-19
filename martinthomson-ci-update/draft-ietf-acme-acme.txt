@@ -3724,8 +3724,8 @@ Internet-Draft                    ACME                     February 2019
    | Header Field     | Protocol | Status   | Reference                |
    | Name             |          |          |                          |
    +------------------+----------+----------+--------------------------+
-   | Replay-Nonce     | http     | standard | [[this-RFC, Section      |
-   |                  |          |          | 6.5.1]                   |
+   | Replay-Nonce     | http     | standard | [[this-RFC,              |
+   |                  |          |          | Section 6.5.1]           |
    +------------------+----------+----------+--------------------------+
 
 9.4.  "url" JWS Header Parameter
