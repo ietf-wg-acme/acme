@@ -2743,7 +2743,7 @@ Change controller: IETF &lt;iesg@ietf.org&gt;
 ## Well-Known URI for the HTTP Challenge
 
 The following value has been registered in the "Well-Known URIs" registry
-(using the template from <xref target="RFC5785"/>):
+(using the template from {{?RFC5785}}):
 
 URI suffix: acme-challenge
 
