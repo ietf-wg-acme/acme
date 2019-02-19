@@ -12,4 +12,4 @@ endif
 rfced::
 	kramdown-rfc2629 draft-ietf-acme-acme.md >rfced/draft-ietf-acme-acme.xml
 	cd rfced && python clean-xml.py <draft-ietf-acme-acme.xml >draft-ietf-acme-acme.clean.xml
-	cd rfced && diff draft-ietf-acme-acme.clean.xml rfc8555.xml >curr.diff
+	-cd rfced && diff -u draft-ietf-acme-acme.clean.xml rfc8555.edited.xml >curr.diff
