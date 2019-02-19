@@ -755,7 +755,16 @@ ul.toc li {
 <p id="rfc.section.6.2.p.6">For newAccount requests, and for revokeCert requests authenticated by a certificate key, there MUST be a &#8220;jwk&#8221; field. This field MUST contain the public key corresponding to the private key used to sign the JWS.</p>
 <p id="rfc.section.6.2.p.7">For all other requests, the request is signed using an existing account, and there MUST be a &#8220;kid&#8221; field. This field MUST contain the account URL received by POSTing to the newAccount resource.</p>
 <p id="rfc.section.6.2.p.8">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221;.  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.  See <a href="#errors" class="xref">Section 6.7</a> for more details on the structure of error responses.</p>
-<p id="rfc.section.6.2.p.9">Because client requests in ACME carry JWS objects in the Flattened JSON Serialization, they must have the Content-Type header field set to &#8220;application/jose+json&#8221;.  If a request does not meet this requirement, then the server MUST return a response with status code 415 (Unsupported Media Type).</p>
+<p id="rfc.section.6.2.p.9">If the server supports the signature algorithm &#8220;alg&#8221; but either does not support or chooses to reject the public key &#8220;jwk&#8221;, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badPublicKey&#8221;.  The problem document detail SHOULD describe the reason for rejecting the public key; some example reasons are:</p>
+<p></p>
+
+<ul>
+<li>&#8220;alg&#8221; is &#8220;RS256&#8221; but the modulus &#8220;n&#8221; is too small (e.g., 512-bit)</li>
+<li>&#8220;alg&#8221; is &#8220;ES256&#8221; but &#8220;jwk&#8221; does not contain a valid P-256 public key</li>
+<li>&#8220;alg&#8221; is &#8220;EdDSA&#8221; and &#8220;crv&#8221; is &#8220;Ed448&#8221;, but the server only supports &#8220;EdDSA&#8221; with &#8220;Ed25519&#8221;</li>
+<li>the corresponding private key is known to have been compromised</li>
+</ul>
+<p id="rfc.section.6.2.p.11">Because client requests in ACME carry JWS objects in the Flattened JSON Serialization, they must have the Content-Type header field set to &#8220;application/jose+json&#8221;.  If a request does not meet this requirement, then the server MUST return a response with status code 415 (Unsupported Media Type).</p>
 <h1 id="rfc.section.6.3">
 <a href="#rfc.section.6.3">6.3.</a> <a href="#post-as-get" id="post-as-get">GET and POST-as-GET Requests</a>
 </h1>
@@ -830,6 +839,10 @@ ul.toc li {
 <tr>
 <td class="left">badNonce</td>
 <td class="left">The client sent an unacceptable anti-replay nonce</td>
+</tr>
+<tr>
+<td class="left">badPublicKey</td>
+<td class="left">The JWS was signed by a public key the server does not support</td>
 </tr>
 <tr>
 <td class="left">badRevocationReason</td>
