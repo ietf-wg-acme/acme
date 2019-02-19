@@ -755,7 +755,7 @@ ul.toc li {
 <p id="rfc.section.6.2.p.6">For newAccount requests, and for revokeCert requests authenticated by a certificate key, there MUST be a &#8220;jwk&#8221; field. This field MUST contain the public key corresponding to the private key used to sign the JWS.</p>
 <p id="rfc.section.6.2.p.7">For all other requests, the request is signed using an existing account, and there MUST be a &#8220;kid&#8221; field. This field MUST contain the account URL received by POSTing to the newAccount resource.</p>
 <p id="rfc.section.6.2.p.8">If the client sends a JWS signed with an algorithm that the server does not support, then the server MUST return an error with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:badSignatureAlgorithm&#8221;.  The problem document returned with the error MUST include an &#8220;algorithms&#8221; field with an array of supported &#8220;alg&#8221; values.  See <a href="#errors" class="xref">Section 6.7</a> for more details on the structure of error responses.</p>
-<p id="rfc.section.6.2.p.9">Because client requests in ACME carry JWS objects in the Flattened JSON Serialization, they must have the &#8220;Content-Type&#8221; header field set to &#8220;application/jose+json&#8221;.  If a request does not meet this requirement, then the server MUST return a response with status code 415 (Unsupported Media Type).</p>
+<p id="rfc.section.6.2.p.9">Because client requests in ACME carry JWS objects in the Flattened JSON Serialization, they must have the Content-Type header field set to &#8220;application/jose+json&#8221;.  If a request does not meet this requirement, then the server MUST return a response with status code 415 (Unsupported Media Type).</p>
 <h1 id="rfc.section.6.3">
 <a href="#rfc.section.6.3">6.3.</a> <a href="#post-as-get" id="post-as-get">GET and POST-as-GET Requests</a>
 </h1>
@@ -780,13 +780,13 @@ ul.toc li {
 <p id="rfc.section.6.5.p.1">In order to protect ACME resources from any possible replay attacks, ACME POST requests have a mandatory anti-replay mechanism.  This mechanism is based on the server maintaining a list of nonces that it has issued, and requiring any signed request from the client to carry such a nonce.</p>
 <p id="rfc.section.6.5.p.2">An ACME server provides nonces to clients using the HTTP Replay-Nonce header field, as specified in <a href="#replay-nonce" class="xref">Section 6.5.1</a>.  The server MUST include a Replay-Nonce header field in every successful response to a POST request and SHOULD provide it in error responses as well.</p>
 <p id="rfc.section.6.5.p.3">Every JWS sent by an ACME client MUST include, in its protected header, the &#8220;nonce&#8221; header parameter, with contents as defined in <a href="#nonce-nonce-jws-header-parameter" class="xref">Section 6.5.2</a>.  As part of JWS verification, the ACME server MUST verify that the value of the &#8220;nonce&#8221; header is a value that the server previously provided in a Replay-Nonce header field.  Once a nonce value has appeared in an ACME request, the server MUST consider it invalid, in the same way as a value it had never issued.</p>
-<p id="rfc.section.6.5.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it MUST provide HTTP status code 400 (Bad Request), and indicate the ACME error type &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error type MUST include a Replay-Nonce header with a fresh nonce that the server will accept in a retry of the original query (and possibly in other requests, according to the server&#8217;s nonce scoping policy).  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
+<p id="rfc.section.6.5.p.4">When a server rejects a request because its nonce value was unacceptable (or not present), it MUST provide HTTP status code 400 (Bad Request), and indicate the ACME error type &#8220;urn:ietf:params:acme:error:badNonce&#8221;.  An error response with the &#8220;badNonce&#8221; error type MUST include a Replay-Nonce header field with a fresh nonce that the server will accept in a retry of the original query (and possibly in other requests, according to the server&#8217;s nonce scoping policy).  On receiving such a response, a client SHOULD retry the request using the new nonce.</p>
 <p id="rfc.section.6.5.p.5">The precise method used to generate and track nonces is up to the server.  For example, the server could generate a random 128-bit value for each response, keep a list of issued nonces, and strike nonces from this list as they are used.</p>
 <p id="rfc.section.6.5.p.6">Other than the constraint above with regard to nonces issued in &#8220;badNonce&#8221; responses, ACME does not constrain how servers scope nonces. Clients MAY assume that nonces have broad scope, e.g., by having a single pool of nonces used for all requests.  However, when retrying in response to a &#8220;badNonce&#8221; error, the client MUST use the nonce provided in the error response. Servers should scope nonces broadly enough that retries are not needed very often.</p>
 <h1 id="rfc.section.6.5.1">
 <a href="#rfc.section.6.5.1">6.5.1.</a> <a href="#replay-nonce" id="replay-nonce">Replay-Nonce</a>
 </h1>
-<p id="rfc.section.6.5.1.p.1">The &#8220;Replay-Nonce&#8221; header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server MUST generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability, and unpredictable to anyone besides the server. For instance, it is acceptable to generate Replay-Nonces randomly.</p>
+<p id="rfc.section.6.5.1.p.1">The Replay-Nonce header field includes a server-generated value that the server can use to detect unauthorized replay in future client requests.  The server MUST generate the value provided in Replay-Nonce in such a way that they are unique to each message, with high probability, and unpredictable to anyone besides the server. For instance, it is acceptable to generate Replay-Nonces randomly.</p>
 <p id="rfc.section.6.5.1.p.2">The value of the Replay-Nonce field MUST be an octet string encoded according to the base64url encoding described in Section 2 of <a href="#RFC7515" class="xref">[RFC7515]</a>.  Clients MUST ignore invalid Replay-Nonce values.  The ABNF <a href="#RFC5234" class="xref">[RFC5234]</a> for the Replay-Nonce header field follows:</p>
 <pre>
   base64url = ALPHA / DIGIT / "-" / "_"
@@ -802,8 +802,8 @@ ul.toc li {
 <h1 id="rfc.section.6.6">
 <a href="#rfc.section.6.6">6.6.</a> <a href="#rate-limits" id="rate-limits">Rate Limits</a>
 </h1>
-<p id="rfc.section.6.6.p.1">Creation of resources can be rate limited by ACME servers to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the type &#8220;urn:ietf:params:acme:error:rateLimited&#8221;.  Additionally, the server SHOULD send a &#8220;Retry-After&#8221; header <a href="#RFC7231" class="xref">[RFC7231]</a> indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.</p>
-<p id="rfc.section.6.6.p.2">In addition to the human-readable &#8220;detail&#8221; field of the error response, the server MAY send one or multiple link relations in the &#8220;Link&#8221; header <a href="#RFC8288" class="xref">[RFC8288]</a> pointing to documentation about the specific rate limit that was hit, using the &#8220;help&#8221; link relation type.</p>
+<p id="rfc.section.6.6.p.1">Creation of resources can be rate limited by ACME servers to ensure fair usage and prevent abuse.  Once the rate limit is exceeded, the server MUST respond with an error with the type &#8220;urn:ietf:params:acme:error:rateLimited&#8221;.  Additionally, the server SHOULD send a Retry-After header field <a href="#RFC7231" class="xref">[RFC7231]</a> indicating when the current request may succeed again.  If multiple rate limits are in place, that is the time where all rate limits allow access again for the current request with exactly the same parameters.</p>
+<p id="rfc.section.6.6.p.2">In addition to the human-readable &#8220;detail&#8221; field of the error response, the server MAY send one or multiple link relations in the Link header field <a href="#RFC8288" class="xref">[RFC8288]</a> pointing to documentation about the specific rate limit that was hit, using the &#8220;help&#8221; link relation type.</p>
 <h1 id="rfc.section.6.7">
 <a href="#rfc.section.6.7">6.7.</a> <a href="#errors" id="errors">Errors</a>
 </h1>
@@ -910,8 +910,8 @@ ul.toc li {
 <h1 id="rfc.section.6.7.1">
 <a href="#rfc.section.6.7.1">6.7.1.</a> <a href="#subproblems" id="subproblems">Subproblems</a>
 </h1>
-<p id="rfc.section.6.7.1.p.1">Sometimes a CA may need to return multiple errors in response to a request.  Additionally, the CA may need to attribute errors to specific identifiers.  For instance, a new-order request may contain multiple identifiers for which the CA cannot issue. In this situation, an ACME problem document MAY contain the &#8220;subproblems&#8221; field, containing a JSON array of problem documents, each of which MAY contain an &#8220;identifier&#8221; field. If present, the &#8220;identifier&#8221; field MUST contain an ACME identifier (<a href="#iana-identifier" class="xref">Section 9.7.7</a>). The &#8220;identifier&#8221; field MUST NOT be present at the top level in ACME problem documents. It can only be present in subproblems.  Subproblems need not all have the same type, and they do not need to match the top level type.</p>
-<p id="rfc.section.6.7.1.p.2">ACME clients may choose to use the &#8220;identifier&#8221; field of a subproblem as a hint that an operation would succeed if that identifier were omitted. For instance, if an order contains ten DNS identifiers, and the new-order request returns a problem document with two subproblems (referencing two of those identifiers), the ACME client may choose to submit another order containing only the eight identifiers not listed in the problem document.</p>
+<p id="rfc.section.6.7.1.p.1">Sometimes a CA may need to return multiple errors in response to a request.  Additionally, the CA may need to attribute errors to specific identifiers.  For instance, a newOrder request may contain multiple identifiers for which the CA cannot issue. In this situation, an ACME problem document MAY contain the &#8220;subproblems&#8221; field, containing a JSON array of problem documents, each of which MAY contain an &#8220;identifier&#8221; field. If present, the &#8220;identifier&#8221; field MUST contain an ACME identifier (<a href="#iana-identifier" class="xref">Section 9.7.7</a>). The &#8220;identifier&#8221; field MUST NOT be present at the top level in ACME problem documents. It can only be present in subproblems.  Subproblems need not all have the same type, and they do not need to match the top level type.</p>
+<p id="rfc.section.6.7.1.p.2">ACME clients may choose to use the &#8220;identifier&#8221; field of a subproblem as a hint that an operation would succeed if that identifier were omitted. For instance, if an order contains ten DNS identifiers, and the newOrder request returns a problem document with two subproblems (referencing two of those identifiers), the ACME client may choose to submit another order containing only the eight identifiers not listed in the problem document.</p>
 <pre>
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
@@ -1000,7 +1000,7 @@ Content-Type: application/problem+json
                           challenge
 </pre>
 <p class="figure">ACME Resources and Relationships</p>
-<p id="rfc.section.7.1.p.8">The following table illustrates a typical sequence of requests required to establish a new account with the server, prove control of an identifier, issue a certificate, and fetch an updated certificate some time after issuance.  The &#8220;-&gt;&#8221; is a mnemonic for a Location header pointing to a created resource.</p>
+<p id="rfc.section.7.1.p.8">The following table illustrates a typical sequence of requests required to establish a new account with the server, prove control of an identifier, issue a certificate, and fetch an updated certificate some time after issuance.  The &#8220;-&gt;&#8221; is a mnemonic for a Location header field pointing to a created resource.</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
 <th class="left">Action</th>
@@ -1117,7 +1117,7 @@ Content-Type: application/problem+json
 <dt>caaIdentities (optional, array of string):</dt>
 <dd style="margin-left: 8">The hostnames that the ACME server recognizes as referring to itself for the purposes of CAA record validation as defined in <a href="#RFC6844" class="xref">[RFC6844]</a>.  Each string MUST represent the same sequence of ASCII code points that the server will expect to see as the &#8220;Issuer Domain Name&#8221; in a CAA issue or issuewild property tag.  This allows clients to determine the correct issuer domain name to use when configuring CAA records.</dd>
 <dt>externalAccountRequired (optional, boolean):</dt>
-<dd style="margin-left: 8">If this field is present and set to &#8220;true&#8221;, then the CA requires that all new-account requests include an &#8220;externalAccountBinding&#8221; field associating the new account with an external account.</dd>
+<dd style="margin-left: 8">If this field is present and set to &#8220;true&#8221;, then the CA requires that all newAccount requests include an &#8220;externalAccountBinding&#8221; field associating the new account with an external account.</dd>
 </dl>
 <p id="rfc.section.7.1.1.p.8">Clients access the directory by sending a GET request to the directory URL.</p>
 <pre>
@@ -1151,7 +1151,7 @@ Content-Type: application/json
 <dt>contact (optional, array of string):</dt>
 <dd style="margin-left: 8">An array of URLs that the server can use to contact the client for issues related to this account. For example, the server may wish to notify the client about server-initiated revocation or certificate expiration.  For information on supported URL schemes, see <a href="#account-management" class="xref">Section 7.3</a>.</dd>
 <dt>termsOfServiceAgreed (optional, boolean):</dt>
-<dd style="margin-left: 8">Including this field in a new-account request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field cannot be updated by the client.</dd>
+<dd style="margin-left: 8">Including this field in a newAccount request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field cannot be updated by the client.</dd>
 <dt>orders (required, string):</dt>
 <dd style="margin-left: 8">A URL from which a list of orders submitted by this account can be fetched via a POST-as-GET request, as described in <a href="#orders-list" class="xref">Section 7.1.2.1</a>.</dd>
 </dl>
@@ -1240,7 +1240,7 @@ Link: &lt;https://example.com/acme/orders/rzGoeA?cursor=2&gt;;rel="next"
   "certificate": "https://example.com/acme/cert/jWCdfHVGY2M"
 }
 </pre>
-<p id="rfc.section.7.1.3.p.3">Any identifier of type &#8220;dns&#8221; in a new-order request MAY have a wildcard domain name as its value. A wildcard domain name consists of a single asterisk character followed by a single full stop character (&#8220;*.&#8221;) followed by a domain name as defined for use in the Subject Alternate Name Extension by <a href="#RFC5280" class="xref">[RFC5280]</a>. An authorization returned by the server for a wildcard domain name identifier MUST NOT include the asterisk and full stop (&#8220;*.&#8221;) prefix in the authorization identifier value. The returned authorization MUST include the optional &#8220;wildcard&#8221; field, with a value of true.</p>
+<p id="rfc.section.7.1.3.p.3">Any identifier of type &#8220;dns&#8221; in a newOrder request MAY have a wildcard domain name as its value. A wildcard domain name consists of a single asterisk character followed by a single full stop character (&#8220;*.&#8221;) followed by a domain name as defined for use in the Subject Alternate Name Extension by <a href="#RFC5280" class="xref">[RFC5280]</a>. An authorization returned by the server for a wildcard domain name identifier MUST NOT include the asterisk and full stop (&#8220;*.&#8221;) prefix in the authorization identifier value. The returned authorization MUST include the optional &#8220;wildcard&#8221; field, with a value of true.</p>
 <p id="rfc.section.7.1.3.p.4">The elements of the &#8220;authorizations&#8221; and &#8220;identifiers&#8221; arrays are immutable once set.  The server MUST NOT change the contents of either array after they are created. If a client observes a change in the contents of either array, then it SHOULD consider the order invalid.</p>
 <p id="rfc.section.7.1.3.p.5">The &#8220;authorizations&#8221; array of the order SHOULD reflect all authorizations that the CA takes into account in deciding to issue, even if some authorizations were fulfilled in earlier orders or in pre-authorization transactions.  For example, if a CA allows multiple orders to be fulfilled based on a single authorization transaction, then it SHOULD reflect that authorization in all of the orders.</p>
 <p id="rfc.section.7.1.3.p.6">Note that just because an authorization URL is listed in the &#8220;authorizations&#8221; array of an order object doesn&#8217;t mean that the client is required to take action.  There are several reasons that the referenced authorizations may already be valid:</p>
@@ -1332,7 +1332,7 @@ validation  |   validation
 valid              invalid
 </pre>
 <p class="figure">State Transitions for Challenge Objects</p>
-<p id="rfc.section.7.1.6.p.3">Authorization objects are created in the &#8220;pending&#8221; state.  If one of the challenges listed in the authorization transitions to the &#8220;valid&#8221; state, then the authorization also changes to the &#8220;valid&#8221; state.  If the client attempts to fulfill a challenge and fails, or if there is an error while the authorization is still pending, then the authorization transitions to the &#8220;invalid&#8221; state.  Once the authorization is in the valid state, it can expire (&#8220;expired&#8221;), be deactivated by the client (&#8220;deactivated&#8221;, see <a href="#deactivating-an-authorization" class="xref">Section 7.5.2</a>), or revoked by the server (&#8220;revoked&#8221;).</p>
+<p id="rfc.section.7.1.6.p.3">Authorization objects are created in the &#8220;pending&#8221; state.  If one of the challenges listed in the authorization transitions to the &#8220;valid&#8221; state, then the authorization also changes to the &#8220;valid&#8221; state.  If the client attempts to fulfill a challenge and fails, or if there is an error while the authorization is still pending, then the authorization transitions to the &#8220;invalid&#8221; state.  Once the authorization is in the &#8220;valid&#8221; state, it can expire (&#8220;expired&#8221;), be deactivated by the client (&#8220;deactivated&#8221;, see <a href="#deactivating-an-authorization" class="xref">Section 7.5.2</a>), or revoked by the server (&#8220;revoked&#8221;).</p>
 <pre>
                    pending --------------------+
                       |                        |
@@ -1402,12 +1402,12 @@ HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
 </pre>
-<p id="rfc.section.7.2.p.3">Proxy caching of responses from the new-nonce resource can cause clients to receive the same nonce repeatedly, leading to badNonce errors.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the new-nonce resource, in order to prevent caching of this resource.</p>
+<p id="rfc.section.7.2.p.3">Proxy caching of responses from the new-nonce resource can cause clients to receive the same nonce repeatedly, leading to &#8220;badNonce&#8221; errors.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the new-nonce resource, in order to prevent caching of this resource.</p>
 <h1 id="rfc.section.7.3">
 <a href="#rfc.section.7.3">7.3.</a> <a href="#account-management" id="account-management">Account Management</a>
 </h1>
 <p id="rfc.section.7.3.p.1">In this section, we describe how an ACME client can create an account on an ACME server and perform some modifications to the account after it has been created.</p>
-<p id="rfc.section.7.3.p.2">A client creates a new account with the server by sending a POST request to the server&#8217;s new-account URL.  The body of the request is a stub account object containing some subset of the following fields:</p>
+<p id="rfc.section.7.3.p.2">A client creates a new account with the server by sending a POST request to the server&#8217;s newAccount URL.  The body of the request is a stub account object containing some subset of the following fields:</p>
 <p></p>
 
 <dl>
@@ -1446,7 +1446,7 @@ Content-Type: application/jose+json
 <p id="rfc.section.7.3.p.5">In general, the server MUST ignore any fields in the request object that it does not recognize.  In particular, it MUST NOT reflect unrecognized fields in the resulting account object.  This allows clients to detect when servers do not support an extension field.</p>
 <p id="rfc.section.7.3.p.6">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URLs, it MUST support the &#8220;mailto&#8221; scheme.  Clients MUST NOT provide a &#8220;mailto&#8221; URL in the &#8220;contact&#8221; field that contains <samp>hfields</samp> <a href="#RFC6068" class="xref">[RFC6068]</a> or more than one <samp>addr-spec</samp> in the <samp>to</samp> component.  If a server encounters a &#8220;mailto&#8221; contact URL that does not meet these criteria, then it SHOULD reject it as invalid.</p>
 <p id="rfc.section.7.3.p.7">If the server rejects a contact URL for using an unsupported scheme, it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description of the error and what types of contact URLs the server considers acceptable. If the server rejects a contact URL for using a supported scheme but an invalid value, then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
-<p id="rfc.section.7.3.p.8">If the server wishes to require the client to agree to terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;termsOfService&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject new-account requests that do not have the &#8220;termsOfServiceAgreed&#8221; field set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
+<p id="rfc.section.7.3.p.8">If the server wishes to require the client to agree to terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;termsOfService&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject newAccount requests that do not have the &#8220;termsOfServiceAgreed&#8221; field set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
 <p id="rfc.section.7.3.p.9">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field. The account URL is used as the &#8220;kid&#8221; value in the JWS authenticating subsequent requests by this account (see <a href="#request-authentication" class="xref">Section 6.2</a>).  The account URL is also used for requests for management actions on this account, as described below.</p>
 <pre>
 HTTP/1.1 201 Created
@@ -1470,7 +1470,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 <a href="#rfc.section.7.3.1">7.3.1.</a> <a href="#finding-an-account-url-given-a-key" id="finding-an-account-url-given-a-key">Finding an Account URL Given a Key</a>
 </h1>
 <p id="rfc.section.7.3.1.p.1">If the server receives a newAccount request signed with a key for which it already has an account registered with the provided account key, then it MUST return a response with status code 200 (OK) and provide the URL of that account in the Location header field.  The body of this response represents the account object as it existed on the server before this request; any fields in the request object MUST be ignored.  This allows a client that has an account key but not the corresponding account URL to recover the account URL.</p>
-<p id="rfc.section.7.3.1.p.2">If a client wishes to find the URL for an existing account and does not want an account to be created if one does not already exist, then it SHOULD do so by sending a POST request to the new-account URL with a JWS whose payload has an &#8220;onlyReturnExisting&#8221; field set to &#8220;true&#8221; ({&#8220;onlyReturnExisting&#8221;: true}).  If a client sends such a request and an account does not exist, then the server MUST return an error response with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:accountDoesNotExist&#8221;.</p>
+<p id="rfc.section.7.3.1.p.2">If a client wishes to find the URL for an existing account and does not want an account to be created if one does not already exist, then it SHOULD do so by sending a POST request to the newAccount URL with a JWS whose payload has an &#8220;onlyReturnExisting&#8221; field set to &#8220;true&#8221; ({&#8220;onlyReturnExisting&#8221;: true}).  If a client sends such a request and an account does not exist, then the server MUST return an error response with status code 400 (Bad Request) and type &#8220;urn:ietf:params:acme:error:accountDoesNotExist&#8221;.</p>
 <h1 id="rfc.section.7.3.2">
 <a href="#rfc.section.7.3.2">7.3.2.</a> <a href="#account-update" id="account-update">Account Update</a>
 </h1>
@@ -1560,8 +1560,8 @@ Content-Type: application/jose+json
   "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
 }
 </pre>
-<p id="rfc.section.7.3.4.p.6">If such a CA requires that new-account requests contain an &#8220;externalAccountBinding&#8221; field, then it MUST provide the value &#8220;true&#8221; in the &#8220;externalAccountRequired&#8221; subfield of the &#8220;meta&#8221; field in the directory object.  If the CA receives a new-account request without an &#8220;externalAccountBinding&#8221; field, then it SHOULD reply with an error of type &#8220;externalAccountRequired&#8221;.</p>
-<p id="rfc.section.7.3.4.p.7">When a CA receives a new-account request containing an &#8220;externalAccountBinding&#8221; field, it decides whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;externalAccountBinding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
+<p id="rfc.section.7.3.4.p.6">If such a CA requires that newAccount requests contain an &#8220;externalAccountBinding&#8221; field, then it MUST provide the value &#8220;true&#8221; in the &#8220;externalAccountRequired&#8221; subfield of the &#8220;meta&#8221; field in the directory object.  If the CA receives a newAccount request without an &#8220;externalAccountBinding&#8221; field, then it SHOULD reply with an error of type &#8220;externalAccountRequired&#8221;.</p>
+<p id="rfc.section.7.3.4.p.7">When a CA receives a newAccount request containing an &#8220;externalAccountBinding&#8221; field, it decides whether or not to verify the binding.  If the CA does not verify the binding, then it MUST NOT reflect the &#8220;externalAccountBinding&#8221; field in the resulting account object (if any).  To verify the account binding, the CA MUST take the following steps:</p>
 <p></p>
 
 <ol>
@@ -1571,7 +1571,7 @@ Content-Type: application/jose+json
 <li>Verify that the MAC on the JWS verifies using that MAC key</li>
 <li>Verify that the payload of the JWS represents the same key as was used to verify the outer JWS (i.e., the &#8220;jwk&#8221; field of the outer JWS)</li>
 </ol>
-<p id="rfc.section.7.3.4.p.9">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key.  The account object the CA returns MUST include an &#8220;externalAccountBinding&#8221; field with the same value as the field in the request.  If any of these checks fail, then the CA MUST reject the new-account request.</p>
+<p id="rfc.section.7.3.4.p.9">If all of these checks pass and the CA creates a new account, then the CA may consider the new account associated with the external account corresponding to the MAC key.  The account object the CA returns MUST include an &#8220;externalAccountBinding&#8221; field with the same value as the field in the request.  If any of these checks fail, then the CA MUST reject the newAccount request.</p>
 <h1 id="rfc.section.7.3.5">
 <a href="#rfc.section.7.3.5">7.3.5.</a> <a href="#account-key-roll-over" id="account-key-roll-over">Account Key Rollover</a>
 </h1>
@@ -1582,7 +1582,7 @@ Content-Type: application/jose+json
 
 <dl>
 <dt>account (required, string):</dt>
-<dd style="margin-left: 8">The URL for the account being modified.  The content of this field MUST be the exact string provided in the Location header field in response to the new-account request that created the account.</dd>
+<dd style="margin-left: 8">The URL for the account being modified.  The content of this field MUST be the exact string provided in the Location header field in response to the newAccount request that created the account.</dd>
 <dt>oldKey (required, JWK):</dt>
 <dd style="margin-left: 8">The JWK representation of the old key.</dd>
 </dl>
@@ -1666,7 +1666,7 @@ Content-Type: application/jose+json
 <h1 id="rfc.section.7.4">
 <a href="#rfc.section.7.4">7.4.</a> <a href="#applying-for-certificate-issuance" id="applying-for-certificate-issuance">Applying for Certificate Issuance</a>
 </h1>
-<p id="rfc.section.7.4.p.1">The client begins the certificate issuance process by sending a POST request to the server&#8217;s new-order resource.  The body of the POST is a JWS object whose JSON payload is a subset of the order object defined in <a href="#order-objects" class="xref">Section 7.1.3</a>, containing the fields that describe the certificate to be issued:</p>
+<p id="rfc.section.7.4.p.1">The client begins the certificate issuance process by sending a POST request to the server&#8217;s newOrder resource.  The body of the POST is a JWS object whose JSON payload is a subset of the order object defined in <a href="#order-objects" class="xref">Section 7.1.3</a>, containing the fields that describe the certificate to be issued:</p>
 <p></p>
 
 <dl>
@@ -1757,7 +1757,7 @@ Content-Type: application/jose+json
   "signature": "uOrUfIIk5RyQ...nw62Ay1cl6AB"
 }
 </pre>
-<p id="rfc.section.7.4.p.8">The CSR encodes the client&#8217;s requests with regard to the content of the certificate to be issued.  The CSR MUST indicate the exact same set of requested identifiers as the initial new-order request.  Identifiers of type &#8220;dns&#8221; MUST appear either in the commonName portion of the requested subject name or in an extensionRequest attribute <a href="#RFC2985" class="xref">[RFC2985]</a> requesting a subjectAltName extension, or both.  (These identifiers may appear in any sort order.)  Specifications that define new identifier types must specify where in the certificate signing request these identifiers can appear.</p>
+<p id="rfc.section.7.4.p.8">The CSR encodes the client&#8217;s requests with regard to the content of the certificate to be issued.  The CSR MUST indicate the exact same set of requested identifiers as the initial newOrder request.  Identifiers of type &#8220;dns&#8221; MUST appear either in the commonName portion of the requested subject name or in an extensionRequest attribute <a href="#RFC2985" class="xref">[RFC2985]</a> requesting a subjectAltName extension, or both.  (These identifiers may appear in any sort order.)  Specifications that define new identifier types must specify where in the certificate signing request these identifiers can appear.</p>
 <p id="rfc.section.7.4.p.9">A request to finalize an order will result in an error if the CA is unwilling to issue a certificate corresponding to the submitted CSR.  For example:</p>
 <p></p>
 
@@ -1775,7 +1775,7 @@ Content-Type: application/jose+json
 <li>&#8220;invalid&#8221;: The certificate will not be issued.  Consider this order process abandoned.</li>
 <li>&#8220;pending&#8221;: The server does not believe that the client has fulfilled the requirements.  Check the &#8220;authorizations&#8221; array for entries that are still pending.</li>
 <li>&#8220;ready&#8221;: The server agrees that the requirements have been fulfilled, and is awaiting finalization.  Submit a finalization request.</li>
-<li>&#8220;processing&#8221;: The certificate is being issued. Send a POST-as-GET request after the time given in the &#8220;Retry-After&#8221; header field of the response, if any.</li>
+<li>&#8220;processing&#8221;: The certificate is being issued. Send a POST-as-GET request after the time given in the Retry-After header field of the response, if any.</li>
 <li>&#8220;valid&#8221;: The server has issued the certificate and provisioned its URL to the &#8220;certificate&#8221; field of the order.  Download the certificate.</li>
 </ul>
 <pre>
@@ -1810,8 +1810,8 @@ Location: https://example.com/acme/order/TOlocE8rfgo
 </h1>
 <p id="rfc.section.7.4.1.p.1">The order process described above presumes that authorization objects are created reactively, in response to a certificate order.  Some servers may also wish to enable clients to obtain authorization for an identifier proactively, outside of the context of a specific issuance.  For example, a client hosting virtual servers for a collection of names might wish to obtain authorization before any virtual servers are created and only create a certificate when a virtual server starts up.</p>
 <p id="rfc.section.7.4.1.p.2">In some cases, a CA running an ACME server might have a completely external, non-ACME process for authorizing a client to issue certificates for an identifier.  In these cases, the CA should provision its ACME server with authorization objects corresponding to these authorizations and reflect them as already valid in any orders submitted by the client.</p>
-<p id="rfc.section.7.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the field &#8220;newAuthz&#8221; with a URL for the new authorization resource.</p>
-<p id="rfc.section.7.4.1.p.4">To request authorization for an identifier, the client sends a POST request to the new-authorization resource specifying the identifier for which authorization is being requested.</p>
+<p id="rfc.section.7.4.1.p.3">If a CA wishes to allow pre-authorization within ACME, it can offer a &#8220;new authorization&#8221; resource in its directory by adding the field &#8220;newAuthz&#8221; with a URL for the newAuthz resource.</p>
+<p id="rfc.section.7.4.1.p.4">To request authorization for an identifier, the client sends a POST request to the newAuthz resource specifying the identifier for which authorization is being requested.</p>
 <p></p>
 
 <dl>
@@ -1909,7 +1909,7 @@ Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 </ol>
 <p id="rfc.section.7.5.p.3">This process may be repeated to associate multiple identifiers to a key pair (e.g., to request certificates with multiple identifiers) or to associate multiple accounts with an identifier (e.g., to allow multiple entities to manage certificates).</p>
 <p id="rfc.section.7.5.p.4">Authorization resources are created by the server in response to certificate orders or authorization requests submitted by an account key holder; their URLs are provided to the client in the responses to these requests.  The authorization object is implicitly tied to the account key used to sign the request.</p>
-<p id="rfc.section.7.5.p.5">When a client receives an order from the server in reply to a new order request, it downloads the authorization resources by sending POST-as-GET requests to the indicated URLs.  If the client initiates authorization using a request to the new authorization resource, it will have already received the pending authorization object in the response to that request.</p>
+<p id="rfc.section.7.5.p.5">When a client receives an order from the server in reply to a new order request, it downloads the authorization resources by sending POST-as-GET requests to the indicated URLs.  If the client initiates authorization using a request to the newAuthz resource, it will have already received the pending authorization object in the response to that request.</p>
 <pre>
 POST /acme/authz/PAniVnsZcis HTTP/1.1
 Host: example.com
@@ -2422,7 +2422,7 @@ certchain = stricttextualmsg *(eol stricttextualmsg)
 <h1 id="rfc.section.9.7.1">
 <a href="#rfc.section.9.7.1">9.7.1.</a> <a href="#iana-account" id="iana-account">Fields in Account Objects</a>
 </h1>
-<p id="rfc.section.9.7.1.p.1">The &#8220;ACME Account Object Fields&#8221; registry lists field names that are defined for use in ACME account objects.  Fields marked as &#8220;configurable&#8221; may be included in a new-account request.</p>
+<p id="rfc.section.9.7.1.p.1">The &#8220;ACME Account Object Fields&#8221; registry lists field names that are defined for use in ACME account objects.  Fields marked as &#8220;configurable&#8221; may be included in a newAccount request.</p>
 <p id="rfc.section.9.7.1.p.2">Template:</p>
 <p></p>
 
@@ -2839,7 +2839,7 @@ certchain = stricttextualmsg *(eol stricttextualmsg)
 <h1 id="rfc.section.10.2">
 <a href="#rfc.section.10.2">10.2.</a> <a href="#integrity-of-authorizations" id="integrity-of-authorizations">Integrity of Authorizations</a>
 </h1>
-<p id="rfc.section.10.2.p.1">ACME allows anyone to request challenges for an identifier by registering an account key and sending a new-order request using that account key.  The integrity of the authorization process thus depends on the identifier validation challenges to ensure that the challenge can only be completed by someone who both (1) holds the private key of the account key pair and (2) controls the identifier in question.</p>
+<p id="rfc.section.10.2.p.1">ACME allows anyone to request challenges for an identifier by registering an account key and sending a newOrder request using that account key.  The integrity of the authorization process thus depends on the identifier validation challenges to ensure that the challenge can only be completed by someone who both (1) holds the private key of the account key pair and (2) controls the identifier in question.</p>
 <p id="rfc.section.10.2.p.2">Validation responses need to be bound to an account key pair in order to avoid situations where a MitM on ACME HTTPS requests can switch out a legitimate domain holder&#8217;s account key for one of his choosing.  Such MitMs can arise, for example, if a CA uses a CDN or third-party reverse proxy in front of its ACME interface.  An attack by such an MitM could have the following form:</p>
 <p></p>
 
