@@ -2851,7 +2851,7 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 The "ACME Order Object Fields" registry lists field names that are defined
 for use in ACME order objects.  Fields marked as "configurable" may be included in a
-new-order request.
+newOrder request.
 
 Template:
 
@@ -2880,7 +2880,7 @@ Initial contents: The fields and descriptions defined in {{order-objects}}.
 
 The "ACME Authorization Object Fields" registry lists field names that are 
 defined for use in ACME authorization objects.  Fields marked as
-"configurable" may be included in a new-authorization request.
+"configurable" may be included in a newAuthz request.
 
 Template:
 
@@ -3109,7 +3109,7 @@ following form:
 
 1. Legitimate domain holder registers account key pair A
 2. MitM registers account key pair B
-3. Legitimate domain holder sends a new-order request signed using account key A
+3. Legitimate domain holder sends a newOrder request signed using account key A
 4. MitM suppresses the legitimate request but sends the same request signed
    using account key B
 5. ACME server issues challenges and MitM forwards them to the legitimate domain
