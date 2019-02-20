@@ -912,8 +912,8 @@ a POST-as-GET request, as described in {{orders-list}}.
 {
   "status": "valid",
   "contact": [
-    "mailto:cert-admin@example.com",
-    "mailto:admin@example.com"
+    "mailto:cert-admin@example.org",
+    "mailto:admin@example.org"
   ],
   "termsOfServiceAgreed": true,
   "orders": "https://example.com/acme/orders/rzGoeA"
@@ -1533,7 +1533,10 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
-    "contact": ["mailto:cert-admin@example.org"],
+    "contact": [
+      "mailto:cert-admin@example.org",
+      "mailto:admin@example.org"
+    ],
     "termsOfServiceAgreed": true,
 
     "externalAccountBinding": {
