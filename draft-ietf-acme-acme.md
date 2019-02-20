@@ -3469,9 +3469,11 @@ inception.
 * Karthik Bhargavan, INRIA
 * Peter Eckersley, EFF
 * Alex Halderman, University of Michigan
+* Tim Hollebeek, DigiCert
 * Sophie Herold, Hemio
 * Eric Rescorla, Mozilla
 * Seth Schoen, EFF
+* Rob Stradling, Sectigo
 * Martin Thomson, Mozilla
 * Jakub Warmuz, University of Oxford
 
