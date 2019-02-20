@@ -1012,6 +1012,7 @@ Internet-Draft                    ACME                     February 2019
 
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
     "type": "urn:ietf:params:acme:error:malformed",
@@ -1056,8 +1057,7 @@ Content-Type: application/problem+json
    ACME is structured as a HTTP-based application with the following
    types of resources:
 
-   o  Account resources, representing information about an account
-      (Section 7.1.2, Section 7.3)
+
 
 
 
@@ -1065,6 +1065,9 @@ Barnes, et al.           Expires August 24, 2019               [Page 19]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   o  Account resources, representing information about an account
+      (Section 7.1.2, Section 7.3)
 
    o  Order resources, representing an account's requests to issue
       certificates (Section 7.1.3)
@@ -1111,9 +1114,6 @@ Internet-Draft                    ACME                     February 2019
    an ACME server.  For the most part, these relations are expressed by
    URLs provided as strings in the resources' JSON representations.
    Lines with labels in quotes indicate HTTP link relations.
-
-
-
 
 
 
@@ -1348,6 +1348,7 @@ Internet-Draft                    ACME                     February 2019
 
    HTTP/1.1 200 OK
    Content-Type: application/json
+   Link: <https://example.com/acme/some-directory>;rel="index"
    Link: <https://example.com/acme/orders/rzGoeA?cursor=2>;rel="next"
 
    {
@@ -1391,9 +1392,8 @@ Internet-Draft                    ACME                     February 2019
    notAfter (optional, string):  The requested value of the notAfter
       field in the certificate, in the date format defined in [RFC3339].
 
-   error (optional, object):  The error that occurred while processing
-      the order, if any.  This field is structured as a problem document
-      [RFC7807].
+
+
 
 
 
@@ -1401,6 +1401,10 @@ Barnes, et al.           Expires August 24, 2019               [Page 25]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   error (optional, object):  The error that occurred while processing
+      the order, if any.  This field is structured as a problem document
+      [RFC7807].
 
    authorizations (required, array of string):  For pending orders, the
       authorizations that the client needs to complete before the
@@ -1446,10 +1450,6 @@ Internet-Draft                    ACME                     February 2019
    Any identifier of type "dns" in a newOrder request MAY have a
    wildcard domain name as its value.  A wildcard domain name consists
    of a single asterisk character followed by a single full stop
-   character ("*.") followed by a domain name as defined for use in the
-   Subject Alternate Name Extension by [RFC5280].  An authorization
-   returned by the server for a wildcard domain name identifier MUST NOT
-   include the asterisk and full stop ("*.") prefix in the authorization
 
 
 
@@ -1458,6 +1458,10 @@ Barnes, et al.           Expires August 24, 2019               [Page 26]
 Internet-Draft                    ACME                     February 2019
 
 
+   character ("*.") followed by a domain name as defined for use in the
+   Subject Alternate Name Extension by [RFC5280].  An authorization
+   returned by the server for a wildcard domain name identifier MUST NOT
+   include the asterisk and full stop ("*.") prefix in the authorization
    identifier value.  The returned authorization MUST include the
    optional "wildcard" field, with a value of true.
 
@@ -1501,11 +1505,7 @@ Internet-Draft                    ACME                     February 2019
 
    The structure of an ACME authorization resource is as follows:
 
-   identifier (required, object):  The identifier that the account is
-      authorized to represent.
 
-      type (required, string):  The type of identifier (see below and
-         Section 9.7.7).
 
 
 
@@ -1513,6 +1513,12 @@ Barnes, et al.           Expires August 24, 2019               [Page 27]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   identifier (required, object):  The identifier that the account is
+      authorized to represent.
+
+      type (required, string):  The type of identifier (see below and
+         Section 9.7.7).
 
       value (required, string):  The identifier itself.
 
@@ -1554,12 +1560,6 @@ Internet-Draft                    ACME                     February 2019
    of true.
 
    Section 8 describes a set of challenges for domain name validation.
-
-
-
-
-
-
 
 
 
@@ -1810,6 +1810,7 @@ Internet-Draft                    ACME                     February 2019
    HTTP/1.1 200 OK
    Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
    Cache-Control: no-store
+   Link: <https://example.com/acme/some-directory>;rel="index"
 
    Proxy caching of responses from the newNonce resource can cause
    clients to receive the same nonce repeatedly, leading to "badNonce"
@@ -1841,7 +1842,6 @@ Internet-Draft                    ACME                     February 2019
 
    externalAccountBinding (optional, object):  Same meaning as the
       corresponding server field defined in Section 7.1.2
-
 
 
 
@@ -1924,8 +1924,8 @@ Internet-Draft                    ACME                     February 2019
    HTTP/1.1 201 Created
    Content-Type: application/json
    Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-   Location: https://example.com/acme/acct/evOfKhNU60wg
    Link: <https://example.com/acme/some-directory>;rel="index"
+   Location: https://example.com/acme/acct/evOfKhNU60wg
 
    {
      "status": "valid",
@@ -2029,6 +2029,7 @@ Internet-Draft                    ACME                     February 2019
 
  HTTP/1.1 403 Forbidden
  Replay-Nonce: T81bdZroZ2ITWSondpTmAw
+ Link: <https://example.com/acme/some-directory>;rel="index"
  Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"
  Content-Type: application/problem+json
  Content-Language: en
@@ -2065,7 +2066,6 @@ Internet-Draft                    ACME                     February 2019
    o  The "nonce" field MUST NOT be present
 
    o  The "url" field MUST be set to the same value as the outer JWS
-
 
 
 
@@ -2412,6 +2412,7 @@ Internet-Draft                    ACME                     February 2019
 
    HTTP/1.1 201 Created
    Replay-Nonce: MYAuvOpaoIiywTezizk5vw
+   Link: <https://example.com/acme/some-directory>;rel="index"
    Location: https://example.com/acme/order/TOlocE8rfgo
 
    {
@@ -2455,7 +2456,6 @@ Internet-Draft                    ACME                     February 2019
       base64url-encoded version of the DER format.  (Note: Because this
       field uses base64url, and does not include headers, it is
       different from PEM.)
-
 
 
 
@@ -2580,6 +2580,7 @@ Internet-Draft                    ACME                     February 2019
 
    HTTP/1.1 200 OK
    Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
+   Link: <https://example.com/acme/some-directory>;rel="index"
    Location: https://example.com/acme/order/TOlocE8rfgo
 
    {
@@ -2625,7 +2626,6 @@ Internet-Draft                    ACME                     February 2019
    If a CA wishes to allow pre-authorization within ACME, it can offer a
    "new authorization" resource in its directory by adding the field
    "newAuthz" with a URL for the newAuthz resource.
-
 
 
 
@@ -3043,6 +3043,7 @@ Internet-Draft                    ACME                     February 2019
 
    HTTP/1.1 200 OK
    Content-Type: application/json
+   Link: <https://example.com/acme/some-directory>;rel="index"
 
    {
      "status": "valid",
@@ -3073,7 +3074,6 @@ Internet-Draft                    ACME                     February 2019
    deactivate each authorization associated with it by sending POST
    requests with the static object {"status": "deactivated"} to each
    authorization URL.
-
 
 
 
@@ -3212,6 +3212,7 @@ Internet-Draft                    ACME                     February 2019
    HTTP/1.1 200 OK
    Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
    Content-Length: 0
+   Link: <https://example.com/acme/some-directory>;rel="index"
 
    --- or ---
 
@@ -3219,6 +3220,7 @@ Internet-Draft                    ACME                     February 2019
    Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
    Content-Type: application/problem+json
    Content-Language: en
+   Link: <https://example.com/acme/some-directory>;rel="index"
 
    {
      "type": "urn:ietf:params:acme:error:unauthorized",
@@ -3241,14 +3243,14 @@ Internet-Draft                    ACME                     February 2019
    o  Hold the private key of the account key pair used to respond to
       the challenge, and
 
-   o  Control the identifier in question.
-
 
 
 Barnes, et al.           Expires August 24, 2019               [Page 58]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   o  Control the identifier in question.
 
    Section 10 documents how the challenges defined in this document meet
    these requirements.  New challenges will need to document how they
@@ -3296,8 +3298,6 @@ Internet-Draft                    ACME                     February 2019
    include the "error" field to help the client diagnose why the
    challenge failed.
 
-   Different challenges allow the server to obtain proof of different
-   aspects of control over an identifier.  In some challenges, like HTTP
 
 
 
@@ -3306,6 +3306,8 @@ Barnes, et al.           Expires August 24, 2019               [Page 59]
 Internet-Draft                    ACME                     February 2019
 
 
+   Different challenges allow the server to obtain proof of different
+   aspects of control over an identifier.  In some challenges, like HTTP
    and DNS, the client directly proves its ability to do certain things
    related to the identifier.  The choice of which challenges to offer
    to a client under which circumstances is a matter of server policy.
@@ -3352,8 +3354,6 @@ Internet-Draft                    ACME                     February 2019
    server, but server operators should keep in mind the operational
    scenarios that the schedule is trying to accommodate.  Given that
    retries are intended to address things like propagation delays in
-   HTTP or DNS provisioning, there should not usually be any reason to
-   retry more often than every 5 or 10 seconds.  While the server is
 
 
 
@@ -3362,6 +3362,8 @@ Barnes, et al.           Expires August 24, 2019               [Page 60]
 Internet-Draft                    ACME                     February 2019
 
 
+   HTTP or DNS provisioning, there should not usually be any reason to
+   retry more often than every 5 or 10 seconds.  While the server is
    still trying, the status of the challenge remains "processing"; it is
    only marked "invalid" once the server has given up.
 
@@ -3404,8 +3406,6 @@ Internet-Draft                    ACME                     February 2019
       It MUST NOT contain any characters outside the base64url alphabet
       and MUST NOT include base64 padding characters ("=").  See
       [RFC4086] for additional information on randomness requirements.
-
-
 
 
 

@@ -932,6 +932,7 @@ ul.toc li {
 <pre>
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 
 {
     "type": "urn:ietf:params:acme:error:malformed",
@@ -1192,6 +1193,7 @@ Content-Type: application/json
 <pre>
 HTTP/1.1 200 OK
 Content-Type: application/json
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 Link: &lt;https://example.com/acme/orders/rzGoeA?cursor=2&gt;;rel="next"
 
 {
@@ -1420,6 +1422,7 @@ Host: example.com
 HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 </pre>
 <p id="rfc.section.7.2.p.3">Proxy caching of responses from the newNonce resource can cause clients to receive the same nonce repeatedly, leading to &#8220;badNonce&#8221; errors.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the newNonce resource, in order to prevent caching of this resource.</p>
 <h1 id="rfc.section.7.3">
@@ -1471,8 +1474,8 @@ Content-Type: application/jose+json
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Location: https://example.com/acme/acct/evOfKhNU60wg
 Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Location: https://example.com/acme/acct/evOfKhNU60wg
 
 {
   "status": "valid",
@@ -1525,6 +1528,7 @@ Content-Type: application/jose+json
 <pre>
 HTTP/1.1 403 Forbidden
 Replay-Nonce: T81bdZroZ2ITWSondpTmAw
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 Link: &lt;https://example.com/acme/terms/2017-6-02&gt;;rel="terms-of-service"
 Content-Type: application/problem+json
 Content-Language: en
@@ -1730,6 +1734,7 @@ Content-Type: application/jose+json
 <pre>
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -1800,6 +1805,7 @@ Content-Type: application/jose+json
 <pre>
 HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -2019,6 +2025,7 @@ Content-Type: application/jose+json
 
 HTTP/1.1 200 OK
 Content-Type: application/json
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 
 {
   "status": "valid",
@@ -2132,6 +2139,7 @@ Content-Type: application/jose+json
 HTTP/1.1 200 OK
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 
 --- or ---
 
@@ -2139,6 +2147,7 @@ HTTP/1.1 403 Forbidden
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
+Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
 
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
