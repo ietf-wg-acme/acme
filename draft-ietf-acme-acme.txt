@@ -903,8 +903,6 @@ Internet-Draft                    ACME                     February 2019
    |                         | allowed by the server                   |
    | badSignatureAlgorithm   | The JWS was signed with an algorithm    |
    |                         | the server does not support             |
-   | badState                | The request attempted to finalize an    |
-   |                         | order that is not ready to be finalized |
    | caa                     | Certification Authority Authorization   |
    |                         | (CAA) records forbid the CA from        |
    |                         | issuing a certificate                   |
@@ -921,6 +919,8 @@ Internet-Draft                    ACME                     February 2019
    | invalidContact          | A contact URL for an account was        |
    |                         | invalid                                 |
    | malformed               | The request message was malformed       |
+   | orderNotReady           | The request attempted to finalize an    |
+   |                         | order that is not ready to be finalized |
    | rateLimited             | The request exceeds a rate limit        |
    | rejectedIdentifier      | The server will not issue certificates  |
    |                         | for the identifier                      |
@@ -1543,8 +1543,9 @@ Internet-Draft                    ACME                     February 2019
 
    wildcard (optional, boolean):  This field MUST be present and true
       for authorizations created as a result of a newOrder request
-      containing a DNS identifier with a value that contained a wildcard
-      prefix.  For other authorizations, it MUST be absent.
+      containing a DNS identifier with a value that was a wildcard
+      domain name.  For other authorizations, it MUST be absent.
+      Wildcard domain names are described in Section 7.1.3.
 
    The only type of identifier defined by this specification is a fully
    qualified domain name (type: "dns").  The domain name MUST be encoded
@@ -1555,12 +1556,11 @@ Internet-Draft                    ACME                     February 2019
    properly encoded.  Wildcard domain names (with "*" as the first
    label) MUST NOT be included in authorization objects.  If an
    authorization object conveys authorization for the base domain of a
-   newOrder DNS type identifier with a wildcard prefix, then the
+   newOrder DNS identifier containing a wildcard domain name, then the
    optional authorizations "wildcard" field MUST be present with a value
    of true.
 
    Section 8 describes a set of challenges for domain name validation.
-
 
 
 
@@ -2513,7 +2513,7 @@ Internet-Draft                    ACME                     February 2019
 
    A request to finalize an order will result in error if the order is
    not in the "ready" state.  In such cases, the server MUST return a
-   403 (Forbidden) error with a problem document of type "badState".
+   403 (Forbidden) error with a problem document of type
 
 
 
@@ -2522,9 +2522,9 @@ Barnes, et al.           Expires August 24, 2019               [Page 45]
 Internet-Draft                    ACME                     February 2019
 
 
-   The client should then send a POST-as-GET request to the order
-   resource to obtain its current state.  The status of the order will
-   indicate what action the client should take (see below).
+   "orderNotReady".  The client should then send a POST-as-GET request
+   to the order resource to obtain its current state.  The status of the
+   order will indicate what action the client should take (see below).
 
    If a request to finalize an order is successful, the server will
    return a 200 (OK) with an updated order object.  The status of the
@@ -2667,8 +2667,8 @@ Internet-Draft                    ACME                     February 2019
 
    Note that because the identifier in a pre-authorization request is
    the exact identifier to be included in the authorization object, pre-
-   authorization cannot be used to authorize issuance with wildcard DNS
-   identifiers.
+   authorization cannot be used to authorize issuance of certificates
+   containing wildcard domain names.
 
    Before processing the authorization request, the server SHOULD
    determine whether it is willing to issue certificates for the
