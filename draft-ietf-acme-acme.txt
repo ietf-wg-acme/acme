@@ -4689,9 +4689,9 @@ Internet-Draft                    ACME                     February 2019
 
    o  Alex Halderman, University of Michigan
 
-   o  Tim Hollebeek, DigiCert
-
    o  Sophie Herold, Hemio
+
+   o  Tim Hollebeek, DigiCert
 
    o  Eric Rescorla, Mozilla
 
