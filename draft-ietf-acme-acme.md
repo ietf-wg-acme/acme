@@ -680,10 +680,10 @@ Link: <https://example.com/acme/some-directory>;rel="index"
     "subproblems": [
         {
             "type": "urn:ietf:params:acme:error:malformed",
-            "detail": "Invalid underscore in DNS name \"_example.com\"",
+            "detail": "Invalid underscore in DNS name \"_example.org\"",
             "identifier": {
                 "type": "dns",
-                "value": "_example.com"
+                "value": "_example.org"
             }
         },
         {
@@ -1008,8 +1008,8 @@ certificate (optional, string):
   "expires": "2015-03-01T14:09:07.99Z",
 
   "identifiers": [
-    { "type": "dns", "value": "example.com" },
-    { "type": "dns", "value": "www.example.com" }
+    { "type": "dns", "value": "www.example.org" }
+    { "type": "dns", "value": "example.org" },
   ],
 
   "notBefore": "2016-01-01T00:00:00Z",
@@ -1125,7 +1125,7 @@ name validation.
 
   "identifier": {
     "type": "dns",
-    "value": "example.org"
+    "value": "www.example.org"
   },
 
   "challenges": [
@@ -1350,8 +1350,8 @@ Content-Type: application/jose+json
   "payload": base64url({
     "termsOfServiceAgreed": true,
     "contact": [
-      "mailto:cert-admin@example.com",
-      "mailto:admin@example.com"
+      "mailto:cert-admin@example.org",
+      "mailto:admin@example.org"
     ]
   }),
   "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
@@ -1407,8 +1407,8 @@ Location: https://example.com/acme/acct/evOfKhNU60wg
   "status": "valid",
 
   "contact": [
-    "mailto:cert-admin@example.com",
-    "mailto:admin@example.com"
+    "mailto:cert-admin@example.org",
+    "mailto:admin@example.org"
   ],
 
   "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"
@@ -1455,8 +1455,8 @@ Content-Type: application/jose+json
   }),
   "payload": base64url({
     "contact": [
-      "mailto:certificates@example.com",
-      "mailto:admin@example.com"
+      "mailto:certificates@example.org",
+      "mailto:admin@example.org"
     ]
   }),
   "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
@@ -1533,7 +1533,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
-    "contact": ["mailto:example@anonymous.invalid"],
+    "contact": ["mailto:cert-admin@example.org"],
     "termsOfServiceAgreed": true,
 
     "externalAccountBinding": {
@@ -1764,7 +1764,7 @@ Content-Type: application/jose+json
   }),
   "payload": base64url({
     "identifiers": [
-      { "type": "dns", "value": "example.com" }
+      { "type": "dns", "value": "www.example.org" }
     ],
     "notBefore": "2016-01-01T00:04:00+04:00",
     "notAfter": "2016-01-08T00:04:00+04:00"
@@ -1797,7 +1797,7 @@ Location: https://example.com/acme/order/TOlocE8rfgo
   "notAfter": "2016-01-08T00:00:00Z",
 
   "identifiers": [
-    { "type": "dns", "value": "example.com" },
+    { "type": "dns", "value": "www.example.org" },
   ],
 
   "authorizations": [
@@ -1914,8 +1914,8 @@ Location: https://example.com/acme/order/TOlocE8rfgo
   "notAfter": "2015-12-31T00:17:00.00-09:00",
 
   "identifiers": [
-    { "type": "dns", "value": "example.com" },
-    { "type": "dns", "value": "www.example.com" }
+    { "type": "dns", "value": "www.example.org" }
+    { "type": "dns", "value": "example.org" },
   ],
 
   "authorizations": [
@@ -1978,7 +1978,7 @@ Content-Type: application/jose+json
   "payload": base64url({
     "identifier": {
       "type": "dns",
-      "value": "example.net"
+      "value": "example.org"
     }
   }),
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2127,7 +2127,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
   "identifier": {
     "type": "dns",
-    "value": "example.org"
+    "value": "www.example.org"
   },
 
   "challenges": [
@@ -2236,7 +2236,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
   "identifier": {
     "type": "dns",
-    "value": "example.org"
+    "value": "www.example.org"
   },
 
   "challenges": [
@@ -2386,7 +2386,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
-  "detail": "No authorization provided for name example.net"
+  "detail": "No authorization provided for name example.org"
 }
 ~~~~~~~~~~
 
@@ -2665,11 +2665,11 @@ The record provisioned to the DNS contains the base64url encoding of this digest
 client constructs the validation domain name by prepending the label
 "\_acme-challenge" to the domain name being validated, then provisions a TXT
 record with the digest value under that name. For example, if the domain name
-being validated is "example.org", then the client would provision the following
+being validated is "www.example.org", then the client would provision the following
 DNS record:
 
 ~~~~~~~~~~
-_acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
+_acme-challenge.www.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 ~~~~~~~~~~
 
 A client responds with an empty object ({}) to acknowledge that the challenge
