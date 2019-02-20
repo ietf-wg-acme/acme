@@ -621,7 +621,6 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
 | badPublicKey            | The JWS was signed by a public key the server does not support                               |
 | badRevocationReason     | The revocation reason provided is not allowed by the server                                  |
 | badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support                             |
-| badState                | The request attempted to finalize an order that is not ready to be finalized                 |
 | caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing a certificate |
 | compound                | Specific error conditions are indicated in the "subproblems" array.                          |
 | connection              | The server could not connect to validation target                                            |
@@ -630,6 +629,7 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
 | incorrectResponse       | Response received didn't match the challenge's requirements                                  |
 | invalidContact          | A contact URL for an account was invalid                                                     |
 | malformed               | The request message was malformed                                                            |
+| orderNotReady           | The request attempted to finalize an order that is not ready to be finalized                 |
 | rateLimited             | The request exceeds a rate limit                                                             |
 | rejectedIdentifier      | The server will not issue certificates for the identifier                                    |
 | serverInternal          | The server experienced an internal error                                                     |
@@ -1099,8 +1099,8 @@ sufficient to make the authorization valid.
 wildcard (optional, boolean):
 : This field MUST be present and true for authorizations created as
 a result of a newOrder request containing a DNS identifier with a
-value that contained a wildcard prefix.  For other authorizations,
-it MUST be absent.
+value that was a wildcard domain name.  For other authorizations,
+it MUST be absent.  Wildcard domain names are described in Section 7.1.2.
 
 The only type of identifier defined by this specification is a fully qualified
 domain name (type: "dns"). The domain name MUST be encoded in the
@@ -1110,7 +1110,7 @@ any identifier values that begin with the ASCII-Compatible Encoding prefix
 "xn\-\-" as defined in {{!RFC5890}} are properly encoded. Wildcard domain names
 (with "\*" as the first label) MUST NOT be included in authorization objects. If
 an authorization object conveys authorization for the base domain of a newOrder
-DNS type identifier with a wildcard prefix, then the optional authorizations
+DNS identifier containing a wildcard domain name, then the optional authorizations
 "wildcard" field MUST be present with a value of true.
 
 {{identifier-validation-challenges}} describes a set of challenges for domain
@@ -1868,7 +1868,7 @@ client to submit a new finalize request with an amended CSR.
 
 A request to finalize an order will result in error if the order is not in the
 "ready" state.  In such cases, the server MUST return a 403 (Forbidden) error
-with a problem document of type "badState".  The client should then send a
+with a problem document of type "badOrderState".  The client should then send a
 POST-as-GET request to the order resource to obtain its current state.  The
 status of the order will indicate what action the client should take (see
 below).
@@ -1981,8 +1981,8 @@ Content-Type: application/jose+json
 
 Note that because the identifier in a pre-authorization request is
 the exact identifier to be included in the authorization object,
-pre-authorization cannot be used to authorize issuance with wildcard
-DNS identifiers.
+pre-authorization cannot be used to authorize issuance of certificates
+containing wildcard domain names.
 
 Before processing the authorization request, the server SHOULD determine whether
 it is willing to issue certificates for the identifier.  For example, the server
