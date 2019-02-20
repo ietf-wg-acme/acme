@@ -3473,6 +3473,7 @@ inception.
 * Sophie Herold, Hemio
 * Eric Rescorla, Mozilla
 * Seth Schoen, EFF
+* Roland Shoemaker, Let's Encrypt
 * Rob Stradling, Sectigo
 * Martin Thomson, Mozilla
 * Jakub Warmuz, University of Oxford
