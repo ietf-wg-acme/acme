@@ -3472,8 +3472,8 @@ inception.
 * Karthik Bhargavan, INRIA
 * Peter Eckersley, EFF
 * Alex Halderman, University of Michigan
-* Tim Hollebeek, DigiCert
 * Sophie Herold, Hemio
+* Tim Hollebeek, DigiCert
 * Eric Rescorla, Mozilla
 * Seth Schoen, EFF
 * Roland Shoemaker, Let's Encrypt
