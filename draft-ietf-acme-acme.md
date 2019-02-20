@@ -898,6 +898,11 @@ termsOfServiceAgreed (optional, boolean):
 the client's agreement with the terms of service. This field cannot be updated
 by the client.
 
+externalAccountBinding (optional, object):
+: Including this field in a newAccount request indicates approval by the holder
+of an existing non-ACME account to bind that account to this ACME account. This
+field is not updateable by the client. (See {{external-account-binding}}).
+
 orders (required, string):
 : A URL from which a list of orders submitted by this account can be fetched via
 a POST-as-GET request, as described in {{orders-list}}.
@@ -1325,8 +1330,7 @@ onlyReturnExisting (optional, boolean):
   {{finding-an-account-url-given-a-key}}).
 
 externalAccountBinding (optional, object):
-: An optional field for binding the new account with an existing non-ACME
-  account (see {{ external-account-binding }}).
+: Same meaning as the corresponding server field defined in {{account-objects}}
 
 ~~~~~~~~~~
 POST /acme/new-account HTTP/1.1
@@ -1351,15 +1355,12 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST ignore any values provided in the "orders"
-fields in account bodies sent by the client, as well as any other fields
-that it does not recognize.  If new fields are specified in the future, the
-specification of those fields MUST describe whether they can be provided by the
-client.
-
-In general, the server MUST ignore any fields in the request object that it does
-not recognize.  In particular, it MUST NOT reflect unrecognized fields in the
-resulting account object.  This allows clients to detect when servers do not
+The server MUST ignore any values provided in the "orders" fields in account
+objects sent by the client, as well as any other fields that it does not
+recognize. If new fields are specified in the future, the specification of those
+fields MUST describe whether they can be provided by the client. The server MUST
+NOT reflect the "onlyReturnExisting" field or any unrecognized fields in the
+resulting account object. This allows clients to detect when servers do not
 support an extension field.
 
 The server SHOULD validate that the contact URLs in the "contact" field are
@@ -2860,10 +2861,12 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 | Field Name               | Field Type      | Requests     | Reference |
 |:-------------------------|:----------------|:-------------|:----------|
+=======
 | status                   | string          | new, account | RFC 8555  |
 | contact                  | array of string | new, account | RFC 8555  |
 | externalAccountBinding   | object          | new          | RFC 8555  |
 | termsOfServiceAgreed     | boolean         | new          | RFC 8555  |
+| onlyReturnExisting       | boolean         | new          | RFC 8555  |
 | orders                   | string          | none         | RFC 8555  |
 
 ### Fields in Order Objects {#iana-order}
