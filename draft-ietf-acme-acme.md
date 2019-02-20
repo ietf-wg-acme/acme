@@ -1886,16 +1886,20 @@ action the client should take:
 * "invalid": The certificate will not be issued.  Consider this order process
   abandoned.
 
+* "pending": The server does not believe that the client has fulfilled the
+  requirements.  Check the "authorizations" array for entries that are still
+  pending.
+
+* "ready": The server agrees that the requirements have been
+  fulfilled, and is awaiting finalization.  Submit a finalization
+  request.
+
 * "processing": The certificate is being issued. Send a POST-as-GET request after the
   time given in the Retry-After header field of the response, if
   any.
 
 * "valid": The server has issued the certificate and provisioned its URL to the
   "certificate" field of the order.  Download the certificate.
-
-* "pending": This status should not be returned after a successful finalize request.
-
-* "ready": This status should not be returned after a successful finalize request.
 
 ~~~~~~~~~~
 HTTP/1.1 200 OK
