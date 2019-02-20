@@ -4697,7 +4697,7 @@ Internet-Draft                    ACME                     February 2019
 
    o  Seth Schoen, EFF
 
-   o  Rob Stradling, Sectigo
+   o  Roland Shoemaker, Let's Encrypt
 
 
 
@@ -4705,6 +4705,8 @@ Barnes, et al.           Expires August 24, 2019               [Page 84]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   o  Rob Stradling, Sectigo
 
    o  Martin Thomson, Mozilla
 
@@ -4751,8 +4753,6 @@ Internet-Draft                    ACME                     February 2019
               Classes and Attribute Types Version 2.0", RFC 2985,
               DOI 10.17487/RFC2985, November 2000,
               <https://www.rfc-editor.org/info/rfc2985>.
-
-
 
 
 
