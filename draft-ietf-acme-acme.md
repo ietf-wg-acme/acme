@@ -932,6 +932,7 @@ relation indicating where further entries can be acquired.
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Content-Type: application/json
+Link: <https://example.com/acme/some-directory>;rel="index"
 Link: <https://example.com/acme/orders/rzGoeA?cursor=2>;rel="next"
 
 {
@@ -1782,6 +1783,7 @@ certificate will be issued.
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
+Link: <https://example.com/acme/some-directory>;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -1898,6 +1900,7 @@ action the client should take:
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
+Link: <https://example.com/acme/some-directory>;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -2222,6 +2225,7 @@ Content-Type: application/jose+json
 
 HTTP/1.1 200 OK
 Content-Type: application/json
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "status": "valid",
@@ -2367,6 +2371,7 @@ has already been revoked, the server returns an error response with status code 
 HTTP/1.1 200 OK
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 --- or ---
 
