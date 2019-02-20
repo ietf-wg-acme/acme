@@ -1400,8 +1400,8 @@ requests for management actions on this account, as described below.
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Location: https://example.com/acme/acct/evOfKhNU60wg
 Link: <https://example.com/acme/some-directory>;rel="index"
+Location: https://example.com/acme/acct/evOfKhNU60wg
 
 {
   "status": "valid",
