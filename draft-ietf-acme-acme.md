@@ -672,6 +672,7 @@ containing only the eight identifiers not listed in the problem document.
 ~~~~~
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
     "type": "urn:ietf:params:acme:error:malformed",
@@ -1300,6 +1301,7 @@ Host: example.com
 HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
+Link: <https://example.com/acme/some-directory>;rel="index"
 ~~~~~~~~~~
 
 Proxy caching of responses from the newNonce resource can cause
@@ -1481,6 +1483,7 @@ order for instructions on how to agree to the terms.
 ~~~~~
 HTTP/1.1 403 Forbidden
 Replay-Nonce: T81bdZroZ2ITWSondpTmAw
+Link: <https://example.com/acme/some-directory>;rel="index"
 Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"
 Content-Type: application/problem+json
 Content-Language: en
@@ -2379,6 +2382,7 @@ HTTP/1.1 403 Forbidden
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
+Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
