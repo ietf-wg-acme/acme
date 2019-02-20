@@ -426,8 +426,22 @@ document returned with the error MUST include an "algorithms" field with an
 array of supported "alg" values.  See <xref target="errors"/> for more details on
 the structure of error responses.</t>
 
+<t>If the server supports the signature algorithm "alg" but either does not support
+or chooses to reject the public key "jwk", then the server MUST return an error
+with status code 400 (Bad Request) and type
+"urn:ietf:params:acme:error:badPublicKey".  The problem document detail SHOULD
+describe the reason for rejecting the public key; some example reasons are:</t>
+
+<t><list style="symbols">
+  <t>"alg" is "RS256" but the modulus "n" is too small (e.g., 512-bit)</t>
+  <t>"alg" is "ES256" but "jwk" does not contain a valid P-256 public key</t>
+  <t>"alg" is "EdDSA" and "crv" is "Ed448", but the server only supports "EdDSA"
+with "Ed25519"</t>
+  <t>the corresponding private key is known to have been compromised</t>
+</list></t>
+
 <t>Because client requests in ACME carry JWS objects in the Flattened
-JSON Serialization, they must have the "Content-Type" header field
+JSON Serialization, they must have the Content-Type header field
 set to "application/jose+json".  If a request does not meet this
 requirement, then the server MUST return a response with status code
 415 (Unsupported Media Type).</t>
@@ -480,7 +494,7 @@ the request URL.  If the two do not match, then the server MUST reject the
 request as unauthorized.</t>
 
 <t>Except for the directory resource, all ACME resources are addressed with URLs
-provided to the client by the server.  In requests sent to these resources, the client MUST set
+provided to the client by the server.  In POST requests sent to these resources, the client MUST set
 the "url" header parameter to the exact string provided by the server (rather
 than performing any re-encoding on the URL).  The server SHOULD perform the
 corresponding string equality check, configuring each resource with the URL
@@ -520,7 +534,7 @@ way as a value it had never issued.</t>
 <t>When a server rejects a request because its nonce value was unacceptable (or not
 present), it MUST provide HTTP status code 400 (Bad Request), and indicate the
 ACME error type "urn:ietf:params:acme:error:badNonce".  An error response with
-the "badNonce" error type MUST include a Replay-Nonce header with a
+the "badNonce" error type MUST include a Replay-Nonce header field with a
 fresh nonce that the server will accept in a retry of the original
 query (and possibly in other requests, according to the server's
 nonce scoping policy).
@@ -541,7 +555,7 @@ scope nonces broadly enough that retries are not needed very often.</t>
 
 <section anchor="replay-nonce" title="Replay-Nonce">
 
-<t>The "Replay-Nonce" header field includes a server-generated value that the
+<t>The Replay-Nonce header field includes a server-generated value that the
 server can use to detect unauthorized replay in future client requests.  The
 server MUST generate the value provided in Replay-Nonce in such a way that
 they are unique to each message, with high probability, and unpredictable to anyone besides the server. For instance, it is
@@ -579,13 +593,13 @@ then the verifier MUST reject the JWS as malformed.</t>
 <t>Creation of resources can be rate limited by ACME servers to ensure fair usage and
 prevent abuse.  Once the rate limit is exceeded, the server MUST respond
 with an error with the type "urn:ietf:params:acme:error:rateLimited".
-Additionally, the server SHOULD send a "Retry-After" header <xref target="RFC7231"/> indicating
+Additionally, the server SHOULD send a Retry-After header field <xref target="RFC7231"/> indicating
 when the current request may succeed again.  If multiple rate limits are
 in place, that is the time where all rate limits allow access again for
 the current request with exactly the same parameters.</t>
 
 <t>In addition to the human-readable "detail" field of the error response, the
-server MAY send one or multiple link relations in the "Link" header <xref target="RFC8288"/> pointing to
+server MAY send one or multiple link relations in the Link header field <xref target="RFC8288"/> pointing to
 documentation about the specific rate limit that was hit, using the "help" link relation type.</t>
 
 </section>
@@ -614,6 +628,8 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
       <c>The CSR is unacceptable (e.g., due to a short key)</c>
       <c>badNonce</c>
       <c>The client sent an unacceptable anti-replay nonce</c>
+      <c>badPublicKey</c>
+      <c>The JWS was signed by a public key the server does not support</c>
       <c>badRevocationReason</c>
       <c>The revocation reason provided is not allowed by the server</c>
       <c>badSignatureAlgorithm</c>
@@ -634,6 +650,8 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
       <c>A contact URL for an account was invalid</c>
       <c>malformed</c>
       <c>The request message was malformed</c>
+      <c>orderNotReady</c>
+      <c>The request attempted to finalize an order that is not ready to be finalized</c>
       <c>rateLimited</c>
       <c>The request exceeds a rate limit</c>
       <c>rejectedIdentifier</c>
@@ -667,7 +685,7 @@ to error types, rather than the full URNs.  For example, an "error of type
 
 <t>Sometimes a CA may need to return multiple errors in response to a request.
 Additionally, the CA may need to attribute errors to specific
-identifiers.  For instance, a new-order request may contain multiple
+identifiers.  For instance, a newOrder request may contain multiple
 identifiers for which the CA cannot issue. In this situation, an ACME
 problem document MAY contain the "subproblems" field, containing a JSON
 array of problem documents, each of which MAY contain an "identifier"
@@ -678,7 +696,7 @@ Subproblems need not all have the same type, and they do not need to match the t
 
 <t>ACME clients may choose to use the "identifier" field of a subproblem
 as a hint that an operation would succeed if that identifier were omitted. For
-instance, if an order contains ten DNS identifiers, and the new-order
+instance, if an order contains ten DNS identifiers, and the newOrder
 request returns a problem document with two subproblems (referencing two
 of those identifiers), the ACME client may choose to submit another order
 containing only the eight identifiers not listed in the problem document.</t>
@@ -686,6 +704,7 @@ containing only the eight identifiers not listed in the problem document.</t>
 <figure><artwork><![CDATA[
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
+Link: <https://example.com/acme/directory>;rel="index"
 
 {
     "type": "urn:ietf:params:acme:error:malformed",
@@ -798,7 +817,7 @@ indicate HTTP link relations.</t>
 <t>The following table illustrates a typical sequence of requests required to
 establish a new account with the server, prove control of an identifier, issue a
 certificate, and fetch an updated certificate some time after issuance.  The
-"-&gt;" is a mnemonic for a Location header pointing to a created resource.</t>
+"-&gt;" is a mnemonic for a Location header field pointing to a created resource.</t>
 <?rfc compact="no"?>
 <texttable>
       <ttcol align='left'>Action</ttcol>
@@ -861,7 +880,7 @@ URLs.</t>
       <c>revokeCert</c>
       <c>Revoke certificate</c>
       <c>keyChange</c>
-      <c>Key Change</c>
+      <c>Key change</c>
 </texttable>
 <?rfc compact="yes"?>
 <t>There is no constraint on the URL of the directory except that it
@@ -901,7 +920,7 @@ to determine the correct issuer domain name to use when configuring
 CAA records.</t>
   <t hangText='externalAccountRequired (optional, boolean):'>
   If this field is present and set to "true", then the CA requires that all
-new-account requests include an "externalAccountBinding" field associating the
+newAccount requests include an "externalAccountBinding" field associating the
 new account with an external account.</t>
 </list></t>
 
@@ -945,9 +964,13 @@ related to this account. For example, the server may wish to notify the
 client about server-initiated revocation or certificate expiration.
 For information on supported URL schemes, see <xref target="account-management"/>.</t>
   <t hangText='termsOfServiceAgreed (optional, boolean):'>
-  Including this field in a new-account request, with a value of true, indicates
+  Including this field in a newAccount request, with a value of true, indicates
 the client's agreement with the terms of service. This field cannot be updated
 by the client.</t>
+  <t hangText='externalAccountBinding (optional, object):'>
+  Including this field in a newAccount request indicates approval by the holder
+of an existing non-ACME account to bind that account to this ACME account. This
+field is not updateable by the client. (See <xref target="external-account-binding"/>).</t>
   <t hangText='orders (required, string):'>
   A URL from which a list of orders submitted by this account can be fetched via
 a POST-as-GET request, as described in <xref target="orders-list"/>.</t>
@@ -978,6 +1001,7 @@ relation indicating where further entries can be acquired.</t>
 <figure><artwork><![CDATA[
 HTTP/1.1 200 OK
 Content-Type: application/json
+Link: <https://example.com/acme/directory>;rel="index"
 Link: <https://example.com/acme/orders/rzGoeA?cursor=2>;rel="next"
 
 {
@@ -1068,7 +1092,7 @@ the population of the certificate URL for the order.</t>
 }
 ]]></artwork></figure>
 
-<t>Any identifier of type "dns" in a new-order request MAY have a wildcard domain
+<t>Any identifier of type "dns" in a newOrder request MAY have a wildcard domain
 name as its value. A wildcard domain name consists of a single asterisk
 character followed by a single full stop character ("*.") followed by a domain
 name as defined for use in the Subject Alternate Name Extension by
@@ -1145,8 +1169,8 @@ sufficient to make the authorization valid.</t>
   <t hangText='wildcard (optional, boolean):'>
   This field MUST be present and true for authorizations created as
 a result of a newOrder request containing a DNS identifier with a
-value that contained a wildcard prefix.  For other authorizations,
-it MUST be absent.</t>
+value that was a wildcard domain name.  For other authorizations,
+it MUST be absent.  Wildcard domain names are described in <xref target="order-objects"/>.</t>
 </list></t>
 
 <t>The only type of identifier defined by this specification is a fully qualified
@@ -1157,7 +1181,7 @@ any identifier values that begin with the ASCII-Compatible Encoding prefix
 "xn--" as defined in <xref target="RFC5890"/> are properly encoded. Wildcard domain names
 (with "*" as the first label) MUST NOT be included in authorization objects. If
 an authorization object conveys authorization for the base domain of a newOrder
-DNS type identifier with a wildcard prefix, then the optional authorizations
+DNS identifier containing a wildcard domain name, then the optional authorizations
 "wildcard" field MUST be present with a value of true.</t>
 
 <t><xref target="identifier-validation-challenges"/> describes a set of challenges for domain
@@ -1242,7 +1266,7 @@ the challenges listed in the authorization transitions to the
 state.  If the client attempts to fulfill a challenge and fails, or
 if there is an error while the authorization is still
 pending, then the authorization transitions to the "invalid" state.
-Once the authorization is in the valid state, it can expire
+Once the authorization is in the "valid" state, it can expire
 ("expired"), be deactivated by the client ("deactivated", see
 <xref target="deactivating-an-authorization"/>), or revoked by the server
 ("revoked").</t>
@@ -1332,7 +1356,7 @@ the client will have gotten a nonce from a previous request.  However, the
 client might sometimes need to get a new nonce, e.g., on its first request to
 the server or if an existing nonce is no longer valid.</t>
 
-<t>To get a fresh nonce, the client sends a HEAD request to the new-nonce resource
+<t>To get a fresh nonce, the client sends a HEAD request to the newNonce resource
 on the server.  The server's response MUST include a Replay-Nonce header field
 containing a fresh nonce and SHOULD have status code 200 (OK).  The
 server MUST also respond to GET requests for this resource, returning an empty
@@ -1345,12 +1369,13 @@ Host: example.com
 HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
+Link: <https://example.com/acme/directory>;rel="index"
 ]]></artwork></figure>
 
-<t>Proxy caching of responses from the new-nonce resource can cause
-clients to receive the same nonce repeatedly, leading to badNonce errors.
+<t>Proxy caching of responses from the newNonce resource can cause
+clients to receive the same nonce repeatedly, leading to "badNonce" errors.
 The server MUST include a Cache-Control header field with the "no-store"
-directive in responses for the new-nonce resource, in order to prevent
+directive in responses for the newNonce resource, in order to prevent
 caching of this resource.</t>
 
 </section>
@@ -1361,7 +1386,7 @@ account on an ACME server and perform some modifications to the
 account after it has been created.</t>
 
 <t>A client creates a new account with the server by sending a POST request to the
-server's new-account URL.  The body of the request is a stub account object
+server's newAccount URL.  The body of the request is a stub account object
 containing some subset of the following fields:</t>
 
 <t><list style="hanging">
@@ -1375,8 +1400,7 @@ create a new account if one does not already exist.  This allows a client to
 look up an account URL based on an account key (see
 <xref target="finding-an-account-url-given-a-key"/>).</t>
   <t hangText='externalAccountBinding (optional, object):'>
-  An optional field for binding the new account with an existing non-ACME
-account (see <xref target=" external-account-binding "/>).</t>
+  Same meaning as the corresponding server field defined in <xref target="account-objects"/></t>
 </list></t>
 
 <figure><artwork><![CDATA[
@@ -1402,15 +1426,12 @@ Content-Type: application/jose+json
 }
 ]]></artwork></figure>
 
-<t>The server MUST ignore any values provided in the "orders"
-fields in account bodies sent by the client, as well as any other fields
-that it does not recognize.  If new fields are specified in the future, the
-specification of those fields MUST describe whether they can be provided by the
-client.</t>
-
-<t>In general, the server MUST ignore any fields in the request object that it does
-not recognize.  In particular, it MUST NOT reflect unrecognized fields in the
-resulting account object.  This allows clients to detect when servers do not
+<t>The server MUST ignore any values provided in the "orders" fields in account
+objects sent by the client, as well as any other fields that it does not
+recognize. If new fields are specified in the future, the specification of those
+fields MUST describe whether they can be provided by the client. The server MUST
+NOT reflect the "onlyReturnExisting" field or any unrecognized fields in the
+resulting account object. This allows clients to detect when servers do not
 support an extension field.</t>
 
 <t>The server SHOULD validate that the contact URLs in the "contact" field are
@@ -1430,7 +1451,7 @@ scheme but an invalid value, then the server MUST return an error of type
 <t>If the server wishes to require the client to agree to terms under which the ACME
 service is to be used, it MUST indicate the URL where such terms can be accessed
 in the "termsOfService" subfield of the "meta" field in the directory object,
-and the server MUST reject new-account requests that do not have the
+and the server MUST reject newAccount requests that do not have the
 "termsOfServiceAgreed" field set to "true".  Clients SHOULD NOT automatically agree
 to terms by default.  Rather, they SHOULD require some user interaction for
 agreement to terms.</t>
@@ -1447,8 +1468,8 @@ requests for management actions on this account, as described below.</t>
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
+Link: <https://example.com/acme/directory>;rel="index"
 Location: https://example.com/acme/acct/evOfKhNU60wg
-Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "status": "valid",
@@ -1471,7 +1492,7 @@ an account key but not the corresponding account URL to recover the account URL.
 
 <t>If a client wishes to find the URL for an existing account and does not want an
 account to be created if one does not already exist, then it SHOULD do so by
-sending a POST request to the new-account URL with a JWS whose payload has an
+sending a POST request to the newAccount URL with a JWS whose payload has an
 "onlyReturnExisting" field set to "true" ({"onlyReturnExisting": true}).
 If a client sends such a request and an account does not exist, then the server
 MUST return an error response with status code 400 (Bad Request) and type
@@ -1532,6 +1553,7 @@ order for instructions on how to agree to the terms.</t>
 <figure><artwork><![CDATA[
 HTTP/1.1 403 Forbidden
 Replay-Nonce: T81bdZroZ2ITWSondpTmAw
+Link: <https://example.com/acme/directory>;rel="index"
 Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"
 Content-Type: application/problem+json
 Content-Language: en
@@ -1601,13 +1623,13 @@ Content-Type: application/jose+json
 }
 ]]></artwork></figure>
 
-<t>If such a CA requires that new-account requests contain an "externalAccountBinding"
+<t>If such a CA requires that newAccount requests contain an "externalAccountBinding"
 field, then it MUST provide the value "true" in the "externalAccountRequired" subfield
 of the "meta" field in the directory object.  If the CA receives a
-new-account request without an "externalAccountBinding" field, then it SHOULD
+newAccount request without an "externalAccountBinding" field, then it SHOULD
 reply with an error of type "externalAccountRequired".</t>
 
-<t>When a CA receives a new-account request containing an
+<t>When a CA receives a newAccount request containing an
 "externalAccountBinding" field, it decides whether or not to verify the
 binding.  If the CA does not verify the binding, then it MUST NOT reflect the
 "externalAccountBinding" field in the resulting account object (if any).  To
@@ -1627,7 +1649,7 @@ consider the new account associated with the external account corresponding to
 the MAC key.  The account object the CA returns MUST include an
 "externalAccountBinding" field with the same value as the field in
 the request.  If any of these checks fail, then the CA MUST
-reject the new-account request.</t>
+reject the newAccount request.</t>
 
 </section>
 <section anchor="account-key-roll-over" title="Account Key Rollover">
@@ -1645,19 +1667,19 @@ covers this request and its signature, and indicates the old key
 holder's assent to the rollover request.</t>
 
 <t>To create this request object, the client first constructs a
-key-change object describing the account to be updated and its
+keyChange object describing the account to be updated and its
 account key:</t>
 
 <t><list style="hanging">
   <t hangText='account (required, string):'>
   The URL for the account being modified.  The content of this field MUST be the
 exact string provided in the Location header field in response to the
-new-account request that created the account.</t>
+newAccount request that created the account.</t>
   <t hangText='oldKey (required, JWK):'>
   The JWK representation of the old key.</t>
 </list></t>
 
-<t>The client then encapsulates the key-change object in an "inner" JWS, signed with the
+<t>The client then encapsulates the keyChange object in an "inner" JWS, signed with the
 requested new account key.
 This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.</t>
@@ -1709,7 +1731,7 @@ Content-Type: application/jose+json
 }
 ]]></artwork></figure>
 
-<t>On receiving key-change request, the server MUST perform the following steps in
+<t>On receiving keyChange request, the server MUST perform the following steps in
 addition to the typical JWS validation:</t>
 
 <t><list style="numbers">
@@ -1719,13 +1741,13 @@ in <xref target="message-transport"/>.</t>
 JWS").</t>
   <t>Check that the JWS protected header of the inner JWS has a "jwk" field.</t>
   <t>Check that the inner JWS verifies using the key in its "jwk" field.</t>
-  <t>Check that the payload of the inner JWS is a well-formed key-change object
+  <t>Check that the payload of the inner JWS is a well-formed keyChange object
 (as described above).</t>
   <t>Check that the "url" parameters of the inner and outer JWSs are the same.</t>
-  <t>Check that the "account" field of the key-change object contains the URL for
+  <t>Check that the "account" field of the keyChange object contains the URL for
 the account matching the old key (i.e., the "kid" field in the
 outer JWS).</t>
-  <t>Check that the "oldKey" field of the key-change object is the
+  <t>Check that the "oldKey" field of the keyChange object is the
 same as the account key for the account in question.</t>
   <t>Check that no account exists whose account key is the same as the key in the
 "jwk" header parameter of the inner JWS.</t>
@@ -1790,7 +1812,7 @@ provide a way to reactivate a deactivated account.</t>
 <section anchor="applying-for-certificate-issuance" title="Applying for Certificate Issuance">
 
 <t>The client begins the certificate issuance process by sending a POST request to the server's
-new-order resource.  The body of the POST is a JWS object whose JSON payload is
+newOrder resource.  The body of the POST is a JWS object whose JSON payload is
 a subset of the order object defined in <xref target="order-objects"/>, containing the fields
 that describe the certificate to be issued:</t>
 
@@ -1849,6 +1871,7 @@ certificate will be issued.</t>
 <figure><artwork><![CDATA[
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
+Link: <https://example.com/acme/directory>;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -1915,7 +1938,7 @@ Content-Type: application/jose+json
 
 <t>The CSR encodes the client's requests with regard to the content of the
 certificate to be issued.  The CSR MUST indicate the exact same set of requested
-identifiers as the initial new-order request.  Identifiers of type "dns" MUST appear either in the commonName portion
+identifiers as the initial newOrder request.  Identifiers of type "dns" MUST appear either in the commonName portion
 of the requested subject name or in an extensionRequest attribute <xref target="RFC2985"/>
 requesting a subjectAltName extension, or both.  (These identifiers may appear
 in any sort order.)  Specifications that define
@@ -1926,7 +1949,6 @@ identifiers can appear.</t>
 <t>A request to finalize an order will result in an error if the CA is unwilling to issue a certificate corresponding to the submitted CSR.  For example:</t>
 
 <t><list style="symbols">
-  <t>If the order indicated does not have status "ready"</t>
   <t>If the CSR and order identifiers differ</t>
   <t>If the account is not authorized for the identifiers indicated in the CSR</t>
   <t>If the CSR requests extensions that the CA is not willing to include</t>
@@ -1938,9 +1960,15 @@ rejected in its "detail" field.  After returning such an error, the
 server SHOULD leave the order in the "ready" state, to allow the
 client to submit a new finalize request with an amended CSR.</t>
 
-<t>A request to finalize an order will return the order to be finalized.
-The client should begin polling the order by sending a POST-as-GET request to the order
-resource to obtain its current state. The status of the order will indicate what
+<t>A request to finalize an order will result in error if the order is not in the
+"ready" state.  In such cases, the server MUST return a 403 (Forbidden) error
+with a problem document of type "orderNotReady".  The client should then send a
+POST-as-GET request to the order resource to obtain its current state.  The
+status of the order will indicate what action the client should take (see
+below).</t>
+
+<t>If a request to finalize an order is successful, the server will return a 200
+(OK) with an updated order object.  The status of the order will indicate what
 action the client should take:</t>
 
 <t><list style="symbols">
@@ -1953,7 +1981,7 @@ pending.</t>
 fulfilled, and is awaiting finalization.  Submit a finalization
 request.</t>
   <t>"processing": The certificate is being issued. Send a POST-as-GET request after the
-time given in the "Retry-After" header field of the response, if
+time given in the Retry-After header field of the response, if
 any.</t>
   <t>"valid": The server has issued the certificate and provisioned its URL to the
 "certificate" field of the order.  Download the certificate.</t>
@@ -1962,6 +1990,7 @@ any.</t>
 <figure><artwork><![CDATA[
 HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
+Link: <https://example.com/acme/directory>;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -2005,10 +2034,10 @@ orders submitted by the client.</t>
 
 <t>If a CA wishes to allow pre-authorization within ACME, it can offer a "new
 authorization" resource in its directory by adding the field "newAuthz" with a
-URL for the new authorization resource.</t>
+URL for the newAuthz resource.</t>
 
 <t>To request authorization for an identifier, the client sends a POST request to
-the new-authorization resource specifying the identifier for which authorization
+the newAuthz resource specifying the identifier for which authorization
 is being requested.</t>
 
 <t><list style="hanging">
@@ -2049,8 +2078,8 @@ Content-Type: application/jose+json
 
 <t>Note that because the identifier in a pre-authorization request is
 the exact identifier to be included in the authorization object,
-pre-authorization cannot be used to authorize issuance with wildcard
-DNS identifiers.</t>
+pre-authorization cannot be used to authorize issuance of certificates
+containing wildcard domain names.</t>
 
 <t>Before processing the authorization request, the server SHOULD determine whether
 it is willing to issue certificates for the identifier.  For example, the server
@@ -2108,7 +2137,7 @@ Accept: application/pem-certificate-chain
 
 HTTP/1.1 200 OK
 Content-Type: application/pem-certificate-chain
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 
 -----BEGIN CERTIFICATE-----
 [End-entity certificate contents]
@@ -2165,7 +2194,7 @@ request.</t>
 
 <t>When a client receives an order from the server in reply to a new order request, it downloads the authorization
 resources by sending POST-as-GET requests to the indicated URLs.  If the client
-initiates authorization using a request to the new authorization resource, it
+initiates authorization using a request to the newAuthz resource, it
 will have already received the pending authorization object in the response
 to that request.</t>
 
@@ -2179,7 +2208,7 @@ Content-Type: application/jose+json
     "alg": "ES256",
     "kid": "https://example.com/acme/acct/evOfKhNU60wg",
     "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
-    "url": "https://example.com/acme/authz/1234"
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
   }),
   "payload": "",
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2187,7 +2216,7 @@ Content-Type: application/jose+json
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 
 {
   "status": "pending",
@@ -2296,6 +2325,7 @@ Content-Type: application/jose+json
 
 HTTP/1.1 200 OK
 Content-Type: application/json
+Link: <https://example.com/acme/directory>;rel="index"
 
 {
   "status": "valid",
@@ -2447,6 +2477,7 @@ has already been revoked, the server returns an error response with status code 
 HTTP/1.1 200 OK
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
+Link: <https://example.com/acme/directory>;rel="index"
 
 --- or ---
 
@@ -2454,6 +2485,7 @@ HTTP/1.1 403 Forbidden
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
+Link: <https://example.com/acme/directory>;rel="index"
 
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
@@ -2956,7 +2988,7 @@ Required policy <xref target="RFC8126"/>.</t>
 
 <t>The "ACME Account Object Fields" registry lists field names that are defined
 for use in ACME account objects.  Fields marked as "configurable" may be included in a
-new-account request.</t>
+newAccount request.</t>
 
 <t>Template:</t>
 
@@ -2998,6 +3030,10 @@ following values:
       <c>boolean</c>
       <c>new</c>
       <c>RFC 8555</c>
+      <c>onlyReturnExisting</c>
+      <c>boolean</c>
+      <c>new</c>
+      <c>RFC 8555</c>
       <c>orders</c>
       <c>string</c>
       <c>none</c>
@@ -3010,7 +3046,7 @@ following values:
 
 <t>The "ACME Order Object Fields" registry lists field names that are defined
 for use in ACME order objects.  Fields marked as "configurable" may be included in a
-new-order request.</t>
+newOrder request.</t>
 
 <t>Template:</t>
 
@@ -3074,7 +3110,7 @@ values provided by the client</t>
 
 <t>The "ACME Authorization Object Fields" registry lists field names that are
 defined for use in ACME authorization objects.  Fields marked as
-"configurable" may be included in a new-authorization request.</t>
+"configurable" may be included in a newAuthz request.</t>
 
 <t>Template:</t>
 
@@ -3385,7 +3421,7 @@ CDN) can cause denial-of-service conditions in a variety of ways.</t>
 <section anchor="integrity-of-authorizations" title="Integrity of Authorizations">
 
 <t>ACME allows anyone to request challenges for an identifier by registering an
-account key and sending a new-order request using that account key.  The
+account key and sending a newOrder request using that account key.  The
 integrity of the authorization process thus depends on the identifier validation
 challenges to ensure that the challenge can only be completed by someone who
 both (1) holds the private key of the account key pair and (2) controls the
@@ -3401,7 +3437,7 @@ following form:</t>
 <t><list style="numbers">
   <t>Legitimate domain holder registers account key pair A</t>
   <t>MitM registers account key pair B</t>
-  <t>Legitimate domain holder sends a new-order request signed using account key A</t>
+  <t>Legitimate domain holder sends a newOrder request signed using account key A</t>
   <t>MitM suppresses the legitimate request but sends the same request signed
 using account key B</t>
   <t>ACME server issues challenges and MitM forwards them to the legitimate domain
@@ -4003,14 +4039,16 @@ inception.</t>
   <t>Peter Eckersley, EFF</t>
   <t>Alex Halderman, University of Michigan</t>
   <t>Sophie Herold, Hemio</t>
+  <t>Tim Hollebeek, DigiCert</t>
   <t>Eric Rescorla, Mozilla</t>
   <t>Seth Schoen, EFF</t>
+  <t>Roland Shoemaker, Let's Encrypt</t>
+  <t>Rob Stradling, Sectigo</t>
   <t>Martin Thomson, Mozilla</t>
   <t>Jakub Warmuz, University of Oxford</t>
 </list></t>
 
-<t>
-This document draws on many concepts established by Eric Rescorla's "Automated
+<t>This document draws on many concepts established by Eric Rescorla's "Automated
 Certificate Issuance Protocol" draft.  Martin Thomson provided helpful guidance
 in the use of HTTP.</t>
 

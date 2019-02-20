@@ -672,7 +672,7 @@ containing only the eight identifiers not listed in the problem document.
 ~~~~~
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 
 {
     "type": "urn:ietf:params:acme:error:malformed",
@@ -933,7 +933,7 @@ relation indicating where further entries can be acquired.
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 Link: <https://example.com/acme/orders/rzGoeA?cursor=2>;rel="next"
 
 {
@@ -1301,7 +1301,7 @@ Host: example.com
 HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 ~~~~~~~~~~
 
 Proxy caching of responses from the newNonce resource can cause
@@ -1400,7 +1400,7 @@ requests for management actions on this account, as described below.
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 Location: https://example.com/acme/acct/evOfKhNU60wg
 
 {
@@ -1483,7 +1483,7 @@ order for instructions on how to agree to the terms.
 ~~~~~
 HTTP/1.1 403 Forbidden
 Replay-Nonce: T81bdZroZ2ITWSondpTmAw
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"
 Content-Type: application/problem+json
 Content-Language: en
@@ -1786,7 +1786,7 @@ certificate will be issued.
 ~~~~~~~~~~
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -1903,7 +1903,7 @@ action the client should take:
 ~~~~~~~~~~
 HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -2044,7 +2044,7 @@ Accept: application/pem-certificate-chain
 
 HTTP/1.1 200 OK
 Content-Type: application/pem-certificate-chain
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 
 -----BEGIN CERTIFICATE-----
 [End-entity certificate contents]
@@ -2119,7 +2119,7 @@ Content-Type: application/jose+json
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 
 {
   "status": "pending",
@@ -2228,7 +2228,7 @@ Content-Type: application/jose+json
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 
 {
   "status": "valid",
@@ -2374,7 +2374,7 @@ has already been revoked, the server returns an error response with status code 
 HTTP/1.1 200 OK
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 
 --- or ---
 
@@ -2382,7 +2382,7 @@ HTTP/1.1 403 Forbidden
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
-Link: <https://example.com/acme/some-directory>;rel="index"
+Link: <https://example.com/acme/directory>;rel="index"
 
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
@@ -2870,7 +2870,6 @@ Initial contents: The fields and descriptions defined in {{account-objects}}.
 
 | Field Name               | Field Type      | Requests     | Reference |
 |:-------------------------|:----------------|:-------------|:----------|
-=======
 | status                   | string          | new, account | RFC 8555  |
 | contact                  | array of string | new, account | RFC 8555  |
 | externalAccountBinding   | object          | new          | RFC 8555  |
