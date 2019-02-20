@@ -1022,7 +1022,7 @@ certificate (optional, string):
 
   "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",
 
-  "certificate": "https://example.com/acme/cert/jWCdfHVGY2M"
+  "certificate": "https://example.com/acme/cert/mAt3xBGaobw"
 }
 ~~~~~~~~~~
 
