@@ -1,6 +1,492 @@
 [
 
   {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/494",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/494/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/494/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/494/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/494",
+    "id": 412404566,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NjIwNDIx",
+    "number": 494,
+    "title": "List Acknowledgements in alphabetical order by surname.",
+    "user": {
+      "login": "robstradling",
+      "id": 958624,
+      "node_id": "MDQ6VXNlcjk1ODYyNA==",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/958624?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/robstradling",
+      "html_url": "https://github.com/robstradling",
+      "followers_url": "https://api.github.com/users/robstradling/followers",
+      "following_url": "https://api.github.com/users/robstradling/following{/other_user}",
+      "gists_url": "https://api.github.com/users/robstradling/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/robstradling/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/robstradling/subscriptions",
+      "organizations_url": "https://api.github.com/users/robstradling/orgs",
+      "repos_url": "https://api.github.com/users/robstradling/repos",
+      "events_url": "https://api.github.com/users/robstradling/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/robstradling/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "closed",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2019-02-20T12:38:41Z",
+    "updated_at": "2019-02-20T13:15:19Z",
+    "closed_at": "2019-02-20T13:15:19Z",
+    "author_association": "CONTRIBUTOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/494",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/494",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/494.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/494.patch"
+    },
+    "body": "Swapping the order of two names after https://github.com/ietf-wg-acme/acme/commit/cc745b535492373030a1ab23a0d49adfc08096d0"
+  },
+  {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/493",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/493/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/493/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/493/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/493",
+    "id": 412402313,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NjE4NjIz",
+    "number": 493,
+    "title": "Include the 'index' link relation in all example server responses that return a resource",
+    "user": {
+      "login": "robstradling",
+      "id": 958624,
+      "node_id": "MDQ6VXNlcjk1ODYyNA==",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/958624?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/robstradling",
+      "html_url": "https://github.com/robstradling",
+      "followers_url": "https://api.github.com/users/robstradling/followers",
+      "following_url": "https://api.github.com/users/robstradling/following{/other_user}",
+      "gists_url": "https://api.github.com/users/robstradling/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/robstradling/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/robstradling/subscriptions",
+      "organizations_url": "https://api.github.com/users/robstradling/orgs",
+      "repos_url": "https://api.github.com/users/robstradling/repos",
+      "events_url": "https://api.github.com/users/robstradling/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/robstradling/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2019-02-20T12:32:51Z",
+    "updated_at": "2019-02-20T13:15:30Z",
+    "closed_at": null,
+    "author_association": "CONTRIBUTOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/493",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/493",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/493.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/493.patch"
+    },
+    "body": "Section 7.1 says:\r\n```The \"index\" link relation is present on all resources other than the directory and indicates the URL of the directory.```\r\n\r\nThis PR adds an example \"index\" link relation to the example server responses that return a resource but that didn't already have it.\r\n\r\nI'm interpreting \"is present on all resources\" to _not_ include responses that return a problem document.  Is that right?"
+  },
+  {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/492",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/492/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/492/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/492/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/492",
+    "id": 412291995,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NTM0MzY3",
+    "number": 492,
+    "title": "nit: Use consistent capitalization within the directory value table.",
+    "user": {
+      "login": "jdkasten",
+      "id": 1581662,
+      "node_id": "MDQ6VXNlcjE1ODE2NjI=",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1581662?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/jdkasten",
+      "html_url": "https://github.com/jdkasten",
+      "followers_url": "https://api.github.com/users/jdkasten/followers",
+      "following_url": "https://api.github.com/users/jdkasten/following{/other_user}",
+      "gists_url": "https://api.github.com/users/jdkasten/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/jdkasten/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/jdkasten/subscriptions",
+      "organizations_url": "https://api.github.com/users/jdkasten/orgs",
+      "repos_url": "https://api.github.com/users/jdkasten/repos",
+      "events_url": "https://api.github.com/users/jdkasten/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/jdkasten/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2019-02-20T07:58:13Z",
+    "updated_at": "2019-02-20T13:09:36Z",
+    "closed_at": null,
+    "author_association": "FIRST_TIME_CONTRIBUTOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/492",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/492",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/492.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/492.patch"
+    },
+    "body": "\"Key Change\" -> \"Key change\" to be consistent with the capitalization of the other table values. (\"New nonce\", \"New account\", \"Revoke certificate\", etc.)"
+  },
+  {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/491",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/491/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/491/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/491/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/491",
+    "id": 412283963,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NTI4NjIy",
+    "number": 491,
+    "title": "Fix URL in Identifier Authorization example.",
+    "user": {
+      "login": "jdkasten",
+      "id": 1581662,
+      "node_id": "MDQ6VXNlcjE1ODE2NjI=",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1581662?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/jdkasten",
+      "html_url": "https://github.com/jdkasten",
+      "followers_url": "https://api.github.com/users/jdkasten/followers",
+      "following_url": "https://api.github.com/users/jdkasten/following{/other_user}",
+      "gists_url": "https://api.github.com/users/jdkasten/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/jdkasten/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/jdkasten/subscriptions",
+      "organizations_url": "https://api.github.com/users/jdkasten/orgs",
+      "repos_url": "https://api.github.com/users/jdkasten/repos",
+      "events_url": "https://api.github.com/users/jdkasten/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/jdkasten/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2019-02-20T07:32:50Z",
+    "updated_at": "2019-02-20T13:08:40Z",
+    "closed_at": null,
+    "author_association": "FIRST_TIME_CONTRIBUTOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/491",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/491",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/491.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/491.patch"
+    },
+    "body": "This embedded URL missed the update in #455."
+  },
+  {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/490",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/490/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/490/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/490/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/490",
+    "id": 412251494,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NTA0ODY5",
+    "number": 490,
+    "title": "Fix some nits for AUTH48.",
+    "user": {
+      "login": "jsha",
+      "id": 220205,
+      "node_id": "MDQ6VXNlcjIyMDIwNQ==",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/220205?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/jsha",
+      "html_url": "https://github.com/jsha",
+      "followers_url": "https://api.github.com/users/jsha/followers",
+      "following_url": "https://api.github.com/users/jsha/following{/other_user}",
+      "gists_url": "https://api.github.com/users/jsha/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/jsha/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/jsha/subscriptions",
+      "organizations_url": "https://api.github.com/users/jsha/orgs",
+      "repos_url": "https://api.github.com/users/jsha/repos",
+      "events_url": "https://api.github.com/users/jsha/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/jsha/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2019-02-20T05:27:45Z",
+    "updated_at": "2019-02-20T13:05:51Z",
+    "closed_at": null,
+    "author_association": "COLLABORATOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/490",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/490",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/490.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/490.patch"
+    },
+    "body": "- badState should be orderNotReady\r\n- Use \"wildcard domain name\" consistently instead of \"wildcard prefix\""
+  },
+  {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/489",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/489/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/489/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/489/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/489",
+    "id": 412182100,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NDU0MDEw",
+    "number": 489,
+    "title": "A couple more acknowledgements",
+    "user": {
+      "login": "bifurcation",
+      "id": 75597,
+      "node_id": "MDQ6VXNlcjc1NTk3",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/75597?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bifurcation",
+      "html_url": "https://github.com/bifurcation",
+      "followers_url": "https://api.github.com/users/bifurcation/followers",
+      "following_url": "https://api.github.com/users/bifurcation/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bifurcation/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bifurcation/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bifurcation/subscriptions",
+      "organizations_url": "https://api.github.com/users/bifurcation/orgs",
+      "repos_url": "https://api.github.com/users/bifurcation/repos",
+      "events_url": "https://api.github.com/users/bifurcation/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bifurcation/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "closed",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2019-02-20T00:03:08Z",
+    "updated_at": "2019-02-20T03:57:17Z",
+    "closed_at": "2019-02-20T00:09:57Z",
+    "author_association": "CONTRIBUTOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/489",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/489",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/489.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/489.patch"
+    },
+    "body": ""
+  },
+  {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/488",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/488/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/488/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/488/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/488",
+    "id": 412174619,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NDQ4MjYy",
+    "number": 488,
+    "title": "Test whether new PRs get spurious double-builds (again)",
+    "user": {
+      "login": "bifurcation",
+      "id": 75597,
+      "node_id": "MDQ6VXNlcjc1NTk3",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/75597?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bifurcation",
+      "html_url": "https://github.com/bifurcation",
+      "followers_url": "https://api.github.com/users/bifurcation/followers",
+      "following_url": "https://api.github.com/users/bifurcation/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bifurcation/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bifurcation/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bifurcation/subscriptions",
+      "organizations_url": "https://api.github.com/users/bifurcation/orgs",
+      "repos_url": "https://api.github.com/users/bifurcation/repos",
+      "events_url": "https://api.github.com/users/bifurcation/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bifurcation/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "closed",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2019-02-19T23:34:06Z",
+    "updated_at": "2019-02-19T23:34:17Z",
+    "closed_at": "2019-02-19T23:34:17Z",
+    "author_association": "CONTRIBUTOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/488",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/488",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/488.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/488.patch"
+    },
+    "body": ""
+  },
+  {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/487",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/487/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/487/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/487/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/487",
+    "id": 412172747,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NDQ2ODUy",
+    "number": 487,
+    "title": "Test whether new PRs get spurious double-builds",
+    "user": {
+      "login": "bifurcation",
+      "id": 75597,
+      "node_id": "MDQ6VXNlcjc1NTk3",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/75597?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bifurcation",
+      "html_url": "https://github.com/bifurcation",
+      "followers_url": "https://api.github.com/users/bifurcation/followers",
+      "following_url": "https://api.github.com/users/bifurcation/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bifurcation/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bifurcation/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bifurcation/subscriptions",
+      "organizations_url": "https://api.github.com/users/bifurcation/orgs",
+      "repos_url": "https://api.github.com/users/bifurcation/repos",
+      "events_url": "https://api.github.com/users/bifurcation/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bifurcation/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "closed",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2019-02-19T23:27:06Z",
+    "updated_at": "2019-02-19T23:33:28Z",
+    "closed_at": "2019-02-19T23:33:28Z",
+    "author_association": "CONTRIBUTOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/487",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/487",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/487.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/487.patch"
+    },
+    "body": ""
+  },
+  {
+    "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/486",
+    "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
+    "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/486/labels{/name}",
+    "comments_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/486/comments",
+    "events_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/486/events",
+    "html_url": "https://github.com/ietf-wg-acme/acme/pull/486",
+    "id": 412169749,
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjU0NDQ0NTIz",
+    "number": 486,
+    "title": "Attempt to fix CI issues (take 2)",
+    "user": {
+      "login": "bifurcation",
+      "id": 75597,
+      "node_id": "MDQ6VXNlcjc1NTk3",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/75597?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bifurcation",
+      "html_url": "https://github.com/bifurcation",
+      "followers_url": "https://api.github.com/users/bifurcation/followers",
+      "following_url": "https://api.github.com/users/bifurcation/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bifurcation/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bifurcation/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bifurcation/subscriptions",
+      "organizations_url": "https://api.github.com/users/bifurcation/orgs",
+      "repos_url": "https://api.github.com/users/bifurcation/repos",
+      "events_url": "https://api.github.com/users/bifurcation/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bifurcation/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+
+    ],
+    "state": "closed",
+    "locked": false,
+    "assignee": null,
+    "assignees": [
+
+    ],
+    "milestone": null,
+    "comments": 1,
+    "created_at": "2019-02-19T23:16:52Z",
+    "updated_at": "2019-02-19T23:19:13Z",
+    "closed_at": "2019-02-19T23:19:13Z",
+    "author_association": "CONTRIBUTOR",
+    "pull_request": {
+      "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/486",
+      "html_url": "https://github.com/ietf-wg-acme/acme/pull/486",
+      "diff_url": "https://github.com/ietf-wg-acme/acme/pull/486.diff",
+      "patch_url": "https://github.com/ietf-wg-acme/acme/pull/486.patch"
+    },
+    "body": ""
+  },
+  {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/485",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
     "labels_url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/485/labels{/name}",
@@ -34,7 +520,7 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
@@ -43,8 +529,8 @@
     "milestone": null,
     "comments": 0,
     "created_at": "2019-02-19T22:45:28Z",
-    "updated_at": "2019-02-19T22:45:29Z",
-    "closed_at": null,
+    "updated_at": "2019-02-19T23:16:58Z",
+    "closed_at": "2019-02-19T23:16:58Z",
     "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/485",
@@ -88,7 +574,7 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
@@ -97,8 +583,8 @@
     "milestone": null,
     "comments": 0,
     "created_at": "2019-02-19T20:30:43Z",
-    "updated_at": "2019-02-19T21:17:52Z",
-    "closed_at": null,
+    "updated_at": "2019-02-19T23:35:36Z",
+    "closed_at": "2019-02-19T23:35:36Z",
     "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/484",
@@ -142,7 +628,7 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
@@ -151,8 +637,8 @@
     "milestone": null,
     "comments": 0,
     "created_at": "2019-02-19T19:48:55Z",
-    "updated_at": "2019-02-19T21:18:57Z",
-    "closed_at": null,
+    "updated_at": "2019-02-20T03:42:12Z",
+    "closed_at": "2019-02-19T23:44:46Z",
     "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/483",
@@ -196,18 +682,18 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
 
     ],
     "milestone": null,
-    "comments": 0,
+    "comments": 1,
     "created_at": "2019-02-19T15:16:45Z",
-    "updated_at": "2019-02-19T21:20:02Z",
-    "closed_at": null,
-    "author_association": "FIRST_TIME_CONTRIBUTOR",
+    "updated_at": "2019-02-20T11:56:43Z",
+    "closed_at": "2019-02-19T23:57:40Z",
+    "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/482",
       "html_url": "https://github.com/ietf-wg-acme/acme/pull/482",
@@ -346,7 +832,7 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
@@ -355,9 +841,9 @@
     "milestone": null,
     "comments": 1,
     "created_at": "2019-01-28T15:20:02Z",
-    "updated_at": "2019-02-19T21:21:25Z",
-    "closed_at": null,
-    "author_association": "FIRST_TIME_CONTRIBUTOR",
+    "updated_at": "2019-02-20T11:57:04Z",
+    "closed_at": "2019-02-20T00:04:03Z",
+    "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/479",
       "html_url": "https://github.com/ietf-wg-acme/acme/pull/479",
@@ -400,7 +886,7 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
@@ -409,9 +895,9 @@
     "milestone": null,
     "comments": 1,
     "created_at": "2019-01-24T12:25:00Z",
-    "updated_at": "2019-02-19T21:22:07Z",
-    "closed_at": null,
-    "author_association": "FIRST_TIME_CONTRIBUTOR",
+    "updated_at": "2019-02-20T11:55:46Z",
+    "closed_at": "2019-02-19T23:55:13Z",
+    "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/478",
       "html_url": "https://github.com/ietf-wg-acme/acme/pull/478",
@@ -454,17 +940,17 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
 
     ],
     "milestone": null,
-    "comments": 3,
+    "comments": 4,
     "created_at": "2019-01-22T14:43:27Z",
-    "updated_at": "2019-02-19T21:22:40Z",
-    "closed_at": null,
+    "updated_at": "2019-02-20T03:43:47Z",
+    "closed_at": "2019-02-19T23:50:04Z",
     "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/477",
@@ -508,17 +994,17 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
 
     ],
     "milestone": null,
-    "comments": 0,
+    "comments": 1,
     "created_at": "2019-01-21T02:14:46Z",
-    "updated_at": "2019-02-19T21:23:00Z",
-    "closed_at": null,
+    "updated_at": "2019-02-19T23:39:33Z",
+    "closed_at": "2019-02-19T23:39:33Z",
     "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/476",
@@ -616,17 +1102,17 @@
     "labels": [
 
     ],
-    "state": "open",
+    "state": "closed",
     "locked": false,
     "assignee": null,
     "assignees": [
 
     ],
     "milestone": null,
-    "comments": 2,
+    "comments": 3,
     "created_at": "2018-12-18T22:21:58Z",
-    "updated_at": "2019-02-19T21:23:19Z",
-    "closed_at": null,
+    "updated_at": "2019-02-19T23:51:43Z",
+    "closed_at": "2019-02-19T23:51:42Z",
     "author_association": "CONTRIBUTOR",
     "pull_request": {
       "url": "https://api.github.com/repos/ietf-wg-acme/acme/pulls/474",
@@ -1147,7 +1633,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/463.patch"
     },
     "body": "- Fix a misuse of the term \"capability URL.\"\r\n- Change the example. Hiding the number of accounts was not a great\r\nexample, because even with randomized account URLs, an attacker could\r\nprobe the space of URLs to estimate their density."
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/462",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -1633,10 +2122,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/454.patch"
     },
     "body": "1. As suggested by David Hancock, change the certificate fetch examples to use POST-as-GET, noting that GET is optional\r\n\r\n2. As suggested by Felix Fontein, use the correct error code for \"malformed\" in the description of what servers should do in response to inappropriate GET requests "
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/453",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -2816,7 +3302,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/433.patch"
     },
     "body": "This is the obligatory reference whenever you mention randomness."
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/432",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -3366,10 +3855,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/423.patch"
     },
     "body": "Section 9.7 \"New Registries\" itemizes the subsections that include new IANA registries. We added a subsection for \"Authorization Object Fields\" but forgot to add a link to it from the top level 9.7 text. This commit adds that forward pointer."
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/422",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -4757,7 +5243,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/402.patch"
     },
     "body": "`NewOrder` and `NewAuthz` pre-authorization requests are allowed\r\nto send DNS type identifiers with a value that contains a wildcard\r\nprefix ('*') as the leftmost label.\r\n\r\nThe authorization object created for the wildcard identifiers in the\r\nrequests are **not** allowed to carry the wildcard prefix in the\r\nauthorization identifier per spec language:\r\n> An authorization returned by the server for a wildcard domain name \r\n> identifier MUST NOT include the asterisk and full stop (\"\\*.\") prefix in the\r\n> authorization identifier value\r\n\r\nThis is sensible because the authorization is not for the logical \r\nwildcard but for the specific base domain.\r\n\r\nThis leaves an ambiguous situation for client developers/users. Imagine\r\na situation where a user requests a new order with the following\r\nrequest body:\r\n```\r\n{\r\n  \"identifiers\": [\r\n    { \"type\": \"dns\", \"value\": \"example.com\" },\r\n    { \"type\": \"dns\", \"value\": \"*.example.com\" }\r\n  ]\r\n}\r\n```\r\nIt's possible two authorizations will be created for this case, but both\r\nwill contain the identifier `{ \"type\":\"dns\", \"value\": \"example.com\"}`.\r\nThis can be confusing to users! (e.g.  shred/acme4j#53)\r\n\r\nIf one of the authorizations fails a challenge validation operation the\r\nclient can't know whether it was the \"example.com\" validation, or the\r\n\"*.example.com\" validation that failed and won't be able to prompt the\r\nuser to retry with the failed domain removed. Generally speaking it\r\nmakes presenting accurate error information difficult without\r\nover-fitting Let's Encrypt's particular Wildcard issuance policies.\r\n(E.g. see discussion in https://github.com/certbot/certbot/pull/5620#issuecomment-369111947 and \r\nhttps://github.com/certbot/certbot/issues/5613#issuecomment-368097551)\r\n\r\nThis commit introduces an optional boolean authorization field that can\r\nbe used to indicate the authorization's identifier should be considered\r\nthe base domain of a wildcard identifier that was requested.\r\n\r\n**Note to reviewers: This builds on top of #401 and only 050474a is new\r\ncontent.**"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/401",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -5299,10 +5788,7 @@
     "closed_at": null,
     "author_association": "NONE",
     "body": "One of the problems of dns-01 is that it's not able to automate like http-01: there the webserver is able to respond with `$token || '.' || $key-thumbprint`\r\n\r\nIt would be nice when that mechanism comes to DNS, to DNS server developers are able to supply an automated.\r\n\r\nInstead of statically querying` _acme-challenge.domain.tld` to prove host/domain ownership, query the dns including the token, like: `<$token>._acme-challenge.host.domain.tld`"
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/392",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -6646,7 +7132,10 @@
     "closed_at": "2018-03-02T03:53:04Z",
     "author_association": "NONE",
     "body": "    xml2rfc -q draft-ietf-acme-acme.xml -o draft-ietf-acme-acme.txt --text\r\n    ERROR: Unable to parse the XML document: draft-ietf-acme-acme.xml\r\n     <string>: Line 2: Extra content at the end of the document\r\n     <string>: Line 2: Extra content at the end of the document\r\n    make: *** [lib/main.mk:83: draft-ietf-acme-acme.txt] Error 1\r\n    rm draft-ietf-acme-acme.xml\r\n\r\n(pulled from github, `pip install xml2rfc` was used to install the damn thing)"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/371",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -7120,10 +7609,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/363.patch"
     },
     "body": "kebab-case variant of #362"
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/362",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -8275,7 +8761,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/342.patch"
     },
     "body": "This commit implements a first go at the replacement of proactive issuance\r\nand the \"CSR first\" new-order flow [proposed on the ACME mailing list](https://mailarchive.ietf.org/arch/msg/acme/DIjJEB06J5cFyuOlGPVcY2I51vg)\r\n\r\nMentions of proactive issuance are removed. The CSR field of the order\r\nobject is removed. A new \"finalizeURL\" field is added to the order\r\nobject. A new \"identifiers\" field is added to the order object. Issuance\r\nprocess is updated to describe submitting identifiers in the new-order\r\nrequest and POSTing a CSR to the order's finalizeURL.\r\n"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/341",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -8737,10 +9226,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/331.patch"
     },
     "body": "As pointed out to the list:\r\n\r\nThere is this sentence in the security considerations (10.2 Integrity of Authorizations) that strikes me as extremely misleading:\r\n\r\n\"All of the challenges above have a binding between the account private key and the validation query made by the server, via the key authorization.  The key authorization is signed by the account private key, reflects the corresponding public key, and is provided to the server in the validation response.\"\r\n\r\nThe key authorization itself does NOT contain the signature of the account's key. It gets though signed by the account's key later on in the challenge response (not the validation response) over the ACME channel (not the validation channel). What about saying that in the chronological order of events?"
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/330",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -9838,7 +10324,10 @@
     "closed_at": "2017-06-15T09:43:14Z",
     "author_association": "CONTRIBUTOR",
     "body": "The section \"Request Authentication\" describes that in the protected header:\r\n\r\n- \"new-account\" and \"revoke-cert\" requests MUST use the \"jwk\" field\r\n- all other requests MUST use the \"kid\" field\r\n\r\nHowever, the JSON examples in other parts of the document contradict:\r\n\r\n- In section \"Account Key Roll-over\", the example \"key-change\" request provides a \"jwk\" field\r\n- In section \"Pre-Authorization\", the example \"new-authz\" provides a \"jwk\" field\r\n- In section \"Certificate Revocation\", the example \"revoke-cert\" provides a \"kid\" field (which is supposed to be wrong), and only states that the \"jwk\" field could be used as alternative."
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/309",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -10324,10 +10813,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/301.patch"
     },
     "body": ""
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/300",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -11455,7 +11941,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/280.patch"
     },
     "body": "This PR is a first go at addressing the following points I raised on the mailing list.\r\n\r\n> 1.\r\n>   I cannot find where the response to account updates is specified.\r\n> \r\n>   Boulder replies with \"202 Accepted\" and an account object. Since\r\n>   updates with trivial payload should be used for account information,\r\n>   it seems to be expected that an account object is returned. The\r\n>   specified response status for \"Account deactivation\" is \"200 OK\".\r\n>   It would be consistent to specify the same response status for\r\n>   account updates I guess?\r\n> \r\n> 2.\r\n>   The client should be able to choose between \"Account URI recovery\"\r\n>   and \"Account Creation\", if needed. A possible way would be to clarify\r\n>   that account creations with trivial payload MUST be rejected. However,\r\n>   if an account exists, the \"Content-Location\" header and \"200 OK\" is\r\n>   returned, independent of the payloads content. Therefore a trivial\r\n>   payload could be used to check if an account with the used key exists,\r\n>   without creating it.\r\n> \r\n> 3.\r\n>   As \"6.3.4.  Account deactivation\", other queries should get their own\r\n>   sub-sub sections. Something like\r\n>    - \"6.3.x Account URI recovery\" (\"new-account\", maybe trivial payload)\r\n>    - \"6.3.x Account update\"\r\n>    - \"6.3.x Account information\" (update with trivial payload)\r\n"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/279",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -11967,10 +12456,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/271.patch"
     },
     "body": ""
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/270",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -13092,7 +13578,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/250.patch"
     },
     "body": "As they are all fulfilled by the `directory` endpoint and are unnecessary. The `ct-sct` relation is removed as the SCT will be provided by the CA via the certificate or a OCSP response, if it doesn't provide these then the client should be able to retrieve the SCT itself from the logs it expects to find the certificate in (or submit it itself).\r\n\r\nAlso removes a paragraph about Certificate Transparency from the 'Downloading the Certificate' section as it is irrelevant to the section and discusses operations of the CA unrelated to the ACME protocol.\r\n\r\nAdditionally changes the relation `rate-limit` which is not registered with a URI extension using the ACME URN namespace `urn:ietf:params:acme:documentation`."
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/249",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -13572,10 +14061,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/241.patch"
     },
     "body": "In accordance with\r\n\r\n```\r\nterms-of-service-agreed (optional, boolean):\r\n: Including this field in a new-account request [...]\r\n```"
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/240",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -14712,7 +15198,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/220.patch"
     },
     "body": "Implements [Fraser Tweedale's suggestion](https://mailarchive.ietf.org/arch/msg/acme/6aoVxKMD17FFxiQSVz78Ry7sMP4) from the mailing list."
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/219",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -15216,10 +15705,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/211.patch"
     },
     "body": "As discussed at IETF 97, this PR creates specification-required registries of fields in ACME objects, so that they can be extended in an orderly fashion.\r\n\r\nCurrently only applies to account and order objects, not authorizations.  Not for any ideological reason -- I would be happy to add that for symmetry if people think there might be a need.."
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/210",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -16341,7 +16827,10 @@
     "closed_at": "2016-10-27T22:32:46Z",
     "author_association": "MEMBER",
     "body": "Since we did not get consensus around #4, we should be explicit that HTTP is TCP port 80, and HTTPS is TCP port 443, and that holds for redirects as well.\n\nThe is pretty much a minor wording change only.\n"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/189",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -16827,10 +17316,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/181.patch"
     },
     "body": "Since resources that provide nonces can't be cacheable, let's isolate nonce priming into one non-cacheable resource so that we don't affect the cacheability of other resources.\n\nNote: This should replace #156 \n"
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/180",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -17958,7 +18444,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/160.patch"
     },
     "body": "This helps the tools auto-generate the right draft number.\n"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/159",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -18476,10 +18965,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/151.patch"
     },
     "body": ""
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/150",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -19631,7 +20117,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/130.patch"
     },
     "body": "Fixes #47 \n\nAs discussed at IETF 95, the server should fail a new-cert request if it cannot fulfill it precisely.  It must not modify the request to something it is willing to fulfill.\n"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/129",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -20184,10 +20673,7 @@
     "closed_at": "2016-05-27T22:01:37Z",
     "author_association": "CONTRIBUTOR",
     "body": "As PHB noted in his presentation at IETF 95, the examples in the doc should indicate clearly the start and end of payload of the JWS object, e.g.:\n\n```\nOLD:\n{\n  \"resource\": \"new-authz\", \n  \"identifier\": { \"type\": \"dns\", \"value\": \"example.org\" }\n} \n/* Signed as JWS */\n\nNEW:\n/* --- begin JWS-signed data --- */\n{\n  \"resource\": \"new-authz\", \n  \"identifier\": { \"type\": \"dns\", \"value\": \"example.org\" }\n} \n/* --- end JWS-signed data --- */\n```\n"
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/120",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -21525,7 +22011,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/100.patch"
     },
     "body": ""
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/99",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -22011,10 +22500,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/91.patch"
     },
     "body": "Fixing convention after #78 \n"
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/90",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -23235,7 +23721,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/70.patch"
     },
     "body": "Looked like a small grammatical error.\n"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/69",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -23753,10 +24242,7 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/61.patch"
     },
     "body": ""
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/60",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -24903,7 +25389,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/40.patch"
     },
     "body": "Fixes #9 \n"
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/39",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -25372,10 +25861,7 @@
     "closed_at": "2015-11-12T23:56:21Z",
     "author_association": "CONTRIBUTOR",
     "body": "See https://github.com/ietf-wg-acme/acme/blob/master/draft-ietf-acme-acme.md#identifier-authorization.\n\nIs that example just bogus or what's the `, 2` for? There are only two challenges, so it can't be an index there.\n"
-  }
-
-,
-
+  },
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/30",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
@@ -26474,7 +26960,10 @@
       "patch_url": "https://github.com/ietf-wg-acme/acme/pull/10.patch"
     },
     "body": ""
-  },
+  }
+
+,
+
   {
     "url": "https://api.github.com/repos/ietf-wg-acme/acme/issues/9",
     "repository_url": "https://api.github.com/repos/ietf-wg-acme/acme",
