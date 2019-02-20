@@ -932,7 +932,7 @@ ul.toc li {
 <pre>
 HTTP/1.1 403 Forbidden
 Content-Type: application/problem+json
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 
 {
     "type": "urn:ietf:params:acme:error:malformed",
@@ -1193,7 +1193,7 @@ Content-Type: application/json
 <pre>
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 Link: &lt;https://example.com/acme/orders/rzGoeA?cursor=2&gt;;rel="next"
 
 {
@@ -1422,7 +1422,7 @@ Host: example.com
 HTTP/1.1 200 OK
 Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 Cache-Control: no-store
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 </pre>
 <p id="rfc.section.7.2.p.3">Proxy caching of responses from the newNonce resource can cause clients to receive the same nonce repeatedly, leading to &#8220;badNonce&#8221; errors.  The server MUST include a Cache-Control header field with the &#8220;no-store&#8221; directive in responses for the newNonce resource, in order to prevent caching of this resource.</p>
 <h1 id="rfc.section.7.3">
@@ -1474,7 +1474,7 @@ Content-Type: application/jose+json
 HTTP/1.1 201 Created
 Content-Type: application/json
 Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 Location: https://example.com/acme/acct/evOfKhNU60wg
 
 {
@@ -1528,7 +1528,7 @@ Content-Type: application/jose+json
 <pre>
 HTTP/1.1 403 Forbidden
 Replay-Nonce: T81bdZroZ2ITWSondpTmAw
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 Link: &lt;https://example.com/acme/terms/2017-6-02&gt;;rel="terms-of-service"
 Content-Type: application/problem+json
 Content-Language: en
@@ -1734,7 +1734,7 @@ Content-Type: application/jose+json
 <pre>
 HTTP/1.1 201 Created
 Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -1805,7 +1805,7 @@ Content-Type: application/jose+json
 <pre>
 HTTP/1.1 200 OK
 Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
@@ -1907,7 +1907,7 @@ Accept: application/pem-certificate-chain
 
 HTTP/1.1 200 OK
 Content-Type: application/pem-certificate-chain
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 
 -----BEGIN CERTIFICATE-----
 [End-entity certificate contents]
@@ -1953,7 +1953,7 @@ Content-Type: application/jose+json
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 
 {
   "status": "pending",
@@ -2025,7 +2025,7 @@ Content-Type: application/jose+json
 
 HTTP/1.1 200 OK
 Content-Type: application/json
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 
 {
   "status": "valid",
@@ -2139,7 +2139,7 @@ Content-Type: application/jose+json
 HTTP/1.1 200 OK
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Length: 0
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 
 --- or ---
 
@@ -2147,7 +2147,7 @@ HTTP/1.1 403 Forbidden
 Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
 Content-Type: application/problem+json
 Content-Language: en
-Link: &lt;https://example.com/acme/some-directory&gt;;rel="index"
+Link: &lt;https://example.com/acme/directory&gt;;rel="index"
 
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
@@ -2465,7 +2465,52 @@ certchain = stricttextualmsg *(eol stricttextualmsg)
 <li>Reference: Where this field is defined</li>
 </ul>
 <p id="rfc.section.9.7.1.p.4">Initial contents: The fields and descriptions defined in <a href="#account-objects" class="xref">Section 7.1.2</a>.</p>
-<p id="rfc.section.9.7.1.p.5">| Field Name               | Field Type      | Requests     | Reference | |:&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-|:&#8212;&#8212;&#8212;&#8212;&#8212;-|:&#8212;&#8212;&#8212;&#8212;-|:&#8212;&#8212;&#8212;-| ======= | status                   | string          | new, account | RFC 8555  | | contact                  | array of string | new, account | RFC 8555  | | externalAccountBinding   | object          | new          | RFC 8555  | | termsOfServiceAgreed     | boolean         | new          | RFC 8555  | | onlyReturnExisting       | boolean         | new          | RFC 8555  | | orders                   | string          | none         | RFC 8555  |</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="left">Field Name</th>
+<th class="left">Field Type</th>
+<th class="left">Requests</th>
+<th class="left">Reference</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="left">status</td>
+<td class="left">string</td>
+<td class="left">new, account</td>
+<td class="left">RFC 8555</td>
+</tr>
+<tr>
+<td class="left">contact</td>
+<td class="left">array of string</td>
+<td class="left">new, account</td>
+<td class="left">RFC 8555</td>
+</tr>
+<tr>
+<td class="left">externalAccountBinding</td>
+<td class="left">object</td>
+<td class="left">new</td>
+<td class="left">RFC 8555</td>
+</tr>
+<tr>
+<td class="left">termsOfServiceAgreed</td>
+<td class="left">boolean</td>
+<td class="left">new</td>
+<td class="left">RFC 8555</td>
+</tr>
+<tr>
+<td class="left">onlyReturnExisting</td>
+<td class="left">boolean</td>
+<td class="left">new</td>
+<td class="left">RFC 8555</td>
+</tr>
+<tr>
+<td class="left">orders</td>
+<td class="left">string</td>
+<td class="left">none</td>
+<td class="left">RFC 8555</td>
+</tr>
+</tbody>
+</table>
 <h1 id="rfc.section.9.7.2">
 <a href="#rfc.section.9.7.2">9.7.2.</a> <a href="#iana-order" id="iana-order">Fields in Order Objects</a>
 </h1>
