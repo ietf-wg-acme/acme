@@ -1005,7 +1005,7 @@ certificate (optional, string):
 ~~~~~~~~~~
 {
   "status": "valid",
-  "expires": "2015-03-01T14:09:07.99Z",
+  "expires": "2016-01-20T14:09:07.99Z",
 
   "identifiers": [
     { "type": "dns", "value": "www.example.org" }
@@ -1791,17 +1791,19 @@ Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
   "status": "pending",
-  "expires": "2016-01-01T00:00:00Z",
+  "expires": "2016-01-05T14:09:07.99Z",
 
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
   "identifiers": [
     { "type": "dns", "value": "www.example.org" },
+    { "type": "dns", "value": "example.org" },
   ],
 
   "authorizations": [
     "https://example.com/acme/authz/PAniVnsZcis",
+    "https://example.com/acme/authz/r4HqLzrSrpI"
   ],
 
   "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize"
@@ -1908,10 +1910,10 @@ Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
   "status": "valid",
-  "expires": "2015-12-31T00:17:00.00-09:00",
+  "expires": "2016-01-20T14:09:07.99Z",
 
-  "notBefore": "2015-12-31T00:17:00.00-09:00",
-  "notAfter": "2015-12-31T00:17:00.00-09:00",
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z",
 
   "identifiers": [
     { "type": "dns", "value": "www.example.org" }
@@ -2123,7 +2125,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 
 {
   "status": "pending",
-  "expires": "2018-03-03T14:09:30Z",
+  "expires": "2016-01-02T14:09:30Z",
 
   "identifier": {
     "type": "dns",
@@ -2379,7 +2381,7 @@ Link: <https://example.com/acme/some-directory>;rel="index"
 --- or ---
 
 HTTP/1.1 403 Forbidden
-Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+Replay-Nonce: lXfyFzi6238tfPQRwgfmPU
 Content-Type: application/problem+json
 Content-Language: en
 Link: <https://example.com/acme/some-directory>;rel="index"
