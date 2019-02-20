@@ -1534,7 +1534,7 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
-    "contact": ["mailto:cert-admin@example.com"],
+    "contact": ["mailto:example@anonymous.invalid"],
     "termsOfServiceAgreed": true,
 
     "externalAccountBinding": {
