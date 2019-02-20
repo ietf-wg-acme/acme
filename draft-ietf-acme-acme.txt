@@ -1197,7 +1197,7 @@ Internet-Draft                    ACME                     February 2019
                     | newOrder   | New order          |
                     | newAuthz   | New authorization  |
                     | revokeCert | Revoke certificate |
-                    | keyChange  | Key Change         |
+                    | keyChange  | Key change         |
                     +------------+--------------------+
 
    There is no constraint on the URL of the directory except that it
