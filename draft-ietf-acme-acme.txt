@@ -159,7 +159,7 @@ Internet-Draft                    ACME                     February 2019
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  85
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  85
      13.2.  Informative References . . . . . . . . . . . . . . . . .  88
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  89
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  90
 
 
 
@@ -4689,15 +4689,15 @@ Internet-Draft                    ACME                     February 2019
 
    o  Alex Halderman, University of Michigan
 
+   o  Tim Hollebeek, DigiCert
+
    o  Sophie Herold, Hemio
 
    o  Eric Rescorla, Mozilla
 
    o  Seth Schoen, EFF
 
-   o  Martin Thomson, Mozilla
-
-   o  Jakub Warmuz, University of Oxford
+   o  Roland Shoemaker, Let's Encrypt
 
 
 
@@ -4705,6 +4705,12 @@ Barnes, et al.           Expires August 24, 2019               [Page 84]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   o  Rob Stradling, Sectigo
+
+   o  Martin Thomson, Mozilla
+
+   o  Jakub Warmuz, University of Oxford
 
    This document draws on many concepts established by Eric Rescorla's
    "Automated Certificate Issuance Protocol" draft.  Martin Thomson
@@ -4748,12 +4754,6 @@ Internet-Draft                    ACME                     February 2019
               DOI 10.17487/RFC2985, November 2000,
               <https://www.rfc-editor.org/info/rfc2985>.
 
-   [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
-              Request Syntax Specification Version 1.7", RFC 2986,
-              DOI 10.17487/RFC2986, November 2000,
-              <https://www.rfc-editor.org/info/rfc2986>.
-
-
 
 
 
@@ -4761,6 +4761,11 @@ Barnes, et al.           Expires August 24, 2019               [Page 85]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
+              Request Syntax Specification Version 1.7", RFC 2986,
+              DOI 10.17487/RFC2986, November 2000,
+              <https://www.rfc-editor.org/info/rfc2986>.
 
    [RFC3339]  Klyne, G. and C. Newman, "Date and Time on the Internet:
               Timestamps", RFC 3339, DOI 10.17487/RFC3339, July 2002,
@@ -4805,11 +4810,6 @@ Internet-Draft                    ACME                     February 2019
               Specification", RFC 5751, DOI 10.17487/RFC5751, January
               2010, <https://www.rfc-editor.org/info/rfc5751>.
 
-   [RFC5890]  Klensin, J., "Internationalized Domain Names for
-              Applications (IDNA): Definitions and Document Framework",
-              RFC 5890, DOI 10.17487/RFC5890, August 2010,
-              <https://www.rfc-editor.org/info/rfc5890>.
-
 
 
 
@@ -4817,6 +4817,11 @@ Barnes, et al.           Expires August 24, 2019               [Page 86]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   [RFC5890]  Klensin, J., "Internationalized Domain Names for
+              Applications (IDNA): Definitions and Document Framework",
+              RFC 5890, DOI 10.17487/RFC5890, August 2010,
+              <https://www.rfc-editor.org/info/rfc5890>.
 
    [RFC5988]  Nottingham, M., "Web Linking", RFC 5988,
               DOI 10.17487/RFC5988, October 2010,
@@ -4861,11 +4866,6 @@ Internet-Draft                    ACME                     February 2019
               Option", RFC 7797, DOI 10.17487/RFC7797, February 2016,
               <https://www.rfc-editor.org/info/rfc7797>.
 
-   [RFC7807]  Nottingham, M. and E. Wilde, "Problem Details for HTTP
-              APIs", RFC 7807, DOI 10.17487/RFC7807, March 2016,
-              <https://www.rfc-editor.org/info/rfc7807>.
-
-
 
 
 
@@ -4873,6 +4873,10 @@ Barnes, et al.           Expires August 24, 2019               [Page 87]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   [RFC7807]  Nottingham, M. and E. Wilde, "Problem Details for HTTP
+              APIs", RFC 7807, DOI 10.17487/RFC7807, March 2016,
+              <https://www.rfc-editor.org/info/rfc7807>.
 
    [RFC8037]  Liusvaara, I., "CFRG Elliptic Curve Diffie-Hellman (ECDH)
               and Signatures in JSON Object Signing and Encryption
@@ -4916,10 +4920,6 @@ Internet-Draft                    ACME                     February 2019
               Shoemaker, R., "ACME IP Identifier Validation Extension",
               draft-ietf-acme-ip-05 (work in progress), February 2019.
 
-   [I-D.ietf-acme-telephone]
-              Peterson, J. and R. Barnes, "ACME Identifiers and
-              Challenges for Telephone Numbers", draft-ietf-acme-
-              telephone-01 (work in progress), October 2017.
 
 
 
@@ -4929,6 +4929,11 @@ Barnes, et al.           Expires August 24, 2019               [Page 88]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   [I-D.ietf-acme-telephone]
+              Peterson, J. and R. Barnes, "ACME Identifiers and
+              Challenges for Telephone Numbers", draft-ietf-acme-
+              telephone-01 (work in progress), October 2017.
 
    [I-D.vixie-dnsext-dns0x20]
               Vixie, P. and D. Dagon, "Use of Bit 0x20 in DNS Labels to
@@ -4970,12 +4975,7 @@ Internet-Draft                    ACME                     February 2019
               Web Consortium Recommendation REC-cors-20140116, January
               2014, <http://www.w3.org/TR/2014/REC-cors-20140116>.
 
-Authors' Addresses
 
-   Richard Barnes
-   Cisco
-
-   Email: rlb@ipv.sx
 
 
 
@@ -4984,6 +4984,14 @@ Authors' Addresses
 Barnes, et al.           Expires August 24, 2019               [Page 89]
 
 Internet-Draft                    ACME                     February 2019
+
+
+Authors' Addresses
+
+   Richard Barnes
+   Cisco
+
+   Email: rlb@ipv.sx
 
 
    Jacob Hoffman-Andrews
@@ -5002,14 +5010,6 @@ Internet-Draft                    ACME                     February 2019
    University of Michigan
 
    Email: jdkasten@umich.edu
-
-
-
-
-
-
-
-
 
 
 
