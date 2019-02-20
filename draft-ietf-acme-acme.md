@@ -1100,7 +1100,7 @@ wildcard (optional, boolean):
 : This field MUST be present and true for authorizations created as
 a result of a newOrder request containing a DNS identifier with a
 value that was a wildcard domain name.  For other authorizations,
-it MUST be absent.  Wildcard domain names are described in Section 7.1.2.
+it MUST be absent.  Wildcard domain names are described in {{order-objects}}.
 
 The only type of identifier defined by this specification is a fully qualified
 domain name (type: "dns"). The domain name MUST be encoded in the
