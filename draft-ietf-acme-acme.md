@@ -2177,7 +2177,12 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server provides a 200 (OK) response with the challenge object as its body.
+The server MUST
+ignore any fields in the response object that are not specified as response
+fields for this type of challenge.  Note that the challenges in this document do
+not define any response fields, but future specifications might define them.
+The server provides a 200 (OK) response
+with the updated challenge object as its body.
 
 If the client's response is invalid for any reason or does not provide the
 server with appropriate information to validate the challenge, then the server
