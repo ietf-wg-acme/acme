@@ -1868,7 +1868,7 @@ client to submit a new finalize request with an amended CSR.
 
 A request to finalize an order will result in error if the order is not in the
 "ready" state.  In such cases, the server MUST return a 403 (Forbidden) error
-with a problem document of type "badOrderState".  The client should then send a
+with a problem document of type "orderNotReady".  The client should then send a
 POST-as-GET request to the order resource to obtain its current state.  The
 status of the order will indicate what action the client should take (see
 below).
