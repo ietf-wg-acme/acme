@@ -621,7 +621,7 @@ in the "type" field (within the ACME URN namespace "urn:ietf:params:acme:error:"
 | badPublicKey            | The JWS was signed by a public key the server does not support                               |
 | badRevocationReason     | The revocation reason provided is not allowed by the server                                  |
 | badSignatureAlgorithm   | The JWS was signed with an algorithm the server does not support                             |
-| badState                | The request attempted to finalize an order that is not ready to be finalized    |
+| badState                | The request attempted to finalize an order that is not ready to be finalized                 |
 | caa                     | Certification Authority Authorization (CAA) records forbid the CA from issuing a certificate |
 | compound                | Specific error conditions are indicated in the "subproblems" array.                          |
 | connection              | The server could not connect to validation target                                            |
