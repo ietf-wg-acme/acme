@@ -365,7 +365,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Barnes, R., Hoffman-Andrews, J., McCarney, D., and J. Kasten" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-acme-acme-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-02-19" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-02-20" />
   <meta name="dct.abstract" content="Public Key Infrastructure using X.509 (PKIX) certificates are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  As of this writing, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a CA and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
   <meta name="description" content="Public Key Infrastructure using X.509 (PKIX) certificates are used for a number of purposes, the most significant of which is the authentication of domain names.  Thus, certification authorities (CAs) in the Web PKI are trusted to verify that an applicant for a certificate legitimately represents the domain name(s) in the certificate.  As of this writing, this verification is done through a collection of ad hoc mechanisms.  This document describes a protocol that a CA and an applicant can use to automate the process of verification and certificate issuance.  The protocol also provides facilities for other certificate management functions, such as certificate revocation." />
 
@@ -389,7 +389,7 @@ ul.toc li {
 <td class="right">J. Hoffman-Andrews</td>
 </tr>
 <tr>
-<td class="left">Expires: August 23, 2019</td>
+<td class="left">Expires: August 24, 2019</td>
 <td class="right">EFF</td>
 </tr>
 <tr>
@@ -410,7 +410,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">February 19, 2019</td>
+<td class="right">February 20, 2019</td>
 </tr>
 
     	
@@ -426,7 +426,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on August 23, 2019.</p>
+<p>This Internet-Draft will expire on August 24, 2019.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -1169,6 +1169,8 @@ Content-Type: application/json
 <dd style="margin-left: 8">An array of URLs that the server can use to contact the client for issues related to this account. For example, the server may wish to notify the client about server-initiated revocation or certificate expiration.  For information on supported URL schemes, see <a href="#account-management" class="xref">Section 7.3</a>.</dd>
 <dt>termsOfServiceAgreed (optional, boolean):</dt>
 <dd style="margin-left: 8">Including this field in a newAccount request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field cannot be updated by the client.</dd>
+<dt>externalAccountBinding (optional, object):</dt>
+<dd style="margin-left: 8">Including this field in a newAccount request indicates approval by the holder of an existing non-ACME account to bind that account to this ACME account. This field is not updateable by the client. (See <a href="#external-account-binding" class="xref">Section 7.3.4</a>).</dd>
 <dt>orders (required, string):</dt>
 <dd style="margin-left: 8">A URL from which a list of orders submitted by this account can be fetched via a POST-as-GET request, as described in <a href="#orders-list" class="xref">Section 7.1.2.1</a>.</dd>
 </dl>
@@ -1435,7 +1437,8 @@ Cache-Control: no-store
 <dt>onlyReturnExisting (optional, boolean):</dt>
 <dd style="margin-left: 8">If this field is present with the value &#8220;true&#8221;, then the server MUST NOT create a new account if one does not already exist.  This allows a client to look up an account URL based on an account key (see <a href="#finding-an-account-url-given-a-key" class="xref">Section 7.3.1</a>).</dd>
 <dt>externalAccountBinding (optional, object):</dt>
-<dd style="margin-left: 8">An optional field for binding the new account with an existing non-ACME account (see <a href="#external-account-binding" class="xref">Section 7.3.4</a>).</dd>
+<dd style="margin-left: 8">Same meaning as the corresponding server field defined in <a href="#account-objects" class="xref">Section 7.1.2</a>
+</dd>
 </dl>
 <pre>
 POST /acme/new-account HTTP/1.1
@@ -1459,12 +1462,11 @@ Content-Type: application/jose+json
   "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
 }
 </pre>
-<p id="rfc.section.7.3.p.4">The server MUST ignore any values provided in the &#8220;orders&#8221; fields in account bodies sent by the client, as well as any other fields that it does not recognize.  If new fields are specified in the future, the specification of those fields MUST describe whether they can be provided by the client.</p>
-<p id="rfc.section.7.3.p.5">In general, the server MUST ignore any fields in the request object that it does not recognize.  In particular, it MUST NOT reflect unrecognized fields in the resulting account object.  This allows clients to detect when servers do not support an extension field.</p>
-<p id="rfc.section.7.3.p.6">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URLs, it MUST support the &#8220;mailto&#8221; scheme.  Clients MUST NOT provide a &#8220;mailto&#8221; URL in the &#8220;contact&#8221; field that contains <samp>hfields</samp> <a href="#RFC6068" class="xref">[RFC6068]</a> or more than one <samp>addr-spec</samp> in the <samp>to</samp> component.  If a server encounters a &#8220;mailto&#8221; contact URL that does not meet these criteria, then it SHOULD reject it as invalid.</p>
-<p id="rfc.section.7.3.p.7">If the server rejects a contact URL for using an unsupported scheme, it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description of the error and what types of contact URLs the server considers acceptable. If the server rejects a contact URL for using a supported scheme but an invalid value, then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
-<p id="rfc.section.7.3.p.8">If the server wishes to require the client to agree to terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;termsOfService&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject newAccount requests that do not have the &#8220;termsOfServiceAgreed&#8221; field set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
-<p id="rfc.section.7.3.p.9">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field. The account URL is used as the &#8220;kid&#8221; value in the JWS authenticating subsequent requests by this account (see <a href="#request-authentication" class="xref">Section 6.2</a>).  The account URL is also used for requests for management actions on this account, as described below.</p>
+<p id="rfc.section.7.3.p.4">The server MUST ignore any values provided in the &#8220;orders&#8221; fields in account objects sent by the client, as well as any other fields that it does not recognize. If new fields are specified in the future, the specification of those fields MUST describe whether they can be provided by the client. The server MUST NOT reflect the &#8220;onlyReturnExisting&#8221; field or any unrecognized fields in the resulting account object. This allows clients to detect when servers do not support an extension field.</p>
+<p id="rfc.section.7.3.p.5">The server SHOULD validate that the contact URLs in the &#8220;contact&#8221; field are valid and supported by the server. If the server validates contact URLs, it MUST support the &#8220;mailto&#8221; scheme.  Clients MUST NOT provide a &#8220;mailto&#8221; URL in the &#8220;contact&#8221; field that contains <samp>hfields</samp> <a href="#RFC6068" class="xref">[RFC6068]</a> or more than one <samp>addr-spec</samp> in the <samp>to</samp> component.  If a server encounters a &#8220;mailto&#8221; contact URL that does not meet these criteria, then it SHOULD reject it as invalid.</p>
+<p id="rfc.section.7.3.p.6">If the server rejects a contact URL for using an unsupported scheme, it MUST return an error of type &#8220;unsupportedContact&#8221;, with a description of the error and what types of contact URLs the server considers acceptable. If the server rejects a contact URL for using a supported scheme but an invalid value, then the server MUST return an error of type &#8220;invalidContact&#8221;.</p>
+<p id="rfc.section.7.3.p.7">If the server wishes to require the client to agree to terms under which the ACME service is to be used, it MUST indicate the URL where such terms can be accessed in the &#8220;termsOfService&#8221; subfield of the &#8220;meta&#8221; field in the directory object, and the server MUST reject newAccount requests that do not have the &#8220;termsOfServiceAgreed&#8221; field set to &#8220;true&#8221;.  Clients SHOULD NOT automatically agree to terms by default.  Rather, they SHOULD require some user interaction for agreement to terms.</p>
+<p id="rfc.section.7.3.p.8">The server creates an account and stores the public key used to verify the JWS (i.e., the &#8220;jwk&#8221; element of the JWS header) to authenticate future requests from the account.  The server returns this account object in a 201 (Created) response, with the account URL in a Location header field. The account URL is used as the &#8220;kid&#8221; value in the JWS authenticating subsequent requests by this account (see <a href="#request-authentication" class="xref">Section 6.2</a>).  The account URL is also used for requests for management actions on this account, as described below.</p>
 <pre>
 HTTP/1.1 201 Created
 Content-Type: application/json
@@ -2454,46 +2456,7 @@ certchain = stricttextualmsg *(eol stricttextualmsg)
 <li>Reference: Where this field is defined</li>
 </ul>
 <p id="rfc.section.9.7.1.p.4">Initial contents: The fields and descriptions defined in <a href="#account-objects" class="xref">Section 7.1.2</a>.</p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="left">Field Name</th>
-<th class="left">Field Type</th>
-<th class="left">Requests</th>
-<th class="left">Reference</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="left">status</td>
-<td class="left">string</td>
-<td class="left">new, account</td>
-<td class="left">RFC 8555</td>
-</tr>
-<tr>
-<td class="left">contact</td>
-<td class="left">array of string</td>
-<td class="left">new, account</td>
-<td class="left">RFC 8555</td>
-</tr>
-<tr>
-<td class="left">externalAccountBinding</td>
-<td class="left">object</td>
-<td class="left">new</td>
-<td class="left">RFC 8555</td>
-</tr>
-<tr>
-<td class="left">termsOfServiceAgreed</td>
-<td class="left">boolean</td>
-<td class="left">new</td>
-<td class="left">RFC 8555</td>
-</tr>
-<tr>
-<td class="left">orders</td>
-<td class="left">string</td>
-<td class="left">none</td>
-<td class="left">RFC 8555</td>
-</tr>
-</tbody>
-</table>
+<p id="rfc.section.9.7.1.p.5">| Field Name               | Field Type      | Requests     | Reference | |:&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-|:&#8212;&#8212;&#8212;&#8212;&#8212;-|:&#8212;&#8212;&#8212;&#8212;-|:&#8212;&#8212;&#8212;-| ======= | status                   | string          | new, account | RFC 8555  | | contact                  | array of string | new, account | RFC 8555  | | externalAccountBinding   | object          | new          | RFC 8555  | | termsOfServiceAgreed     | boolean         | new          | RFC 8555  | | onlyReturnExisting       | boolean         | new          | RFC 8555  | | orders                   | string          | none         | RFC 8555  |</p>
 <h1 id="rfc.section.9.7.2">
 <a href="#rfc.section.9.7.2">9.7.2.</a> <a href="#iana-order" id="iana-order">Fields in Order Objects</a>
 </h1>

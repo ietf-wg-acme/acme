@@ -5,12 +5,12 @@
 ACME Working Group                                             R. Barnes
 Internet-Draft                                                     Cisco
 Intended status: Standards Track                      J. Hoffman-Andrews
-Expires: August 23, 2019                                             EFF
+Expires: August 24, 2019                                             EFF
                                                              D. McCarney
                                                            Let's Encrypt
                                                                J. Kasten
                                                   University of Michigan
-                                                       February 19, 2019
+                                                       February 20, 2019
 
 
           Automatic Certificate Management Environment (ACME)
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 23, 2019.
+   This Internet-Draft will expire on August 24, 2019.
 
 
 
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 1]
+Barnes, et al.           Expires August 24, 2019                [Page 1]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -109,14 +109,14 @@ Table of Contents
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 2]
+Barnes, et al.           Expires August 24, 2019                [Page 2]
 
 Internet-Draft                    ACME                     February 2019
 
 
        7.3.5.  Account Key Rollover  . . . . . . . . . . . . . . . .  39
-       7.3.6.  Account Deactivation  . . . . . . . . . . . . . . . .  42
-     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  43
+       7.3.6.  Account Deactivation  . . . . . . . . . . . . . . . .  41
+     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  42
        7.4.1.  Pre-authorization . . . . . . . . . . . . . . . . . .  47
        7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  49
      7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  51
@@ -165,7 +165,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 3]
+Barnes, et al.           Expires August 24, 2019                [Page 3]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -221,7 +221,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 4]
+Barnes, et al.           Expires August 24, 2019                [Page 4]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -277,7 +277,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 5]
+Barnes, et al.           Expires August 24, 2019                [Page 5]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -333,7 +333,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 6]
+Barnes, et al.           Expires August 24, 2019                [Page 6]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -389,7 +389,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 7]
+Barnes, et al.           Expires August 24, 2019                [Page 7]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -445,7 +445,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 8]
+Barnes, et al.           Expires August 24, 2019                [Page 8]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -501,7 +501,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019                [Page 9]
+Barnes, et al.           Expires August 24, 2019                [Page 9]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -557,7 +557,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 10]
+Barnes, et al.           Expires August 24, 2019               [Page 10]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -613,7 +613,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 11]
+Barnes, et al.           Expires August 24, 2019               [Page 11]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -669,7 +669,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 12]
+Barnes, et al.           Expires August 24, 2019               [Page 12]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -725,7 +725,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 13]
+Barnes, et al.           Expires August 24, 2019               [Page 13]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -781,7 +781,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 14]
+Barnes, et al.           Expires August 24, 2019               [Page 14]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -837,7 +837,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 15]
+Barnes, et al.           Expires August 24, 2019               [Page 15]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -893,7 +893,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 16]
+Barnes, et al.           Expires August 24, 2019               [Page 16]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -949,7 +949,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 17]
+Barnes, et al.           Expires August 24, 2019               [Page 17]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1005,7 +1005,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 18]
+Barnes, et al.           Expires August 24, 2019               [Page 18]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1061,7 +1061,7 @@ Content-Type: application/problem+json
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 19]
+Barnes, et al.           Expires August 24, 2019               [Page 19]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1117,7 +1117,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 20]
+Barnes, et al.           Expires August 24, 2019               [Page 20]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1173,7 +1173,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 21]
+Barnes, et al.           Expires August 24, 2019               [Page 21]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 22]
+Barnes, et al.           Expires August 24, 2019               [Page 22]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1285,7 +1285,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 23]
+Barnes, et al.           Expires August 24, 2019               [Page 23]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1297,6 +1297,11 @@ Internet-Draft                    ACME                     February 2019
       newAccount request, with a value of true, indicates the client's
       agreement with the terms of service.  This field cannot be updated
       by the client.
+
+   externalAccountBinding (optional, object):  Including this field in a
+      newAccount request indicates approval by the holder of an existing
+      non-ACME account to bind that account to this ACME account.  This
+      field is not updateable by the client.  (See Section 7.3.4).
 
    orders (required, string):  A URL from which a list of orders
       submitted by this account can be fetched via a POST-as-GET
@@ -1324,6 +1329,23 @@ Internet-Draft                    ACME                     February 2019
    "next" link relation indicating where further entries can be
    acquired.
 
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 24]
+
+Internet-Draft                    ACME                     February 2019
+
+
    HTTP/1.1 200 OK
    Content-Type: application/json
    Link: <https://example.com/acme/orders/rzGoeA?cursor=2>;rel="next"
@@ -1336,15 +1358,6 @@ Internet-Draft                    ACME                     February 2019
        "https://example.com/acme/order/neBHYLfw0mg"
      ]
    }
-
-
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 24]
-
-Internet-Draft                    ACME                     February 2019
-
 
 7.1.3.  Order Objects
 
@@ -1382,6 +1395,13 @@ Internet-Draft                    ACME                     February 2019
       the order, if any.  This field is structured as a problem document
       [RFC7807].
 
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 25]
+
+Internet-Draft                    ACME                     February 2019
+
+
    authorizations (required, array of string):  For pending orders, the
       authorizations that the client needs to complete before the
       requested certificate can be issued (see Section 7.5), including
@@ -1392,15 +1412,6 @@ Internet-Draft                    ACME                     February 2019
       required.  For final orders (in the "valid" or "invalid" state),
       the authorizations that were completed.  Each entry is a URL from
       which an authorization can be fetched with a POST-as-GET request.
-
-
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 25]
-
-Internet-Draft                    ACME                     February 2019
-
 
    finalize (required, string):  A URL that a CSR must be POSTed to once
       all of the order's authorizations are satisfied to finalize the
@@ -1439,6 +1450,14 @@ Internet-Draft                    ACME                     February 2019
    Subject Alternate Name Extension by [RFC5280].  An authorization
    returned by the server for a wildcard domain name identifier MUST NOT
    include the asterisk and full stop ("*.") prefix in the authorization
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 26]
+
+Internet-Draft                    ACME                     February 2019
+
+
    identifier value.  The returned authorization MUST include the
    optional "wildcard" field, with a value of true.
 
@@ -1450,14 +1469,6 @@ Internet-Draft                    ACME                     February 2019
 
    The "authorizations" array of the order SHOULD reflect all
    authorizations that the CA takes into account in deciding to issue,
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 26]
-
-Internet-Draft                    ACME                     February 2019
-
-
    even if some authorizations were fulfilled in earlier orders or in
    pre-authorization transactions.  For example, if a CA allows multiple
    orders to be fulfilled based on a single authorization transaction,
@@ -1496,6 +1507,13 @@ Internet-Draft                    ACME                     February 2019
       type (required, string):  The type of identifier (see below and
          Section 9.7.7).
 
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 27]
+
+Internet-Draft                    ACME                     February 2019
+
+
       value (required, string):  The identifier itself.
 
    status (required, string):  The status of this authorization.
@@ -1506,13 +1524,6 @@ Internet-Draft                    ACME                     February 2019
       will consider this authorization invalid, encoded in the format
       specified in [RFC3339].  This field is REQUIRED for objects with
       "valid" in the "status" field.
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 27]
-
-Internet-Draft                    ACME                     February 2019
-
 
    challenges (required, array of objects):  For pending authorizations,
       the challenges that the client can fulfill in order to prove
@@ -1554,18 +1565,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 28]
+Barnes, et al.           Expires August 24, 2019               [Page 28]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1621,7 +1621,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 29]
+Barnes, et al.           Expires August 24, 2019               [Page 29]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1677,7 +1677,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 30]
+Barnes, et al.           Expires August 24, 2019               [Page 30]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1733,7 +1733,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 31]
+Barnes, et al.           Expires August 24, 2019               [Page 31]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1789,7 +1789,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 32]
+Barnes, et al.           Expires August 24, 2019               [Page 32]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1839,13 +1839,13 @@ Internet-Draft                    ACME                     February 2019
       look up an account URL based on an account key (see
       Section 7.3.1).
 
-   externalAccountBinding (optional, object):  An optional field for
-      binding the new account with an existing non-ACME account (see
-      Section 7.3.4).
+   externalAccountBinding (optional, object):  Same meaning as the
+      corresponding server field defined in Section 7.1.2
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 33]
+
+Barnes, et al.           Expires August 24, 2019               [Page 33]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1872,15 +1872,13 @@ Internet-Draft                    ACME                     February 2019
    }
 
    The server MUST ignore any values provided in the "orders" fields in
-   account bodies sent by the client, as well as any other fields that
+   account objects sent by the client, as well as any other fields that
    it does not recognize.  If new fields are specified in the future,
    the specification of those fields MUST describe whether they can be
-   provided by the client.
-
-   In general, the server MUST ignore any fields in the request object
-   that it does not recognize.  In particular, it MUST NOT reflect
-   unrecognized fields in the resulting account object.  This allows
-   clients to detect when servers do not support an extension field.
+   provided by the client.  The server MUST NOT reflect the
+   "onlyReturnExisting" field or any unrecognized fields in the
+   resulting account object.  This allows clients to detect when servers
+   do not support an extension field.
 
    The server SHOULD validate that the contact URLs in the "contact"
    field are valid and supported by the server.  If the server validates
@@ -1897,18 +1895,17 @@ Internet-Draft                    ACME                     February 2019
    a supported scheme but an invalid value, then the server MUST return
    an error of type "invalidContact".
 
+   If the server wishes to require the client to agree to terms under
+   which the ACME service is to be used, it MUST indicate the URL where
+   such terms can be accessed in the "termsOfService" subfield of the
 
 
 
-
-Barnes, et al.           Expires August 23, 2019               [Page 34]
+Barnes, et al.           Expires August 24, 2019               [Page 34]
 
 Internet-Draft                    ACME                     February 2019
 
 
-   If the server wishes to require the client to agree to terms under
-   which the ACME service is to be used, it MUST indicate the URL where
-   such terms can be accessed in the "termsOfService" subfield of the
    "meta" field in the directory object, and the server MUST reject
    newAccount requests that do not have the "termsOfServiceAgreed" field
    set to "true".  Clients SHOULD NOT automatically agree to terms by
@@ -1954,17 +1951,17 @@ Internet-Draft                    ACME                     February 2019
 
    If a client wishes to find the URL for an existing account and does
    not want an account to be created if one does not already exist, then
+   it SHOULD do so by sending a POST request to the newAccount URL with
+   a JWS whose payload has an "onlyReturnExisting" field set to "true"
+   ({"onlyReturnExisting": true}).  If a client sends such a request and
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 35]
+Barnes, et al.           Expires August 24, 2019               [Page 35]
 
 Internet-Draft                    ACME                     February 2019
 
 
-   it SHOULD do so by sending a POST request to the newAccount URL with
-   a JWS whose payload has an "onlyReturnExisting" field set to "true"
-   ({"onlyReturnExisting": true}).  If a client sends such a request and
    an account does not exist, then the server MUST return an error
    response with status code 400 (Bad Request) and type
    "urn:ietf:params:acme:error:accountDoesNotExist".
@@ -2009,19 +2006,18 @@ Internet-Draft                    ACME                     February 2019
    terms of service by setting the "termsOfServiceAgreed" field in its
    account object to "true".
 
-
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 36]
-
-Internet-Draft                    ACME                     February 2019
-
-
    If the server has changed its terms of service since a client
    initially agreed, and the server is unwilling to process a request
    without explicit agreement to the new terms, then it MUST return an
    error response with status code 403 (Forbidden) and type
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 36]
+
+Internet-Draft                    ACME                     February 2019
+
+
    "urn:ietf:params:acme:error:userActionRequired".  This response MUST
    include a Link header field with link relation "terms-of-service" and
    the latest terms-of-service URL.
@@ -2066,17 +2062,17 @@ Internet-Draft                    ACME                     February 2019
 
    o  The "kid" field MUST contain the key identifier provided by the CA
 
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 37]
-
-Internet-Draft                    ACME                     February 2019
-
-
    o  The "nonce" field MUST NOT be present
 
    o  The "url" field MUST be set to the same value as the outer JWS
+
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 37]
+
+Internet-Draft                    ACME                     February 2019
+
 
    The "signature" field of the JWS will contain the MAC value computed
    with the MAC key provided by the CA.
@@ -2123,16 +2119,16 @@ Internet-Draft                    ACME                     February 2019
    object (if any).  To verify the account binding, the CA MUST take the
    following steps:
 
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 38]
-
-Internet-Draft                    ACME                     February 2019
-
-
    1.  Verify that the value of the field is a well-formed JWS
 
    2.  Verify that the JWS protected field meets the above criteria
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 38]
+
+Internet-Draft                    ACME                     February 2019
+
 
    3.  Retrieve the MAC key corresponding to the key identifier in the
        "kid" field
@@ -2179,16 +2175,16 @@ Internet-Draft                    ACME                     February 2019
    signed with the requested new account key.  This "inner" JWS becomes
    the payload for the "outer" JWS that is the body of the ACME request.
 
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 39]
-
-Internet-Draft                    ACME                     February 2019
-
-
    The outer JWS MUST meet the normal requirements for an ACME JWS (see
    Section 6.2).  The inner JWS MUST meet the normal requirements, with
    the following differences:
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 39]
+
+Internet-Draft                    ACME                     February 2019
+
 
    o  The inner JWS MUST have a "jwk" header parameter, containing the
       public key of the new key pair.
@@ -2233,20 +2229,18 @@ Internet-Draft                    ACME                     February 2019
      "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
    }
 
-
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 40]
-
-Internet-Draft                    ACME                     February 2019
-
-
    On receiving keyChange request, the server MUST perform the following
    steps in addition to the typical JWS validation:
 
    1.  Validate the POST request belongs to a currently active account,
        as described in Section 6.
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 40]
+
+Internet-Draft                    ACME                     February 2019
+
 
    2.  Check that the payload of the JWS is a well-formed JWS object
        (the "inner JWS").
@@ -2286,18 +2280,6 @@ Internet-Draft                    ACME                     February 2019
    invalidate pending orders or authorization transactions based on a
    change of account key.
 
-
-
-
-
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 41]
-
-Internet-Draft                    ACME                     February 2019
-
-
 7.3.6.  Account Deactivation
 
    A client can deactivate an account by posting a signed update to the
@@ -2307,6 +2289,15 @@ Internet-Draft                    ACME                     February 2019
    access resources related to the account, such as orders or
    authorizations.  If a server receives a POST or POST-as-GET from a
    deactivated account, it MUST return an error response with status
+
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 41]
+
+Internet-Draft                    ACME                     February 2019
+
+
    code 401 (Unauthorized) and type
    "urn:ietf:params:acme:error:unauthorized".
 
@@ -2342,18 +2333,6 @@ Internet-Draft                    ACME                     February 2019
    certificates.  ACME does not provide a way to reactivate a
    deactivated account.
 
-
-
-
-
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 42]
-
-Internet-Draft                    ACME                     February 2019
-
-
 7.4.  Applying for Certificate Issuance
 
    The client begins the certificate issuance process by sending a POST
@@ -2366,6 +2345,14 @@ Internet-Draft                    ACME                     February 2019
       objects that the client wishes to submit an order for.
 
       type (required, string):  The type of identifier.
+
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 42]
+
+Internet-Draft                    ACME                     February 2019
+
 
       value (required, string):  The identifier itself.
 
@@ -2402,19 +2389,26 @@ Internet-Draft                    ACME                     February 2019
    modified in a certain way, it should indicate the required changes
    using an appropriate error type and description.
 
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 43]
-
-Internet-Draft                    ACME                     February 2019
-
-
    If the server is willing to issue the requested certificate, it
    responds with a 201 (Created) response.  The body of this response is
    an order object reflecting the client's request and any
    authorizations the client must complete before the certificate will
    be issued.
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 43]
+
+Internet-Draft                    ACME                     February 2019
+
 
    HTTP/1.1 201 Created
    Replay-Nonce: MYAuvOpaoIiywTezizk5vw
@@ -2458,17 +2452,19 @@ Internet-Draft                    ACME                     February 2019
 
    csr (required, string):  A CSR encoding the parameters for the
       certificate being requested [RFC2986].  The CSR is sent in the
-
-
-
-Barnes, et al.           Expires August 23, 2019               [Page 44]
-
-Internet-Draft                    ACME                     February 2019
-
-
       base64url-encoded version of the DER format.  (Note: Because this
       field uses base64url, and does not include headers, it is
       different from PEM.)
+
+
+
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 44]
+
+Internet-Draft                    ACME                     February 2019
+
 
    POST /acme/order/TOlocE8rfgo/finalize HTTP/1.1
    Host: example.com
@@ -2515,16 +2511,17 @@ Internet-Draft                    ACME                     February 2019
    server SHOULD leave the order in the "ready" state, to allow the
    client to submit a new finalize request with an amended CSR.
 
+   A request to finalize an order will result in error if the order is
+   not in the "ready" state.  In such cases, the server MUST return a
+   403 (Forbidden) error with a problem document of type "badState".
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 45]
+
+Barnes, et al.           Expires August 24, 2019               [Page 45]
 
 Internet-Draft                    ACME                     February 2019
 
 
-   A request to finalize an order will result in error if the order is
-   not in the "ready" state.  In such cases, the server MUST return a
-   403 (Forbidden) error with a problem document of type "badState".
    The client should then send a POST-as-GET request to the order
    resource to obtain its current state.  The status of the order will
    indicate what action the client should take (see below).
@@ -2573,7 +2570,10 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 46]
+
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 46]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2629,7 +2629,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 47]
+Barnes, et al.           Expires August 24, 2019               [Page 47]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2685,7 +2685,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 48]
+Barnes, et al.           Expires August 24, 2019               [Page 48]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2741,7 +2741,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 49]
+Barnes, et al.           Expires August 24, 2019               [Page 49]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2797,7 +2797,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 50]
+Barnes, et al.           Expires August 24, 2019               [Page 50]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2853,7 +2853,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 51]
+Barnes, et al.           Expires August 24, 2019               [Page 51]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2909,7 +2909,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 52]
+Barnes, et al.           Expires August 24, 2019               [Page 52]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2965,7 +2965,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 53]
+Barnes, et al.           Expires August 24, 2019               [Page 53]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3021,7 +3021,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 54]
+Barnes, et al.           Expires August 24, 2019               [Page 54]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3077,7 +3077,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 55]
+Barnes, et al.           Expires August 24, 2019               [Page 55]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3133,7 +3133,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 56]
+Barnes, et al.           Expires August 24, 2019               [Page 56]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3189,7 +3189,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 57]
+Barnes, et al.           Expires August 24, 2019               [Page 57]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3245,7 +3245,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 58]
+Barnes, et al.           Expires August 24, 2019               [Page 58]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3301,7 +3301,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 59]
+Barnes, et al.           Expires August 24, 2019               [Page 59]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3357,7 +3357,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 60]
+Barnes, et al.           Expires August 24, 2019               [Page 60]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3413,7 +3413,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 61]
+Barnes, et al.           Expires August 24, 2019               [Page 61]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3469,7 +3469,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 62]
+Barnes, et al.           Expires August 24, 2019               [Page 62]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3525,7 +3525,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 63]
+Barnes, et al.           Expires August 24, 2019               [Page 63]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3581,7 +3581,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 64]
+Barnes, et al.           Expires August 24, 2019               [Page 64]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3637,7 +3637,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 65]
+Barnes, et al.           Expires August 24, 2019               [Page 65]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3693,7 +3693,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 66]
+Barnes, et al.           Expires August 24, 2019               [Page 66]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3749,7 +3749,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 67]
+Barnes, et al.           Expires August 24, 2019               [Page 67]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3805,7 +3805,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 68]
+Barnes, et al.           Expires August 24, 2019               [Page 68]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3837,16 +3837,14 @@ Internet-Draft                    ACME                     February 2019
    Initial contents: The fields and descriptions defined in
    Section 7.1.2.
 
-   +------------------------+---------------+--------------+-----------+
-   | Field Name             | Field Type    | Requests     | Reference |
-   +------------------------+---------------+--------------+-----------+
-   | status                 | string        | new, account | RFC 8555  |
-   | contact                | array of      | new, account | RFC 8555  |
-   |                        | string        |              |           |
-   | externalAccountBinding | object        | new          | RFC 8555  |
-   | termsOfServiceAgreed   | boolean       | new          | RFC 8555  |
-   | orders                 | string        | none         | RFC 8555  |
-   +------------------------+---------------+--------------+-----------+
+   | Field Name | Field Type | Requests |
+   Reference | |:-----------------|:-----------|:---------|:-------|
+   ======= | status | string | new, account | RFC 8555 | | contact |
+   array of string | new, account | RFC 8555 | |
+   externalAccountBinding | object | new | RFC 8555 | |
+   termsOfServiceAgreed | boolean | new | RFC 8555 | |
+   onlyReturnExisting | boolean | new | RFC 8555 | | orders | string |
+   none | RFC 8555 |
 
 9.7.2.  Fields in Order Objects
 
@@ -3861,7 +3859,9 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 69]
+
+
+Barnes, et al.           Expires August 24, 2019               [Page 69]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3917,7 +3917,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 70]
+Barnes, et al.           Expires August 24, 2019               [Page 70]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3973,7 +3973,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 71]
+Barnes, et al.           Expires August 24, 2019               [Page 71]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4029,7 +4029,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 72]
+Barnes, et al.           Expires August 24, 2019               [Page 72]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4085,7 +4085,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 73]
+Barnes, et al.           Expires August 24, 2019               [Page 73]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4141,7 +4141,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 74]
+Barnes, et al.           Expires August 24, 2019               [Page 74]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4197,7 +4197,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 75]
+Barnes, et al.           Expires August 24, 2019               [Page 75]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4253,7 +4253,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 76]
+Barnes, et al.           Expires August 24, 2019               [Page 76]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4309,7 +4309,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 77]
+Barnes, et al.           Expires August 24, 2019               [Page 77]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4365,7 +4365,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 78]
+Barnes, et al.           Expires August 24, 2019               [Page 78]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4421,7 +4421,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 79]
+Barnes, et al.           Expires August 24, 2019               [Page 79]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4477,7 +4477,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 80]
+Barnes, et al.           Expires August 24, 2019               [Page 80]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4533,7 +4533,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 81]
+Barnes, et al.           Expires August 24, 2019               [Page 81]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4589,7 +4589,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 82]
+Barnes, et al.           Expires August 24, 2019               [Page 82]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4645,7 +4645,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 83]
+Barnes, et al.           Expires August 24, 2019               [Page 83]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4701,7 +4701,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 84]
+Barnes, et al.           Expires August 24, 2019               [Page 84]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4757,7 +4757,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 85]
+Barnes, et al.           Expires August 24, 2019               [Page 85]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4813,7 +4813,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 86]
+Barnes, et al.           Expires August 24, 2019               [Page 86]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4869,7 +4869,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 87]
+Barnes, et al.           Expires August 24, 2019               [Page 87]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4925,7 +4925,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 88]
+Barnes, et al.           Expires August 24, 2019               [Page 88]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4981,7 +4981,7 @@ Authors' Addresses
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 89]
+Barnes, et al.           Expires August 24, 2019               [Page 89]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -5037,4 +5037,4 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 23, 2019               [Page 90]
+Barnes, et al.           Expires August 24, 2019               [Page 90]
