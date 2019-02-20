@@ -3678,8 +3678,10 @@ Internet-Draft                    ACME                     February 2019
 
    Additional information:
 
-   Deprecated alias names for this type: n/a Magic number(s): n/a File
-   extension(s): .pem Macintosh file type code(s): n/a
+   Deprecated alias names for this type: n/a
+   Magic number(s): n/a
+   File extension(s): .pem
+   Macintosh file type code(s): n/a
 
    Person & email address to contact for further information: See
    Authors' Addresses section.
@@ -3688,8 +3690,6 @@ Internet-Draft                    ACME                     February 2019
 
    Restrictions on usage: n/a
 
-   Author: See Authors' Addresses section.
-
 
 
 
@@ -3697,6 +3697,8 @@ Barnes, et al.           Expires August 24, 2019               [Page 66]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   Author: See Authors' Addresses section.
 
    Change controller: IETF <iesg@ietf.org>
 
@@ -3744,8 +3746,6 @@ Internet-Draft                    ACME                     February 2019
    The following value has been registered in the "JSON Web Signature
    and Encryption Header Parameters" registry:
 
-   o  Header Parameter Name: "nonce"
-
 
 
 
@@ -3753,6 +3753,8 @@ Barnes, et al.           Expires August 24, 2019               [Page 67]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   o  Header Parameter Name: "nonce"
 
    o  Header Parameter Description: Nonce
 
@@ -3799,8 +3801,6 @@ Internet-Draft                    ACME                     February 2019
    All of these registries are under a heading of "Automated Certificate
    Management Environment (ACME) Protocol" and are administered under a
    Specification Required policy [RFC8126].
-
-
 
 
 
@@ -3872,8 +3872,8 @@ Internet-Draft                    ACME                     February 2019
    o  Field type: The type of value to be provided, e.g., string,
       boolean, array of string
 
-   o  Client configurable: Boolean indicating whether the server should
-      accept values provided by the client
+   o  Configurable: Boolean indicating whether the server should accept
+      values provided by the client
 
    o  Reference: Where this field is defined
 
@@ -3908,8 +3908,8 @@ Internet-Draft                    ACME                     February 2019
    o  Field type: The type of value to be provided, e.g., string,
       boolean, array of string
 
-   o  Client configurable: Boolean indicating whether the server should
-      accept values provided by the client
+   o  Configurable: Boolean indicating whether the server should accept
+      values provided by the client
 
    o  Reference: Where this field is defined
 
