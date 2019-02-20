@@ -811,7 +811,7 @@ URLs.
 | newOrder       | New order            |
 | newAuthz       | New authorization    |
 | revokeCert     | Revoke certificate   |
-| keyChange      | Key Change           |
+| keyChange      | Key change           |
 
 There is no constraint on the URL of the directory except that it
 should be different from the other ACME server resources' URLs, and that it
