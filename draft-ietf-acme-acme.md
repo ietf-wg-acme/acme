@@ -2096,7 +2096,7 @@ multiple accounts with an identifier (e.g., to allow multiple entities to manage
 certificates).
 
 Authorization resources are created by the server in response to newOrder or
-newAuthorization requests submitted by an account key holder; their
+newAuthz requests submitted by an account key holder; their
 URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
