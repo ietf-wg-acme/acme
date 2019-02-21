@@ -1853,7 +1853,8 @@ Content-Type: application/jose+json
   }),
   "payload": base64url({
     "identifiers": [
-      { "type": "dns", "value": "www.example.org" }
+      { "type": "dns", "value": "www.example.org" },
+      { "type": "dns", "value": "example.org" }
     ],
     "notBefore": "2016-01-01T00:04:00+04:00",
     "notAfter": "2016-01-08T00:04:00+04:00"
