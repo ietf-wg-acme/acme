@@ -115,8 +115,8 @@ Internet-Draft                    ACME                     February 2019
 
 
        7.3.5.  Account Key Rollover  . . . . . . . . . . . . . . . .  39
-       7.3.6.  Account Deactivation  . . . . . . . . . . . . . . . .  41
-     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  42
+       7.3.6.  Account Deactivation  . . . . . . . . . . . . . . . .  42
+     7.4.  Applying for Certificate Issuance . . . . . . . . . . . .  43
        7.4.1.  Pre-authorization . . . . . . . . . . . . . . . . . .  47
        7.4.2.  Downloading the Certificate . . . . . . . . . . . . .  49
      7.5.  Identifier Authorization  . . . . . . . . . . . . . . . .  51
@@ -1020,10 +1020,10 @@ Link: <https://example.com/acme/directory>;rel="index"
     "subproblems": [
         {
             "type": "urn:ietf:params:acme:error:malformed",
-            "detail": "Invalid underscore in DNS name \"_example.com\"",
+            "detail": "Invalid underscore in DNS name \"_example.org\"",
             "identifier": {
                 "type": "dns",
-                "value": "_example.com"
+                "value": "_example.org"
             }
         },
         {
@@ -1310,8 +1310,8 @@ Internet-Draft                    ACME                     February 2019
    {
      "status": "valid",
      "contact": [
-       "mailto:cert-admin@example.com",
-       "mailto:admin@example.com"
+       "mailto:cert-admin@example.org",
+       "mailto:admin@example.org"
      ],
      "termsOfServiceAgreed": true,
      "orders": "https://example.com/acme/orders/rzGoeA"
@@ -1427,11 +1427,11 @@ Internet-Draft                    ACME                     February 2019
 
    {
      "status": "valid",
-     "expires": "2015-03-01T14:09:07.99Z",
+     "expires": "2016-01-20T14:09:07.99Z",
 
      "identifiers": [
-       { "type": "dns", "value": "example.com" },
-       { "type": "dns", "value": "www.example.com" }
+       { "type": "dns", "value": "www.example.org" },
+       { "type": "dns", "value": "example.org" }
      ],
 
      "notBefore": "2016-01-01T00:00:00Z",
@@ -1444,7 +1444,7 @@ Internet-Draft                    ACME                     February 2019
 
      "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",
 
-     "certificate": "https://example.com/acme/cert/jWCdfHVGY2M"
+     "certificate": "https://example.com/acme/cert/mAt3xBGaobw"
    }
 
    Any identifier of type "dns" in a newOrder request MAY have a
@@ -1576,7 +1576,7 @@ Internet-Draft                    ACME                     February 2019
 
      "identifier": {
        "type": "dns",
-       "value": "example.org"
+       "value": "www.example.org"
      },
 
      "challenges": [
@@ -1864,8 +1864,8 @@ Internet-Draft                    ACME                     February 2019
      "payload": base64url({
        "termsOfServiceAgreed": true,
        "contact": [
-         "mailto:cert-admin@example.com",
-         "mailto:admin@example.com"
+         "mailto:cert-admin@example.org",
+         "mailto:admin@example.org"
        ]
      }),
      "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
@@ -1931,8 +1931,8 @@ Internet-Draft                    ACME                     February 2019
      "status": "valid",
 
      "contact": [
-       "mailto:cert-admin@example.com",
-       "mailto:admin@example.com"
+       "mailto:cert-admin@example.org",
+       "mailto:admin@example.org"
      ],
 
      "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"
@@ -1993,8 +1993,8 @@ Internet-Draft                    ACME                     February 2019
      }),
      "payload": base64url({
        "contact": [
-         "mailto:certificates@example.com",
-         "mailto:admin@example.com"
+         "mailto:certificates@example.org",
+         "mailto:admin@example.org"
        ]
      }),
      "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
@@ -2089,7 +2089,10 @@ Internet-Draft                    ACME                     February 2019
        "url": "https://example.com/acme/new-account"
      }),
      "payload": base64url({
-       "contact": ["mailto:example@anonymous.invalid"],
+       "contact": [
+         "mailto:cert-admin@example.org",
+         "mailto:admin@example.org"
+       ],
        "termsOfServiceAgreed": true,
 
        "externalAccountBinding": {
@@ -2119,9 +2122,6 @@ Internet-Draft                    ACME                     February 2019
    object (if any).  To verify the account binding, the CA MUST take the
    following steps:
 
-   1.  Verify that the value of the field is a well-formed JWS
-
-   2.  Verify that the JWS protected field meets the above criteria
 
 
 
@@ -2129,6 +2129,10 @@ Barnes, et al.           Expires August 25, 2019               [Page 38]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   1.  Verify that the value of the field is a well-formed JWS
+
+   2.  Verify that the JWS protected field meets the above criteria
 
    3.  Retrieve the MAC key corresponding to the key identifier in the
        "kid" field
@@ -2175,16 +2179,16 @@ Internet-Draft                    ACME                     February 2019
    signed with the requested new account key.  This "inner" JWS becomes
    the payload for the "outer" JWS that is the body of the ACME request.
 
-   The outer JWS MUST meet the normal requirements for an ACME JWS
-   request body (see Section 6.2).  The inner JWS MUST meet the normal
-   requirements, with the following differences:
-
 
 
 Barnes, et al.           Expires August 25, 2019               [Page 39]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   The outer JWS MUST meet the normal requirements for an ACME JWS
+   request body (see Section 6.2).  The inner JWS MUST meet the normal
+   requirements, with the following differences:
 
    o  The inner JWS MUST have a "jwk" header parameter, containing the
       public key of the new key pair.
@@ -2229,11 +2233,7 @@ Internet-Draft                    ACME                     February 2019
      "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
    }
 
-   On receiving a keyChange request, the server MUST perform the
-   following steps in addition to the typical JWS validation:
 
-   1.  Validate the POST request belongs to a currently active account,
-       as described in Section 6.
 
 
 
@@ -2241,6 +2241,12 @@ Barnes, et al.           Expires August 25, 2019               [Page 40]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   On receiving a keyChange request, the server MUST perform the
+   following steps in addition to the typical JWS validation:
+
+   1.  Validate the POST request belongs to a currently active account,
+       as described in Section 6.
 
    2.  Check that the payload of the JWS is a well-formed JWS object
        (the "inner JWS").
@@ -2280,15 +2286,9 @@ Internet-Draft                    ACME                     February 2019
    invalidate pending orders or authorization transactions based on a
    change of account key.
 
-7.3.6.  Account Deactivation
 
-   A client can deactivate an account by posting a signed update to the
-   account URL with a status field of "deactivated".  Clients may wish
-   to do this when the account key is compromised or decommissioned.  A
-   deactivated account can no longer request certificate issuance or
-   access resources related to the account, such as orders or
-   authorizations.  If a server receives a POST or POST-as-GET from a
-   deactivated account, it MUST return an error response with status
+
+
 
 
 
@@ -2298,6 +2298,15 @@ Barnes, et al.           Expires August 25, 2019               [Page 41]
 Internet-Draft                    ACME                     February 2019
 
 
+7.3.6.  Account Deactivation
+
+   A client can deactivate an account by posting a signed update to the
+   account URL with a status field of "deactivated".  Clients may wish
+   to do this when the account key is compromised or decommissioned.  A
+   deactivated account can no longer request certificate issuance or
+   access resources related to the account, such as orders or
+   authorizations.  If a server receives a POST or POST-as-GET from a
+   deactivated account, it MUST return an error response with status
    code 401 (Unauthorized) and type
    "urn:ietf:params:acme:error:unauthorized".
 
@@ -2333,6 +2342,18 @@ Internet-Draft                    ACME                     February 2019
    certificates.  ACME does not provide a way to reactivate a
    deactivated account.
 
+
+
+
+
+
+
+
+Barnes, et al.           Expires August 25, 2019               [Page 42]
+
+Internet-Draft                    ACME                     February 2019
+
+
 7.4.  Applying for Certificate Issuance
 
    The client begins the certificate issuance process by sending a POST
@@ -2345,14 +2366,6 @@ Internet-Draft                    ACME                     February 2019
       objects that the client wishes to submit an order for.
 
       type (required, string):  The type of identifier.
-
-
-
-
-Barnes, et al.           Expires August 25, 2019               [Page 42]
-
-Internet-Draft                    ACME                     February 2019
-
 
       value (required, string):  The identifier itself.
 
@@ -2375,7 +2388,7 @@ Internet-Draft                    ACME                     February 2019
      }),
      "payload": base64url({
        "identifiers": [
-         { "type": "dns", "value": "example.com" }
+         { "type": "dns", "value": "www.example.org" }
        ],
        "notBefore": "2016-01-01T00:04:00+04:00",
        "notAfter": "2016-01-08T00:04:00+04:00"
@@ -2389,19 +2402,6 @@ Internet-Draft                    ACME                     February 2019
    modified in a certain way, it should indicate the required changes
    using an appropriate error type and description.
 
-   If the server is willing to issue the requested certificate, it
-   responds with a 201 (Created) response.  The body of this response is
-   an order object reflecting the client's request and any
-   authorizations the client must complete before the certificate will
-   be issued.
-
-
-
-
-
-
-
-
 
 
 
@@ -2410,6 +2410,12 @@ Barnes, et al.           Expires August 25, 2019               [Page 43]
 Internet-Draft                    ACME                     February 2019
 
 
+   If the server is willing to issue the requested certificate, it
+   responds with a 201 (Created) response.  The body of this response is
+   an order object reflecting the client's request and any
+   authorizations the client must complete before the certificate will
+   be issued.
+
    HTTP/1.1 201 Created
    Replay-Nonce: MYAuvOpaoIiywTezizk5vw
    Link: <https://example.com/acme/directory>;rel="index"
@@ -2417,17 +2423,19 @@ Internet-Draft                    ACME                     February 2019
 
    {
      "status": "pending",
-     "expires": "2016-01-01T00:00:00Z",
+     "expires": "2016-01-05T14:09:07.99Z",
 
      "notBefore": "2016-01-01T00:00:00Z",
      "notAfter": "2016-01-08T00:00:00Z",
 
      "identifiers": [
-       { "type": "dns", "value": "example.com" },
+       { "type": "dns", "value": "www.example.org" },
+       { "type": "dns", "value": "example.org" }
      ],
 
      "authorizations": [
        "https://example.com/acme/authz/PAniVnsZcis",
+       "https://example.com/acme/authz/r4HqLzrSrpI"
      ],
 
      "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize"
@@ -2451,20 +2459,18 @@ Internet-Draft                    ACME                     February 2019
    it should send a POST request to the order resource's finalize URL.
    The POST body MUST include a CSR:
 
-   csr (required, string):  A CSR encoding the parameters for the
-      certificate being requested [RFC2986].  The CSR is sent in the
-      base64url-encoded version of the DER format.  (Note: Because this
-      field uses base64url, and does not include headers, it is
-      different from PEM.)
-
-
-
 
 
 Barnes, et al.           Expires August 25, 2019               [Page 44]
 
 Internet-Draft                    ACME                     February 2019
 
+
+   csr (required, string):  A CSR encoding the parameters for the
+      certificate being requested [RFC2986].  The CSR is sent in the
+      base64url-encoded version of the DER format.  (Note: Because this
+      field uses base64url, and does not include headers, it is
+      different from PEM.)
 
    POST /acme/order/TOlocE8rfgo/finalize HTTP/1.1
    Host: example.com
@@ -2508,12 +2514,6 @@ Internet-Draft                    ACME                     February 2019
    In such cases, the problem document returned by the server SHOULD use
    error code "badCSR" and describe specific reasons the CSR was
    rejected in its "detail" field.  After returning such an error, the
-   server SHOULD leave the order in the "ready" state, to allow the
-   client to submit a new finalize request with an amended CSR.
-
-   A request to finalize an order will result in error if the order is
-   not in the "ready" state.  In such cases, the server MUST return a
-   403 (Forbidden) error with a problem document of type
 
 
 
@@ -2522,6 +2522,12 @@ Barnes, et al.           Expires August 25, 2019               [Page 45]
 Internet-Draft                    ACME                     February 2019
 
 
+   server SHOULD leave the order in the "ready" state, to allow the
+   client to submit a new finalize request with an amended CSR.
+
+   A request to finalize an order will result in error if the order is
+   not in the "ready" state.  In such cases, the server MUST return a
+   403 (Forbidden) error with a problem document of type
    "orderNotReady".  The client should then send a POST-as-GET request
    to the order resource to obtain its current state.  The status of the
    order will indicate what action the client should take (see below).
@@ -2567,12 +2573,6 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-
-
-
-
-
-
 Barnes, et al.           Expires August 25, 2019               [Page 46]
 
 Internet-Draft                    ACME                     February 2019
@@ -2585,14 +2585,14 @@ Internet-Draft                    ACME                     February 2019
 
    {
      "status": "valid",
-     "expires": "2015-12-31T00:17:00.00-09:00",
+     "expires": "2016-01-20T14:09:07.99Z",
 
-     "notBefore": "2015-12-31T00:17:00.00-09:00",
-     "notAfter": "2015-12-31T00:17:00.00-09:00",
+     "notBefore": "2016-01-01T00:00:00Z",
+     "notAfter": "2016-01-08T00:00:00Z",
 
      "identifiers": [
-       { "type": "dns", "value": "example.com" },
-       { "type": "dns", "value": "www.example.com" }
+       { "type": "dns", "value": "www.example.org" },
+       { "type": "dns", "value": "example.org" }
      ],
 
      "authorizations": [
@@ -2659,7 +2659,7 @@ Internet-Draft                    ACME                     February 2019
      "payload": base64url({
        "identifier": {
          "type": "dns",
-         "value": "example.net"
+         "value": "example.org"
        }
      }),
      "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2879,11 +2879,11 @@ Internet-Draft                    ACME                     February 2019
 
    {
      "status": "pending",
-     "expires": "2018-03-03T14:09:30Z",
+     "expires": "2016-01-02T14:09:30Z",
 
      "identifier": {
        "type": "dns",
-       "value": "example.org"
+       "value": "www.example.org"
      },
 
      "challenges": [
@@ -3051,7 +3051,7 @@ Internet-Draft                    ACME                     February 2019
 
      "identifier": {
        "type": "dns",
-       "value": "example.org"
+       "value": "www.example.org"
      },
 
      "challenges": [
@@ -3217,14 +3217,14 @@ Internet-Draft                    ACME                     February 2019
    --- or ---
 
    HTTP/1.1 403 Forbidden
-   Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+   Replay-Nonce: lXfyFzi6238tfPQRwgfmPU
    Content-Type: application/problem+json
    Content-Language: en
    Link: <https://example.com/acme/directory>;rel="index"
 
    {
      "type": "urn:ietf:params:acme:error:unauthorized",
-     "detail": "No authorization provided for name example.net"
+     "detail": "No authorization provided for name example.org"
    }
 
 8.  Identifier Validation Challenges
@@ -3564,10 +3564,10 @@ Internet-Draft                    ACME                     February 2019
    prepending the label "_acme-challenge" to the domain name being
    validated, then provisions a TXT record with the digest value under
    that name.  For example, if the domain name being validated is
-   "example.org", then the client would provision the following DNS
+   "www.example.org", then the client would provision the following DNS
    record:
 
-   _acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
+   _acme-challenge.www.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 
    A client responds with an empty object ({}) to acknowledge that the
    challenge can be validated by the server.
