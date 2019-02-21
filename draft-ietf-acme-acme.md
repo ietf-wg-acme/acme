@@ -119,7 +119,7 @@ certificates, a typical user experience is something like:
    * Receive a CA-provided challenge at (hopefully) an administrator-controlled email
      address corresponding to the domain, and then respond to it on the CA's web
      page.
-* Download the issued certificate and install it on their Web Server.
+* Download the issued certificate and install it on the user's Web Server.
 
 With the exception of the CSR itself and the certificates that are issued, these
 are all completely ad hoc procedures and are accomplished by getting the human
@@ -903,7 +903,7 @@ by the client.
 externalAccountBinding (optional, object):
 : Including this field in a newAccount request indicates approval by the holder
 of an existing non-ACME account to bind that account to this ACME account. This
-field is not updateable by the client. (See {{external-account-binding}}).
+field is not updateable by the client (see {{external-account-binding}}).
 
 orders (required, string):
 : A URL from which a list of orders submitted by this account can be fetched via
