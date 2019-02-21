@@ -399,7 +399,7 @@ private key unless otherwise specified.  The server MUST verify the JWS before
 processing the request. Encapsulating request bodies in JWS provides
 authentication of requests.
 
-JWS objects sent as the body of ACME requests MUST meet the following additional criteria:
+JWS objects sent as the body of an ACME request MUST meet the following additional criteria:
 
 * The JWS MUST be in the  Flattened JSON Serialization {{!RFC7515}}
 * The JWS MUST NOT have multiple signatures
@@ -2177,9 +2177,11 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-The server MUST
+The server updates the authorization document by updating its representation of
+the challenge with the response object provided by the client.  The server MUST
 ignore any fields in the response object that are not specified as response
-fields for this type of challenge.  Note that the challenges in this document do
+fields for this type of challenge.
+Note that the challenges in this document do
 not define any response fields, but future specifications might define them.
 The server provides a 200 (OK) response
 with the updated challenge object as its body.
@@ -2193,11 +2195,10 @@ that have been provisioned to a web server.
 The server is said to "finalize" the authorization when it has completed
 one of the validations.  This is done by assigning the authorization a status of "valid"
 or "invalid", corresponding to whether it considers the account authorized
-for the identifier. If the final state is "valid", then the server MUST set
-an "expires" field, and MAY update the "expires" field if one was already present.
-When finalizing an authorization, the server MAY remove
-challenges other than the one that was completed.
-The server SHOULD NOT remove challenges with status "invalid".
+for the identifier. If the final state is "valid", then the server MUST include
+an "expires" field. When finalizing an authorization, the server MAY remove
+challenges other than the one that was completed, and it may modify the "expires"
+field. The server SHOULD NOT remove challenges with status "invalid".
 
 Usually, the validation process will take some time, so the client will need to
 poll the authorization resource to see when it is finalized.  For challenges
