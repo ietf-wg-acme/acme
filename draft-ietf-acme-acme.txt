@@ -209,7 +209,7 @@ Internet-Draft                    ACME                     February 2019
          administrator-controlled email address corresponding to the
          domain, and then respond to it on the CA's web page.
 
-   o  Download the issued certificate and install it on their Web
+   o  Download the issued certificate and install it on the user's Web
       Server.
 
    With the exception of the CSR itself and the certificates that are
@@ -1301,7 +1301,7 @@ Internet-Draft                    ACME                     February 2019
    externalAccountBinding (optional, object):  Including this field in a
       newAccount request indicates approval by the holder of an existing
       non-ACME account to bind that account to this ACME account.  This
-      field is not updateable by the client.  (See Section 7.3.4).
+      field is not updateable by the client (see Section 7.3.4).
 
    orders (required, string):  A URL from which a list of orders
       submitted by this account can be fetched via a POST-as-GET

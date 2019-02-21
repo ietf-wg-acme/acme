@@ -611,7 +611,7 @@ ul.toc li {
 <li>Receive a CA-provided challenge at (hopefully) an administrator-controlled email address corresponding to the domain, and then respond to it on the CA&#8217;s web page.</li>
 </ul>
 </li>
-<li>Download the issued certificate and install it on their Web Server.</li>
+<li>Download the issued certificate and install it on the user&#8217;s Web Server.</li>
 </ul>
 <p id="rfc.section.1.p.5">With the exception of the CSR itself and the certificates that are issued, these are all completely ad hoc procedures and are accomplished by getting the human user to follow interactive natural-language instructions from the CA rather than by machine-implemented published protocols.  In many cases, the instructions are difficult to follow and cause significant frustration and confusion.  Informal usability tests by the authors indicate that webmasters often need 1-3 hours to obtain and install a certificate for a domain.  Even in the best case, the lack of published, standardized mechanisms presents an obstacle to the wide deployment of HTTPS and other PKIX-dependent systems because it inhibits mechanization of tasks related to certificate issuance, deployment, and revocation.</p>
 <p id="rfc.section.1.p.6">This document describes an extensible framework for automating the issuance and domain validation procedure, thereby allowing servers and infrastructure software to obtain certificates without user interaction.  Use of this protocol should radically simplify the deployment of HTTPS and the practicality of PKIX-based authentication for other protocols based on Transport Layer Security (TLS) <a href="#RFC5246" class="xref">[RFC5246]</a>.</p>
@@ -1172,7 +1172,7 @@ Content-Type: application/json
 <dt>termsOfServiceAgreed (optional, boolean):</dt>
 <dd style="margin-left: 8">Including this field in a newAccount request, with a value of true, indicates the client&#8217;s agreement with the terms of service. This field cannot be updated by the client.</dd>
 <dt>externalAccountBinding (optional, object):</dt>
-<dd style="margin-left: 8">Including this field in a newAccount request indicates approval by the holder of an existing non-ACME account to bind that account to this ACME account. This field is not updateable by the client. (See <a href="#external-account-binding" class="xref">Section 7.3.4</a>).</dd>
+<dd style="margin-left: 8">Including this field in a newAccount request indicates approval by the holder of an existing non-ACME account to bind that account to this ACME account. This field is not updateable by the client (see <a href="#external-account-binding" class="xref">Section 7.3.4</a>).</dd>
 <dt>orders (required, string):</dt>
 <dd style="margin-left: 8">A URL from which a list of orders submitted by this account can be fetched via a POST-as-GET request, as described in <a href="#orders-list" class="xref">Section 7.1.2.1</a>.</dd>
 </dl>
