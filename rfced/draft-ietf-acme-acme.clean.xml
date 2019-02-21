@@ -102,7 +102,7 @@ domain.</t>
 address corresponding to the domain, and then respond to it on the CA's web
 page.</t>
     </list></t>
-  <t>Download the issued certificate and install it on their Web Server.</t>
+  <t>Download the issued certificate and install it on the user's Web Server.</t>
 </list></t>
 
 <t>With the exception of the CSR itself and the certificates that are issued, these
@@ -969,7 +969,7 @@ by the client.</t>
   <t hangText='externalAccountBinding (optional, object):'>
   Including this field in a newAccount request indicates approval by the holder
 of an existing non-ACME account to bind that account to this ACME account. This
-field is not updateable by the client. (See <xref target="external-account-binding"/>).</t>
+field is not updateable by the client (see <xref target="external-account-binding"/>).</t>
   <t hangText='orders (required, string):'>
   A URL from which a list of orders submitted by this account can be fetched via
 a POST-as-GET request, as described in <xref target="orders-list"/>.</t>

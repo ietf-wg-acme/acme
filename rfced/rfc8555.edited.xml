@@ -67,7 +67,7 @@ Original:
    Public Key Infrastructure X.509 (PKIX) certificates are used for a
    number of purposes... 
 -->
-<!--[auth] Added "using" -->
+<!--[auth] This has been reworded -->
 <t>Public Key Infrastructure X.509 (PKIX) certificates are used for a number
 of purposes, 
 the most significant of which is the authentication of domain names.  Thus,
@@ -129,7 +129,7 @@ Original:
    o  Download the issued certificate and install it on their Web
       Server.
 -->
-<!--[auth] Changed "their" to "the user's" -->
+<!--[auth] This is clear enough from context -->
   <t>Download the issued certificate and install it on their Web Server.</t>
 </list></t>
 
@@ -1041,9 +1041,7 @@ Account resources have the following structure:</t>
 "externalAccountBinding".  That Field does not appear in Section
 7.1.2.  Please review and let us know what updates are necessary.
 -->
-<!--[auth] That field should only appear in requests, never in account objects.
-            So it does not need to appear in this section.
--->
+<!--[auth] This section has been updated to include that field -->
 <t><list style="hanging">
   <t hangText='status (required, string):'>
   The status of this account. Possible values are "valid", "deactivated", and
@@ -2158,7 +2156,7 @@ Perhaps B:
    are created reactively in response to a certificate order.
 
 -->
-<!--[auth] This is an appositive, but I believe it is clear as is. -->
+<!--[auth] This is an appositive, but we believe it is clear as is. -->
 <t>The order process described above presumes that authorization objects are
 created reactively, in response to a certificate order.  Some servers
 may also wish to enable clients to obtain authorization for an identifier
@@ -3000,7 +2998,7 @@ May we update the field names to match the registration form that appears on
 <https://www.iana.org/form/media-types>?
 
 -->
-<!-- [auth] No.  I would like for these to match the form in RFC 6838. -->
+<!-- [auth] No.  We prefer for these to match the form in RFC 6838. -->
 
 <t>A file of this type contains one or more certificates encoded with
 the PEM textual encoding, according to <xref target="RFC7468"/>.  The
@@ -3242,7 +3240,7 @@ mentioned Section 9.7.2 and is not registered with IANA
 in the example in Section 7.1.3.  Please review and let us know if updates are
 necessary.  
 -->
-<!--[auth] Good point.  I have updated the table to add a row for that field.
+<!--[auth] Good point.  We have updated the table to add a row for that field.
            If you could let IANA know to update the registry, that would be helpful.
 -->
 
@@ -3747,7 +3745,7 @@ Perhaps B (More = very):
    gaining the ability to successfully complete a validation
    transaction. 
 -->
-<!-- [auth] I think this is clear as it stands. -->
+<!-- [auth] This is clear as it stands. -->
 
 <t>More limited forms of delegation can also lead to an unintended party gaining
 the ability to successfully complete a validation transaction.  For example,
@@ -3924,7 +3922,7 @@ the URL returns a status code of 404 (Not Found) or 401 (Unauthorized)
 error.
 
 -->
-<!-- [auth] I have made this change -->
+<!-- [auth] We have made this change -->
 
 <t>For example, suppose that the CA uses highly structured URLs with
 guessable fields:</t>
@@ -4177,7 +4175,7 @@ to the landing page, and not a specific version of the
 baseline requirements documents.  Please confirm and
 consider if any further information might be helpful to the
 reader.  -->
-
+<!--[auth] This is an informative reference, and the reader will be better informed by reading the current version -->
 <reference anchor="CABFBR" target="https://cabforum.org/baseline-requirements-documents/">
   <front>
     <title>CA/Browser Forum Baseline Requirements</title>
@@ -4416,7 +4414,7 @@ HTTP header field names should be unquoted.  Others should be quoted.
 
 (c) No change needed.  These are deliberately parallel with the JWS RFCs.
 
-I have filed a PR implementing these changes.  Please review and comment if think there are any that are inappropriate or anything I have missed.
+The above changes have been implemented in the following PR:
 
 https://github.com/ietf-wg-acme/acme/pull/483
 
