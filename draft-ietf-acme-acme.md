@@ -1008,7 +1008,7 @@ certificate (optional, string):
   "expires": "2016-01-20T14:09:07.99Z",
 
   "identifiers": [
-    { "type": "dns", "value": "www.example.org" }
+    { "type": "dns", "value": "www.example.org" },
     { "type": "dns", "value": "example.org" },
   ],
 
