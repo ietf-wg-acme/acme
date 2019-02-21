@@ -1009,7 +1009,7 @@ certificate (optional, string):
 
   "identifiers": [
     { "type": "dns", "value": "www.example.org" },
-    { "type": "dns", "value": "example.org" },
+    { "type": "dns", "value": "example.org" }
   ],
 
   "notBefore": "2016-01-01T00:00:00Z",
