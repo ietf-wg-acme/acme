@@ -2822,10 +2822,10 @@ Internet-Draft                    ACME                     February 2019
    multiple entities to manage certificates).
 
    Authorization resources are created by the server in response to
-   newOrder or newAuthorization requests submitted by an account key
-   holder; their URLs are provided to the client in the responses to
-   these requests.  The authorization object is implicitly tied to the
-   account key used to sign the request.
+   newOrder or newAuthz requests submitted by an account key holder;
+   their URLs are provided to the client in the responses to these
+   requests.  The authorization object is implicitly tied to the account
+   key used to sign the request.
 
    When a client receives an order from the server in reply to a
    newOrder request, it downloads the authorization resources by sending
