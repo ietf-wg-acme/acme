@@ -2096,7 +2096,7 @@ multiple accounts with an identifier (e.g., to allow multiple entities to manage
 certificates).
 
 Authorization resources are created by the server in response to newOrder or
-newAuthorization requests submitted by an account key holder; their
+newAuthz requests submitted by an account key holder; their
 URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
@@ -2758,10 +2758,10 @@ Applications that use this media type: ACME clients and servers, HTTP servers, o
 
 Additional information:
 
-    Deprecated alias names for this type: n/a
-    Magic number(s): n/a
-    File extension(s): .pem
-    Macintosh file type code(s): n/a
+  Deprecated alias names for this type: n/a
+  Magic number(s): n/a
+  File extension(s): .pem
+  Macintosh file type code(s): n/a
 
 Person & email address to contact for further information: See Authors' Addresses section.
 
