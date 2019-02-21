@@ -112,7 +112,7 @@ certificates, a typical user experience is something like:
 
 * Generate a PKCS#10 {{!RFC2986}} Certificate Signing Request (CSR).
 * Cut and paste the CSR into a CA's web page.
-* Prove ownership of the domain by one of the following methods:
+* Prove ownership of the domain(s) in the CSR by one of the following methods:
    * Put a CA-provided challenge at a specific place on the web server.
    * Put a CA-provided challenge in a DNS record corresponding to the target
      domain.
@@ -185,7 +185,7 @@ deploying an HTTPS server using ACME, the experience would be something like thi
   having the ACME client perform some action(s) that can only be done
   with control of the domain name(s).
   For example, the CA might require a client requesting example.com
-  to provision DNS record under example.com or an HTTP resource
+  to provision a DNS record under example.com or an HTTP resource
   under http://example.com.
 * Once the CA is satisfied, it issues the certificate and the ACME client
   automatically downloads and installs it, potentially notifying the operator
@@ -299,7 +299,8 @@ certificate and make it available to the client.
 
                           <~~~~~~Await issuance~~~~~~>
 
-      POST-as-GET request           ------->
+      [POST-as-GET request]
+      Signature                     ------->
                                     <-------              Certificate
 
                 [] Information covered by request signatures
@@ -398,7 +399,7 @@ private key unless otherwise specified.  The server MUST verify the JWS before
 processing the request. Encapsulating request bodies in JWS provides
 authentication of requests.
 
-JWS objects sent in ACME requests MUST meet the following additional criteria:
+A JWS object sent as the body of an ACME request MUST meet the following additional criteria:
 
 * The JWS MUST be in the  Flattened JSON Serialization {{!RFC7515}}
 * The JWS MUST NOT have multiple signatures
@@ -555,13 +556,13 @@ scope nonces broadly enough that retries are not needed very often.
 
 ### Replay-Nonce
 
-The Replay-Nonce header field includes a server-generated value that the
+The Replay-Nonce HTTP header field includes a server-generated value that the
 server can use to detect unauthorized replay in future client requests.  The
-server MUST generate the value provided in Replay-Nonce in such a way that
+server MUST generate the values provided in Replay-Nonce header fields in such a way that
 they are unique to each message, with high probability, and unpredictable to anyone besides the server. For instance, it is
 acceptable to generate Replay-Nonces randomly.
 
-The value of the Replay-Nonce field MUST be an octet string encoded according to
+The value of the Replay-Nonce header field MUST be an octet string encoded according to
 the base64url encoding described in Section 2 of {{!RFC7515}}.  Clients MUST
 ignore invalid Replay-Nonce values.  The ABNF {{!RFC5234}} for the Replay-Nonce
 header field follows:
@@ -1608,7 +1609,7 @@ requested new account key.
 This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.
 
-The outer JWS MUST meet the normal requirements for an ACME JWS (see
+The outer JWS MUST meet the normal requirements for an ACME JWS request body (see
 {{request-authentication}}).  The inner JWS MUST meet the normal requirements,
 with the following differences:
 
@@ -1653,7 +1654,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-On receiving keyChange request, the server MUST perform the following steps in
+On receiving a keyChange request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
 1. Validate the POST request belongs to a currently active account, as described
@@ -2084,18 +2085,18 @@ server of two things:
 1. That the client controls the private key of the account key pair, and
 2. That the client controls the identifier in question.
 
-This process may be repeated to associate multiple identifiers to a key pair
+This process may be repeated to associate multiple identifiers with an account
 (e.g., to request certificates with multiple identifiers) or to associate
 multiple accounts with an identifier (e.g., to allow multiple entities to manage
 certificates).
 
-Authorization resources are created by the server in response to certificate
-orders or authorization requests submitted by an account key holder; their
+Authorization resources are created by the server in response to newOrder or
+newAuthorization requests submitted by an account key holder; their
 URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
 
-When a client receives an order from the server in reply to a new order request, it downloads the authorization
+When a client receives an order from the server in reply to a newOrder request, it downloads the authorization
 resources by sending POST-as-GET requests to the indicated URLs.  If the client
 initiates authorization using a request to the newAuthz resource, it
 will have already received the pending authorization object in the response
@@ -2141,9 +2142,7 @@ Link: <https://example.com/acme/directory>;rel="index"
       "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
-  ],
-
-  "wildcard": false
+  ]
 }
 ~~~~~~~~~~
 
@@ -2181,7 +2180,10 @@ Content-Type: application/jose+json
 The server updates the authorization document by updating its representation of
 the challenge with the response object provided by the client.  The server MUST
 ignore any fields in the response object that are not specified as response
-fields for this type of challenge.  The server provides a 200 (OK) response
+fields for this type of challenge.
+Note that the challenges in this document do
+not define any response fields, but future specifications might define them.
+The server provides a 200 (OK) response
 with the updated challenge object as its body.
 
 If the client's response is invalid for any reason or does not provide the
@@ -2247,9 +2249,7 @@ Link: <https://example.com/acme/directory>;rel="index"
       "validated": "2014-12-01T12:05:13.72Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     }
-  ],
-
-  "wildcard": false
+  ]
 }
 ~~~~~~~~~~
 
