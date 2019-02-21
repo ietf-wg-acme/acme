@@ -112,7 +112,7 @@ certificates, a typical user experience is something like:
 
 * Generate a PKCS#10 {{!RFC2986}} Certificate Signing Request (CSR).
 * Cut and paste the CSR into a CA's web page.
-* Prove ownership of the domain by one of the following methods:
+* Prove ownership of the domain(s) in the CSR by one of the following methods:
    * Put a CA-provided challenge at a specific place on the web server.
    * Put a CA-provided challenge in a DNS record corresponding to the target
      domain.
@@ -185,7 +185,7 @@ deploying an HTTPS server using ACME, the experience would be something like thi
   having the ACME client perform some action(s) that can only be done
   with control of the domain name(s).
   For example, the CA might require a client requesting example.com
-  to provision DNS record under example.com or an HTTP resource
+  to provision a DNS record under example.com or an HTTP resource
   under http://example.com.
 * Once the CA is satisfied, it issues the certificate and the ACME client
   automatically downloads and installs it, potentially notifying the operator
@@ -299,7 +299,8 @@ certificate and make it available to the client.
 
                           <~~~~~~Await issuance~~~~~~>
 
-      POST-as-GET request           ------->
+      [POST-as-GET request]
+      Signature                     ------->
                                     <-------              Certificate
 
                 [] Information covered by request signatures
@@ -398,7 +399,7 @@ private key unless otherwise specified.  The server MUST verify the JWS before
 processing the request. Encapsulating request bodies in JWS provides
 authentication of requests.
 
-JWS objects sent in ACME requests MUST meet the following additional criteria:
+A JWS object sent as the body of an ACME request MUST meet the following additional criteria:
 
 * The JWS MUST be in the  Flattened JSON Serialization {{!RFC7515}}
 * The JWS MUST NOT have multiple signatures
@@ -555,13 +556,13 @@ scope nonces broadly enough that retries are not needed very often.
 
 ### Replay-Nonce
 
-The Replay-Nonce header field includes a server-generated value that the
+The Replay-Nonce HTTP header field includes a server-generated value that the
 server can use to detect unauthorized replay in future client requests.  The
-server MUST generate the value provided in Replay-Nonce in such a way that
+server MUST generate the values provided in Replay-Nonce header fields in such a way that
 they are unique to each message, with high probability, and unpredictable to anyone besides the server. For instance, it is
 acceptable to generate Replay-Nonces randomly.
 
-The value of the Replay-Nonce field MUST be an octet string encoded according to
+The value of the Replay-Nonce header field MUST be an octet string encoded according to
 the base64url encoding described in Section 2 of {{!RFC7515}}.  Clients MUST
 ignore invalid Replay-Nonce values.  The ABNF {{!RFC5234}} for the Replay-Nonce
 header field follows:
@@ -680,10 +681,10 @@ Link: <https://example.com/acme/directory>;rel="index"
     "subproblems": [
         {
             "type": "urn:ietf:params:acme:error:malformed",
-            "detail": "Invalid underscore in DNS name \"_example.com\"",
+            "detail": "Invalid underscore in DNS name \"_example.org\"",
             "identifier": {
                 "type": "dns",
-                "value": "_example.com"
+                "value": "_example.org"
             }
         },
         {
@@ -912,8 +913,8 @@ a POST-as-GET request, as described in {{orders-list}}.
 {
   "status": "valid",
   "contact": [
-    "mailto:cert-admin@example.com",
-    "mailto:admin@example.com"
+    "mailto:cert-admin@example.org",
+    "mailto:admin@example.org"
   ],
   "termsOfServiceAgreed": true,
   "orders": "https://example.com/acme/orders/rzGoeA"
@@ -1005,11 +1006,11 @@ certificate (optional, string):
 ~~~~~~~~~~
 {
   "status": "valid",
-  "expires": "2015-03-01T14:09:07.99Z",
+  "expires": "2016-01-20T14:09:07.99Z",
 
   "identifiers": [
-    { "type": "dns", "value": "example.com" },
-    { "type": "dns", "value": "www.example.com" }
+    { "type": "dns", "value": "www.example.org" },
+    { "type": "dns", "value": "example.org" }
   ],
 
   "notBefore": "2016-01-01T00:00:00Z",
@@ -1022,7 +1023,7 @@ certificate (optional, string):
 
   "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",
 
-  "certificate": "https://example.com/acme/cert/jWCdfHVGY2M"
+  "certificate": "https://example.com/acme/cert/mAt3xBGaobw"
 }
 ~~~~~~~~~~
 
@@ -1125,7 +1126,7 @@ name validation.
 
   "identifier": {
     "type": "dns",
-    "value": "example.org"
+    "value": "www.example.org"
   },
 
   "challenges": [
@@ -1350,8 +1351,8 @@ Content-Type: application/jose+json
   "payload": base64url({
     "termsOfServiceAgreed": true,
     "contact": [
-      "mailto:cert-admin@example.com",
-      "mailto:admin@example.com"
+      "mailto:cert-admin@example.org",
+      "mailto:admin@example.org"
     ]
   }),
   "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
@@ -1407,8 +1408,8 @@ Location: https://example.com/acme/acct/evOfKhNU60wg
   "status": "valid",
 
   "contact": [
-    "mailto:cert-admin@example.com",
-    "mailto:admin@example.com"
+    "mailto:cert-admin@example.org",
+    "mailto:admin@example.org"
   ],
 
   "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"
@@ -1455,8 +1456,8 @@ Content-Type: application/jose+json
   }),
   "payload": base64url({
     "contact": [
-      "mailto:certificates@example.com",
-      "mailto:admin@example.com"
+      "mailto:certificates@example.org",
+      "mailto:admin@example.org"
     ]
   }),
   "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
@@ -1533,7 +1534,10 @@ Content-Type: application/jose+json
     "url": "https://example.com/acme/new-account"
   }),
   "payload": base64url({
-    "contact": ["mailto:example@anonymous.invalid"],
+    "contact": [
+      "mailto:cert-admin@example.org",
+      "mailto:admin@example.org"
+    ],
     "termsOfServiceAgreed": true,
 
     "externalAccountBinding": {
@@ -1608,7 +1612,7 @@ requested new account key.
 This "inner" JWS becomes the payload for the "outer" JWS that is the body of the ACME
 request.
 
-The outer JWS MUST meet the normal requirements for an ACME JWS (see
+The outer JWS MUST meet the normal requirements for an ACME JWS request body (see
 {{request-authentication}}).  The inner JWS MUST meet the normal requirements,
 with the following differences:
 
@@ -1653,7 +1657,7 @@ Content-Type: application/jose+json
 }
 ~~~~~~~~~~
 
-On receiving keyChange request, the server MUST perform the following steps in
+On receiving a keyChange request, the server MUST perform the following steps in
 addition to the typical JWS validation:
 
 1. Validate the POST request belongs to a currently active account, as described
@@ -1764,7 +1768,7 @@ Content-Type: application/jose+json
   }),
   "payload": base64url({
     "identifiers": [
-      { "type": "dns", "value": "example.com" }
+      { "type": "dns", "value": "www.example.org" }
     ],
     "notBefore": "2016-01-01T00:04:00+04:00",
     "notAfter": "2016-01-08T00:04:00+04:00"
@@ -1791,17 +1795,19 @@ Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
   "status": "pending",
-  "expires": "2016-01-01T00:00:00Z",
+  "expires": "2016-01-05T14:09:07.99Z",
 
   "notBefore": "2016-01-01T00:00:00Z",
   "notAfter": "2016-01-08T00:00:00Z",
 
   "identifiers": [
-    { "type": "dns", "value": "example.com" },
+    { "type": "dns", "value": "www.example.org" },
+    { "type": "dns", "value": "example.org" }
   ],
 
   "authorizations": [
     "https://example.com/acme/authz/PAniVnsZcis",
+    "https://example.com/acme/authz/r4HqLzrSrpI"
   ],
 
   "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize"
@@ -1908,14 +1914,14 @@ Location: https://example.com/acme/order/TOlocE8rfgo
 
 {
   "status": "valid",
-  "expires": "2015-12-31T00:17:00.00-09:00",
+  "expires": "2016-01-20T14:09:07.99Z",
 
-  "notBefore": "2015-12-31T00:17:00.00-09:00",
-  "notAfter": "2015-12-31T00:17:00.00-09:00",
+  "notBefore": "2016-01-01T00:00:00Z",
+  "notAfter": "2016-01-08T00:00:00Z",
 
   "identifiers": [
-    { "type": "dns", "value": "example.com" },
-    { "type": "dns", "value": "www.example.com" }
+    { "type": "dns", "value": "www.example.org" },
+    { "type": "dns", "value": "example.org" }
   ],
 
   "authorizations": [
@@ -1978,7 +1984,7 @@ Content-Type: application/jose+json
   "payload": base64url({
     "identifier": {
       "type": "dns",
-      "value": "example.net"
+      "value": "example.org"
     }
   }),
   "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
@@ -2084,18 +2090,18 @@ server of two things:
 1. That the client controls the private key of the account key pair, and
 2. That the client controls the identifier in question.
 
-This process may be repeated to associate multiple identifiers to a key pair
+This process may be repeated to associate multiple identifiers with an account
 (e.g., to request certificates with multiple identifiers) or to associate
 multiple accounts with an identifier (e.g., to allow multiple entities to manage
 certificates).
 
-Authorization resources are created by the server in response to certificate
-orders or authorization requests submitted by an account key holder; their
+Authorization resources are created by the server in response to newOrder or
+newAuthorization requests submitted by an account key holder; their
 URLs are provided to the client in the responses to these requests.  The
 authorization object is implicitly tied to the account key used to sign the
 request.
 
-When a client receives an order from the server in reply to a new order request, it downloads the authorization
+When a client receives an order from the server in reply to a newOrder request, it downloads the authorization
 resources by sending POST-as-GET requests to the indicated URLs.  If the client
 initiates authorization using a request to the newAuthz resource, it
 will have already received the pending authorization object in the response
@@ -2123,11 +2129,11 @@ Link: <https://example.com/acme/directory>;rel="index"
 
 {
   "status": "pending",
-  "expires": "2018-03-03T14:09:30Z",
+  "expires": "2016-01-02T14:09:30Z",
 
   "identifier": {
     "type": "dns",
-    "value": "example.org"
+    "value": "www.example.org"
   },
 
   "challenges": [
@@ -2141,9 +2147,7 @@ Link: <https://example.com/acme/directory>;rel="index"
       "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",
       "token": "DGyRejmCefe7v4NfDGDKfA"
     }
-  ],
-
-  "wildcard": false
+  ]
 }
 ~~~~~~~~~~
 
@@ -2181,7 +2185,10 @@ Content-Type: application/jose+json
 The server updates the authorization document by updating its representation of
 the challenge with the response object provided by the client.  The server MUST
 ignore any fields in the response object that are not specified as response
-fields for this type of challenge.  The server provides a 200 (OK) response
+fields for this type of challenge.
+Note that the challenges in this document do
+not define any response fields, but future specifications might define them.
+The server provides a 200 (OK) response
 with the updated challenge object as its body.
 
 If the client's response is invalid for any reason or does not provide the
@@ -2236,7 +2243,7 @@ Link: <https://example.com/acme/directory>;rel="index"
 
   "identifier": {
     "type": "dns",
-    "value": "example.org"
+    "value": "www.example.org"
   },
 
   "challenges": [
@@ -2247,9 +2254,7 @@ Link: <https://example.com/acme/directory>;rel="index"
       "validated": "2014-12-01T12:05:13.72Z",
       "token": "IlirfxKKXAsHtmzK29Pj8A"
     }
-  ],
-
-  "wildcard": false
+  ]
 }
 ~~~~~~~~~~
 
@@ -2379,14 +2384,14 @@ Link: <https://example.com/acme/directory>;rel="index"
 --- or ---
 
 HTTP/1.1 403 Forbidden
-Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+Replay-Nonce: lXfyFzi6238tfPQRwgfmPU
 Content-Type: application/problem+json
 Content-Language: en
 Link: <https://example.com/acme/directory>;rel="index"
 
 {
   "type": "urn:ietf:params:acme:error:unauthorized",
-  "detail": "No authorization provided for name example.net"
+  "detail": "No authorization provided for name example.org"
 }
 ~~~~~~~~~~
 
@@ -2665,11 +2670,11 @@ The record provisioned to the DNS contains the base64url encoding of this digest
 client constructs the validation domain name by prepending the label
 "\_acme-challenge" to the domain name being validated, then provisions a TXT
 record with the digest value under that name. For example, if the domain name
-being validated is "example.org", then the client would provision the following
+being validated is "www.example.org", then the client would provision the following
 DNS record:
 
 ~~~~~~~~~~
-_acme-challenge.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
+_acme-challenge.www.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
 ~~~~~~~~~~
 
 A client responds with an empty object ({}) to acknowledge that the challenge
@@ -2753,10 +2758,10 @@ Applications that use this media type: ACME clients and servers, HTTP servers, o
 
 Additional information:
 
-  Deprecated alias names for this type: n/a
-  Magic number(s): n/a
-  File extension(s): .pem
-  Macintosh file type code(s): n/a
+    Deprecated alias names for this type: n/a
+    Magic number(s): n/a
+    File extension(s): .pem
+    Macintosh file type code(s): n/a
 
 Person & email address to contact for further information: See Authors' Addresses section.
 
@@ -2888,7 +2893,7 @@ Template:
 * Field name: The string to be used as a field name in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
-* Client configurable: Boolean indicating whether the server should accept
+* Configurable: Boolean indicating whether the server should accept
   values provided by the client
 * Reference: Where this field is defined
 
@@ -2917,7 +2922,7 @@ Template:
 * Field name: The string to be used as a field name in the JSON object
 * Field type: The type of value to be provided, e.g., string, boolean, array of
   string
-* Client configurable: Boolean indicating whether the server should accept
+* Configurable: Boolean indicating whether the server should accept
   values provided by the client
 * Reference: Where this field is defined
 
