@@ -2758,10 +2758,10 @@ Applications that use this media type: ACME clients and servers, HTTP servers, o
 
 Additional information:
 
-  Deprecated alias names for this type: n/a
-  Magic number(s): n/a
-  File extension(s): .pem
-  Macintosh file type code(s): n/a
+    Deprecated alias names for this type: n/a
+    Magic number(s): n/a
+    File extension(s): .pem
+    Macintosh file type code(s): n/a
 
 Person & email address to contact for further information: See Authors' Addresses section.
 
