@@ -399,7 +399,7 @@ private key unless otherwise specified.  The server MUST verify the JWS before
 processing the request. Encapsulating request bodies in JWS provides
 authentication of requests.
 
-JWS objects sent as the body of an ACME request MUST meet the following additional criteria:
+A JWS object sent as the body of an ACME request MUST meet the following additional criteria:
 
 * The JWS MUST be in the  Flattened JSON Serialization {{!RFC7515}}
 * The JWS MUST NOT have multiple signatures
@@ -1139,7 +1139,7 @@ name validation.
     }
   ],
 
-  "wildcard": true
+  "wildcard": false
 }
 ~~~~~~~~~~
 
