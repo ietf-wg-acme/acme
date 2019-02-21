@@ -1801,7 +1801,7 @@ Location: https://example.com/acme/order/TOlocE8rfgo
 
   "identifiers": [
     { "type": "dns", "value": "www.example.org" },
-    { "type": "dns", "value": "example.org" },
+    { "type": "dns", "value": "example.org" }
   ],
 
   "authorizations": [
@@ -1919,8 +1919,8 @@ Location: https://example.com/acme/order/TOlocE8rfgo
   "notAfter": "2016-01-08T00:00:00Z",
 
   "identifiers": [
-    { "type": "dns", "value": "www.example.org" }
-    { "type": "dns", "value": "example.org" },
+    { "type": "dns", "value": "www.example.org" },
+    { "type": "dns", "value": "example.org" }
   ],
 
   "authorizations": [
