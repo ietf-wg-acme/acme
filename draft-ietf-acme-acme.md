@@ -191,7 +191,7 @@ deploying an HTTPS server using ACME, the experience would be something like thi
   automatically downloads and installs it, potentially notifying the operator
   via email, SMS, etc.
 * The ACME client periodically contacts the CA to get updated certificates,
-  stapled Online Certificate Status Protocol (OCSP) responses, or whatever else would be required to keep the web server functional and its credentials up to date.
+  stapled Online Certificate Status Protocol (OCSP) responses {{?RFC6960}}, or whatever else would be required to keep the web server functional and its credentials up to date.
 
 In this way, it would be nearly as easy to deploy with a CA-issued certificate
 as with a self-signed certificate. Furthermore, the maintenance of that
@@ -226,7 +226,7 @@ from the client.
 # Protocol Overview
 
 ACME allows a client to request certificate management actions using a set of
-JavaScript Object Notation (JSON) messages carried over HTTPS {{!RFC8259}} {{!RFC2818}}.
+JavaScript Object Notation (JSON) messages {{!RFC8259}} carried over HTTPS {{!RFC2818}}.
 Issuance using ACME resembles a traditional CA's issuance process, in which a user creates an account,
 requests a certificate, and proves control of the domain(s) in that certificate in
 order for the CA to issue the requested certificate.
@@ -354,7 +354,7 @@ integrity for the HTTPS request URL.
 ## HTTPS Requests
 
 Each ACME function is accomplished by the client sending a sequence of HTTPS
-requests to the server, carrying JSON messages {{!RFC2818}}{{!RFC8259}}.  Use of
+requests to the server {{!RFC2818}}, carrying JSON messages {{!RFC8259}}.  Use of
 HTTPS is REQUIRED. Each subsection of
 {{certificate-management}} below describes the message formats used by the
 function and the order in which messages are sent.
@@ -2513,7 +2513,7 @@ server SHOULD set the Retry-After header field to a time after the server's
 next validation query, since the status of the challenge will not change until
 that time.
 
-Clients can explicitly request a retry by resending their response to a
+Clients can explicitly request a retry by re-sending their response to a
 challenge in a new POST request (with a new nonce, etc.). This allows clients
 to request a retry when the state has changed (e.g., after firewall rules have been
 updated). Servers SHOULD retry a request immediately on receiving such a POST
