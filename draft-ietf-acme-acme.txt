@@ -5,12 +5,12 @@
 ACME Working Group                                             R. Barnes
 Internet-Draft                                                     Cisco
 Intended status: Standards Track                      J. Hoffman-Andrews
-Expires: August 25, 2019                                             EFF
+Expires: September 1, 2019                                           EFF
                                                              D. McCarney
                                                            Let's Encrypt
                                                                J. Kasten
                                                   University of Michigan
-                                                       February 21, 2019
+                                                       February 28, 2019
 
 
           Automatic Certificate Management Environment (ACME)
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 25, 2019.
+   This Internet-Draft will expire on September 1, 2019.
 
 
 
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Barnes, et al.           Expires August 25, 2019                [Page 1]
+Barnes, et al.          Expires September 1, 2019               [Page 1]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Barnes, et al.           Expires August 25, 2019                [Page 2]
+Barnes, et al.          Expires September 1, 2019               [Page 2]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -165,7 +165,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019                [Page 3]
+Barnes, et al.          Expires September 1, 2019               [Page 3]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -221,7 +221,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019                [Page 4]
+Barnes, et al.          Expires September 1, 2019               [Page 4]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -277,7 +277,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019                [Page 5]
+Barnes, et al.          Expires September 1, 2019               [Page 5]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -314,8 +314,8 @@ Internet-Draft                    ACME                     February 2019
 
    o  The ACME client periodically contacts the CA to get updated
       certificates, stapled Online Certificate Status Protocol (OCSP)
-      responses, or whatever else would be required to keep the web
-      server functional and its credentials up to date.
+      responses [RFC6960], or whatever else would be required to keep
+      the web server functional and its credentials up to date.
 
    In this way, it would be nearly as easy to deploy with a CA-issued
    certificate as with a self-signed certificate.  Furthermore, the
@@ -333,7 +333,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019                [Page 6]
+Barnes, et al.          Expires September 1, 2019               [Page 6]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -359,12 +359,11 @@ Internet-Draft                    ACME                     February 2019
 4.  Protocol Overview
 
    ACME allows a client to request certificate management actions using
-   a set of JavaScript Object Notation (JSON) messages carried over
-   HTTPS [RFC8259] [RFC2818].  Issuance using ACME resembles a
-   traditional CA's issuance process, in which a user creates an
-   account, requests a certificate, and proves control of the domain(s)
-   in that certificate in order for the CA to issue the requested
-   certificate.
+   a set of JavaScript Object Notation (JSON) messages [RFC8259] carried
+   over HTTPS [RFC2818].  Issuance using ACME resembles a traditional
+   CA's issuance process, in which a user creates an account, requests a
+   certificate, and proves control of the domain(s) in that certificate
+   in order for the CA to issue the requested certificate.
 
    The first phase of ACME is for the client to request an account with
    the ACME server.  The client generates an asymmetric key pair and
@@ -373,26 +372,6 @@ Internet-Draft                    ACME                     February 2019
    with an existing account in another system.  The creation request is
    signed with the generated private key to prove that the client
    controls it.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Barnes, et al.           Expires August 25, 2019                [Page 7]
-
-Internet-Draft                    ACME                     February 2019
-
 
          Client                                                   Server
 
@@ -407,6 +386,13 @@ Internet-Draft                    ACME                     February 2019
                    [] Information covered by request signatures
 
                              Account Creation
+
+
+
+Barnes, et al.          Expires September 1, 2019               [Page 7]
+
+Internet-Draft                    ACME                     February 2019
+
 
    Once an account is registered, there are four major steps the client
    needs to take to get a certificate:
@@ -445,7 +431,21 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019                [Page 8]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barnes, et al.          Expires September 1, 2019               [Page 8]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -501,7 +501,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019                [Page 9]
+Barnes, et al.          Expires September 1, 2019               [Page 9]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -530,10 +530,10 @@ Internet-Draft                    ACME                     February 2019
 6.1.  HTTPS Requests
 
    Each ACME function is accomplished by the client sending a sequence
-   of HTTPS requests to the server, carrying JSON messages
-   [RFC2818][RFC8259].  Use of HTTPS is REQUIRED.  Each subsection of
-   Section 7 below describes the message formats used by the function
-   and the order in which messages are sent.
+   of HTTPS requests to the server [RFC2818], carrying JSON messages
+   [RFC8259].  Use of HTTPS is REQUIRED.  Each subsection of Section 7
+   below describes the message formats used by the function and the
+   order in which messages are sent.
 
    In most HTTPS transactions used by ACME, the ACME client is the HTTPS
    client and the ACME server is the HTTPS server.  The ACME server acts
@@ -557,7 +557,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 10]
+Barnes, et al.          Expires September 1, 2019              [Page 10]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -613,7 +613,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 11]
+Barnes, et al.          Expires September 1, 2019              [Page 11]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -669,7 +669,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 12]
+Barnes, et al.          Expires September 1, 2019              [Page 12]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -725,7 +725,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 13]
+Barnes, et al.          Expires September 1, 2019              [Page 13]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -781,7 +781,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 14]
+Barnes, et al.          Expires September 1, 2019              [Page 14]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -837,7 +837,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 15]
+Barnes, et al.          Expires September 1, 2019              [Page 15]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -893,7 +893,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 16]
+Barnes, et al.          Expires September 1, 2019              [Page 16]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -949,7 +949,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 17]
+Barnes, et al.          Expires September 1, 2019              [Page 17]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1005,7 +1005,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 18]
+Barnes, et al.          Expires September 1, 2019              [Page 18]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1061,7 +1061,7 @@ Link: <https://example.com/acme/directory>;rel="index"
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 19]
+Barnes, et al.          Expires September 1, 2019              [Page 19]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1117,7 +1117,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 20]
+Barnes, et al.          Expires September 1, 2019              [Page 20]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1173,7 +1173,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 21]
+Barnes, et al.          Expires September 1, 2019              [Page 21]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 22]
+Barnes, et al.          Expires September 1, 2019              [Page 22]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1285,7 +1285,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 23]
+Barnes, et al.          Expires September 1, 2019              [Page 23]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1341,7 +1341,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 24]
+Barnes, et al.          Expires September 1, 2019              [Page 24]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1397,7 +1397,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 25]
+Barnes, et al.          Expires September 1, 2019              [Page 25]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1453,7 +1453,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 26]
+Barnes, et al.          Expires September 1, 2019              [Page 26]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1509,7 +1509,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 27]
+Barnes, et al.          Expires September 1, 2019              [Page 27]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1565,7 +1565,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 28]
+Barnes, et al.          Expires September 1, 2019              [Page 28]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1621,7 +1621,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 29]
+Barnes, et al.          Expires September 1, 2019              [Page 29]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1677,7 +1677,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 30]
+Barnes, et al.          Expires September 1, 2019              [Page 30]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1733,7 +1733,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 31]
+Barnes, et al.          Expires September 1, 2019              [Page 31]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1789,7 +1789,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 32]
+Barnes, et al.          Expires September 1, 2019              [Page 32]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1845,7 +1845,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 33]
+Barnes, et al.          Expires September 1, 2019              [Page 33]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1901,7 +1901,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 34]
+Barnes, et al.          Expires September 1, 2019              [Page 34]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -1957,7 +1957,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 35]
+Barnes, et al.          Expires September 1, 2019              [Page 35]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2013,7 +2013,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 36]
+Barnes, et al.          Expires September 1, 2019              [Page 36]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2069,7 +2069,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 37]
+Barnes, et al.          Expires September 1, 2019              [Page 37]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2125,7 +2125,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 38]
+Barnes, et al.          Expires September 1, 2019              [Page 38]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2181,7 +2181,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 39]
+Barnes, et al.          Expires September 1, 2019              [Page 39]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2237,7 +2237,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 40]
+Barnes, et al.          Expires September 1, 2019              [Page 40]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2293,7 +2293,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 41]
+Barnes, et al.          Expires September 1, 2019              [Page 41]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2349,7 +2349,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 42]
+Barnes, et al.          Expires September 1, 2019              [Page 42]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2405,7 +2405,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 43]
+Barnes, et al.          Expires September 1, 2019              [Page 43]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2461,7 +2461,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 44]
+Barnes, et al.          Expires September 1, 2019              [Page 44]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2517,7 +2517,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 45]
+Barnes, et al.          Expires September 1, 2019              [Page 45]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2573,7 +2573,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 46]
+Barnes, et al.          Expires September 1, 2019              [Page 46]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2629,7 +2629,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 47]
+Barnes, et al.          Expires September 1, 2019              [Page 47]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2685,7 +2685,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 48]
+Barnes, et al.          Expires September 1, 2019              [Page 48]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2741,7 +2741,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 49]
+Barnes, et al.          Expires September 1, 2019              [Page 49]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2797,7 +2797,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 50]
+Barnes, et al.          Expires September 1, 2019              [Page 50]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2853,7 +2853,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 51]
+Barnes, et al.          Expires September 1, 2019              [Page 51]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2909,7 +2909,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 52]
+Barnes, et al.          Expires September 1, 2019              [Page 52]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -2965,7 +2965,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 53]
+Barnes, et al.          Expires September 1, 2019              [Page 53]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3021,7 +3021,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 54]
+Barnes, et al.          Expires September 1, 2019              [Page 54]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3077,7 +3077,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 55]
+Barnes, et al.          Expires September 1, 2019              [Page 55]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3133,7 +3133,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 56]
+Barnes, et al.          Expires September 1, 2019              [Page 56]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3189,7 +3189,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 57]
+Barnes, et al.          Expires September 1, 2019              [Page 57]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3245,7 +3245,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 58]
+Barnes, et al.          Expires September 1, 2019              [Page 58]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3301,7 +3301,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 59]
+Barnes, et al.          Expires September 1, 2019              [Page 59]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3357,7 +3357,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 60]
+Barnes, et al.          Expires September 1, 2019              [Page 60]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3376,8 +3376,8 @@ Internet-Draft                    ACME                     February 2019
    query, since the status of the challenge will not change until that
    time.
 
-   Clients can explicitly request a retry by resending their response to
-   a challenge in a new POST request (with a new nonce, etc.).  This
+   Clients can explicitly request a retry by re-sending their response
+   to a challenge in a new POST request (with a new nonce, etc.).  This
    allows clients to request a retry when the state has changed (e.g.,
    after firewall rules have been updated).  Servers SHOULD retry a
    request immediately on receiving such a POST request.  In order to
@@ -3413,7 +3413,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 61]
+Barnes, et al.          Expires September 1, 2019              [Page 61]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3469,7 +3469,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 62]
+Barnes, et al.          Expires September 1, 2019              [Page 62]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3525,7 +3525,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 63]
+Barnes, et al.          Expires September 1, 2019              [Page 63]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3581,7 +3581,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 64]
+Barnes, et al.          Expires September 1, 2019              [Page 64]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3637,7 +3637,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 65]
+Barnes, et al.          Expires September 1, 2019              [Page 65]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3693,7 +3693,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 66]
+Barnes, et al.          Expires September 1, 2019              [Page 66]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3749,7 +3749,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 67]
+Barnes, et al.          Expires September 1, 2019              [Page 67]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3805,7 +3805,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 68]
+Barnes, et al.          Expires September 1, 2019              [Page 68]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3861,7 +3861,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 69]
+Barnes, et al.          Expires September 1, 2019              [Page 69]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3917,7 +3917,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 70]
+Barnes, et al.          Expires September 1, 2019              [Page 70]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -3973,7 +3973,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 71]
+Barnes, et al.          Expires September 1, 2019              [Page 71]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4029,7 +4029,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 72]
+Barnes, et al.          Expires September 1, 2019              [Page 72]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4085,7 +4085,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 73]
+Barnes, et al.          Expires September 1, 2019              [Page 73]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4141,7 +4141,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 74]
+Barnes, et al.          Expires September 1, 2019              [Page 74]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4197,7 +4197,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 75]
+Barnes, et al.          Expires September 1, 2019              [Page 75]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4253,7 +4253,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 76]
+Barnes, et al.          Expires September 1, 2019              [Page 76]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4309,7 +4309,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 77]
+Barnes, et al.          Expires September 1, 2019              [Page 77]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4365,7 +4365,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 78]
+Barnes, et al.          Expires September 1, 2019              [Page 78]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4421,7 +4421,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 79]
+Barnes, et al.          Expires September 1, 2019              [Page 79]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4477,7 +4477,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 80]
+Barnes, et al.          Expires September 1, 2019              [Page 80]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4533,7 +4533,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 81]
+Barnes, et al.          Expires September 1, 2019              [Page 81]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4589,7 +4589,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 82]
+Barnes, et al.          Expires September 1, 2019              [Page 82]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4645,7 +4645,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 83]
+Barnes, et al.          Expires September 1, 2019              [Page 83]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4701,7 +4701,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 84]
+Barnes, et al.          Expires September 1, 2019              [Page 84]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4757,7 +4757,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 85]
+Barnes, et al.          Expires September 1, 2019              [Page 85]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4813,7 +4813,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 86]
+Barnes, et al.          Expires September 1, 2019              [Page 86]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4869,7 +4869,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 87]
+Barnes, et al.          Expires September 1, 2019              [Page 87]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4925,7 +4925,7 @@ Internet-Draft                    ACME                     February 2019
 
 
 
-Barnes, et al.           Expires August 25, 2019               [Page 88]
+Barnes, et al.          Expires September 1, 2019              [Page 88]
 
 Internet-Draft                    ACME                     February 2019
 
@@ -4960,6 +4960,12 @@ Internet-Draft                    ACME                     February 2019
               DOI 10.17487/RFC5785, April 2010,
               <https://www.rfc-editor.org/info/rfc5785>.
 
+   [RFC6960]  Santesson, S., Myers, M., Ankney, R., Malpani, A.,
+              Galperin, S., and C. Adams, "X.509 Internet Public Key
+              Infrastructure Online Certificate Status Protocol - OCSP",
+              RFC 6960, DOI 10.17487/RFC6960, June 2013,
+              <https://www.rfc-editor.org/info/rfc6960>.
+
    [RFC7132]  Kent, S. and A. Chi, "Threat Model for BGP Path Security",
               RFC 7132, DOI 10.17487/RFC7132, February 2014,
               <https://www.rfc-editor.org/info/rfc7132>.
@@ -4970,21 +4976,20 @@ Internet-Draft                    ACME                     February 2019
               (DTLS)", BCP 195, RFC 7525, DOI 10.17487/RFC7525, May
               2015, <https://www.rfc-editor.org/info/rfc7525>.
 
+
+
+
+
+
+Barnes, et al.          Expires September 1, 2019              [Page 89]
+
+Internet-Draft                    ACME                     February 2019
+
+
    [W3C.REC-cors-20140116]
               Kesteren, A., "Cross-Origin Resource Sharing", World Wide
               Web Consortium Recommendation REC-cors-20140116, January
               2014, <http://www.w3.org/TR/2014/REC-cors-20140116>.
-
-
-
-
-
-
-
-Barnes, et al.           Expires August 25, 2019               [Page 89]
-
-Internet-Draft                    ACME                     February 2019
-
 
 Authors' Addresses
 
@@ -5032,9 +5037,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-Barnes, et al.           Expires August 25, 2019               [Page 90]
+Barnes, et al.          Expires September 1, 2019              [Page 90]
